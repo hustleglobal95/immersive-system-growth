@@ -1,0 +1,13 @@
+{
+  "models": [],
+  "textures": [],
+  "hdr": [],
+  "video": [],
+  "budgets": {
+    "modelMb": 12,
+    "textureMb": 5,
+    "hdrMb": 12,
+    "videoMb": 20,
+    "totalMb": 45
+  }
+}

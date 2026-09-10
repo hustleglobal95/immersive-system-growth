@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "name": "Forge Cinematic Demo",
+    "description": "A six-scene reference experience demonstrating one persistent object and one continuous camera journey.",
+    "themeColor": "#f97316",
+    "backgroundColor": "#070707"
+  },
+  "runtime": {
+    "sceneHeightVh": 100,
+    "cameraDamping": 7.5,
+    "objectDamping": 8.5,
+    "pointerInfluence": 0.18,
+    "maxDpr": 2,
+    "minDpr": 1
+  },
+  "heroModel": "",
+  "scenes": [
+    {
+      "id": "arrival",
+      "label": "Arrival",
+      "range": [0,0.16],
+      "easing": "cinematic",
+      "camera": {"path":"dolly","from":{"position":[0,0.35,8.2],"target":[0,0,0],"fov":42},"to":{"position":[0.2,0.15,5.6],"target":[0,0,0],"fov":38}},
+      "hero": {"from":{"position":[0,0,0],"rotation":[0.15,-0.25,0],"scale":1.0},"to":{"position":[0.45,-0.1,0.1],"rotation":[0.45,0.55,0.18],"scale":1.18}},
+      "world": {"background":"#070707","fog":"#070707","fogDensity":0.035,"ambient":0.45,"key":4.2,"rim":2.1},
+      "post": {"bloom":0.25,"vignette":0.42},
+      "copy": {"eyebrow":"IMMERSIVE SITE FORGE","headline":"Build one world, not six sections.","body":"A persistent WebGL scene turns scrolling into camera direction, object choreography, lighting changes and spatial narrative.","align":"left"}
+    },
+    {
+      "id": "approach",
+      "label": "Approach",
+      "range": [0.16,0.34],
+      "easing": "smooth",
+      "camera": {"path":"arc","from":{"position":[0.2,0.15,5.6],"target":[0,0,0],"fov":38},"to":{"position":[-2.0,0.65,4.15],"target":[0.2,-0.1,0],"fov":35}},
+      "hero": {"from":{"position":[0.45,-0.1,0.1],"rotation":[0.45,0.55,0.18],"scale":1.18},"to":{"position":[1.0,0.1,-0.4],"rotation":[0.15,1.5,-0.08],"scale":1.35}},
+      "world": {"background":"#090806","fog":"#090806","fogDensity":0.03,"ambient":0.5,"key":5.0,"rim":2.6},
+      "post": {"bloom":0.38,"vignette":0.35},
+      "copy": {"eyebrow":"CAMERA PATHS","headline":"Move through the story.","body":"Dolly, orbit, arc, crane and threshold paths are reusable primitives. The visitor should feel movement through space, not page transitions.","align":"right"}
+    },
+    {
+      "id": "threshold",
+      "label": "Threshold",
+      "range": [0.34,0.5],
+      "easing": "cinematic",
+      "camera": {"path":"threshold","from":{"position":[-2.0,0.65,4.15],"target":[0.2,-0.1,0],"fov":35},"to":{"position":[0.0,0.15,1.65],"target":[0.1,0,-1.0],"fov":46}},
+      "hero": {"from":{"position":[1.0,0.1,-0.4],"rotation":[0.15,1.5,-0.08],"scale":1.35},"to":{"position":[-0.45,0.25,-2.2],"rotation":[0.6,2.8,0.12],"scale":2.15}},
+      "world": {"background":"#0b0907","fog":"#0b0907","fogDensity":0.02,"ambient":0.62,"key":5.5,"rim":3.2},
+      "post": {"bloom":0.5,"vignette":0.25},
+      "copy": {"eyebrow":"SPATIAL HANDOFFS","headline":"Cross the threshold without cutting away.","body":"Transitions can pass through geometry, move behind occluders, transform persistent objects or exchange one environment for another.","align":"left"}
+    },
+    {
+      "id": "interior",
+      "label": "Interior",
+      "range": [0.5,0.68],
+      "easing": "smooth",
+      "camera": {"path":"crane","from":{"position":[0.0,0.15,1.65],"target":[0.1,0,-1.0],"fov":46},"to":{"position":[1.8,1.35,3.1],"target":[-0.4,0.15,-1.4],"fov":40}},
+      "hero": {"from":{"position":[-0.45,0.25,-2.2],"rotation":[0.6,2.8,0.12],"scale":2.15},"to":{"position":[-1.4,-0.1,-1.25],"rotation":[1.0,3.8,-0.2],"scale":1.55}},
+      "world": {"background":"#0c0b0a","fog":"#0c0b0a","fogDensity":0.027,"ambient":0.7,"key":4.7,"rim":3.8},
+      "post": {"bloom":0.3,"vignette":0.32},
+      "copy": {"eyebrow":"INTERACTION","headline":"Make the environment respond.","body":"Hotspots, pointer influence, object inspection and scene jumps are built into the runtime without sacrificing accessible DOM content.","align":"right"}
+    },
+    {
+      "id": "reveal",
+      "label": "Reveal",
+      "range": [0.68,0.84],
+      "easing": "cinematic",
+      "camera": {"path":"orbit","from":{"position":[1.8,1.35,3.1],"target":[-0.4,0.15,-1.4],"fov":40},"to":{"position":[-3.0,0.8,4.7],"target":[0.0,0.0,-0.4],"fov":34}},
+      "hero": {"from":{"position":[-1.4,-0.1,-1.25],"rotation":[1.0,3.8,-0.2],"scale":1.55},"to":{"position":[0.5,0.35,-0.2],"rotation":[1.25,5.3,0.15],"scale":1.25}},
+      "world": {"background":"#08090b","fog":"#08090b","fogDensity":0.025,"ambient":0.55,"key":6.2,"rim":4.0},
+      "post": {"bloom":0.58,"vignette":0.28},
+      "copy": {"eyebrow":"QUALITY SYSTEM","headline":"Spend pixels where they matter.","body":"Adaptive DPR, reduced-motion support, asset budgets and runtime quality tiers keep cinematic work practical across desktop and mobile.","align":"left"}
+    },
+    {
+      "id": "finale",
+      "label": "Finale",
+      "range": [0.84,1.0],
+      "easing": "smooth",
+      "camera": {"path":"dolly","from":{"position":[-3.0,0.8,4.7],"target":[0.0,0.0,-0.4],"fov":34},"to":{"position":[0.0,0.3,7.3],"target":[0.0,0.0,0.0],"fov":44}},
+      "hero": {"from":{"position":[0.5,0.35,-0.2],"rotation":[1.25,5.3,0.15],"scale":1.25},"to":{"position":[0.0,0.0,0.0],"rotation":[0.3,6.6,0.0],"scale":0.92}},
+      "world": {"background":"#070707","fog":"#070707","fogDensity":0.035,"ambient":0.5,"key":4.0,"rim":2.4},
+      "post": {"bloom":0.2,"vignette":0.5},
+      "copy": {"eyebrow":"FORGE","headline":"Describe the journey. Build the world.","body":"Use the recipes, scene composer and Claude operating contract to turn a brief and assets into a deployable immersive experience.","align":"center","cta":{"label":"Open the scene lab","href":"/lab"}}
+    }
+  ],
+  "hotspots": [
+    {"id":"architecture","sceneId":"interior","label":"Scene architecture","description":"Persistent canvas, one shared timeline and scene-aware interaction state.","position":[-0.4,0.8,-0.8]},
+    {"id":"quality","sceneId":"reveal","label":"Adaptive quality","description":"Quality tiers control DPR, particles and postprocessing intensity.","position":[0.8,-0.35,0.25]}
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "name": "immersive-site-forge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A production starter for cinematic, scroll-driven 3D websites using Next.js, React Three Fiber, GSAP, Lenis, and a persistent WebGL world.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "doctor": "node scripts/doctor.mjs",
+    "experience:validate": "node scripts/validate-experience.mjs",
+    "assets:audit": "node scripts/audit-assets.mjs",
+    "scene:new": "node scripts/new-scene.mjs",
+    "recipe:list": "node scripts/recipe-list.mjs",
+    "recipe:apply": "node scripts/apply-recipe.mjs",
+    "test": "node scripts/test-configs.mjs",
+    "check": "npm run doctor && npm run experience:validate && npm run cinematic:audit && npm run assets:audit && npm run test && npm run typecheck && npm run lint",
+    "cinematic:audit": "node scripts/cinematic-audit.mjs",
+    "scene:report": "node scripts/scene-report.mjs"
+  },
+  "dependencies": {
+    "@react-three/drei": "10.7.8",
+    "@react-three/fiber": "9.7.0",
+    "@react-three/postprocessing": "3.1.1",
+    "gsap": "3.15.0",
+    "lenis": "1.3.26",
+    "next": "16.3.4",
+    "postprocessing": "6.39.4",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "three": "0.185.1",
+    "zustand": "5.0.15"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.180.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^16.0.0",
+    "typescript": "^5.8.0"
+  }
+}

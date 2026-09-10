@@ -1,0 +1,31 @@
+{
+  "models": [
+    {
+      "path": "/models/hero.glb",
+      "role": "persistent hero",
+      "critical": true
+    }
+  ],
+  "textures": [
+    {
+      "path": "/textures/hero-basecolor.webp",
+      "role": "hero base color",
+      "critical": true
+    }
+  ],
+  "hdr": [
+    {
+      "path": "/hdr/studio.hdr",
+      "role": "studio lighting",
+      "critical": false
+    }
+  ],
+  "video": [],
+  "budgets": {
+    "modelMb": 12,
+    "textureMb": 5,
+    "hdrMb": 12,
+    "videoMb": 20,
+    "totalMb": 45
+  }
+}
