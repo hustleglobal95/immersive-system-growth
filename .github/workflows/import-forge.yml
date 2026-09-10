@@ -38,7 +38,7 @@ jobs:
           echo "11c2ef13c705b1e20ac2dc71d3e2f39144e32d1b468c3a9e817682c8bb789ac7  /tmp/immersive-site-forge.gitbundle" | sha256sum -c -
           git bundle verify /tmp/immersive-site-forge.gitbundle
 
-      - name: Force exact Forge history onto main
+      - name: Publish exact Forge commit to transfer branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -48,4 +48,4 @@ jobs:
           cd /tmp/forge-imported
           test "$(git rev-parse HEAD)" = "a53f52ce5b6d1c317f2c9a35b6f1c8a3b6a019bb"
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git push origin main:main --force
+          git push origin main:refs/heads/forge-exact --force
