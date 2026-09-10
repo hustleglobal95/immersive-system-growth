@@ -1,42 +1,95 @@
 "use client";
-
-import { SceneCanvas } from "@/src/components/three/SceneCanvas";
+import { useEffect, type ReactNode } from "react";
+import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 import { NarrativeOverlay } from "@/src/components/dom/NarrativeOverlay";
 import { ProgressRail } from "@/src/components/dom/ProgressRail";
 import { HotspotDialog } from "@/src/components/dom/HotspotDialog";
-import { DebugHUD } from "@/src/components/dom/DebugHUD";
 import { SiteChrome } from "@/src/components/dom/SiteChrome";
-import { LoadingOverlay } from "@/src/components/dom/LoadingOverlay";
-import { LabControls } from "@/src/components/dom/LabControls";
 import { WebGLBoundary } from "@/src/components/runtime/WebGLBoundary";
-import { AssetPreloader } from "@/src/components/runtime/AssetPreloader";
 import { ScrollController } from "@/src/runtime/ScrollController";
 import { PointerController } from "@/src/runtime/PointerController";
 import { SystemProfile } from "@/src/runtime/SystemProfile";
 import { KeyboardController } from "@/src/runtime/KeyboardController";
-import { experience } from "@/src/lib/experience";
-
-export function ExperienceRuntime({ forceDebug = false, lab = false }: { forceDebug?: boolean; lab?: boolean }) {
+import { useExperienceStore } from "@/src/store/experienceStore";
+const SceneCanvas = dynamic(
+  () => import("@/src/components/three/SceneCanvas").then((m) => m.SceneCanvas),
+  { ssr: false },
+);
+const LabControls = dynamic(() =>
+  import("@/src/components/dom/LabControls").then((m) => m.LabControls),
+);
+const DebugHUD = dynamic(() =>
+  import("@/src/components/dom/DebugHUD").then((m) => m.DebugHUD),
+);
+function RuntimeStatus() {
+  const status = useExperienceStore((s) => s.webglStatus);
+  const errors = useExperienceStore((s) => s.assetErrors);
+  if (status === "ready" && !Object.keys(errors).length) return null;
   return (
-    <div className="experience-root">
+    <aside className="runtime-notice" role="status" aria-live="polite">
+      {status === "loading"
+        ? "The 3D view is loading. All content is available below."
+        : status === "lost"
+          ? "The 3D view was interrupted. Your content remains available."
+          : status === "failed"
+            ? "The 3D view is unavailable. You can continue reading."
+            : "Some visual assets are unavailable. You can continue reading."}
+      {status !== "loading" && (
+        <button
+          onClick={async () => {
+            const { useGLTF, useTexture } = await import("@react-three/drei");
+            const { experience } = await import("@/src/lib/experience");
+            for (const url of [
+              experience.heroModel,
+              ...experience.assets.flatMap((a) => [
+                a.url,
+                a.kind === "model" ? a.lowUrl : undefined,
+              ]),
+            ].filter((x): x is string => !!x)) {
+              useGLTF.clear(url);
+              useTexture.clear(url);
+            }
+            useExperienceStore.getState().retry();
+          }}
+        >
+          Retry 3D
+        </button>
+      )}
+    </aside>
+  );
+}
+export function ExperienceRuntime({ children }: { children?: ReactNode }) {
+  const pathname = usePathname(),
+    lab = pathname === "/lab";
+  const ready = useExperienceStore((s) => s.profileReady),
+    motion = useExperienceStore((s) => s.reducedMotion),
+    debug = useExperienceStore((s) => s.debug),
+    generation = useExperienceStore((s) => s.retryGeneration);
+  useEffect(() => {
+    const s = useExperienceStore.getState();
+    s.resetLab();
+    s.setDebug(lab || process.env.NEXT_PUBLIC_DEBUG_3D === "true");
+  }, [lab]);
+  return (
+    <div className="experience-root" data-reduced-motion={motion}>
+      <SystemProfile />
       <ScrollController />
       <PointerController />
-      <SystemProfile forceDebug={forceDebug} />
       <KeyboardController />
-      <AssetPreloader />
       <SiteChrome />
-      <WebGLBoundary><SceneCanvas /></WebGLBoundary>
-      <LoadingOverlay />
+      {ready && (
+        <WebGLBoundary key={generation}>
+          <SceneCanvas />
+        </WebGLBoundary>
+      )}
       <NarrativeOverlay />
       <ProgressRail />
       <HotspotDialog />
-      <DebugHUD />
+      <RuntimeStatus />
+      {debug && <DebugHUD />}
       {lab && <LabControls />}
-      <main className="scroll-space" aria-label={experience.meta.name}>
-        {experience.scenes.map((scene) => (
-          <section key={scene.id} className="scroll-marker" style={{ height: `${experience.runtime.sceneHeightVh}svh` }} aria-label={scene.label} />
-        ))}
-      </main>
+      {children}
     </div>
   );
 }

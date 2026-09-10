@@ -1,93 +1,25 @@
+import type { z } from "zod";
+import type {
+  experienceSchema,
+  sceneAssetSchema,
+  cameraSchema,
+} from "@/src/lib/configSchema";
 export type Vec3 = [number, number, number];
 export type QualityTier = "low" | "medium" | "high";
-export type SceneEasing = "linear" | "smooth" | "cinematic";
-export type CameraPathPreset = "linear" | "dolly" | "arc" | "orbit" | "crane" | "threshold" | "flyby" | "swoop" | "macro" | "pullback";
-export type ObjectMotionPreset = "linear" | "handoff" | "rise" | "drop" | "spiral" | "scale-through";
-
-export interface CameraState {
-  position: Vec3;
-  target: Vec3;
-  fov: number;
-}
-
-export interface ObjectState {
-  position: Vec3;
-  rotation: Vec3;
-  scale: number;
-}
-
-export interface WorldState {
-  background: string;
-  fog: string;
-  fogDensity: number;
-  ambient: number;
-  key: number;
-  rim: number;
-}
-
-export interface PostState {
-  bloom: number;
-  vignette: number;
-}
-
-export interface SceneCopy {
-  eyebrow?: string;
-  headline: string;
-  body: string;
-  align?: "left" | "right" | "center";
-  cta?: { label: string; href: string };
-}
-
-export interface SceneDefinition {
-  id: string;
-  label: string;
-  range: [number, number];
-  easing: SceneEasing;
-  camera: {
-    path: CameraPathPreset;
-    waypoints?: Vec3[];
-    targetWaypoints?: Vec3[];
-    from: CameraState;
-    to: CameraState;
-  };
-  hero: {
-    motion?: ObjectMotionPreset;
-    from: ObjectState;
-    to: ObjectState;
-  };
-  world: WorldState;
-  post: PostState;
-  copy: SceneCopy;
-}
-
-export interface HotspotDefinition {
-  id: string;
-  sceneId: string;
-  label: string;
-  description: string;
-  position: Vec3;
-}
-
-export interface ExperienceConfig {
-  meta: {
-    name: string;
-    description: string;
-    themeColor: string;
-    backgroundColor: string;
-  };
-  runtime: {
-    sceneHeightVh: number;
-    cameraDamping: number;
-    objectDamping: number;
-    pointerInfluence: number;
-    maxDpr: number;
-    minDpr: number;
-  };
-  heroModel: string;
-  scenes: SceneDefinition[];
-  hotspots: HotspotDefinition[];
-}
-
+export type QualityMode = "auto" | QualityTier;
+export type ExperienceConfig = z.infer<typeof experienceSchema>;
+export type SceneDefinition = ExperienceConfig["scenes"][number];
+export type SceneAsset = z.infer<typeof sceneAssetSchema>;
+export type CameraDefinition = z.infer<typeof cameraSchema>;
+export type SceneEasing = SceneDefinition["easing"];
+export type CameraPathPreset = CameraDefinition["path"];
+export type ObjectMotionPreset = NonNullable<SceneDefinition["hero"]["motion"]>;
+export type CameraState = CameraDefinition["from"];
+export type ObjectState = SceneDefinition["hero"]["from"];
+export type WorldState = SceneDefinition["world"];
+export type PostState = SceneDefinition["post"];
+export type SceneCopy = SceneDefinition["copy"];
+export type HotspotDefinition = ExperienceConfig["hotspots"][number];
 export interface SampledExperienceState {
   scene: SceneDefinition;
   sceneIndex: number;

@@ -1,0 +1,1 @@
+Runtime Draco and Basis decoders copied from Three.js 0.185.1 examples/jsm/libs. Preserve the license notices in the JavaScript files and the upstream third-party notices. Refresh with the pinned Three dependency and test compressed fixtures before release. Decoders are served locally; no runtime gstatic dependency is required.

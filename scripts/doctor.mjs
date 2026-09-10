@@ -10,7 +10,7 @@ const required = [
   "src/components/three/SceneCanvas.tsx",
   "src/lib/sampleExperience.ts",
   "CLAUDE.md",
-  "docs/ARCHITECTURE.md"
+  "docs/ARCHITECTURE.md",
 ];
 
 let failed = false;
@@ -20,8 +20,19 @@ for (const item of required) {
   if (!ok) failed = true;
 }
 
-const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
-for (const dependency of ["next", "react", "three", "@react-three/fiber", "@react-three/drei", "gsap", "lenis", "zustand"]) {
+const pkg = JSON.parse(
+  fs.readFileSync(path.join(root, "package.json"), "utf8"),
+);
+for (const dependency of [
+  "next",
+  "react",
+  "three",
+  "@react-three/fiber",
+  "@react-three/drei",
+  "gsap",
+  "lenis",
+  "zustand",
+]) {
   const ok = Boolean(pkg.dependencies?.[dependency]);
   console.log(`${ok ? "✓" : "✗"} dependency ${dependency}`);
   if (!ok) failed = true;

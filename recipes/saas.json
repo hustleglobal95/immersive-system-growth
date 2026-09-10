@@ -1,0 +1,726 @@
+{
+  "meta": {
+    "name": "Signal — Spatial interface reference",
+    "description": "Original saas cinematic reference with real GLB loading, accessible content and responsive camera choreography.",
+    "themeColor": "#7fcfe0",
+    "backgroundColor": "#080b10"
+  },
+  "runtime": {
+    "sceneHeightVh": 100,
+    "cameraDamping": 7.5,
+    "objectDamping": 8.5,
+    "pointerInfluence": 0.18,
+    "maxDpr": 2,
+    "minDpr": 1,
+    "maxPixels": 4000000,
+    "preloadMb": 20
+  },
+  "heroModel": "/models/reference/saas.glb",
+  "scenes": [
+    {
+      "id": "signal",
+      "label": "Signal",
+      "range": [
+        0,
+        0.15
+      ],
+      "easing": "cinematic",
+      "camera": {
+        "path": "dolly",
+        "from": {
+          "position": [
+            0,
+            0.4,
+            7
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 46
+        },
+        "to": {
+          "position": [
+            1,
+            0.3,
+            5
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 46
+        }
+      },
+      "mobileCamera": {
+        "path": "dolly",
+        "from": {
+          "position": [
+            0,
+            0.6000000000000001,
+            10.5
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 60
+        },
+        "to": {
+          "position": [
+            1.5,
+            0.44999999999999996,
+            7.5
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 60
+        }
+      },
+      "hero": {
+        "motion": "linear",
+        "from": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        },
+        "to": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0.18,
+            0
+          ],
+          "scale": 1.0451713978716028
+        }
+      },
+      "world": {
+        "background": "#080b10",
+        "fog": "#080b10",
+        "fogDensity": 0.012,
+        "ambient": 0.65,
+        "key": 3.2,
+        "rim": 1.2
+      },
+      "post": {
+        "bloom": 0.12,
+        "vignette": 0.2
+      },
+      "copy": {
+        "eyebrow": "SIGNAL",
+        "headline": "Turn information into understanding.",
+        "body": "A signal view of this original saas reference. Scroll in either direction to explore its form, materials and composition.",
+        "align": "left"
+      }
+    },
+    {
+      "id": "workspace",
+      "label": "Workspace",
+      "range": [
+        0.15,
+        0.31
+      ],
+      "easing": "cinematic",
+      "camera": {
+        "path": "arc",
+        "from": {
+          "position": [
+            1,
+            0.3,
+            5
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 46
+        },
+        "to": {
+          "position": [
+            -1,
+            0.4,
+            3
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 46
+        }
+      },
+      "mobileCamera": {
+        "path": "arc",
+        "from": {
+          "position": [
+            1.5,
+            0.44999999999999996,
+            7.5
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 60
+        },
+        "to": {
+          "position": [
+            -1.5,
+            0.6000000000000001,
+            4.5
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 60
+        }
+      },
+      "hero": {
+        "motion": "handoff",
+        "from": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0.18,
+            0
+          ],
+          "scale": 1.0451713978716028
+        },
+        "to": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0.36,
+            0
+          ],
+          "scale": 1.074563126877378
+        }
+      },
+      "world": {
+        "background": "#10151b",
+        "fog": "#080b10",
+        "fogDensity": 0.013000000000000001,
+        "ambient": 0.6900000000000001,
+        "key": 3.45,
+        "rim": 1.3
+      },
+      "post": {
+        "bloom": 0.135,
+        "vignette": 0.2
+      },
+      "copy": {
+        "eyebrow": "WORKSPACE",
+        "headline": "Make room for the work.",
+        "body": "A workspace view of this original saas reference. Scroll in either direction to explore its form, materials and composition.",
+        "align": "right"
+      }
+    },
+    {
+      "id": "interface",
+      "label": "Interface",
+      "range": [
+        0.31,
+        0.48
+      ],
+      "easing": "cinematic",
+      "camera": {
+        "path": "threshold",
+        "from": {
+          "position": [
+            -1,
+            0.4,
+            3
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 46
+        },
+        "to": {
+          "position": [
+            1.5,
+            0.6,
+            4
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 46
+        }
+      },
+      "mobileCamera": {
+        "path": "threshold",
+        "from": {
+          "position": [
+            -1.5,
+            0.6000000000000001,
+            4.5
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 60
+        },
+        "to": {
+          "position": [
+            2.25,
+            0.8999999999999999,
+            6
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 60
+        }
+      },
+      "hero": {
+        "motion": "rise",
+        "from": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0.36,
+            0
+          ],
+          "scale": 1.074563126877378
+        },
+        "to": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0.54,
+            0
+          ],
+          "scale": 1.0779078104702555
+        }
+      },
+      "world": {
+        "background": "#141b20",
+        "fog": "#080b10",
+        "fogDensity": 0.014,
+        "ambient": 0.73,
+        "key": 3.7,
+        "rim": 1.4
+      },
+      "post": {
+        "bloom": 0.15,
+        "vignette": 0.2
+      },
+      "copy": {
+        "eyebrow": "INTERFACE",
+        "headline": "Bring the important details closer.",
+        "body": "A interface view of this original saas reference. Scroll in either direction to explore its form, materials and composition.",
+        "align": "left"
+      }
+    },
+    {
+      "id": "connections",
+      "label": "Connections",
+      "range": [
+        0.48,
+        0.67
+      ],
+      "easing": "cinematic",
+      "camera": {
+        "path": "flyby",
+        "from": {
+          "position": [
+            1.5,
+            0.6,
+            4
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 46
+        },
+        "to": {
+          "position": [
+            -1.5,
+            1,
+            5
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 46
+        }
+      },
+      "mobileCamera": {
+        "path": "flyby",
+        "from": {
+          "position": [
+            2.25,
+            0.8999999999999999,
+            6
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 60
+        },
+        "to": {
+          "position": [
+            -2.25,
+            1.5,
+            7.5
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 60
+        }
+      },
+      "hero": {
+        "motion": "linear",
+        "from": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0.54,
+            0
+          ],
+          "scale": 1.0779078104702555
+        },
+        "to": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0.72,
+            0
+          ],
+          "scale": 1.054037054444092
+        }
+      },
+      "world": {
+        "background": "#151b21",
+        "fog": "#080b10",
+        "fogDensity": 0.015,
+        "ambient": 0.77,
+        "key": 3.95,
+        "rim": 1.5
+      },
+      "post": {
+        "bloom": 0.16499999999999998,
+        "vignette": 0.2
+      },
+      "copy": {
+        "eyebrow": "CONNECTIONS",
+        "headline": "See how the pieces connect.",
+        "body": "A connections view of this original saas reference. Scroll in either direction to explore its form, materials and composition.",
+        "align": "right"
+      }
+    },
+    {
+      "id": "insight",
+      "label": "Insight",
+      "range": [
+        0.67,
+        0.82
+      ],
+      "easing": "cinematic",
+      "camera": {
+        "path": "crane",
+        "from": {
+          "position": [
+            -1.5,
+            1,
+            5
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 46
+        },
+        "to": {
+          "position": [
+            0,
+            1.5,
+            6
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 46
+        }
+      },
+      "mobileCamera": {
+        "path": "crane",
+        "from": {
+          "position": [
+            -2.25,
+            1.5,
+            7.5
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 60
+        },
+        "to": {
+          "position": [
+            0,
+            2.25,
+            9
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 60
+        }
+      },
+      "hero": {
+        "motion": "spiral",
+        "from": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0.72,
+            0
+          ],
+          "scale": 1.054037054444092
+        },
+        "to": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0.8999999999999999,
+            0
+          ],
+          "scale": 1.0112896006447893
+        }
+      },
+      "world": {
+        "background": "#0d131c",
+        "fog": "#080b10",
+        "fogDensity": 0.016,
+        "ambient": 0.81,
+        "key": 4.2,
+        "rim": 1.6
+      },
+      "post": {
+        "bloom": 0.18,
+        "vignette": 0.2
+      },
+      "copy": {
+        "eyebrow": "INSIGHT",
+        "headline": "Step back with clarity.",
+        "body": "A insight view of this original saas reference. Scroll in either direction to explore its form, materials and composition.",
+        "align": "left"
+      }
+    },
+    {
+      "id": "start",
+      "label": "Start",
+      "range": [
+        0.82,
+        1
+      ],
+      "easing": "cinematic",
+      "camera": {
+        "path": "pullback",
+        "from": {
+          "position": [
+            0,
+            1.5,
+            6
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 46
+        },
+        "to": {
+          "position": [
+            0,
+            0.3,
+            7
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 46
+        }
+      },
+      "mobileCamera": {
+        "path": "pullback",
+        "from": {
+          "position": [
+            0,
+            2.25,
+            9
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 60
+        },
+        "to": {
+          "position": [
+            0,
+            0.44999999999999996,
+            10.5
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 60
+        }
+      },
+      "hero": {
+        "motion": "linear",
+        "from": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0.8999999999999999,
+            0
+          ],
+          "scale": 1.0112896006447893
+        },
+        "to": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            1.08,
+            0
+          ],
+          "scale": 0.9645983645364118
+        }
+      },
+      "world": {
+        "background": "#080b10",
+        "fog": "#080b10",
+        "fogDensity": 0.017,
+        "ambient": 0.8500000000000001,
+        "key": 4.45,
+        "rim": 1.7
+      },
+      "post": {
+        "bloom": 0.195,
+        "vignette": 0.2
+      },
+      "copy": {
+        "eyebrow": "START",
+        "headline": "Build your next experience.",
+        "body": "A start view of this original saas reference. Scroll in either direction to explore its form, materials and composition.",
+        "align": "center",
+        "cta": {
+          "label": "Open the scene lab",
+          "href": "/lab"
+        }
+      }
+    }
+  ],
+  "hotspots": [
+    {
+      "id": "construction",
+      "sceneId": "connections",
+      "label": "About this reference",
+      "description": "This original GLB is a working reference asset. Replace it with optimized project artwork using the documented model contract.",
+      "position": [
+        0.9,
+        0.3,
+        0
+      ]
+    }
+  ],
+  "stage": "minimal",
+  "heroVisible": true,
+  "assets": [],
+  "heroLowModel": "/models/reference/saas-low.glb"
+}

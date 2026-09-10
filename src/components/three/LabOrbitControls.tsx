@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { ElementRef } from "react";
 import { OrbitControls } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
@@ -12,6 +12,14 @@ export function LabOrbitControls() {
   const controls = useRef<ElementRef<typeof OrbitControls>>(null);
   const { camera } = useThree();
   const frame = useRef(0);
+  useEffect(() => {
+    if (freeCamera && controls.current) {
+      controls.current.target.set(
+        ...useExperienceStore.getState().cameraTelemetry.target,
+      );
+      controls.current.update();
+    }
+  }, [freeCamera]);
 
   useFrame(() => {
     if (!freeCamera || !controls.current) return;
@@ -26,5 +34,12 @@ export function LabOrbitControls() {
   });
 
   if (!freeCamera) return null;
-  return <OrbitControls ref={controls} makeDefault enableDamping dampingFactor={0.08} />;
+  return (
+    <OrbitControls
+      ref={controls}
+      makeDefault
+      enableDamping
+      dampingFactor={0.08}
+    />
+  );
 }

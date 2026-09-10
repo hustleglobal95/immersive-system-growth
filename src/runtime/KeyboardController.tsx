@@ -1,27 +1,45 @@
 "use client";
-
 import { useEffect } from "react";
-import { experience, progressForScene } from "@/src/lib/experience";
+import { experience } from "@/src/lib/experience";
 import { useExperienceStore } from "@/src/store/experienceStore";
-
 export function KeyboardController() {
-  const activeScene = useExperienceStore((state) => state.activeScene);
-  const debug = useExperienceStore((state) => state.debug);
-  const setDebug = useExperienceStore((state) => state.setDebug);
-
   useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() === "d") setDebug(!debug);
-      if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
-      const delta = event.key === "ArrowRight" ? 1 : -1;
-      const next = Math.max(0, Math.min(experience.scenes.length - 1, activeScene + delta));
-      const progress = progressForScene(next);
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      window.scrollTo({ top: maxScroll * progress, behavior: "smooth" });
+    const onKey = (e: KeyboardEvent) => {
+      if (
+        e.defaultPrevented ||
+        e.ctrlKey ||
+        e.metaKey ||
+        e.altKey ||
+        e.shiftKey
+      )
+        return;
+      if (
+        e.target instanceof Element &&
+        e.target.closest(
+          "input,textarea,select,button,a,[contenteditable=true],[role=dialog]",
+        )
+      )
+        return;
+      const s = useExperienceStore.getState();
+      if (e.key.toLowerCase() === "d") {
+        s.setDebug(!s.debug);
+        return;
+      }
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+      e.preventDefault();
+      const i = Math.max(
+        0,
+        Math.min(
+          experience.scenes.length - 1,
+          s.activeScene + (e.key === "ArrowRight" ? 1 : -1),
+        ),
+      );
+      document
+        .getElementById(experience.scenes[i].id)
+        ?.scrollIntoView({ behavior: s.reducedMotion ? "instant" : "smooth" });
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [activeScene, debug, setDebug]);
-
+  }, []);
   return null;
 }

@@ -10,3 +10,9 @@ coverage/
 *.log
 public/generated/
 config/experience.backup.json
+*.tsbuildinfo
+playwright-report/
+test-results/
+config/backups/
+public/decoders/draco/
+public/decoders/basis/

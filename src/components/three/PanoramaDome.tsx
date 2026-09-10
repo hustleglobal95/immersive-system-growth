@@ -3,7 +3,15 @@
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
-export function PanoramaDome({ texture, radius = 20, rotationY = 0 }: { texture: string; radius?: number; rotationY?: number }) {
+export function PanoramaDome({
+  texture,
+  radius = 20,
+  rotationY = 0,
+}: {
+  texture: string;
+  radius?: number;
+  rotationY?: number;
+}) {
   const map = useTexture(texture);
   map.colorSpace = THREE.SRGBColorSpace;
   return (
