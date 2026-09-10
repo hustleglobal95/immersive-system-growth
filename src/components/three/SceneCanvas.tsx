@@ -1,5 +1,5 @@
 "use client";
-import { lazy,Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { experience } from "@/src/lib/experience";
 import { useExperienceStore } from "@/src/store/experienceStore";
@@ -18,9 +18,15 @@ import { CinematicFrame } from "./CinematicFrame";
 import { RendererLifecycle } from "./RendererLifecycle";
 import { SceneAssets } from "./SceneAssets";
 import { AssetBoundary } from "./AssetBoundary";
-const LabGuides=lazy(()=>import("./LabGuides").then(m=>({default:m.LabGuides})));
+function CanvasFallback() {
+  useEffect(() => useExperienceStore.getState().setWebglStatus("failed"), []);
+  return null;
+}
+const LabGuides = lazy(() =>
+  import("./LabGuides").then((m) => ({ default: m.LabGuides })),
+);
 export function SceneCanvas() {
-  const guides=useExperienceStore(s=>s.guides);
+  const guides = useExperienceStore((s) => s.guides);
   const quality = useExperienceStore((s) => s.quality);
   const camera = experience.scenes[0].camera.from;
   return (
@@ -35,7 +41,7 @@ export function SceneCanvas() {
         dpr={1}
         gl={{ antialias: false, alpha: false, powerPreference: "default" }}
         shadows={quality === "high"}
-        fallback={<span>3D unavailable</span>}
+        fallback={<CanvasFallback />}
       >
         <RendererLifecycle />
         <RenderStatsProbe />
@@ -45,7 +51,11 @@ export function SceneCanvas() {
           <SceneLighting />
           <CameraRig />
           <LabOrbitControls />
-          {guides&&<Suspense fallback={null}><LabGuides/></Suspense>}
+          {guides && (
+            <Suspense fallback={null}>
+              <LabGuides />
+            </Suspense>
+          )}
           {experience.stage === "demo" ? (
             <DemoStage />
           ) : (

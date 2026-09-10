@@ -1,7 +1,6 @@
 "use client";
 
-import { useTexture } from "@react-three/drei";
-import * as THREE from "three";
+import { useImageTexture } from "./useImageTexture";
 import type { Vec3 } from "@/src/types/experience";
 
 export function ImagePlane({
@@ -15,8 +14,7 @@ export function ImagePlane({
   rotation?: Vec3;
   scale?: Vec3;
 }) {
-  const map = useTexture(src);
-  map.colorSpace = THREE.SRGBColorSpace;
+  const map = useImageTexture(src);
   return (
     <mesh position={position} rotation={rotation} scale={scale}>
       <planeGeometry args={[1, 1]} />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTexture } from "@react-three/drei";
+import { useImageTexture } from "./useImageTexture";
 import * as THREE from "three";
 
 export function PanoramaDome({
@@ -12,8 +12,7 @@ export function PanoramaDome({
   radius?: number;
   rotationY?: number;
 }) {
-  const map = useTexture(texture);
-  map.colorSpace = THREE.SRGBColorSpace;
+  const map = useImageTexture(texture);
   return (
     <mesh rotation={[0, rotationY, 0]}>
       <sphereGeometry args={[radius, 64, 32]} />

@@ -5,12 +5,14 @@ interface Resource {
   scene: Object3D;
   timer?: ReturnType<typeof setTimeout>;
 }
-const resources = new Map<string, Resource>();
+const resources = new Map<Object3D, Resource>();
+const latest = new Map<string, Object3D>();
 export function retainModel(url: string, scene: Object3D) {
-  const entry = resources.get(url) ?? { count: 0, scene };
+  const entry = resources.get(scene) ?? { count: 0, scene };
   clearTimeout(entry.timer);
   entry.count++;
-  resources.set(url, entry);
+  resources.set(scene, entry);
+  latest.set(url, scene);
   return () => {
     entry.count--;
     entry.timer = setTimeout(() => {
@@ -41,8 +43,11 @@ export function retainModel(url: string, scene: Object3D) {
         const image = t.source?.data as { close?: () => void } | undefined;
         if (image && typeof image.close === "function") image.close();
       });
-      useGLTF.clear(url);
-      resources.delete(url);
+      if (latest.get(url) === scene) {
+        useGLTF.clear(url);
+        latest.delete(url);
+      }
+      resources.delete(scene);
     }, 500);
   };
 }

@@ -42,6 +42,7 @@ function RuntimeStatus() {
             const { experience } = await import("@/src/lib/experience");
             for (const url of [
               experience.heroModel,
+              experience.heroLowModel,
               ...experience.assets.flatMap((a) => [
                 a.url,
                 a.kind === "model" ? a.lowUrl : undefined,

@@ -4,6 +4,10 @@ import path from "node:path";
 const root = process.cwd();
 const required = [
   "package.json",
+  "package-lock.json",
+  "node_modules/next/package.json",
+  "node_modules/typescript/package.json",
+  "node_modules/eslint/package.json",
   "config/experience.json",
   "config/asset-manifest.json",
   "src/components/runtime/ExperienceRuntime.tsx",
@@ -13,7 +17,9 @@ const required = [
   "docs/ARCHITECTURE.md",
 ];
 
-let failed = false;
+const [major, minor] = process.versions.node.split(".").map(Number);
+let failed = major < 22 || (major === 22 && minor < 13);
+if (failed) console.error("Node 22.13 or later required");
 for (const item of required) {
   const ok = fs.existsSync(path.join(root, item));
   console.log(`${ok ? "✓" : "✗"} ${item}`);

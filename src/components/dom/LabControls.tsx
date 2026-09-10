@@ -7,7 +7,7 @@ import type { QualityMode } from "@/src/types/experience";
 const round = (n: number) => Number(n.toFixed(3));
 
 export function LabControls() {
-  const guides=useExperienceStore(s=>s.guides);
+  const guides = useExperienceStore((s) => s.guides);
   const progress = useExperienceStore((state) => state.progress);
   const activeScene = useExperienceStore((state) => state.activeScene);
   const quality = useExperienceStore((state) => state.qualityMode);
@@ -77,6 +77,7 @@ export function LabControls() {
       <label>
         Quality{" "}
         <select
+          aria-label="Quality"
           value={quality}
           onChange={(event) => setQuality(event.target.value as QualityMode)}
         >
@@ -102,7 +103,16 @@ export function LabControls() {
         />{" "}
         Free camera
       </label>
-      <label className="lab-controls__check"><input type="checkbox" checked={guides} onChange={e=>useExperienceStore.getState().setGuides(e.target.checked)}/> Show authoring guides</label>
+      <label className="lab-controls__check">
+        <input
+          type="checkbox"
+          checked={guides}
+          onChange={(e) =>
+            useExperienceStore.getState().setGuides(e.target.checked)
+          }
+        />{" "}
+        Show authoring guides
+      </label>
       <button
         className="lab-controls__button"
         type="button"
