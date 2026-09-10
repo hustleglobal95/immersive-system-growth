@@ -88,11 +88,20 @@ test("reduced motion, final conversion and no horizontal overflow across viewpor
 test("missing GLB preserves semantic content and exposes retry", async ({
   page,
 }) => {
-  await page.route("**/models/**/*.glb", (route) => route.abort());
+  await page.addInitScript(() => {
+    document.addEventListener("click", (event) => {
+      if ((event.target as HTMLElement)?.closest("button")?.textContent === "Retry 3D") {
+        document.documentElement.dataset.retryRequested = "true";
+      }
+    }, true);
+  });
+  await page.route("**/models/**/*.glb", async (route) => {
+    const retryRequested = await page.evaluate(() => document.documentElement.dataset.retryRequested === "true");
+    await (retryRequested ? route.continue() : route.abort());
+  });
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await expect(page.getByRole("button", { name: "Retry 3D" })).toBeVisible();
-  await page.unroute("**/models/**/*.glb");
   await page.getByRole("button", { name: "Retry 3D" }).click();
   await expect(page.getByRole("button", { name: "Retry 3D" })).toHaveCount(0);
   await expect(page.locator("canvas")).toHaveCount(1);
