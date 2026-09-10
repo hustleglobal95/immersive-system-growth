@@ -2,7 +2,7 @@
 import { useEffect, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useAnimations } from "@react-three/drei";
-import { LoopOnce, type Group } from "three";
+import { LoopOnce, type AnimationAction, type Group } from "three";
 import type { Vec3 } from "@/src/types/experience";
 import { useModelInstance } from "@/src/components/three/useModelInstance";
 import { useCinematicFrame } from "@/src/components/three/CinematicFrame";
@@ -30,17 +30,21 @@ export function ScrubbedGLTF({
   const { actions, names, mixer } = useAnimations(gltf.animations, group);
   const scene = experience.scenes.find((s) => s.id === sceneId),
     name = clip ?? names[0];
-  const action = actions[name];
+  const actionRef = useRef<AnimationAction | null>(null);
   useEffect(() => {
+    const action = actions[name];
     if (!action) return;
+    actionRef.current = action;
     action.reset().setLoop(LoopOnce, 1).play();
     action.clampWhenFinished = true;
     action.paused = true;
     return () => {
       action.stop();
+      actionRef.current = null;
     };
-  }, [action]);
+  }, [actions, name]);
   useFrame(() => {
+    const action = actionRef.current;
     if (!scene || !action) return;
     action.time =
       (useExperienceStore.getState().reducedMotion

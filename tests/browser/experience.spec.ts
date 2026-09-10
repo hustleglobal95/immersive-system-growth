@@ -49,6 +49,10 @@ test("production canvas stays persistent across scroll, reverse, quality and rou
   await page.getByLabel("Quality", { exact: true }).selectOption("low");
   await expect(page.getByLabel("Quality", { exact: true })).toHaveValue("low");
   await page.getByLabel("Free camera", { exact: true }).check();
+  await page.getByLabel("Show authoring guides", { exact: true }).check();
+  await expect(
+    page.getByLabel("Show authoring guides", { exact: true }),
+  ).toBeChecked();
   await page
     .getByRole("link", {
       name: "Pavilion — A spatial property journey",
@@ -88,6 +92,10 @@ test("missing GLB preserves semantic content and exposes retry", async ({
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await expect(page.getByRole("button", { name: "Retry 3D" })).toBeVisible();
+  await page.unroute("**/models/**/*.glb");
+  await page.getByRole("button", { name: "Retry 3D" }).click();
+  await expect(page.getByRole("button", { name: "Retry 3D" })).toHaveCount(0);
+  await expect(page.locator("canvas")).toHaveCount(1);
   await page.locator("#finale").scrollIntoViewIfNeeded();
   await expect(
     page.getByRole("link", { name: "Open the scene lab" }),

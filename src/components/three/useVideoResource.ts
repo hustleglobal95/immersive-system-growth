@@ -9,6 +9,9 @@ export function useVideoResource(
 ) {
   const [resource, setResource] = useState<{
     src: string;
+    autoplay: boolean;
+    loop: boolean;
+    reducedMotion: boolean;
     video: HTMLVideoElement;
     texture: VideoTexture;
   } | null>(null);
@@ -31,7 +34,7 @@ export function useVideoResource(
           "Video unavailable. Read the equivalent page content.",
         );
     const ready = () => {
-      setResource({ src, video, texture });
+      setResource({ src, autoplay, loop, reducedMotion, video, texture });
       useExperienceStore.getState().setAssetError(src, null);
       if (autoplay && !reducedMotion) void video.play().catch(fail);
     };
@@ -57,5 +60,10 @@ export function useVideoResource(
       texture.dispose();
     };
   }, [src, autoplay, loop, reducedMotion]);
-  return resource?.src === src ? resource : null;
+  return resource?.src === src &&
+    resource.autoplay === autoplay &&
+    resource.loop === loop &&
+    resource.reducedMotion === reducedMotion
+    ? resource
+    : null;
 }
