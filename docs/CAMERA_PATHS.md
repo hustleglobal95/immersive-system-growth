@@ -19,7 +19,6 @@ Prefer motivated camera movement. The camera moves because the visitor is approa
 
 For photoreal architecture, keep most FOV values roughly in the 32 to 55 range and avoid extreme perspective unless art direction calls for it.
 
-
 ## Multi-point spline paths
 
 For moves that cannot be described by a two-point preset, add `waypoints` to the scene camera. Forge samples a Catmull-Rom spline from the start position through those points to the end position. `targetWaypoints` can independently curve the look-at target.

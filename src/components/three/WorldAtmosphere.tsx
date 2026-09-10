@@ -1,28 +1,24 @@
 "use client";
-
-import { useEffect } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
+import { useRef } from "react";
 import * as THREE from "three";
-import { sampleExperience } from "@/src/lib/sampleExperience";
-import { useExperienceStore } from "@/src/store/experienceStore";
-
+import { useCinematicFrame } from "@/src/components/three/CinematicFrame";
 export function WorldAtmosphere() {
-  const { scene } = useThree();
-
-  useEffect(() => {
-    scene.background = new THREE.Color("#070707");
-    scene.fog = new THREE.FogExp2("#070707", 0.035);
-  }, [scene]);
-
+  const frame = useCinematicFrame();
+  const background = useRef<THREE.Color>(null);
+  const fog = useRef<THREE.FogExp2>(null);
   useFrame(() => {
-    const { progress, reducedMotion } = useExperienceStore.getState();
-    const world = sampleExperience(progress, reducedMotion).world;
-    if (scene.background instanceof THREE.Color) scene.background.set(world.background);
-    if (scene.fog instanceof THREE.FogExp2) {
-      scene.fog.color.set(world.fog);
-      scene.fog.density = world.fogDensity;
+    const w = frame.current.world;
+    background.current?.set(w.background);
+    if (fog.current) {
+      fog.current.color.set(w.fog);
+      fog.current.density = w.fogDensity;
     }
   });
-
-  return null;
+  return (
+    <>
+      <color ref={background} attach="background" args={["#070707"]} />
+      <fogExp2 ref={fog} attach="fog" args={["#070707", 0.03]} />
+    </>
+  );
 }

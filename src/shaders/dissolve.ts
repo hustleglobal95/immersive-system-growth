@@ -20,9 +20,10 @@ float hash(vec3 p) {
 }
 
 void main() {
+  if (uProgress >= 1.0) discard;
   float noise = hash(floor(vPosition * 10.0));
   float edge = smoothstep(uProgress - 0.08, uProgress + 0.08, noise);
-  if (edge < 0.08) discard;
+  if (uProgress > 0.0 && edge < 0.08) discard;
   float glow = 1.0 - smoothstep(0.08, 0.2, abs(noise - uProgress));
   gl_FragColor = vec4(mix(uColor, vec3(1.0, 0.35, 0.02), glow * 0.8), 1.0);
 }`;

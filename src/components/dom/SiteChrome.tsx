@@ -1,10 +1,17 @@
 import Link from "next/link";
-
+import { experience } from "@/src/lib/experience";
 export function SiteChrome() {
   return (
     <header className="site-chrome">
-      <Link href="/" className="wordmark">IMMERSIVE SITE FORGE</Link>
-      <div className="site-chrome__meta"><span>R3F</span><span>GSAP</span><span>LENIS</span></div>
+      <a className="skip-link" href="#experience-content">
+        Skip to content
+      </a>
+      <Link href="/" className="wordmark">
+        {experience.meta.name}
+      </Link>
+      <Link href="/lab" className="lab-link">
+        Scene lab
+      </Link>
     </header>
   );
 }

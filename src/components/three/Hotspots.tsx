@@ -8,13 +8,20 @@ export function Hotspots() {
   const activeScene = useExperienceStore((state) => state.activeScene);
   const setSelected = useExperienceStore((state) => state.setSelectedHotspot);
   const activeId = experience.scenes[activeScene]?.id;
-  const hotspots = experience.hotspots.filter((hotspot) => hotspot.sceneId === activeId);
+  const hotspots = experience.hotspots.filter(
+    (hotspot) => hotspot.sceneId === activeId,
+  );
 
   return (
     <>
       {hotspots.map((hotspot) => (
         <group key={hotspot.id} position={hotspot.position}>
-          <mesh onClick={(event) => { event.stopPropagation(); setSelected(hotspot.id); }}>
+          <mesh
+            onClick={(event) => {
+              event.stopPropagation();
+              setSelected(hotspot.id);
+            }}
+          >
             <sphereGeometry args={[0.085, 24, 24]} />
             <meshBasicMaterial color="#ffffff" toneMapped={false} />
           </mesh>

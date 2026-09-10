@@ -1,18 +1,11 @@
-# Validation
+# Validation contract
 
-Forge separates structural validation from cinematic heuristics.
+`npm ci` uses the committed lockfile. `npm run check` runs doctor, full schema validation for demo/all recipes, actual sampled cinematic continuity at desktop/portrait aspects, recursive asset auditing, regression tests, TypeScript and ESLint. `npm run build` prepares decoders and builds production Next.js.
 
-```bash
-npm run doctor
-npm run experience:validate
-npm run cinematic:audit
-npm run assets:audit
-npm test
-npm run typecheck
-npm run lint
-npm run build
-```
+Both runtime and CLI use src/lib/configSchema.ts. Invalid nested configuration is rejected with field paths. Optional defaults are defined in that schema, not scattered in validators. CLI recipe application validates before atomic replacement and preserves timestamped backups.
 
-`experience:validate` fails on malformed ranges, vectors, IDs and missing scene relationships. `cinematic:audit` reports suspicious camera distance, extreme FOV, long scene copy and discontinuous camera or persistent-object states. Warnings are not automatically wrong, but they require an intentional design reason.
+`npm run test:browser` runs Playwright against the production server on Chromium and WebKit. Install browser binaries with the README command. Failure traces/screenshots are retained. Browser emulation does not certify Safari on physical iPhones, decoder thermal behavior or real GPU memory limits.
 
-Use `npm run scene:report` for a concise timeline printout during reviews.
+Required release evidence: full gates green, no unexpected browser errors, readable arrival/final conversion, keyboard details/navigation, reduced motion, missing asset/renderer recovery, forward/reverse/jump/restore/resize, route/quality resource stability, and measured target-device budgets.
+
+Do not modify assertions merely to accept a broken outcome. If a test was based on an incorrect assumption, document that distinction and preserve the intended user-facing invariant.

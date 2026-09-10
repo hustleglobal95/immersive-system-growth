@@ -2,21 +2,32 @@ name: Forge CI
 on:
   push:
   pull_request:
-
+permissions:
+  contents: read
+concurrency:
+  group: forge-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           cache: npm
-      - run: npm install
-      - run: npm run doctor
-      - run: npm run experience:validate
-      - run: npm run assets:audit
-      - run: npm test
-      - run: npm run typecheck
-      - run: npm run lint
+      - run: npm ci
+      - run: npm run check
       - run: npm run build
+      - run: npm audit --audit-level=high
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npm run test:browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-evidence
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14

@@ -1,16 +1,15 @@
 "use client";
-
 import { PerformanceMonitor } from "@react-three/drei";
 import { useExperienceStore } from "@/src/store/experienceStore";
-
 export function AdaptiveQuality() {
-  const setQuality = useExperienceStore((state) => state.setQuality);
   return (
     <PerformanceMonitor
+      iterations={10}
+      ms={250}
       flipflops={3}
-      onDecline={() => setQuality("low")}
-      onIncline={() => setQuality("high")}
-      onFallback={() => setQuality("low")}
+      onDecline={() => useExperienceStore.getState().adaptQuality(-1)}
+      onIncline={() => useExperienceStore.getState().adaptQuality(1)}
+      onFallback={() => useExperienceStore.getState().adaptQuality(0)}
     />
   );
 }

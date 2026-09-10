@@ -1,13 +1,9 @@
 # Accessibility
 
-The 3D layer is visual enhancement. Important information remains in normal HTML.
+Primary content is an ordinary server-rendered anchored document. It is visible without JavaScript, without WebGL and at global timeline endpoints. Headings use one h1 and subsequent h2 elements. The decorative Canvas remains aria-hidden; every hotspot has an equivalent native details/summary in the document.
 
-- Respect `prefers-reduced-motion`.
-- Keep navigation and calls to action keyboard accessible.
-- Maintain sufficient text contrast against variable backgrounds.
-- Never require precision pointer interaction for essential tasks.
-- Provide textual equivalents for hotspot information.
-- Avoid flashing effects.
-- Do not trap focus inside decorative 3D overlays.
+Keyboard navigation uses native anchors and a skip link. Global cinematic shortcuts ignore focused controls/editable fields. The optional nonmodal hotspot dialog moves focus on open, closes with Escape and returns focus when possible; it does not claim modal semantics or trap focus.
 
-Reduced-motion mode snaps between key camera states, removes floating movement, removes decorative particles and disables postprocessing.
+Reduced motion fixes the camera and hero to an initial pose, disables Lenis smoothing, parallax, particles/postprocessing and autonomous animation, and changes the narrative to compact ordinary flow. It can follow the system preference or be previewed in /lab. A change to the OS preference is observed live.
+
+Validate content contrast against project artwork, zoom/text wrapping, touch targets and actual screen-reader navigation before client release. The supplied dark panel backdrop is a starting treatment, not a guarantee for arbitrary CSS/theme changes.

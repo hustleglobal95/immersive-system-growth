@@ -15,11 +15,10 @@ Forge includes reusable building blocks for common immersive-site requirements.
 
 These are primitives, not art direction. Replace their defaults per project.
 
-
 Additional motion-aware primitives:
 
 - `AnimatedGLTF`: plays a GLB animation clip normally.
 - `ScrubbedGLTF`: maps a GLB clip to one scene's scroll progress.
 - `ScrubbedVideoPlane`: maps video time to scene progress.
 - `QualityGate`: mounts expensive children only above a chosen quality tier.
-- `ScenePortal`: a configurable transmission threshold surface.
+- `ScenePortal`: a real offscreen scene rendered through MeshPortalMaterial; low quality and reduced motion use a static surface. `GlassPortal` remains the separate transmission primitive.

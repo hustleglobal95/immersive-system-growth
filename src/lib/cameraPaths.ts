@@ -5,7 +5,12 @@ function add(a: Vec3, b: Vec3): Vec3 {
   return [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
 }
 
-export function sampleCameraPath(from: Vec3, to: Vec3, t: number, preset: CameraPathPreset): Vec3 {
+export function sampleCameraPath(
+  from: Vec3,
+  to: Vec3,
+  t: number,
+  preset: CameraPathPreset,
+): Vec3 {
   const base = lerpVec3(from, to, t);
   const wave = Math.sin(Math.PI * t);
   const fullWave = Math.sin(Math.PI * 2 * t);
@@ -14,7 +19,11 @@ export function sampleCameraPath(from: Vec3, to: Vec3, t: number, preset: Camera
     case "arc":
       return add(base, [wave * 0.9, wave * 0.18, wave * 0.25]);
     case "orbit":
-      return add(base, [fullWave * 0.55, wave * 0.25, Math.cos(Math.PI * 2 * t) * 0.35]);
+      return add(base, [
+        fullWave * 0.55,
+        wave * 0.25,
+        (Math.cos(Math.PI * 2 * t) - 1) * 0.35,
+      ]);
     case "crane":
       return add(base, [0, wave * 0.7, 0]);
     case "threshold":

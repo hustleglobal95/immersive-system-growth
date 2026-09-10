@@ -10,7 +10,9 @@ export function LoadingOverlay() {
       <div className="loading-overlay__inner">
         <span>LOADING 3D WORLD</span>
         <strong>{Math.round(progress)}%</strong>
-        <div><i style={{ transform: `scaleX(${progress / 100})` }} /></div>
+        <div>
+          <i style={{ transform: `scaleX(${progress / 100})` }} />
+        </div>
         {item && <small>{item.split("/").at(-1)}</small>}
       </div>
     </div>

@@ -1,5 +1,56 @@
 {
-  "models": [],
+  "models": [
+    {
+      "path": "/models/reference/pavilion.glb",
+      "bytes": 14148,
+      "sha256": "91e6d0996eae86381a3e7c24e54c676b364997159a81b27eba77532ff8831823"
+    },
+    {
+      "path": "/models/reference/pavilion-low.glb",
+      "bytes": 6468,
+      "sha256": "5a3b97b27cb8fe7de88be037be009e76cc6008f6d059fa267a51d92d5516c472"
+    },
+    {
+      "path": "/models/reference/automotive.glb",
+      "bytes": 13372,
+      "sha256": "426ca1914a4c4580bdfcb3d79855c5d5bb2d5d9de0dfb49ef5e672f46277b8c7"
+    },
+    {
+      "path": "/models/reference/automotive-low.glb",
+      "bytes": 5856,
+      "sha256": "56823d9e75b3766933bdde4434bd55c8e124ef8e6c7fdb6ac1ad6f19e4f70490"
+    },
+    {
+      "path": "/models/reference/restaurant.glb",
+      "bytes": 12708,
+      "sha256": "475c7702fc31fe8954e92852056e6eba38732cc5a5ae104f3d35035c6c0ff613"
+    },
+    {
+      "path": "/models/reference/restaurant-low.glb",
+      "bytes": 5356,
+      "sha256": "f54cfcee01e22ade601845aad2cbd926b0680b880a54f253211d1d8efcb2c8a5"
+    },
+    {
+      "path": "/models/reference/product.glb",
+      "bytes": 12688,
+      "sha256": "e2819eee29fd516e90bf5b7000a5c311a16b6cd811e608818ce77f63b343c92a"
+    },
+    {
+      "path": "/models/reference/product-low.glb",
+      "bytes": 5336,
+      "sha256": "ef084d055c41dcdc9e9ea77520105129b637631722f0dc8bb5903737b4b422c0"
+    },
+    {
+      "path": "/models/reference/saas.glb",
+      "bytes": 12872,
+      "sha256": "671295fa592cb3e762d7b879d0c16e95f13bb1df447ee22dd4a54bf249caf4f7"
+    },
+    {
+      "path": "/models/reference/saas-low.glb",
+      "bytes": 5360,
+      "sha256": "a5a378edff4505e220ac85fb912f523abd20a62750e013ee170fdea0ee625ef9"
+    }
+  ],
   "textures": [],
   "hdr": [],
   "video": [],
