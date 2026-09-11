@@ -1,5 +1,16 @@
 # Release Notes
 
+## 2.0.0
+
+- Added Forge Studio with project, timeline, model, integration, publish and telemetry workspaces.
+- Added local browser and CLI GLB inspection plus automatic named-mesh suggestions.
+- Added deterministic scene presets and slide, curtain, zoom, dissolve and wipe media transitions.
+- Added validated static, JSON and Shopify content adapters with explicit JSON-path mapping.
+- Added isolated client generation, validation and activation commands.
+- Added a protected manual GitHub Actions workflow for validated Vercel releases.
+- Added consent-aware FPS, Web Vitals, long-task and WebGL telemetry with an optional HTTPS webhook.
+- Added cross-browser Studio coverage and expanded the unit suite.
+
 ## Product choreography
 
 - Added named-node product rigs with deterministic global transform, opacity and visibility tracks.

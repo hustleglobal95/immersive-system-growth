@@ -1,0 +1,53 @@
+name: Deploy client experience
+on:
+  workflow_dispatch:
+    inputs:
+      client:
+        description: Client folder slug under clients/
+        required: true
+        type: string
+      production:
+        description: Deploy to production
+        required: true
+        default: false
+        type: boolean
+permissions:
+  contents: read
+concurrency:
+  group: deploy-client-${{ inputs.client }}
+  cancel-in-progress: false
+jobs:
+  validate-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Validate client input
+        env:
+          CLIENT_SLUG: ${{ inputs.client }}
+        run: node -e 'if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(process.env.CLIENT_SLUG))process.exit(1)'
+      - name: Activate client configuration
+        env:
+          CLIENT_SLUG: ${{ inputs.client }}
+        run: npm run project:activate -- "$CLIENT_SLUG"
+      - run: npm run check
+      - run: npm run build
+      - name: Deploy preview
+        if: ${{ !inputs.production }}
+        run: npx --yes vercel@latest deploy --yes --token="$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      - name: Deploy production
+        if: ${{ inputs.production }}
+        run: npx --yes vercel@latest deploy --prod --yes --token="$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

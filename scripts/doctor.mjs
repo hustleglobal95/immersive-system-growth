@@ -9,10 +9,12 @@ const required = [
   "node_modules/typescript/package.json",
   "node_modules/eslint/package.json",
   "config/experience.json",
+  "config/studio-project.json",
   "config/asset-manifest.json",
   "src/components/runtime/ExperienceRuntime.tsx",
   "src/components/three/SceneCanvas.tsx",
   "src/lib/sampleExperience.ts",
+  "src/studio/StudioWorkbench.tsx",
   "CLAUDE.md",
   "docs/ARCHITECTURE.md",
 ];

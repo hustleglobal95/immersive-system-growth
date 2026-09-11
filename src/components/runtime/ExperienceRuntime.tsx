@@ -12,6 +12,7 @@ import { ScrollController } from "@/src/runtime/ScrollController";
 import { PointerController } from "@/src/runtime/PointerController";
 import { SystemProfile } from "@/src/runtime/SystemProfile";
 import { KeyboardController } from "@/src/runtime/KeyboardController";
+import { TelemetryClient } from "@/src/components/runtime/TelemetryClient";
 import { useExperienceStore } from "@/src/store/experienceStore";
 const SceneCanvas = dynamic(
   () => import("@/src/components/three/SceneCanvas").then((m) => m.SceneCanvas),
@@ -75,13 +76,14 @@ export function ExperienceRuntime({ children }: { children?: ReactNode }) {
   }, [lab]);
   // The normal-flow authoring specimen has no cinematic runtime. The canvas
   // remains persistent when navigating between the experience and scene lab.
-  if (pathname === "/design") return <>{children}</>;
+  if (pathname === "/design" || pathname.startsWith("/studio")) return <>{children}</>;
   return (
     <div className="experience-root" data-reduced-motion={motion} data-media-motion={!motion} data-lab={lab}>
       <SystemProfile />
       <ScrollController />
       <PointerController />
       <KeyboardController />
+      <TelemetryClient />
       <SiteChrome />
       {ready && (
         <WebGLBoundary key={generation}>

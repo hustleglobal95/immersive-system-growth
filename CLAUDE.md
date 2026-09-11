@@ -20,6 +20,9 @@ Build cinematic, spatial, interactive websites that feel like one continuous exp
 10. Do not replace Forge architecture with a generic landing-page scaffold.
 11. Product explosions must use named GLB nodes and deterministic productRig tracks.
 12. Menus, prices and conversion actions must remain semantic DOM content.
+13. Studio output must pass the same schema as checked-in production configuration.
+14. Never expose CMS, commerce, telemetry or deployment secrets to client components.
+15. Remote content and telemetry endpoints must use HTTPS, bounded requests and explicit trust controls.
 
 ## Before implementation
 

@@ -1,5 +1,13 @@
 # Runtime ownership
 
+## Studio control plane
+
+`/studio` is the browser control plane for the runtime. It edits a versioned project document, keeps drafts in local storage, validates every import and export, and writes no server files. The timeline, preset, GLB-mapping, integration, deployment and telemetry panels all operate on the same schema so generated client projects can be reviewed before activation.
+
+Client projects live under `clients/<slug>/` and contain runtime configuration plus Studio metadata. The project scripts create, validate and activate those folders deterministically. Activation keeps a timestamped backup before replacing the active configuration. GitHub Actions performs the same validation and build before any Vercel deployment.
+
+External content is fetched only by the server integration route. URLs must use HTTPS and match an optional host allowlist; credentials are resolved from restricted environment-variable names and are never accepted from the browser. Telemetry follows the same boundary: the client emits a bounded, coarse event schema only after policy checks, while the route validates, rate-limits and optionally relays events to an HTTPS webhook.
+
 The shared App Router layout owns ExperienceRuntime and its single unkeyed Canvas. / and /lab do not mount their own worlds. Only an explicit Retry 3D action replaces a failed renderer. Leaving /lab resets free camera, guides, debug and the motion preview; manual quality policy remains explicit.
 
 The semantic document is the baseline. Every scene has a real anchored section, heading, body, CTA and native details for hotspot information. It is usable before hydration or when JavaScript/WebGL fails. The fixed 3D view enhances that document. No opacity or aria-hidden gate owns primary content.

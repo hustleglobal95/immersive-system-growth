@@ -1,6 +1,6 @@
 # Repository Manifest
 
-Immersive Site Forge 1.0 is organized as a reusable engine rather than a one-off demo.
+Immersive Site Forge 2.0 is organized as a multi-project production platform rather than a one-off demo.
 
 ## Runtime
 
@@ -38,6 +38,15 @@ Immersive Site Forge 1.0 is organized as a reusable engine rather than a one-off
 
 ## Authoring and automation
 
+- browser-based Forge Studio at `/studio`
+- visual scene timeline and boundary editor
+- browser and CLI GLB inspection with named-node mapping
+- reusable scene and media-transition presets
+- validated Studio project schema
+- CMS JSON and Shopify Storefront adapters
+- client project generation and activation
+- protected GitHub Actions deployment workflow
+- consent-aware real-device performance telemetry
 - JSON scene composer
 - semantic statement, brand-band, menu-grid and order-card modules
 - scene draft generator
@@ -56,4 +65,4 @@ Immersive Site Forge 1.0 is organized as a reusable engine rather than a one-off
 
 ## Documentation
 
-Architecture, camera paths, transitions, object motion, DOM motion, shaders, animated assets, scene lab, primitives, interactions, accessibility, asset pipeline, performance, validation, deployment, troubleshooting and optional third-party integrations are documented under `/docs` and `/integrations`.
+Architecture, Studio, integrations, telemetry, camera paths, transitions, object motion, DOM motion, shaders, animated assets, scene lab, primitives, interactions, accessibility, asset pipeline, performance, validation, deployment and troubleshooting are documented under `/docs` and `/integrations`.

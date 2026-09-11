@@ -28,3 +28,12 @@ test("media config requires safe source, video poster and bounded art direction"
   assert(!sceneMediaSchema.safeParse({kind:"image",src:"javascript:alert(1)",alt:"Product"}).success);
   assert(!sceneMediaSchema.safeParse({kind:"image",src:"/textures/test.jpg",alt:"Product",overlap:.9}).success);
 });
+test("media transition presets sample deterministic reveal properties",()=>{
+  for(const transition of ["slide","curtain","zoom","dissolve","wipe"] as const){
+    const a=sampleMediaPanel(.44,{...window,transition});
+    const b=sampleMediaPanel(.44,{...window,transition});
+    assert.deepEqual(a,b);
+    assert(a.opacity>=0&&a.opacity<=1);
+    assert(a.clip>=0&&a.clip<=100);
+  }
+});

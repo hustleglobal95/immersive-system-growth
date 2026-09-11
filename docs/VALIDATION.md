@@ -1,6 +1,6 @@
 # Validation contract
 
-`npm ci` uses the committed lockfile. `npm run check` runs doctor, full schema validation for demo/all recipes, actual sampled cinematic continuity at desktop/portrait aspects, recursive asset auditing, regression tests, TypeScript and ESLint. `npm run build` prepares decoders and builds production Next.js.
+`npm ci` uses the committed lockfile. `npm run check` runs doctor, Studio project validation, full schema validation for demo/all recipes, actual sampled cinematic continuity at desktop/portrait aspects, rig and recursive asset auditing, regression tests, TypeScript and ESLint. `npm run build` prepares decoders and builds production Next.js.
 
 Both runtime and CLI use src/lib/configSchema.ts. Invalid nested configuration is rejected with field paths. Optional defaults are defined in that schema, not scattered in validators. CLI recipe application validates before atomic replacement and preserves timestamped backups.
 
