@@ -468,9 +468,9 @@ a {
   max-height: calc(100svh - 40px);
   overflow-y: auto;
   z-index: 98;
-  right: 20px;
+  right: 90px;
   bottom: 20px;
-  width: min(360px, calc(100vw - 40px));
+  width: min(360px, calc(100vw - 110px));
   padding: 15px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 14px;
@@ -653,6 +653,7 @@ html {
   display: none;
   font-style: normal;
 }
+.experience-root[data-lab="true"] .progress-rail a em { display:none; }
 .progress-rail a:focus-visible em,
 .progress-rail a:hover em {
   display: inline;

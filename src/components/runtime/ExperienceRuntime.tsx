@@ -74,7 +74,7 @@ export function ExperienceRuntime({ children }: { children?: ReactNode }) {
     s.setDebug(lab || process.env.NEXT_PUBLIC_DEBUG_3D === "true");
   }, [lab]);
   return (
-    <div className="experience-root" data-reduced-motion={motion} data-media-motion={!motion}>
+    <div className="experience-root" data-reduced-motion={motion} data-media-motion={!motion} data-lab={lab}>
       <SystemProfile />
       <ScrollController />
       <PointerController />
