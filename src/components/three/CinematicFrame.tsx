@@ -8,6 +8,7 @@ import {
 } from "react";
 import { useFrame } from "@react-three/fiber";
 import { experience } from "@/src/lib/experience";
+import { cinematicProgress } from "@/src/lib/cinematicProgress";
 import { sampleExperience } from "@/src/lib/sampleExperience";
 import { useExperienceStore } from "@/src/store/experienceStore";
 import type { SampledExperienceState } from "@/src/types/experience";
@@ -51,6 +52,7 @@ export function CinematicFrame({ children }: { children: ReactNode }) {
       value.current = sampleExperience(p, s.reducedMotion, experience, aspect);
       previous.current = { aspect, motion: s.reducedMotion, initialized: true };
     }
+    cinematicProgress.publish(value.progress);
   }, -100);
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }
