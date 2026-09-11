@@ -17,7 +17,7 @@ test("design directions, catalog and inquiry are operable without cinematic mach
   expect(fonts.every(url => url.startsWith("http://127.0.0.1:3000/"))).toBe(true);
   await page.getByLabel("Search fonts").fill("cormorant");
   await expect(page.getByRole("link", { name: "Cormorant Garamond", exact: true })).toBeVisible();
-  await page.getByLabel("Category", { exact: true }).selectOption("Mono");
+  await page.getByRole("combobox").selectOption("Mono");
   await expect(page.getByText("No matches.", { exact: false })).toBeVisible();
   await page.getByLabel("Your name", { exact: true }).fill("Sample visitor");
   await page.getByLabel("Email address", { exact: true }).fill("sample@example.com");
