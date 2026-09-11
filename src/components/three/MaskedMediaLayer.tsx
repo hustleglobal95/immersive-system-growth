@@ -11,7 +11,7 @@ import {
   Texture,
   Vector2,
 } from "three";
-import { experience } from "@/src/lib/experience";
+import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { getMediaPanelWindow, sampleMediaPanel } from "@/src/lib/mediaPanels";
 import { createMaskReveal, resolveMaskBackend } from "@/src/lib/maskReveal";
 import {
@@ -28,6 +28,7 @@ import { useVideoResource } from "@/src/components/three/useVideoResource";
 import { AssetBoundary } from "@/src/components/three/AssetBoundary";
 
 export function MaskedMediaLayer() {
+  const experience = useExperienceConfig();
   const active = useExperienceStore((state) => state.activeScene);
   const quality = useExperienceStore((state) => state.quality);
   const webglStatus = useExperienceStore((state) => state.webglStatus);
@@ -51,9 +52,10 @@ export function MaskedMediaLayer() {
                   poster={media.poster!}
                   sceneIndex={index}
                   mask={mask}
+                  experience={experience}
                 />
               ) : (
-                <MaskedImagePanel src={media.src} sceneIndex={index} mask={mask} />
+                <MaskedImagePanel src={media.src} sceneIndex={index} mask={mask} experience={experience} />
               )}
             </Suspense>
           </AssetBoundary>
@@ -67,13 +69,15 @@ function MaskedImagePanel({
   src,
   sceneIndex,
   mask,
+  experience,
 }: {
   src: string;
   sceneIndex: number;
   mask: MaskRevealDefinition;
+  experience: import("@/src/types/experience").ExperienceConfig;
 }) {
   const texture = useImageTexture(src);
-  return <MaskedPlane texture={texture} sceneIndex={sceneIndex} mask={mask} />;
+  return <MaskedPlane texture={texture} sceneIndex={sceneIndex} mask={mask} experience={experience} />;
 }
 
 function MaskedVideoPanel({
@@ -81,25 +85,29 @@ function MaskedVideoPanel({
   poster,
   sceneIndex,
   mask,
+  experience,
 }: {
   src: string;
   poster: string;
   sceneIndex: number;
   mask: MaskRevealDefinition;
+  experience: import("@/src/types/experience").ExperienceConfig;
 }) {
   const fallback = useImageTexture(poster);
   const media = useVideoResource(src, true, true);
-  return <MaskedPlane texture={media?.texture ?? fallback} sceneIndex={sceneIndex} mask={mask} />;
+  return <MaskedPlane texture={media?.texture ?? fallback} sceneIndex={sceneIndex} mask={mask} experience={experience} />;
 }
 
 function MaskedPlane({
   texture,
   sceneIndex,
   mask,
+  experience,
 }: {
   texture: Texture;
   sceneIndex: number;
   mask: MaskRevealDefinition;
+  experience: import("@/src/types/experience").ExperienceConfig;
 }) {
   const mesh = useRef<Mesh>(null);
   const frame = useCinematicFrame();

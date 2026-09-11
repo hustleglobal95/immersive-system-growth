@@ -24,6 +24,9 @@ Build cinematic, spatial, interactive websites that feel like one continuous exp
 14. Never expose CMS, commerce, telemetry or deployment secrets to client components.
 15. Remote content and telemetry endpoints must use HTTPS, bounded requests and explicit trust controls.
 16. Runtime shader transitions must share the persistent Canvas and provide a deterministic DOM or static fallback.
+17. Studio live preview must receive the current validated draft through ExperienceConfigProvider; production runtime continues to use the checked-in default.
+18. Studio publishing may create review branches and pull requests only. Repository tokens stay server-side and publishing never implies merge or deployment.
+19. Transition-layer IDs are unique per media scene, timing ranges are bounded and reverse sampling must reconstruct the same frame.
 
 ## Before implementation
 

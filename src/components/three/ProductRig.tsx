@@ -1,12 +1,13 @@
 "use client";
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Material, Mesh, Object3D, type Group, type MeshStandardMaterial } from "three";
+import { Color, Material, Mesh, Object3D, type Group, type MeshStandardMaterial } from "three";
 import { useModelInstance } from "@/src/components/three/useModelInstance";
 import { useCinematicFrame } from "@/src/components/three/CinematicFrame";
 import { sampleProductTrack } from "@/src/lib/productRig";
 import { useExperienceStore } from "@/src/store/experienceStore";
 import type { ProductRigDefinition, Vec3 } from "@/src/types/experience";
+import { applyHeroMaterial, captureHeroMaterial } from "@/src/lib/heroMaterial";
 
 interface Baseline {
   object: Object3D;
@@ -30,6 +31,7 @@ function materialsFor(object: Object3D) {
 
 export function ProductRig({ url, rig }: { url: string; rig: ProductRigDefinition }) {
   const root = useRef<Group>(null);
+  const tint = useRef(new Color());
   const frame = useCinematicFrame();
   const { scene } = useModelInstance(url);
   const prepared = useMemo(() => {
@@ -69,7 +71,8 @@ export function ProductRig({ url, rig }: { url: string; rig: ProductRigDefinitio
     }
     if (missing.length)
       throw new Error("Product rig is missing GLB nodes: " + missing.join(", "));
-    return { baselines, ownedMaterials };
+    const materialBaselines = new Map([...ownedMaterials].map((material) => [material, captureHeroMaterial(material)]));
+    return { baselines, ownedMaterials, materialBaselines };
   }, [rig.nodes, scene]);
 
   useEffect(
@@ -85,6 +88,8 @@ export function ProductRig({ url, rig }: { url: string; rig: ProductRigDefinitio
     group.rotation.set(...hero.rotation);
     group.scale.setScalar(hero.scale);
     const progress = useExperienceStore.getState().reducedMotion ? 0 : frame.progress;
+    tint.current.set(frame.current.material.tint);
+    prepared.materialBaselines.forEach((baseline, material) => applyHeroMaterial(material, baseline, frame.current.material, tint.current));
 
     for (const baseline of prepared.baselines.values()) {
       baseline.object.position.set(...baseline.position);

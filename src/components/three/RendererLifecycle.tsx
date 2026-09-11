@@ -2,9 +2,10 @@
 import { useEffect } from "react";
 import { useThree } from "@react-three/fiber";
 import { useExperienceStore } from "@/src/store/experienceStore";
-import { experience } from "@/src/lib/experience";
+import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { qualityDpr } from "@/src/lib/quality";
 export function RendererLifecycle() {
+  const experience = useExperienceConfig();
   const { gl, size, setDpr } = useThree();
   const quality = useExperienceStore((s) => s.quality);
   useEffect(() => {
@@ -19,7 +20,7 @@ export function RendererLifecycle() {
         experience.runtime.maxPixels,
       ),
     );
-  }, [quality, size.width, size.height, setDpr]);
+  }, [experience.runtime.maxDpr, experience.runtime.maxPixels, experience.runtime.minDpr, quality, size.width, size.height, setDpr]);
   useEffect(() => {
     const canvas = gl.domElement;
     let timeout: ReturnType<typeof setTimeout> | undefined;

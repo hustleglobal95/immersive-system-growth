@@ -11,8 +11,8 @@ export function SceneLighting() {
   useFrame(() => {
     const w = frame.current.world;
     if (ambient.current) ambient.current.intensity = w.ambient;
-    if (key.current) key.current.intensity = w.key;
-    if (rim.current) rim.current.intensity = w.rim;
+    if (key.current) { key.current.intensity = w.key; key.current.color.set(w.keyColor); }
+    if (rim.current) { rim.current.intensity = w.rim; rim.current.color.set(w.rimColor); }
   });
   return (
     <>

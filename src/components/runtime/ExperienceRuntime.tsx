@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { NarrativeOverlay } from "@/src/components/dom/NarrativeOverlay";
 import { CinematicMedia } from "@/src/components/dom/CinematicMedia";
+import { CinematicTransitionLayers } from "@/src/components/dom/CinematicTransitionLayers";
 import { ProgressRail } from "@/src/components/dom/ProgressRail";
 import { HotspotDialog } from "@/src/components/dom/HotspotDialog";
 import { SiteChrome } from "@/src/components/dom/SiteChrome";
@@ -92,6 +93,7 @@ export function ExperienceRuntime({ children }: { children?: ReactNode }) {
       )}
       <NarrativeOverlay />
       <CinematicMedia />
+      <CinematicTransitionLayers />
       <ProgressRail />
       <HotspotDialog />
       <RuntimeStatus />

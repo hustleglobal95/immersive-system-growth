@@ -7,6 +7,9 @@
   --bg: #070707;
 }
 .cinematic-media { position:fixed; inset:0; z-index:1; overflow:hidden; pointer-events:none; }
+.cinematic-transition-layers { position:fixed; inset:0; z-index:2; overflow:hidden; pointer-events:none; }
+.cinematic-transition-layer,.cinematic-transition-layer > * { position:absolute; inset:-3%; }
+.cinematic-transition-layer img { width:106%; height:106%; display:block; object-fit:cover; }
 .media-panel { position:absolute; inset:0; overflow:hidden; background:#111; visibility:hidden; }
 .media-panel__inner { position:absolute; inset:-15% 0; }
 .media-panel__inner img,.media-panel__inner video { width:100%; height:100%; display:block; object-fit:cover; object-position:var(--media-position,50% 50%); }

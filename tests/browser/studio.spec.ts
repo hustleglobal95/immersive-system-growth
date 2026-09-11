@@ -29,9 +29,38 @@ test("Studio exposes content, deployment and real-device telemetry controls", as
 
   await page.getByRole("button", { name: "publish", exact: true }).click();
   await expect(page.getByText("Actions / Deploy client experience / Run workflow")).toBeVisible();
+  await expect(page.getByLabel("Publish secret")).toHaveAttribute("type", "password");
+  await expect(page.getByRole("button", { name: "Open review pull request" })).toBeDisabled();
   await page.getByRole("button", { name: "telemetry", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Telemetry policy" })).toBeVisible();
   await expect(page.getByLabel("Sample rate")).toBeVisible();
+});
+
+test("Studio Pro composes a validated template, directed scene and live runtime", async ({ page }) => {
+  await page.goto("/studio");
+  await page.getByRole("button", { name: "templates", exact: true }).click();
+  await expect(page.locator(".template-grid article")).toHaveCount(6);
+  const restaurant = page.locator(".template-grid article").filter({ hasText: "Restaurant journey" });
+  await restaurant.getByRole("button", { name: "Apply template" }).click();
+  await expect(page.getByText("Production schema valid")).toBeVisible();
+
+  await page.getByRole("button", { name: "director", exact: true }).click();
+  await expect(page.getByRole("img", { name: "Camera top path" })).toBeVisible();
+  await page.getByLabel("Path preset").selectOption("orbit");
+  await page.locator(".director-range").filter({ hasText: "Exposure" }).locator("input").fill("1.2");
+  await expect(page.getByText("Production schema valid")).toBeVisible();
+
+  await page.getByRole("button", { name: "layers", exact: true }).click();
+  const addMedia = page.getByRole("button", { name: "Add reference media" });
+  if (await addMedia.count()) await addMedia.click();
+  await page.getByRole("button", { name: "Add color flash" }).click();
+  await expect(page.locator(".layer-stack li")).toHaveCount(1);
+
+  await page.getByRole("button", { name: "preview", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Live experience preview" })).toBeVisible();
+  await expect(page.locator(".studio-preview__canvas canvas")).toHaveCount(1);
+  await page.getByLabel("Live preview progress").fill("0.5");
+  await expect(page.locator(".studio-preview__transport output")).toHaveText("0.500");
 });
 
 test("Mask Lab authors all presets and renders deterministic DOM and WebGL previews", async ({ page }) => {

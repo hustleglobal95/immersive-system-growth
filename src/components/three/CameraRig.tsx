@@ -2,10 +2,11 @@
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { experience } from "@/src/lib/experience";
+import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { useExperienceStore } from "@/src/store/experienceStore";
 import { useCinematicFrame } from "@/src/components/three/CinematicFrame";
 export function CameraRig() {
+  const experience = useExperienceConfig();
   const frame = useCinematicFrame();
   const target = useRef(new THREE.Vector3());
   const tick = useRef(0);

@@ -1,7 +1,7 @@
 "use client";
 import { lazy, Suspense, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
-import { experience } from "@/src/lib/experience";
+import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { useExperienceStore } from "@/src/store/experienceStore";
 import { CameraRig } from "./CameraRig";
 import { PersistentHero, HeroFallback } from "./PersistentHero";
@@ -27,6 +27,7 @@ const LabGuides = lazy(() =>
   import("./LabGuides").then((m) => ({ default: m.LabGuides })),
 );
 export function SceneCanvas() {
+  const experience = useExperienceConfig();
   const guides = useExperienceStore((s) => s.guides);
   const quality = useExperienceStore((s) => s.quality);
   const camera = experience.scenes[0].camera.from;

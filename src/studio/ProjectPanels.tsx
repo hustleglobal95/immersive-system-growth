@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import type { ExperienceConfig } from "@/src/types/experience";
+import type { AssetManifest } from "@/src/types/assets";
 import { contentSourceSchema, type ContentSource, type StudioProject } from "@/src/platform/studioSchema";
 
 export function ProjectPanel({
@@ -92,7 +93,23 @@ export function IntegrationsPanel({ project, setProject }: Pick<StudioPanelProps
   );
 }
 
-export function PublishPanel({ project, setProject }: Pick<StudioPanelProps, "project" | "setProject">) {
+export function PublishPanel({ project, setProject, experience, assetManifest }: Pick<StudioPanelProps, "project" | "setProject" | "experience" | "assetManifest">) {
+  const [secret, setSecret] = useState("");
+  const [title, setTitle] = useState(`Update ${project.name} experience`);
+  const [summary, setSummary] = useState("Studio-authored camera, material, transition and content improvements ready for review.");
+  const [result, setResult] = useState<{ message: string; url?: string } | null>(null);
+  const [publishing, setPublishing] = useState(false);
+  const publish = async () => {
+    setPublishing(true); setResult({ message: "Creating review branch and pull request..." });
+    try {
+      const response = await fetch("/api/studio/publish", { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${secret}` }, body: JSON.stringify({ experience, project, assetManifest, title, summary }) });
+      const body = await response.json() as { ok?: boolean; error?: string; url?: string; number?: number };
+      if (!response.ok || !body.ok) throw new Error(body.error ?? "Publishing failed");
+      setResult({ message: `Pull request #${body.number} created for review.`, url: body.url });
+      setSecret("");
+    } catch (error) { setResult({ message: error instanceof Error ? error.message : "Publishing failed" }); }
+    finally { setPublishing(false); }
+  };
   return (
     <div className="studio-grid">
       <section className="studio-card">
@@ -111,6 +128,15 @@ export function PublishPanel({ project, setProject }: Pick<StudioPanelProps, "pr
           <li>Deploy preview or production through the protected workflow.</li>
         </ol>
         <code className="studio-command">Actions / Deploy client experience / Run workflow</code>
+      </section>
+      <section className="studio-card studio-card--wide studio-publish-pr">
+        <div className="studio-card__head"><div><span>SECURE GITHUB HANDOFF</span><h2>Create review pull request</h2></div><output>server token only</output></div>
+        <p className="studio-muted">Forge validates the experience, project and asset manifest on the server. The GitHub token never enters the browser. Configure the server variables documented in `.env.example`.</p>
+        <label>Pull request title<input value={title} maxLength={100} onChange={(event) => setTitle(event.target.value)} /></label>
+        <label>Review summary<textarea rows={3} value={summary} maxLength={600} onChange={(event) => setSummary(event.target.value)} /></label>
+        <label>Publish secret<input type="password" autoComplete="off" value={secret} onChange={(event) => setSecret(event.target.value)} /></label>
+        <button type="button" className="studio-primary" disabled={!secret || publishing} onClick={() => void publish()}>{publishing ? "Publishing..." : "Open review pull request"}</button>
+        {result && <p className="studio-message" role="status">{result.url ? <a href={result.url} target="_blank" rel="noreferrer">{result.message}</a> : result.message}</p>}
       </section>
     </div>
   );
@@ -160,4 +186,5 @@ interface StudioPanelProps {
   setExperience: Dispatch<SetStateAction<ExperienceConfig>>;
   project: StudioProject;
   setProject: Dispatch<SetStateAction<StudioProject>>;
+  assetManifest: AssetManifest;
 }
