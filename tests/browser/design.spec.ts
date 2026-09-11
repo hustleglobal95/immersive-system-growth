@@ -13,7 +13,7 @@ test("design directions, catalog and inquiry are operable without cinematic mach
     await page.evaluate(() => document.fonts.ready);
     await page.screenshot({ path: info.outputPath(`${id}-desktop.png`), fullPage: true });
   }
-  expect(new Set(fonts).size).toBeLessThanOrEqual(3);
+  expect(new Set(fonts).size).toBe(3);
   expect(fonts.every(url => url.startsWith("http://127.0.0.1:3000/"))).toBe(true);
   await page.getByLabel("Search fonts").fill("cormorant");
   await expect(page.locator(".ds-font-list li")).toHaveCount(1);
@@ -53,5 +53,6 @@ test("design preview is readable without JavaScript", async ({ browser }) => {
   await page.goto("http://127.0.0.1:3000/design");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await expect(page.locator(".ds-font-list li")).toHaveCount(36);
+  await expect(page.getByRole("button", { name: "Send inquiry" })).toBeDisabled();
   await context.close();
 });
