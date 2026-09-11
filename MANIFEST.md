@@ -1,6 +1,6 @@
 # Repository Manifest
 
-Immersive Site Forge 2.0 is organized as a multi-project production platform rather than a one-off demo.
+Immersive Site Forge 2.1 is organized as a multi-project production platform rather than a one-off demo.
 
 ## Runtime
 
@@ -34,12 +34,15 @@ Immersive Site Forge 2.0 is organized as a multi-project production platform rat
 - material starters
 - particle atmosphere
 - adaptive postprocessing
+- eight deterministic image/video mask reveals with DOM and WebGL renderers
+- automatic mask fallback for quality, WebGL loss and reduced motion
 - runtime draw-call and triangle telemetry
 
 ## Authoring and automation
 
 - browser-based Forge Studio at `/studio`
 - visual scene timeline and boundary editor
+- browser Mask Lab with DOM/WebGL comparison and preset controls
 - browser and CLI GLB inspection with named-node mapping
 - reusable scene and media-transition presets
 - validated Studio project schema

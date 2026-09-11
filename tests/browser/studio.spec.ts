@@ -33,3 +33,34 @@ test("Studio exposes content, deployment and real-device telemetry controls", as
   await expect(page.getByRole("heading", { name: "Telemetry policy" })).toBeVisible();
   await expect(page.getByLabel("Sample rate")).toBeVisible();
 });
+
+test("Mask Lab authors all presets and renders deterministic DOM and WebGL previews", async ({ page }) => {
+  await page.goto("/studio");
+  await page.getByRole("button", { name: "masks", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Mask reveal laboratory" })).toBeVisible();
+  await page.getByRole("button", { name: "Add reference image" }).click();
+  await expect(page.locator(".mask-preset-grid button")).toHaveCount(8);
+  await page.getByRole("button", { name: "film burn" }).click();
+  const slider = page.getByLabel("Reveal progress");
+  await slider.fill("0.35");
+  const domMask = await page.locator(".mask-preview--dom img").evaluate((element) => getComputedStyle(element).maskImage || getComputedStyle(element).webkitMaskImage);
+  expect(domMask).toContain("gradient");
+  await expect(page.getByText(/WEBGL LIVE|CSS FALLBACK/)).toBeVisible();
+  const start = await page.locator(".mask-preview--webgl canvas").evaluate((canvas) => {
+    const gl = (canvas as HTMLCanvasElement).getContext("webgl", { preserveDrawingBuffer: true });
+    if (!gl) return null;
+    const pixel = new Uint8Array(4);
+    gl.readPixels(480, 270, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+    return [...pixel];
+  });
+  await slider.fill("0.8");
+  const end = await page.locator(".mask-preview--webgl canvas").evaluate((canvas) => {
+    const gl = (canvas as HTMLCanvasElement).getContext("webgl", { preserveDrawingBuffer: true });
+    if (!gl) return null;
+    const pixel = new Uint8Array(4);
+    gl.readPixels(480, 270, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+    return [...pixel];
+  });
+  if (start && end) expect(end).not.toEqual(start);
+  await expect(page.getByText("Production schema valid")).toBeVisible();
+});

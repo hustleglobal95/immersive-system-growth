@@ -23,6 +23,7 @@ Build cinematic, spatial, interactive websites that feel like one continuous exp
 13. Studio output must pass the same schema as checked-in production configuration.
 14. Never expose CMS, commerce, telemetry or deployment secrets to client components.
 15. Remote content and telemetry endpoints must use HTTPS, bounded requests and explicit trust controls.
+16. Runtime shader transitions must share the persistent Canvas and provide a deterministic DOM or static fallback.
 
 ## Before implementation
 

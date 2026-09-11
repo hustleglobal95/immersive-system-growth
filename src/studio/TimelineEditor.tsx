@@ -12,7 +12,7 @@ import {
 } from "@/src/platform/studioPresets";
 import type { MediaTransition } from "@/src/lib/mediaPanels";
 
-const transitions: MediaTransition[] = ["slide", "curtain", "zoom", "dissolve", "wipe"];
+const transitions: MediaTransition[] = ["slide", "curtain", "zoom", "dissolve", "wipe", "mask"];
 
 export function TimelineEditor({
   experience,

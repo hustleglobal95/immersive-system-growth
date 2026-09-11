@@ -61,7 +61,13 @@
       "sha256": "a5a378edff4505e220ac85fb912f523abd20a62750e013ee170fdea0ee625ef9"
     }
   ],
-  "textures": [],
+  "textures": [
+    {
+      "path": "/textures/reference/reveal-field.svg",
+      "bytes": 1799,
+      "sha256": "d46134af48c3a19b533e4c44fd90280843a427b7d5d9c866b5e7e9b10f5870b5"
+    }
+  ],
   "hdr": [],
   "video": [],
   "budgets": {

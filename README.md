@@ -1,6 +1,6 @@
-# Immersive Site Forge 2
+# Immersive Site Forge 2.1
 
-A production platform for designing, validating, generating and deploying cinematic 3D websites. Forge Studio adds a visual timeline, browser-based recipe editing, private local GLB inspection, reusable choreography presets, CMS and commerce adapters, client generation, protected deployment automation and consent-aware real-device telemetry.
+A production platform for designing, validating, generating and deploying cinematic 3D websites. Forge Studio adds a visual timeline, an eight-preset DOM/WebGL mask laboratory, browser-based recipe editing, private local GLB inspection, reusable choreography presets, CMS and commerce adapters, client generation, protected deployment automation and consent-aware real-device telemetry.
 
 The production runtime keeps one Canvas alive across / and /lab. Accessible HTML remains usable without JavaScript or WebGL. `/studio` is an independent authoring surface, so editing tools never compete with the client experience for rendering resources. This repository includes six distinct reference recipes and original GLB fixtures, not photorealistic client artwork or a blanket hardware-performance guarantee.
 
@@ -21,7 +21,7 @@ For development use `npm run dev`. Dev/build prepares locally served Draco and B
 
 ## Forge Studio
 
-Open `/studio` to edit project identity, scene timing, copy, camera/object presets, media transitions, product-rig node mappings, content sources, deployment settings and telemetry policy. Drafts stay in local browser storage until exported. Both exported files use the same production schemas as CLI and CI.
+Open `/studio` to edit project identity, scene timing, copy, camera/object presets, media transitions and mask reveals, product-rig node mappings, content sources, deployment settings and telemetry policy. Drafts stay in local browser storage until exported. Both exported files use the same production schemas as CLI and CI.
 
 ```bash
 npm run glb:inspect -- public/models/reference/burger.glb
@@ -30,7 +30,7 @@ npm run project:validate
 npm run content:sync -- config/studio-project.json
 ```
 
-Read [Studio](docs/STUDIO.md), [integrations](docs/INTEGRATIONS.md), [telemetry](docs/TELEMETRY.md) and [deployment](docs/DEPLOYMENT.md) before configuring external systems.
+Read [Studio](docs/STUDIO.md), [mask reveals](docs/MASK_REVEALS.md), [integrations](docs/INTEGRATIONS.md), [telemetry](docs/TELEMETRY.md) and [deployment](docs/DEPLOYMENT.md) before configuring external systems.
 
 ## Reference experiences
 
