@@ -9,9 +9,9 @@ export function SiteChrome() {
       <Link href="/" className="wordmark">
         {experience.meta.name}
       </Link>
-      <Link href="/lab" className="lab-link">
+      <nav aria-label="Authoring tools"><Link href="/design" className="lab-link">Design atelier</Link><Link href="/lab" className="lab-link">
         Scene lab
-      </Link>
+      </Link></nav>
     </header>
   );
 }

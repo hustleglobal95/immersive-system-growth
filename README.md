@@ -6,6 +6,8 @@ The shared layout keeps one Canvas alive across / and /lab. Accessible HTML rema
 
 ## Start
 
+Open `/design` for three art directions, reusable page sections, responsive typography, live font specimens and a searchable 36-family reference catalog. Three pinned local variable fonts total about 97 KiB; unused families are not force-preloaded. See [the design system](docs/DESIGN_SYSTEM.md) and [research-to-code decisions](docs/DESIGN_RESEARCH.md). The preview is an authoring tool with labeled concept content, not a finished client site.
+
 Use Node 22.13 or later (.nvmrc selects Node 22).
 
 ```bash

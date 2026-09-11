@@ -73,6 +73,9 @@ export function ExperienceRuntime({ children }: { children?: ReactNode }) {
     s.resetLab();
     s.setDebug(lab || process.env.NEXT_PUBLIC_DEBUG_3D === "true");
   }, [lab]);
+  // The normal-flow authoring specimen has no cinematic runtime. The canvas
+  // remains persistent when navigating between the experience and scene lab.
+  if (pathname === "/design") return <>{children}</>;
   return (
     <div className="experience-root" data-reduced-motion={motion} data-media-motion={!motion} data-lab={lab}>
       <SystemProfile />
