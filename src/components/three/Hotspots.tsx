@@ -1,10 +1,11 @@
 "use client";
 
 import { Html } from "@react-three/drei";
-import { experience } from "@/src/lib/experience";
+import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { useExperienceStore } from "@/src/store/experienceStore";
 
 export function Hotspots() {
+  const experience = useExperienceConfig();
   const activeScene = useExperienceStore((state) => state.activeScene);
   const setSelected = useExperienceStore((state) => state.setSelectedHotspot);
   const activeId = experience.scenes[activeScene]?.id;

@@ -6,6 +6,7 @@ import type {
   productRigSchema,
   maskRevealSchema,
   maskPresetSchema,
+  transitionLayerSchema,
 } from "@/src/lib/configSchema";
 export type Vec3 = [number, number, number];
 export type QualityTier = "low" | "medium" | "high";
@@ -18,6 +19,7 @@ export type ProductRigDefinition = z.infer<typeof productRigSchema>;
 export type ProductTrack = ProductRigDefinition["tracks"][number];
 export type MaskRevealDefinition = z.infer<typeof maskRevealSchema>;
 export type MaskPreset = z.infer<typeof maskPresetSchema>;
+export type TransitionLayerDefinition = z.infer<typeof transitionLayerSchema>;
 export type SceneBlock = SceneDefinition["blocks"][number];
 export type SceneEasing = SceneDefinition["easing"];
 export type CameraPathPreset = CameraDefinition["path"];
@@ -36,5 +38,6 @@ export interface SampledExperienceState {
   camera: CameraState;
   hero: ObjectState;
   world: WorldState;
+  material: SceneDefinition["material"];
   post: PostState;
 }

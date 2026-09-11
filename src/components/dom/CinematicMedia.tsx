@@ -1,13 +1,15 @@
 "use client";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import gsap from "gsap";
-import { experience, getSceneIndex } from "@/src/lib/experience";
+import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
+import { getSceneIndex } from "@/src/lib/experience";
 import { cinematicProgress } from "@/src/lib/cinematicProgress";
 import { getMediaPanelWindow, sampleMediaPanel } from "@/src/lib/mediaPanels";
 import { createCssMaskStyle, createMaskReveal, resolveMaskBackend } from "@/src/lib/maskReveal";
 import { useExperienceStore } from "@/src/store/experienceStore";
 
 export function CinematicMedia() {
+  const experience = useExperienceConfig();
   const root = useRef<HTMLDivElement>(null);
   const preview = useExperienceStore(s=>s.mediaPreview);
   const reduced = useExperienceStore(s=>s.reducedMotion);
@@ -22,7 +24,7 @@ export function CinematicMedia() {
     const frame=cinematicProgress.subscribe(update);
     const fallback=useExperienceStore.subscribe(s=>{if(s.webglStatus!=="ready")update(s.progress);});
     return ()=>{frame();fallback();};
-  },[reduced]);
+  },[experience,reduced]);
   useEffect(()=>{
     const element=root.current;
     if(!element || reduced) return;
@@ -48,7 +50,7 @@ export function CinematicMedia() {
     const fallback=useExperienceStore.subscribe(s=>{if(s.webglStatus!=="ready")render(s.progress);});
     compact.addEventListener("change",refresh);document.addEventListener("visibilitychange",refresh);refresh();
     return ()=>{frame();fallback();compact.removeEventListener("change",refresh);document.removeEventListener("visibilitychange",refresh);tracks.forEach(t=>{t.video?.pause();gsap.set(t.panel,{clearProps:"transform,visibility"});gsap.set(t.panel.querySelector(".media-panel__inner"),{clearProps:"transform"});});};
-  },[active,preview,reduced,quality,webglStatus]);
+  },[active,experience,preview,reduced,quality,webglStatus]);
   if(reduced) return null;
   return <div ref={root} className="cinematic-media" aria-hidden="true">
     {experience.scenes.map((scene,index)=>{

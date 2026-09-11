@@ -68,6 +68,7 @@ export function MaskLab({
           blendColor: "#120805",
           maskSoftness: nextMask.softness,
           mask: nextMask,
+          layers: [],
           position: [50, 50],
           mobilePosition: [50, 50],
           overlap: 0.25,

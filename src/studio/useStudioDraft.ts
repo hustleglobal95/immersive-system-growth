@@ -4,17 +4,20 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { parseExperience } from "@/src/lib/configSchema";
 import { parseStudioProject, type StudioProject } from "@/src/platform/studioSchema";
 import type { ExperienceConfig } from "@/src/types/experience";
+import type { AssetManifest } from "@/src/types/assets";
 
 const STORAGE_KEY = "forge-studio-v2";
 
 interface StoredDraft {
   experience: unknown;
   project: unknown;
+  assetManifest?: unknown;
 }
 
-export function useStudioDraft(initialExperience: ExperienceConfig, initialProject: StudioProject) {
+export function useStudioDraft(initialExperience: ExperienceConfig, initialProject: StudioProject, initialAssetManifest: AssetManifest) {
   const [experience, setExperience] = useState(initialExperience);
   const [project, setProject] = useState(initialProject);
+  const [assetManifest, setAssetManifest] = useState(initialAssetManifest);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -24,9 +27,11 @@ export function useStudioDraft(initialExperience: ExperienceConfig, initialProje
         const draft = JSON.parse(stored) as StoredDraft;
         const nextExperience = parseExperience(draft.experience);
         const nextProject = parseStudioProject(draft.project);
+        const nextManifest = isAssetManifest(draft.assetManifest) ? draft.assetManifest : initialAssetManifest;
         queueMicrotask(() => {
           setExperience(nextExperience);
           setProject(nextProject);
+          setAssetManifest(nextManifest);
         });
       }
     } catch {
@@ -34,12 +39,12 @@ export function useStudioDraft(initialExperience: ExperienceConfig, initialProje
     } finally {
       queueMicrotask(() => setHydrated(true));
     }
-  }, []);
+  }, [initialAssetManifest]);
 
   useEffect(() => {
     if (!hydrated) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ experience, project }));
-  }, [experience, hydrated, project]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ experience, project, assetManifest }));
+  }, [assetManifest, experience, hydrated, project]);
 
   const validation = useMemo(() => {
     const issues: string[] = [];
@@ -53,10 +58,17 @@ export function useStudioDraft(initialExperience: ExperienceConfig, initialProje
   const reset = useCallback(() => {
     setExperience(initialExperience);
     setProject(initialProject);
+    setAssetManifest(initialAssetManifest);
     localStorage.removeItem(STORAGE_KEY);
-  }, [initialExperience, initialProject]);
+  }, [initialAssetManifest, initialExperience, initialProject]);
 
-  return { experience, setExperience, project, setProject, validation, hydrated, reset };
+  return { experience, setExperience, project, setProject, assetManifest, setAssetManifest, validation, hydrated, reset };
+}
+
+function isAssetManifest(value: unknown): value is AssetManifest {
+  if (!value || typeof value !== "object") return false;
+  const record = value as Record<string, unknown>;
+  return ["models", "textures", "hdr", "video"].every((key) => Array.isArray(record[key])) && Boolean(record.budgets);
 }
 
 function parseSafe(action: () => unknown) {

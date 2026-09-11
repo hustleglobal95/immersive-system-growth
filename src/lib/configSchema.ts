@@ -216,6 +216,17 @@ export const maskRevealSchema = z
     edgeWidth: finite.min(0).max(20).default(0),
   })
   .strict();
+const transitionLayerBase = {
+  id,
+  blendMode: z.enum(["normal", "multiply", "screen", "overlay"]).default("normal"),
+  opacity: finite.min(0).max(1).default(1),
+  range: z.tuple([finite.min(0).max(1), finite.min(0).max(1)]).refine(([start, end]) => end > start, "Layer range must increase").default([0, 1]),
+  motion: z.enum(["none", "parallax-up", "parallax-down", "scale"]).default("none"),
+};
+export const transitionLayerSchema = z.discriminatedUnion("kind", [
+  z.object({ ...transitionLayerBase, kind: z.literal("color"), color }).strict(),
+  z.object({ ...transitionLayerBase, kind: z.literal("image"), src: assetUrl, position: z.tuple([finite.min(0).max(100), finite.min(0).max(100)]).default([50, 50]) }).strict(),
+]);
 export const sceneMediaSchema = z.object({
   kind: z.enum(["image", "video"]),
   src: assetUrl,
@@ -225,13 +236,21 @@ export const sceneMediaSchema = z.object({
   blendColor: color.optional(),
   maskSoftness: finite.min(0).max(100).default(18),
   mask: maskRevealSchema.optional(),
+  layers: z.array(transitionLayerSchema).max(6).default([]),
   position: z.tuple([finite.min(0).max(100),finite.min(0).max(100)]).default([50,50]),
   mobilePosition: z.tuple([finite.min(0).max(100),finite.min(0).max(100)]).default([50,50]),
   overlap: finite.min(.1).max(.45).default(.25),
   direction: z.enum(["up","down"]).default("up"),
   zoom: finite.min(1).max(1.18).default(1.06),
   textEnd: finite.min(.1).max(.6).default(.28),
-}).strict().refine(m=>m.kind!=="video" || !!m.poster,"Video media requires a poster");
+}).strict().superRefine((media, context) => {
+  if (media.kind === "video" && !media.poster) context.addIssue({ code: "custom", message: "Video media requires a poster", path: ["poster"] });
+  const ids = new Set<string>();
+  media.layers.forEach((layer, index) => {
+    if (ids.has(layer.id)) context.addIssue({ code: "custom", message: "Transition layer IDs must be unique", path: ["layers", index, "id"] });
+    ids.add(layer.id);
+  });
+});
 export const sceneSchema = z
   .object({
     id,
@@ -268,8 +287,27 @@ export const sceneSchema = z
         ambient: finite.min(0).max(20),
         key: finite.min(0).max(50),
         rim: finite.min(0).max(50),
+        keyColor: color.default("#fff2df"),
+        rimColor: color.default("#ff7a1a"),
+        exposure: finite.min(0.25).max(3).default(1),
       })
       .strict(),
+    material: z
+      .object({
+        tint: color.default("#ffffff"),
+        tintStrength: finite.min(0).max(1).default(0),
+        metalness: finite.min(0).max(1).nullable().default(null),
+        roughness: finite.min(0).max(1).nullable().default(null),
+        clearcoat: finite.min(0).max(1).nullable().default(null),
+      })
+      .strict()
+      .default({
+        tint: "#ffffff",
+        tintStrength: 0,
+        metalness: null,
+        roughness: null,
+        clearcoat: null,
+      }),
     post: z
       .object({ bloom: finite.min(0).max(2), vignette: finite.min(0).max(1) })
       .strict(),

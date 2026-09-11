@@ -1,10 +1,11 @@
 "use client";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useRef } from "react";
 import * as THREE from "three";
 import { useCinematicFrame } from "@/src/components/three/CinematicFrame";
 export function WorldAtmosphere() {
   const frame = useCinematicFrame();
+  const gl = useThree((state) => state.gl);
   const background = useRef<THREE.Color>(null);
   const fog = useRef<THREE.FogExp2>(null);
   useFrame(() => {
@@ -14,6 +15,7 @@ export function WorldAtmosphere() {
       fog.current.color.set(w.fog);
       fog.current.density = w.fogDensity;
     }
+    gl.toneMappingExposure = w.exposure;
   });
   return (
     <>

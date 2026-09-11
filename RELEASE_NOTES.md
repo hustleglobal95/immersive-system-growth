@@ -1,5 +1,16 @@
 # Release Notes
 
+## 3.0.0
+
+- Added a Studio live preview that mounts the same production R3F scene graph, media panels, masks and transition layers used by the public runtime.
+- Added visual direction for eleven camera paths, mobile framing, colored key/rim lights, exposure, fog, postprocessing and non-destructive hero material overrides.
+- Added a transition-layer composer with bounded timing, blend modes and deterministic motion.
+- Added browser asset intake with local-only GLB inspection, image/video metadata, SHA-256 records and budget enforcement.
+- Added six industry template cards for food, restaurant, property, automotive, product and SaaS experiences.
+- Added safe AVIF/WebP texture optimization that preserves sources and atomically updates the asset manifest.
+- Added server-only GitHub publishing that validates all documents, creates a review branch and opens a pull request without exposing repository credentials to the browser.
+- Added Studio Pro schema, optimizer, security and end-to-end browser coverage.
+
 ## 2.1.0
 
 - Added Forge Reveal Engine with eight original, schema-driven mask presets.

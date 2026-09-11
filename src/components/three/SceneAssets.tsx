@@ -2,7 +2,7 @@
 import { Suspense, lazy } from "react";
 import manifest from "@/config/asset-manifest.json";
 import { planSceneAssets } from "@/src/lib/assetPlan";
-import { experience } from "@/src/lib/experience";
+import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import type { SceneAsset } from "@/src/types/experience";
 import { useExperienceStore } from "@/src/store/experienceStore";
 import { AssetBoundary } from "@/src/components/three/AssetBoundary";
@@ -64,6 +64,7 @@ function Asset({ asset }: { asset: SceneAsset }) {
   );
 }
 export function SceneAssets() {
+  const experience = useExperienceConfig();
   const active = useExperienceStore((s) => s.activeScene);
   return (
     <>

@@ -75,10 +75,25 @@ export function sampleExperience(
       ambient: lerp(world.ambient, nextScene.world.ambient, worldT),
       key: lerp(world.key, nextScene.world.key, worldT),
       rim: lerp(world.rim, nextScene.world.rim, worldT),
+      keyColor: lerpHex(world.keyColor, nextScene.world.keyColor, worldT),
+      rimColor: lerpHex(world.rimColor, nextScene.world.rimColor, worldT),
+      exposure: lerp(world.exposure, nextScene.world.exposure, worldT),
+    },
+    material: {
+      tint: lerpHex(scene.material.tint, nextScene.material.tint, worldT),
+      tintStrength: lerp(scene.material.tintStrength, nextScene.material.tintStrength, worldT),
+      metalness: interpolateNullable(scene.material.metalness, nextScene.material.metalness, worldT),
+      roughness: interpolateNullable(scene.material.roughness, nextScene.material.roughness, worldT),
+      clearcoat: interpolateNullable(scene.material.clearcoat, nextScene.material.clearcoat, worldT),
     },
     post: {
       bloom: lerp(scene.post.bloom, nextScene.post.bloom, worldT),
       vignette: lerp(scene.post.vignette, nextScene.post.vignette, worldT),
     },
   };
+}
+
+function interpolateNullable(from: number | null, to: number | null, progress: number) {
+  if (from === null || to === null) return from;
+  return lerp(from, to, progress);
 }

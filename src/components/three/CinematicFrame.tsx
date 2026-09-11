@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { useFrame } from "@react-three/fiber";
-import { experience } from "@/src/lib/experience";
+import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { cinematicProgress } from "@/src/lib/cinematicProgress";
 import { sampleCameraShot } from "@/src/lib/cameraShots";
 import { sampleExperience } from "@/src/lib/sampleExperience";
@@ -19,11 +19,12 @@ interface Frame {
 }
 const Context = createContext<Frame | null>(null);
 export function CinematicFrame({ children }: { children: ReactNode }) {
+  const experience = useExperienceConfig();
   const [value] = useState<Frame>(() => ({
-    current: sampleExperience(0, true),
+    current: sampleExperience(0, true, experience),
     progress: 0,
   }));
-  const previous = useRef({ aspect: 0, motion: true, initialized: false });
+  const previous = useRef({ aspect: 0, motion: true, initialized: false, config: experience });
   const previousPreview = useRef(useExperienceStore.getState().cameraPreview);
   useFrame(({ size }, delta) => {
     const s = useExperienceStore.getState(),
@@ -49,6 +50,7 @@ export function CinematicFrame({ children }: { children: ReactNode }) {
       previous.current.aspect !== aspect ||
       previous.current.motion !== s.reducedMotion ||
       previousPreview.current !== s.cameraPreview ||
+      previous.current.config !== experience ||
       !previous.current.initialized
     ) {
       value.progress = p;
@@ -57,7 +59,7 @@ export function CinematicFrame({ children }: { children: ReactNode }) {
         value.current.camera = sampleCameraShot(aspect < .85 ? s.cameraPreview.mobileCamera : s.cameraPreview.camera, value.current.easedProgress);
       }
       previousPreview.current = s.cameraPreview;
-      previous.current = { aspect, motion: s.reducedMotion, initialized: true };
+      previous.current = { aspect, motion: s.reducedMotion, initialized: true, config: experience };
     }
     cinematicProgress.publish(value.progress);
   }, -100);

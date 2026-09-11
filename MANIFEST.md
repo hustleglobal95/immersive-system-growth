@@ -1,6 +1,6 @@
 # Repository Manifest
 
-Immersive Site Forge 2.1 is organized as a multi-project production platform rather than a one-off demo.
+Immersive Site Forge 3.0 is organized as a multi-project production platform rather than a one-off demo.
 
 ## Runtime
 
@@ -17,7 +17,7 @@ Immersive Site Forge 2.1 is organized as a multi-project production platform rat
 ## 3D systems
 
 - damped cinematic camera rig
-- ten camera path presets
+- eleven camera path presets
 - optional multi-point Catmull-Rom spline camera paths
 - persistent object choreography and object-motion presets
 - named-node product rigs with position, rotation, scale, opacity and visibility tracks
@@ -41,14 +41,20 @@ Immersive Site Forge 2.1 is organized as a multi-project production platform rat
 ## Authoring and automation
 
 - browser-based Forge Studio at `/studio`
+- live preview of the production R3F scene graph and media stack
+- visual camera, lighting, atmosphere, postprocessing and material direction
 - visual scene timeline and boundary editor
 - browser Mask Lab with DOM/WebGL comparison and preset controls
 - browser and CLI GLB inspection with named-node mapping
-- reusable scene and media-transition presets
+- six reusable industry templates plus scene and media-transition presets
+- bounded image and color transition-layer composition
+- browser asset intake with hashes, media metadata, GLB structure and budget checks
+- deterministic AVIF/WebP texture optimization with manifest updates
 - validated Studio project schema
 - CMS JSON and Shopify Storefront adapters
 - client project generation and activation
 - protected GitHub Actions deployment workflow
+- server-only GitHub review-PR publishing from validated Studio drafts
 - consent-aware real-device performance telemetry
 - JSON scene composer
 - semantic statement, brand-band, menu-grid and order-card modules

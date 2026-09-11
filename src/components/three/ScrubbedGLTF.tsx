@@ -6,7 +6,7 @@ import { LoopOnce, type AnimationAction, type Group } from "three";
 import type { Vec3 } from "@/src/types/experience";
 import { useModelInstance } from "@/src/components/three/useModelInstance";
 import { useCinematicFrame } from "@/src/components/three/CinematicFrame";
-import { experience } from "@/src/lib/experience";
+import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { remap01 } from "@/src/lib/math";
 import { useExperienceStore } from "@/src/store/experienceStore";
 export function ScrubbedGLTF({
@@ -24,6 +24,7 @@ export function ScrubbedGLTF({
   rotation?: Vec3;
   scale?: number;
 }) {
+  const experience = useExperienceConfig();
   const group = useRef<Group>(null),
     gltf = useModelInstance(url),
     frame = useCinematicFrame();

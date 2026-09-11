@@ -4,21 +4,29 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import rawExperience from "@/config/experience.json";
 import rawProject from "@/config/studio-project.json";
+import rawAssetManifest from "@/config/asset-manifest.json";
 import { parseExperience } from "@/src/lib/configSchema";
 import { parseStudioProject } from "@/src/platform/studioSchema";
 import { GlbInspectorPanel } from "@/src/studio/GlbInspectorPanel";
 import { TimelineEditor } from "@/src/studio/TimelineEditor";
 import { MaskLab } from "@/src/studio/MaskLab";
+import { StudioLivePreview } from "@/src/studio/StudioLivePreview";
+import { SceneDirector } from "@/src/studio/SceneDirector";
+import { LayerEditor } from "@/src/studio/LayerEditor";
+import { AssetManager } from "@/src/studio/AssetManager";
+import { TemplateGallery } from "@/src/studio/TemplateGallery";
+import type { AssetManifest } from "@/src/types/assets";
 import { IntegrationsPanel, ProjectPanel, PublishPanel, TelemetryPanel } from "@/src/studio/ProjectPanels";
 import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
 
 const initialExperience = parseExperience(rawExperience);
 const initialProject = parseStudioProject(rawProject);
-const tabs = ["project", "timeline", "masks", "model", "integrations", "publish", "telemetry"] as const;
+const initialAssetManifest = rawAssetManifest as AssetManifest;
+const tabs = ["project", "templates", "preview", "director", "timeline", "masks", "layers", "assets", "model", "integrations", "publish", "telemetry"] as const;
 type Tab = (typeof tabs)[number];
 
 export function StudioWorkbench() {
-  const draft = useStudioDraft(initialExperience, initialProject);
+  const draft = useStudioDraft(initialExperience, initialProject, initialAssetManifest);
   const [tab, setTab] = useState<Tab>("project");
   const [activeScene, setActiveScene] = useState(0);
   const [notice, setNotice] = useState("");
@@ -53,6 +61,7 @@ export function StudioWorkbench() {
           <button type="button" onClick={() => importRef.current?.click()}>Import</button>
           <button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Export experience</button>
           <button type="button" onClick={() => downloadJson("studio-project.json", draft.project)}>Export project</button>
+          <button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Export assets</button>
         </div>
       </header>
 
@@ -81,16 +90,21 @@ export function StudioWorkbench() {
       {notice && <p className="studio-message" role="status">{notice}</p>}
 
       {tab === "project" && <ProjectPanel {...draft} />}
+      {tab === "templates" && <TemplateGallery experience={draft.experience} setExperience={draft.setExperience} />}
+      {tab === "preview" && <StudioLivePreview experience={draft.experience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
+      {tab === "director" && <SceneDirector experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "timeline" && <TimelineEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "masks" && <MaskLab experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
+      {tab === "layers" && <LayerEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
+      {tab === "assets" && <AssetManager setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} active={Math.min(activeScene, draft.experience.scenes.length - 1)} />}
       {tab === "model" && <GlbInspectorPanel experience={draft.experience} setExperience={draft.setExperience} />}
       {tab === "integrations" && <IntegrationsPanel project={draft.project} setProject={draft.setProject} />}
-      {tab === "publish" && <PublishPanel project={draft.project} setProject={draft.setProject} />}
+      {tab === "publish" && <PublishPanel project={draft.project} setProject={draft.setProject} experience={draft.experience} assetManifest={draft.assetManifest} />}
       {tab === "telemetry" && <TelemetryPanel project={draft.project} setProject={draft.setProject} />}
 
       <footer className="studio-footer">
-        <span>Forge Studio v2.1</span>
-        <span>One canvas / one timeline / validated output</span>
+        <span>Forge Studio v3.0</span>
+        <span>Live runtime / visual direction / review PR</span>
       </footer>
     </main>
   );
@@ -99,8 +113,13 @@ export function StudioWorkbench() {
 function titleFor(tab: Tab) {
   return {
     project: "Project control",
+    templates: "Industry template gallery",
+    preview: "Live production preview",
+    director: "Camera and art direction",
     timeline: "Visual timeline",
     masks: "Mask reveal laboratory",
+    layers: "Transition layer composer",
+    assets: "Asset intake and budgets",
     model: "Model inspection",
     integrations: "Content connections",
     publish: "Release pipeline",

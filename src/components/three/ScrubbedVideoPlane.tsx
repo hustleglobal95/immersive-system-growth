@@ -1,6 +1,6 @@
 "use client";
 import { useFrame } from "@react-three/fiber";
-import { experience } from "@/src/lib/experience";
+import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { remap01 } from "@/src/lib/math";
 import { seekTarget, shouldSeek } from "@/src/lib/media";
 import { useCinematicFrame } from "@/src/components/three/CinematicFrame";
@@ -20,6 +20,7 @@ export function ScrubbedVideoPlane({
   rotation?: Vec3;
   scale?: Vec3;
 }) {
+  const experience = useExperienceConfig();
   const media = useVideoResource(src, false, false),
     frame = useCinematicFrame(),
     scene = experience.scenes.find((s) => s.id === sceneId);

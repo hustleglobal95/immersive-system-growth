@@ -17,7 +17,7 @@ test("timeline boundaries stay contiguous and media transitions are editable", (
   const moved = moveSceneBoundary(config, 1, 0.22);
   assert.equal(moved.scenes[0].range[1], moved.scenes[1].range[0]);
   assert.doesNotThrow(() => parseExperience(moved));
-  const withMedia = { ...config.scenes[0], media: { kind: "image" as const, src: "/textures/test.jpg", alt: "Test", transition: "slide" as const, position: [50, 50] as [number, number], mobilePosition: [50, 50] as [number, number], overlap: 0.25, direction: "up" as const, zoom: 1.06, textEnd: 0.28, maskSoftness: 18 } };
+  const withMedia = { ...config.scenes[0], media: { kind: "image" as const, src: "/textures/test.jpg", alt: "Test", transition: "slide" as const, position: [50, 50] as [number, number], mobilePosition: [50, 50] as [number, number], overlap: 0.25, direction: "up" as const, zoom: 1.06, textEnd: 0.28, maskSoftness: 18, layers: [] } };
   assert.equal(applyMediaTransition(withMedia, "wipe").media?.transition, "wipe");
   const masked = applyMaskPreset(withMedia, "film-burn", { seed: 4096 });
   assert.equal(masked.media?.transition, "mask");
