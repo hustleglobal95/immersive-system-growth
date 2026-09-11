@@ -14,7 +14,7 @@ export function CameraRig() {
     if (s.freeCamera) return;
     const c = frame.current.camera;
     const influence =
-      s.reducedMotion || size.width < 760
+      s.reducedMotion || size.width < 760 || s.cameraPreview
         ? 0
         : experience.runtime.pointerInfluence;
     camera.position.set(

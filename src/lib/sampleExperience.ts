@@ -40,6 +40,8 @@ export function sampleExperience(
         camera.to.position,
         easedProgress,
         camera.path,
+        camera.from.target,
+        camera.to.target,
       );
   const target = camera.targetWaypoints?.length
     ? sampleSpline(

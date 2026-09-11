@@ -8,6 +8,8 @@ import {
 } from "react";
 import { useFrame } from "@react-three/fiber";
 import { experience } from "@/src/lib/experience";
+import { cinematicProgress } from "@/src/lib/cinematicProgress";
+import { sampleCameraShot } from "@/src/lib/cameraShots";
 import { sampleExperience } from "@/src/lib/sampleExperience";
 import { useExperienceStore } from "@/src/store/experienceStore";
 import type { SampledExperienceState } from "@/src/types/experience";
@@ -22,6 +24,7 @@ export function CinematicFrame({ children }: { children: ReactNode }) {
     progress: 0,
   }));
   const previous = useRef({ aspect: 0, motion: true, initialized: false });
+  const previousPreview = useRef(useExperienceStore.getState().cameraPreview);
   useFrame(({ size }, delta) => {
     const s = useExperienceStore.getState(),
       aspect = size.width / Math.max(1, size.height);
@@ -45,12 +48,18 @@ export function CinematicFrame({ children }: { children: ReactNode }) {
       p !== value.progress ||
       previous.current.aspect !== aspect ||
       previous.current.motion !== s.reducedMotion ||
+      previousPreview.current !== s.cameraPreview ||
       !previous.current.initialized
     ) {
       value.progress = p;
       value.current = sampleExperience(p, s.reducedMotion, experience, aspect);
+      if (!s.reducedMotion && s.cameraPreview?.sceneId === value.current.scene.id) {
+        value.current.camera = sampleCameraShot(aspect < .85 ? s.cameraPreview.mobileCamera : s.cameraPreview.camera, value.current.easedProgress);
+      }
+      previousPreview.current = s.cameraPreview;
       previous.current = { aspect, motion: s.reducedMotion, initialized: true };
     }
+    cinematicProgress.publish(value.progress);
   }, -100);
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }

@@ -6,6 +6,22 @@
   --accent: #f97316;
   --bg: #070707;
 }
+.cinematic-media { position:fixed; inset:0; z-index:1; overflow:hidden; pointer-events:none; }
+.media-panel { position:absolute; inset:0; overflow:hidden; background:#111; visibility:hidden; }
+.media-panel__inner { position:absolute; inset:-15% 0; }
+.media-panel__inner img,.media-panel__inner video { width:100%; height:100%; display:block; object-fit:cover; object-position:var(--media-position,50% 50%); }
+.media-panel__shade { position:absolute; inset:0; background:linear-gradient(90deg,#0008,transparent 75%),linear-gradient(0deg,#0006,transparent 40%); }
+.story-media-static { display:block; width:100%; height:50svh; object-fit:cover; }
+[data-media-motion="true"] .story-media-static { display:none; }
+.media-fixture { position:absolute; inset:0; overflow:hidden; background:radial-gradient(ellipse at 65% 40%,#a39070,#27221a 50%,#070707); }
+.media-fixture span { position:absolute; right:8%; top:23%; font:12px Arial; letter-spacing:.25em; color:#eee9; }
+.media-fixture i { position:absolute; width:38vw; height:38vw; right:10%; top:30%; border-radius:50%; border:2vw solid #cbb995; box-shadow:inset 1vw 1vw 3vw #000a,2vw 2vw 6vw #0008; }
+.media-fixture b { position:absolute; width:60%; height:1px; right:0; top:75%; background:#fff4; transform:rotate(-15deg); }
+.media-fixture--1 { background:radial-gradient(ellipse at 65% 40%,#527b8b,#142831 50%,#06090a); }
+.media-fixture--1 i { border-radius:3%; transform:rotate(25deg); border-color:#84b0b4; }
+.media-fixture--2 { background:radial-gradient(ellipse at 65% 40%,#977b7b,#302129 50%,#090608); }
+.media-fixture--2 i { border-radius:50% 50% 3% 3%; border-color:#c2a09b; }
+@media(max-width:760px) { .media-panel__inner img,.media-panel__inner video {object-position:var(--media-position-mobile,50% 50%);} .media-fixture i {width:70vw;height:70vw;right:-5%;top:35%;} }
 
 * {
   box-sizing: border-box;
@@ -449,10 +465,12 @@ a {
 
 .lab-controls {
   position: fixed;
+  max-height: calc(100svh - 40px);
+  overflow-y: auto;
   z-index: 98;
-  right: 20px;
+  right: 90px;
   bottom: 20px;
-  width: min(360px, calc(100vw - 40px));
+  width: min(360px, calc(100vw - 110px));
   padding: 15px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 14px;
@@ -635,6 +653,7 @@ html {
   display: none;
   font-style: normal;
 }
+.experience-root[data-lab="true"] .progress-rail a em { display:none; }
 .progress-rail a:focus-visible em,
 .progress-rail a:hover em {
   display: inline;

@@ -73,6 +73,7 @@ export function auditAssets(root, manifest, configs) {
     const refs = [
       c.heroModel, c.heroLowModel,
       ...(c.assets ?? []).flatMap((a) => [a.url, a.lowUrl]),
+      ...(c.scenes ?? []).flatMap((s) => [s.media?.src, s.media?.poster]),
     ].filter(Boolean);
     for (const ref of refs)
       if (!registered.has(ref))
