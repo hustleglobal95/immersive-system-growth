@@ -6,7 +6,7 @@ test("media preview overlaps, reverses, and respects reduced motion",async({page
   const first=page.locator('[data-media-panel="0"]');
   await expect(first).toHaveCSS("visibility","visible");
   expect(await page.locator("[data-media-panel]").count()).toBeLessThanOrEqual(3);
-  await page.locator('a[href="#threshold"]').click();
+  await page.locator('a[href="#signature"]').click();
   await expect(page.locator('[data-media-panel="2"]')).toHaveCSS("visibility","visible");
   await page.locator('a[href="#arrival"]').click();
   await expect(first).toHaveCSS("visibility","visible");

@@ -1,8 +1,8 @@
 # Immersive Site Forge
 
-A configuration-driven foundation for cinematic, scroll-driven 3D websites, built with Next.js, React Three Fiber, Three.js, Drei, Lenis, GSAP and Zustand.
+A configuration-driven foundation for cinematic, scroll-driven 3D websites, built with Next.js, React Three Fiber, Three.js, Drei, Lenis, GSAP and Zustand. Named-node product rigs, semantic content modules and global keyframe tracks support product assembly experiences without replacing the accessible document.
 
-The shared layout keeps one Canvas alive across / and /lab. Accessible HTML remains usable without JavaScript or WebGL. A shared sampler coordinates camera, objects, lighting, atmosphere and postprocessing. This repository includes five distinct reference recipes and original GLB fixtures, not photorealistic client artwork or a blanket hardware-performance guarantee.
+The shared layout keeps one Canvas alive across / and /lab. Accessible HTML remains usable without JavaScript or WebGL. A shared sampler coordinates camera, objects, product parts, lighting, atmosphere, content modules and postprocessing. This repository includes six distinct reference recipes and original GLB fixtures, not photorealistic client artwork or a blanket hardware-performance guarantee.
 
 ## Start
 
@@ -27,7 +27,7 @@ npm run recipe:apply -- restaurant
 npm run check
 ```
 
-Recipes: real-estate, restaurant, automotive, product and saas. Each changes camera coordinates, ranges, object choreography, atmosphere and its original GLB model. The default pavilion keeps its environment persistent and scrubs an embedded sliding-door clip through the threshold scene. Low model variants have lower geometry cost. The application command validates before applying and preserves timestamped backups.
+Recipes: burger-showcase, real-estate, restaurant, automotive, product and saas. Each changes camera coordinates, ranges, object choreography, atmosphere and its original GLB model. The default burger showcase demonstrates ingredient separation, reassembly, brand bands, a semantic menu and an order card. The pavilion recipe keeps its environment persistent and scrubs an embedded sliding-door clip through the threshold scene. Low model variants have lower geometry cost. The application command validates before applying and preserves timestamped backups.
 
 The scene lab provides timeline scrubbing, actual camera/target/FOV telemetry, camera copying, manual/automatic quality policy, reduced motion, free camera and authoring guides with path lines and material/portal examples. D toggles diagnostics outside interactive fields. Arrow keys navigate scenes when focus is not in a control. Primary scene navigation and hotspot information also work with native semantic HTML.
 
@@ -38,7 +38,7 @@ The scene lab provides timeline scrubbing, actual camera/target/FOV telemetry, c
 - `npm run scene:new -- kitchen`: generate a draft, then integrate and validate.
 - `npm run assets:generate`: regenerate original model fixtures and their manifest. This resets the reference asset manifest; do not use it on a custom project manifest without a backup.
 
-Read [architecture](docs/ARCHITECTURE.md), [asset pipeline](docs/ASSET_PIPELINE.md), [authoring](docs/AUTHORING.md), [accessibility](docs/ACCESSIBILITY.md), [validation](docs/VALIDATION.md) and [deployment](docs/DEPLOYMENT.md). CLAUDE.md is the contribution/agent operating contract.
+Read [architecture](docs/ARCHITECTURE.md), [product rigs](docs/PRODUCT_RIGS.md), [asset pipeline](docs/ASSET_PIPELINE.md), [authoring](docs/AUTHORING.md), [accessibility](docs/ACCESSIBILITY.md), [validation](docs/VALIDATION.md) and [deployment](docs/DEPLOYMENT.md). CLAUDE.md is the contribution/agent operating contract.
 
 ## Verification
 

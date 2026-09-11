@@ -12,16 +12,18 @@ const sizes = [
   [844, 390],
   [360, 740],
 ];
-test("semantic content, details and CTA survive without JavaScript", async ({
+test("semantic menu, order modules and CTA survive without JavaScript", async ({
   browser,
 }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await page.locator("#finale").scrollIntoViewIfNeeded();
+  await page.locator("#menu").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("heading", { name: "House stacks" })).toBeVisible();
+  await page.locator("#order").scrollIntoViewIfNeeded();
   await expect(
-    page.getByRole("link", { name: "Open the scene lab" }),
+    page.getByRole("link", { name: "Choose a location" }),
   ).toBeVisible();
   await context.close();
 });
@@ -36,7 +38,7 @@ test("production canvas stays persistent across scroll, reverse, quality and rou
     page.getByText("The 3D view is loading.", { exact: false }),
   ).toHaveCount(0);
   const canvas = await page.locator("canvas").elementHandle();
-  for (const id of ["threshold", "finale", "approach", "interior", "arrival"]) {
+  for (const id of ["ingredients", "order", "signature", "menu", "arrival"]) {
     await page.locator(`a[href="#${id}"]`).click();
     await expect(page.locator(`a[href="#${id}"]`)).toHaveAttribute(
       "aria-current",
@@ -55,7 +57,7 @@ test("production canvas stays persistent across scroll, reverse, quality and rou
   ).toBeChecked();
   await page
     .getByRole("link", {
-      name: "Pavilion — A spatial property journey",
+      name: "Ember Bun — Fire-built burger story",
       exact: true,
     })
     .click();
@@ -70,9 +72,9 @@ test("reduced motion, final conversion and no horizontal overflow across viewpor
   await page.goto("/");
   for (const [width, height] of sizes) {
     await page.setViewportSize({ width, height });
-    await page.locator("#finale").scrollIntoViewIfNeeded();
+    await page.locator("#order").scrollIntoViewIfNeeded();
     await expect(
-      page.getByRole("link", { name: "Open the scene lab" }),
+      page.getByRole("link", { name: "Choose a location" }),
     ).toBeVisible();
     expect(
       await page.evaluate(
@@ -105,9 +107,9 @@ test("missing GLB preserves semantic content and exposes retry", async ({
   await page.getByRole("button", { name: "Retry 3D" }).click();
   await expect(page.getByRole("button", { name: "Retry 3D" })).toHaveCount(0);
   await expect(page.locator("canvas")).toHaveCount(1);
-  await page.locator("#finale").scrollIntoViewIfNeeded();
+  await page.locator("#order").scrollIntoViewIfNeeded();
   await expect(
-    page.getByRole("link", { name: "Open the scene lab" }),
+    page.getByRole("link", { name: "Choose a location" }),
   ).toBeVisible();
 });
 test("WebGL failure leaves content and details usable", async ({ page }) => {
@@ -124,9 +126,9 @@ test("WebGL failure leaves content and details usable", async ({ page }) => {
   });
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await page.getByText("Inside the pavilion", { exact: true }).click();
+  await page.getByText("About this reference", { exact: true }).click();
   await expect(
-    page.getByText("The doorway is an embedded animation.", { exact: false }),
+    page.getByText("This original GLB is a working reference asset.", { exact: false }),
   ).toBeVisible();
 });
 test("range keyboard does not invoke global scene shortcut", async ({

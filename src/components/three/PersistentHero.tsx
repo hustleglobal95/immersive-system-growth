@@ -6,6 +6,7 @@ import { experience } from "@/src/lib/experience";
 import { useCinematicFrame } from "@/src/components/three/CinematicFrame";
 import { GLTFModel } from "@/src/components/three/GLTFModel";
 import { useExperienceStore } from "@/src/store/experienceStore";
+import { ProductRig } from "@/src/components/three/ProductRig";
 export function HeroFallback() {
   const quality = useExperienceStore((s) => s.quality);
   return (
@@ -40,6 +41,13 @@ export function PersistentHero() {
     g.scale.setScalar(h.scale);
   });
   if (!experience.heroVisible) return null;
+  if (experience.productRig && experience.heroModel)
+    return (
+      <ProductRig
+        url={quality === "low" && experience.heroLowModel ? experience.heroLowModel : experience.heroModel}
+        rig={experience.productRig}
+      />
+    );
   return (
     <group ref={group}>
       {experience.heroModel ? (

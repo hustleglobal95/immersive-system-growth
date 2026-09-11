@@ -48,6 +48,102 @@ export const cameraSchema = z
 const objectState = z
   .object({ position: vec3, rotation: vec3, scale: finite.positive().max(100) })
   .strict();
+const trackEasing = z.enum(["linear", "smooth", "cinematic"]);
+const vecKeyframes = z
+  .array(
+    z.object({ at: finite.min(0).max(1), value: vec3, easing: trackEasing.optional() }).strict(),
+  )
+  .min(2)
+  .max(40)
+  .refine((frames) => frames.every((frame, index) => !index || frame.at > frames[index - 1].at), "Keyframes must be strictly ordered");
+const scalarKeyframes = z
+  .array(
+    z.object({ at: finite.min(0).max(1), value: finite.min(0).max(1), easing: trackEasing.optional() }).strict(),
+  )
+  .min(2)
+  .max(40)
+  .refine((frames) => frames.every((frame, index) => !index || frame.at > frames[index - 1].at), "Keyframes must be strictly ordered");
+const booleanKeyframes = z
+  .array(z.object({ at: finite.min(0).max(1), value: z.boolean() }).strict())
+  .min(1)
+  .max(40)
+  .refine((frames) => frames.every((frame, index) => !index || frame.at > frames[index - 1].at), "Keyframes must be strictly ordered");
+const transformTrack = z
+  .object({
+    node: z.string().min(1).max(120),
+    property: z.enum(["position", "rotation", "scale"]),
+    mode: z.enum(["offset", "absolute"]).default("offset"),
+    keyframes: vecKeyframes,
+  })
+  .strict();
+const opacityTrack = z
+  .object({
+    node: z.string().min(1).max(120),
+    property: z.literal("opacity"),
+    keyframes: scalarKeyframes,
+  })
+  .strict();
+const visibilityTrack = z
+  .object({
+    node: z.string().min(1).max(120),
+    property: z.literal("visible"),
+    keyframes: booleanKeyframes,
+  })
+  .strict();
+export const productRigSchema = z
+  .object({
+    nodes: z.array(z.string().min(1).max(120)).min(1).max(100),
+    tracks: z.array(z.union([transformTrack, opacityTrack, visibilityTrack])).min(1).max(300),
+  })
+  .strict()
+  .superRefine((rig, ctx) => {
+    const nodes = new Set(rig.nodes);
+    if (nodes.size !== rig.nodes.length)
+      ctx.addIssue({ code: "custom", path: ["nodes"], message: "Product rig node names must be unique" });
+    const keys = new Set<string>();
+    rig.tracks.forEach((track, index) => {
+      if (!nodes.has(track.node))
+        ctx.addIssue({ code: "custom", path: ["tracks", index, "node"], message: "Track node is not declared by this rig" });
+      const key = track.node + ":" + track.property;
+      if (keys.has(key))
+        ctx.addIssue({ code: "custom", path: ["tracks", index], message: "Duplicate node property track" });
+      keys.add(key);
+    });
+  });
+const sceneBlockSchema = z.discriminatedUnion("type", [
+  z.object({
+    id,
+    type: z.literal("statement"),
+    title: z.string().min(1).max(160),
+    body: z.string().max(500).optional(),
+    accent: z.string().max(80).optional(),
+  }).strict(),
+  z.object({
+    id,
+    type: z.literal("brand-band"),
+    text: z.string().min(1).max(120),
+    repeats: finite.int().min(1).max(8).default(3),
+  }).strict(),
+  z.object({
+    id,
+    type: z.literal("menu-grid"),
+    title: z.string().min(1).max(100),
+    items: z.array(z.object({
+      name: z.string().min(1).max(80),
+      description: z.string().min(1).max(220),
+      price: z.string().min(1).max(24),
+      badge: z.string().max(40).optional(),
+    }).strict()).min(2).max(8),
+  }).strict(),
+  z.object({
+    id,
+    type: z.literal("order-card"),
+    title: z.string().min(1).max(100),
+    items: z.array(z.object({ label: z.string().min(1).max(80), value: z.string().min(1).max(40) }).strict()).min(1).max(8),
+    total: z.string().min(1).max(40),
+    cta: z.object({ label: z.string().min(1).max(80), href: linkUrl }).strict(),
+  }).strict(),
+]);
 const assetBase = {
   id,
   position: vec3.default([0, 0, 0]),
@@ -115,6 +211,7 @@ export const sceneSchema = z
     camera: cameraSchema,
     mobileCamera: cameraSchema.optional(),
     media: sceneMediaSchema.optional(),
+    blocks: z.array(sceneBlockSchema).max(6).default([]),
     hero: z
       .object({
         motion: z
@@ -183,6 +280,7 @@ export const experienceSchema = z
       .refine((s) => s.minDpr <= s.maxDpr, "minDpr must not exceed maxDpr"),
     heroModel: z.union([z.literal(""), assetUrl]),
     heroLowModel: assetUrl.optional(),
+    productRig: productRigSchema.optional(),
     stage: z.enum(["demo", "minimal"]).default("demo"),
     heroVisible: z.boolean().default(true),
     assets: z.array(sceneAssetSchema).max(60).default([]),
@@ -235,6 +333,8 @@ export const experienceSchema = z
       if (a.kind === "video" && a.sceneId && !ids.has(a.sceneId))
         issue(["assets", i, "sceneId"], "Unknown scene");
     });
+    if (c.productRig && !c.heroModel)
+      issue(["productRig"], "Product rigs require heroModel");
   });
 export type ParsedExperience = z.infer<typeof experienceSchema>;
 export function parseExperience(input: unknown): ParsedExperience {

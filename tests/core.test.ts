@@ -97,7 +97,7 @@ test("spline endpoints and repeated points remain finite", () => {
     [2, 1, 0],
   );
 });
-test("all five recipes have valid actual desktop/mobile continuity and different choreography", () => {
+test("all six recipes have valid actual desktop/mobile continuity and different choreography", () => {
   const signatures = new Set<string>();
   for (const name of [
     "real-estate",
@@ -105,6 +105,7 @@ test("all five recipes have valid actual desktop/mobile continuity and different
     "automotive",
     "product",
     "saas",
+    "burger-showcase",
   ]) {
     const c = parseExperience(
       JSON.parse(fs.readFileSync(`recipes/${name}.json`, "utf8")),
@@ -114,7 +115,7 @@ test("all five recipes have valid actual desktop/mobile continuity and different
       JSON.stringify(c.scenes.map((s) => [s.range, s.camera, s.hero, s.world])),
     );
   }
-  assert.equal(signatures.size, 5);
+  assert.equal(signatures.size, 6);
   assert.deepEqual(auditContinuity(config), []);
 });
 test("cinematic audit rejects a discontinuity", () => {

@@ -20,6 +20,7 @@ Immersive Site Forge 1.0 is organized as a reusable engine rather than a one-off
 - ten camera path presets
 - optional multi-point Catmull-Rom spline camera paths
 - persistent object choreography and object-motion presets
+- named-node product rigs with position, rotation, scale, opacity and visibility tracks
 - animated GLB playback
 - scroll-scrubbed GLB animation
 - image, video and scroll-scrubbed video planes
@@ -38,8 +39,10 @@ Immersive Site Forge 1.0 is organized as a reusable engine rather than a one-off
 ## Authoring and automation
 
 - JSON scene composer
+- semantic statement, brand-band, menu-grid and order-card modules
 - scene draft generator
-- five full choreography recipes
+- six full choreography recipes
+- local GLB product-rig auditor
 - timeline validator
 - cinematic continuity auditor
 - asset budget auditor
