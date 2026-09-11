@@ -25,3 +25,5 @@ Treat these as starting points, not universal limits:
 ## Measure
 
 The debug HUD reports scene, normalized progress, camera position, render calls and triangle count. Use browser performance tooling for CPU, GPU and memory profiling before launch.
+
+Forge telemetry adds consent-aware measurements from actual devices: coarse viewport and capability hints, four-second FPS sampling, slow-frame counts, LCP, CLS, interaction candidates, long tasks and WebGL status. It does not infer GPU time and does not collect advertising identifiers. See [telemetry](TELEMETRY.md).

@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "id": "ember-bun-reference",
+  "name": "Ember Bun Reference",
+  "experiencePath": "config/experience.json",
+  "contentSources": [],
+  "deployment": {
+    "provider": "vercel",
+    "projectName": "ember-bun-reference",
+    "productionBranch": "main"
+  },
+  "telemetry": {
+    "enabled": true,
+    "endpoint": "/api/telemetry",
+    "sampleRate": 1,
+    "consent": "analytics",
+    "respectDnt": true
+  }
+}

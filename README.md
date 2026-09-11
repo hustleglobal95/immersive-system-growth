@@ -1,8 +1,8 @@
-# Immersive Site Forge
+# Immersive Site Forge 2
 
-A configuration-driven foundation for cinematic, scroll-driven 3D websites, built with Next.js, React Three Fiber, Three.js, Drei, Lenis, GSAP and Zustand. Named-node product rigs, semantic content modules and global keyframe tracks support product assembly experiences without replacing the accessible document.
+A production platform for designing, validating, generating and deploying cinematic 3D websites. Forge Studio adds a visual timeline, browser-based recipe editing, private local GLB inspection, reusable choreography presets, CMS and commerce adapters, client generation, protected deployment automation and consent-aware real-device telemetry.
 
-The shared layout keeps one Canvas alive across / and /lab. Accessible HTML remains usable without JavaScript or WebGL. A shared sampler coordinates camera, objects, product parts, lighting, atmosphere, content modules and postprocessing. This repository includes six distinct reference recipes and original GLB fixtures, not photorealistic client artwork or a blanket hardware-performance guarantee.
+The production runtime keeps one Canvas alive across / and /lab. Accessible HTML remains usable without JavaScript or WebGL. `/studio` is an independent authoring surface, so editing tools never compete with the client experience for rendering resources. This repository includes six distinct reference recipes and original GLB fixtures, not photorealistic client artwork or a blanket hardware-performance guarantee.
 
 ## Start
 
@@ -19,6 +19,19 @@ npm run start
 
 For development use `npm run dev`. Dev/build prepares locally served Draco and Basis decoders from the locked Three dependency. Open http://localhost:3000. No runtime gstatic decoder dependency is required.
 
+## Forge Studio
+
+Open `/studio` to edit project identity, scene timing, copy, camera/object presets, media transitions, product-rig node mappings, content sources, deployment settings and telemetry policy. Drafts stay in local browser storage until exported. Both exported files use the same production schemas as CLI and CI.
+
+```bash
+npm run glb:inspect -- public/models/reference/burger.glb
+npm run project:new -- client-name burger-showcase
+npm run project:validate
+npm run content:sync -- config/studio-project.json
+```
+
+Read [Studio](docs/STUDIO.md), [integrations](docs/INTEGRATIONS.md), [telemetry](docs/TELEMETRY.md) and [deployment](docs/DEPLOYMENT.md) before configuring external systems.
+
 ## Reference experiences
 
 ```bash
@@ -34,11 +47,12 @@ The scene lab provides timeline scrubbing, actual camera/target/FOV telemetry, c
 ## Configure and extend
 
 - config/experience.json: validated scene ranges, camera/mobile paths, hero, world, postprocessing, copy, hotspots and scene assets.
+- config/studio-project.json: client identity, content sources, deployment target and telemetry policy.
 - config/asset-manifest.json: paths, byte sizes, hashes and asset budgets.
 - `npm run scene:new -- kitchen`: generate a draft, then integrate and validate.
 - `npm run assets:generate`: regenerate original model fixtures and their manifest. This resets the reference asset manifest; do not use it on a custom project manifest without a backup.
 
-Read [architecture](docs/ARCHITECTURE.md), [product rigs](docs/PRODUCT_RIGS.md), [asset pipeline](docs/ASSET_PIPELINE.md), [authoring](docs/AUTHORING.md), [accessibility](docs/ACCESSIBILITY.md), [validation](docs/VALIDATION.md) and [deployment](docs/DEPLOYMENT.md). CLAUDE.md is the contribution/agent operating contract.
+Read [architecture](docs/ARCHITECTURE.md), [Studio](docs/STUDIO.md), [product rigs](docs/PRODUCT_RIGS.md), [asset pipeline](docs/ASSET_PIPELINE.md), [authoring](docs/AUTHORING.md), [accessibility](docs/ACCESSIBILITY.md), [validation](docs/VALIDATION.md) and [deployment](docs/DEPLOYMENT.md). CLAUDE.md is the contribution/agent operating contract.
 
 ## Verification
 

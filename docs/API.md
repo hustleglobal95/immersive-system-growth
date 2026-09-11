@@ -29,3 +29,23 @@ Reusable cloned GLB/GLTF model component.
 ## `thresholdHandoff`, `occlusionHandoff`, `modelExchange`, `surfaceDive`
 
 Transition timing helpers for scene-specific visual handoffs.
+
+## `inspectGlb(arrayBuffer)`
+
+Pure GLB 2.0 inspector used by Studio and the CLI. Reports nodes, meshes, materials, animations, warnings and suggested named rig nodes without uploading a model.
+
+## `applyScenePreset`, `applyMediaTransition`, `moveSceneBoundary`
+
+Immutable Studio editing helpers. Their output must pass the production experience schema.
+
+## `fetchContentSource`, `applyContentMappings`
+
+Server-side content adapter and deterministic JSON-path mapper. Remote URLs require HTTPS and an explicit host allowlist in preview routes.
+
+## `POST /api/integrations/preview`
+
+Validates and previews one static, JSON or Shopify source. Request bodies are capped and remote calls have a five-second timeout.
+
+## `POST /api/telemetry`
+
+Accepts size-bounded, schema-validated anonymous performance events. Events are forwarded to `FORGE_TELEMETRY_WEBHOOK_URL` when configured or logged as structured server output.
