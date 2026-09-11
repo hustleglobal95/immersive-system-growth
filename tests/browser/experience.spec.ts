@@ -38,9 +38,13 @@ test("production canvas stays persistent across scroll, reverse, quality and rou
     page.getByText("The 3D view is loading.", { exact: false }),
   ).toHaveCount(0);
   const canvas = await page.locator("canvas").elementHandle();
+  const sceneNavigation = page.getByRole("navigation", {
+    name: "Experience scenes",
+  });
   for (const id of ["ingredients", "order", "signature", "menu", "arrival"]) {
-    await page.locator(`a[href="#${id}"]`).click();
-    await expect(page.locator(`a[href="#${id}"]`)).toHaveAttribute(
+    const sceneLink = sceneNavigation.locator(`a[href="#${id}"]`);
+    await sceneLink.click();
+    await expect(sceneLink).toHaveAttribute(
       "aria-current",
       "step",
     );
