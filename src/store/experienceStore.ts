@@ -1,6 +1,8 @@
 "use client";
 import { create } from "zustand";
-import type { QualityTier, QualityMode, Vec3 } from "@/src/types/experience";
+import type { QualityTier, QualityMode, Vec3, CameraDefinition } from "@/src/types/experience";
+import type { CameraShotName } from "@/src/lib/cameraShots";
+export interface CameraPreview { name: CameraShotName; sceneId: string; camera: CameraDefinition; mobileCamera: CameraDefinition }
 import { constrainQuality, nextQuality } from "@/src/lib/quality";
 interface PointerState {
   x: number;
@@ -21,6 +23,8 @@ interface CameraTelemetry {
   fov: number;
 }
 interface ExperienceState {
+  cameraPreview: CameraPreview | null;
+  setCameraPreview: (value: CameraPreview | null) => void;
   guides:boolean; setGuides:(value:boolean)=>void;
   progress: number;
   velocity: number;
@@ -66,6 +70,8 @@ interface ExperienceState {
   resetLab: () => void;
 }
 export const useExperienceStore = create<ExperienceState>((set) => ({
+  cameraPreview: null,
+  setCameraPreview: (cameraPreview) => set({ cameraPreview, freeCamera: false }),
   guides:false,setGuides:(guides)=>set({guides}),
   progress: 0,
   velocity: 0,
@@ -153,6 +159,7 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
     })),
   resetLab: () =>
     set((s) => ({
+      cameraPreview: null,
       freeCamera: false,
       guides: false,
       debug: false,

@@ -449,6 +449,8 @@ a {
 
 .lab-controls {
   position: fixed;
+  max-height: calc(100svh - 40px);
+  overflow-y: auto;
   z-index: 98;
   right: 20px;
   bottom: 20px;

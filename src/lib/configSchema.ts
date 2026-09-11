@@ -37,6 +37,7 @@ export const cameraSchema = z
       "swoop",
       "macro",
       "pullback",
+      "subject-orbit",
     ]),
     waypoints: z.array(vec3).max(32).optional(),
     targetWaypoints: z.array(vec3).max(32).optional(),
