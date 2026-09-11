@@ -23,6 +23,8 @@ interface CameraTelemetry {
   fov: number;
 }
 interface ExperienceState {
+  mediaPreview: boolean;
+  setMediaPreview: (value: boolean) => void;
   cameraPreview: CameraPreview | null;
   setCameraPreview: (value: CameraPreview | null) => void;
   guides:boolean; setGuides:(value:boolean)=>void;
@@ -70,6 +72,8 @@ interface ExperienceState {
   resetLab: () => void;
 }
 export const useExperienceStore = create<ExperienceState>((set) => ({
+  mediaPreview: false,
+  setMediaPreview: (mediaPreview) => set({mediaPreview}),
   cameraPreview: null,
   setCameraPreview: (cameraPreview) => set({ cameraPreview, freeCamera: false }),
   guides:false,setGuides:(guides)=>set({guides}),
@@ -159,6 +163,7 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
     })),
   resetLab: () =>
     set((s) => ({
+      mediaPreview: false,
       cameraPreview: null,
       freeCamera: false,
       guides: false,

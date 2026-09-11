@@ -3,6 +3,7 @@ import { useEffect, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { NarrativeOverlay } from "@/src/components/dom/NarrativeOverlay";
+import { CinematicMedia } from "@/src/components/dom/CinematicMedia";
 import { ProgressRail } from "@/src/components/dom/ProgressRail";
 import { HotspotDialog } from "@/src/components/dom/HotspotDialog";
 import { SiteChrome } from "@/src/components/dom/SiteChrome";
@@ -73,7 +74,7 @@ export function ExperienceRuntime({ children }: { children?: ReactNode }) {
     s.setDebug(lab || process.env.NEXT_PUBLIC_DEBUG_3D === "true");
   }, [lab]);
   return (
-    <div className="experience-root" data-reduced-motion={motion}>
+    <div className="experience-root" data-reduced-motion={motion} data-media-motion={!motion}>
       <SystemProfile />
       <ScrollController />
       <PointerController />
@@ -85,6 +86,7 @@ export function ExperienceRuntime({ children }: { children?: ReactNode }) {
         </WebGLBoundary>
       )}
       <NarrativeOverlay />
+      <CinematicMedia />
       <ProgressRail />
       <HotspotDialog />
       <RuntimeStatus />

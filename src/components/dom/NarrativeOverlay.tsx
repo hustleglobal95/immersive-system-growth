@@ -4,7 +4,7 @@ import { CinematicDomMotion } from "./CinematicDomMotion";
 import type { CinematicCue } from "@/src/lib/cinematicDom";
 const cues: CinematicCue[] = experience.scenes.map((scene, index) => ({
   selector: `[data-motion-scene="${index}"] [data-motion-copy]`,
-  range: [scene.range[0], scene.range[0] + (scene.range[1] - scene.range[0]) * .28],
+  range: [scene.range[0], scene.range[0] + (scene.range[1] - scene.range[0]) * (scene.media?.textEnd ?? .28)],
   preset: "text-settle",
 }));
 // Ordinary server-rendered content remains the baseline. No opacity/aria-hidden gate owns primary copy.
@@ -31,6 +31,7 @@ export function NarrativeOverlay() {
           }}
           aria-labelledby={`${scene.id}-heading`}
         >
+          {scene.media && <img className="story-media-static" src={scene.media.poster ?? scene.media.src} alt={scene.media.alt} loading={index===0?"eager":"lazy"} />}
           <div className="story-panel">
             <div className="narrative-panel__index">
               {String(index + 1).padStart(2, "0")}

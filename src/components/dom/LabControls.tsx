@@ -9,6 +9,7 @@ import type { QualityMode } from "@/src/types/experience";
 const round = (n: number) => Number(n.toFixed(3));
 
 export function LabControls() {
+  const mediaPreview = useExperienceStore(s=>s.mediaPreview);
   const [subjectRadius, setSubjectRadius] = useState(1.5);
   const preview = useExperienceStore((s) => s.cameraPreview);
   const guides = useExperienceStore((s) => s.guides);
@@ -124,6 +125,10 @@ export function LabControls() {
           <textarea aria-label="Camera shot JSON" readOnly rows={6} style={{ width: "100%" }} value={JSON.stringify({ camera: selectedPreview.camera, mobileCamera: selectedPreview.mobileCamera }, null, 2)} />
         </details>
       </>}
+      <label className="lab-controls__check">
+        <input type="checkbox" checked={mediaPreview} onChange={e=>useExperienceStore.getState().setMediaPreview(e.target.checked)}/>
+        Preview media transitions (illustrations)
+      </label>
       <label className="lab-controls__check">
         <input
           type="checkbox"

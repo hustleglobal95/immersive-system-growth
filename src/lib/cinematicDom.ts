@@ -31,19 +31,19 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
       const distance = compact ? 10 : 28;
       if (cue.preset === "text-settle") {
         timeline.fromTo(targets, { y: distance }, {
-          y: 0, duration: 1, stagger: { amount: .18 }, ease: "power2.out", immediateRender: false,
+          y: 0, duration: 1, stagger: { amount: .18 }, ease: "power2.out", immediateRender: true,
         });
       } else if (cue.preset === "curtain") {
         timeline.fromTo(targets, { clipPath: "inset(0 0 100% 0)" }, {
-          clipPath: "inset(0 0 0% 0)", duration: 1, ease: "power2.inOut", immediateRender: false,
+          clipPath: "inset(0 0 0% 0)", duration: 1, ease: "power2.inOut", immediateRender: true,
         });
       } else if (cue.preset === "image-depth") {
         timeline.fromTo(targets, { yPercent: compact ? 2 : 6, scale: compact ? 1.03 : 1.08 }, {
-          yPercent: compact ? -2 : -6, scale: 1, duration: 1, ease: "none", immediateRender: false,
+          yPercent: compact ? -2 : -6, scale: 1, duration: 1, ease: "none", immediateRender: true,
         });
       } else {
         timeline.fromTo(targets, { y: distance, rotation: compact ? 0 : 2 }, {
-          y: 0, rotation: 0, duration: 1, stagger: { amount: .3 }, ease: "power2.out", immediateRender: false,
+          y: 0, rotation: 0, duration: 1, stagger: { amount: .3 }, ease: "power2.out", immediateRender: true,
         });
       }
       tracks.push({ timeline, range: cue.range });
