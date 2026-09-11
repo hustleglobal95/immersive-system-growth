@@ -7,6 +7,8 @@
 5. Match every camera/hero end state to the next start. Dolly is intentionally a linear alias. Other path offsets preserve endpoints. Use waypoints for Catmull-Rom paths, and mobileCamera when portrait framing needs different coordinates. Camera/target equality and invalid FOVs are rejected. Camera clearance against your actual geometry still needs visual review.
 6. Use heroModel/heroLowModel for a single transforming product. For a persistent environment set heroVisible=false and register assets instead.
 
+For an assembled product, add `productRig` with required GLB node names and global keyframe tracks. Use position or rotation offsets for separations, multiplicative scale tracks for squash/stretch, and opacity only when the rig owns cloned materials. Run `npm run rig:audit` before visual review. See [product rigs](PRODUCT_RIGS.md).
+
 ```json
 {
   "id": "building",

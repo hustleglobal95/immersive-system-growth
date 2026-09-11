@@ -6,7 +6,7 @@ test("DOM choreography reverses and reduced motion restores readable baseline", 
   const heading = page.locator('[data-motion-scene="0"] h1');
   const y = () => heading.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m42);
   await expect.poll(y).toBeGreaterThan(5);
-  await page.locator('a[href="#threshold"]').click();
+  await page.locator('a[href="#signature"]').click();
   await expect.poll(y).toBeLessThan(.1);
   await page.locator('a[href="#arrival"]').click();
   await expect.poll(y).toBeGreaterThan(5);

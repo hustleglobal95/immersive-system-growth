@@ -18,6 +18,8 @@ Build cinematic, spatial, interactive websites that feel like one continuous exp
 8. Measure render cost before increasing visual complexity.
 9. Never invent asset paths. Inspect the repository and `config/asset-manifest.json` first.
 10. Do not replace Forge architecture with a generic landing-page scaffold.
+11. Product explosions must use named GLB nodes and deterministic productRig tracks.
+12. Menus, prices and conversion actions must remain semantic DOM content.
 
 ## Before implementation
 

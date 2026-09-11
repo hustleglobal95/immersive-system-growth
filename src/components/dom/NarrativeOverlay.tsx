@@ -2,11 +2,22 @@ import Link from "next/link";
 import { experience } from "@/src/lib/experience";
 import { CinematicDomMotion } from "./CinematicDomMotion";
 import type { CinematicCue } from "@/src/lib/cinematicDom";
-const cues: CinematicCue[] = experience.scenes.map((scene, index) => ({
-  selector: `[data-motion-scene="${index}"] [data-motion-copy]`,
-  range: [scene.range[0], scene.range[0] + (scene.range[1] - scene.range[0]) * (scene.media?.textEnd ?? .28)],
-  preset: "text-settle",
-}));
+import { SceneBlocks } from "./SceneBlocks";
+const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
+  const span = scene.range[1] - scene.range[0];
+  return [
+    {
+      selector: '[data-motion-scene="' + index + '"] [data-motion-copy]',
+      range: [scene.range[0], scene.range[0] + span * (scene.media?.textEnd ?? .28)],
+      preset: "text-settle",
+    },
+    {
+      selector: '[data-motion-scene="' + index + '"] [data-motion-block]',
+      range: [scene.range[0] + span * .08, scene.range[0] + span * .66],
+      preset: "text-settle",
+    },
+  ];
+});
 // Ordinary server-rendered content remains the baseline. No opacity/aria-hidden gate owns primary copy.
 export function NarrativeOverlay() {
   const runway = Math.max(
@@ -25,7 +36,7 @@ export function NarrativeOverlay() {
           id={scene.id}
           key={scene.id}
           data-motion-scene={index}
-          className={`story-section story-section--${scene.copy.align ?? "left"}`}
+          className={"story-section story-section--" + (scene.copy.align ?? "left") + (scene.blocks.length ? " story-section--blocks" : "")}
           style={{
             minHeight: `${runway * (scene.range[1] - scene.range[0]) + (index === experience.scenes.length - 1 ? 100 : 0)}svh`,
           }}
@@ -45,6 +56,7 @@ export function NarrativeOverlay() {
               <h2 id={`${scene.id}-heading`} data-motion-copy>{scene.copy.headline}</h2>
             )}
             <p className="narrative-body" data-motion-copy>{scene.copy.body}</p>
+            <SceneBlocks blocks={scene.blocks} />
             {experience.hotspots
               .filter((h) => h.sceneId === scene.id)
               .map((h) => (

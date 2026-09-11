@@ -1,6 +1,16 @@
 // Original procedural reference assets, released under the repository MIT license.
 import fs from "node:fs";
 import crypto from "node:crypto";
+function eulerQuaternion([x, y, z]) {
+  const c1 = Math.cos(x / 2), c2 = Math.cos(y / 2), c3 = Math.cos(z / 2);
+  const s1 = Math.sin(x / 2), s2 = Math.sin(y / 2), s3 = Math.sin(z / 2);
+  return [
+    s1 * c2 * c3 + c1 * s2 * s3,
+    c1 * s2 * c3 - s1 * c2 * s3,
+    c1 * c2 * s3 + s1 * s2 * c3,
+    c1 * c2 * c3 - s1 * s2 * s3,
+  ];
+}
 function cube() {
   const p = [],
     n = [],
@@ -51,8 +61,8 @@ function cube() {
   }
   return { p, n, ix };
 }
-function lathe(segments) {
-  const profile = [
+function lathe(segments, customProfile) {
+  const profile = customProfile ?? [
       [0, -0.5],
       [0.48, -0.5],
       [0.5, -0.4],
@@ -108,6 +118,14 @@ const palettes = {
     [0.23, 0.35, 0.12, 1],
     [0.65, 0.22, 0.08, 1],
   ],
+  burger: [
+    [0.93, 0.48, 0.12, 1],
+    [0.18, 0.055, 0.025, 1],
+    [1, 0.63, 0.04, 1],
+    [0.16, 0.42, 0.075, 1],
+    [0.72, 0.08, 0.035, 1],
+    [0.83, 0.75, 0.63, 1],
+  ],
   product: [
     [0.07, 0.09, 0.11, 1],
     [0.83, 0.47, 0.15, 1],
@@ -154,6 +172,18 @@ function parts(name) {
       ["dish", [0, -0.66, 0], [1.8, 0.5, 1.8], 2, "round"],
       ["garnish", [0.2, -0.32, 0], [0.9, 0.2, 0.75], 1, "round"],
       ["fork", [1.9, -0.92, 0], [0.12, 0.08, 2.2], 0],
+    ];
+  if (name === "burger")
+    return [
+      ["bottom-bun", [0, -1.08, 0], [1.85, 0.38, 1.85], 0, "bun-bottom"],
+      ["patty-bottom", [0, -0.72, 0], [1.72, 0.28, 1.72], 1, "round"],
+      ["cheese-bottom", [0, -0.46, 0], [1.92, 0.08, 1.92], 2, "cube", [0, 0.16, 0]],
+      ["lettuce", [0, -0.25, 0], [1.93, 0.14, 1.93], 3, "ruffle"],
+      ["tomato", [0, -0.02, 0], [1.68, 0.15, 1.68], 4, "round"],
+      ["patty-top", [0, 0.28, 0], [1.76, 0.29, 1.76], 1, "round"],
+      ["cheese-top", [0, 0.54, 0], [1.96, 0.08, 1.96], 2, "cube", [0, -0.18, 0]],
+      ["onion", [0, 0.74, 0], [1.55, 0.12, 1.55], 5, "round"],
+      ["top-bun", [0, 1.18, 0], [1.88, 0.72, 1.88], 0, "bun-top"],
     ];
   if (name === "product")
     return [
@@ -219,7 +249,14 @@ function generate(name, low = false) {
     });
     return accessors.length - 1;
   }
-  const shapes = [cube(), lathe(low ? 12 : 48)].map((g) => ({
+  const shapeGeometry = [cube(), lathe(low ? 12 : 48)];
+  if (name === "burger")
+    shapeGeometry.push(
+      lathe(low ? 12 : 48, [[0, -0.5], [0.38, -0.5], [0.5, -0.25], [0.46, 0.15], [0.32, 0.4], [0, 0.5]]),
+      lathe(low ? 12 : 48, [[0, -0.5], [0.42, -0.48], [0.5, -0.2], [0.48, 0.25], [0.32, 0.46], [0, 0.5]]),
+      lathe(low ? 12 : 64, [[0, -0.25], [0.34, -0.32], [0.49, -0.18], [0.43, 0], [0.5, 0.17], [0.32, 0.28], [0, 0.25]]),
+    );
+  const shapes = shapeGeometry.map((g) => ({
     attributes: {
       POSITION: accessor(g.p, 5126, "VEC3"),
       NORMAL: accessor(g.n, 5126, "VEC3"),
@@ -227,12 +264,20 @@ function generate(name, low = false) {
     indices: accessor(g.ix, 5123, "SCALAR"),
   }));
   const selectedParts = parts(name).filter(([label])=>!low || !["bench","plinth","lights","foot"].includes(label));
-  for (const [label, translation, scale, material, shape] of selectedParts) {
+  for (const [label, translation, scale, material, shape, rotation] of selectedParts) {
     const mesh = doc.meshes.length;
     doc.meshes.push({
-      primitives: [{ ...shapes[shape === "round" ? 1 : 0], material }],
+      primitives: [{
+        ...shapes[
+          shape === "round" ? 1 :
+          shape === "bun-top" ? 2 :
+          shape === "bun-bottom" ? 3 :
+          shape === "ruffle" ? 4 : 0
+        ],
+        material,
+      }],
     });
-    doc.nodes.push({ name: label, mesh, translation, scale });
+    doc.nodes.push({ name: label, mesh, translation, scale, ...(rotation ? { rotation: eulerQuaternion(rotation) } : {}) });
     doc.scenes[0].nodes.push(doc.nodes.length - 1);
   }
   if (name === "pavilion") {
@@ -291,5 +336,5 @@ fs.writeFileSync(
   JSON.stringify(manifest, null, 2) + "\n",
 );
 console.log(
-  "Generated ten original GLB reference assets and content manifest.",
+  "Generated twelve original GLB reference assets and content manifest.",
 );

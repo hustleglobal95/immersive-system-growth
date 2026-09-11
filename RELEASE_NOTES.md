@@ -1,5 +1,13 @@
 # Release Notes
 
+## Product choreography
+
+- Added named-node product rigs with deterministic global transform, opacity and visibility tracks.
+- Added semantic statement, brand-band, menu-grid and order-card modules.
+- Added a rig auditor and forward/reverse sampling tests.
+- Added original high/low burger GLBs and a complete six-scene burger showcase.
+- Made the burger showcase the default experience while retaining all previous recipes.
+
 ## 1.0.0
 
 The first complete Forge engine release establishes the persistent-world architecture, data-driven scene timeline, camera and object choreography, asset primitives, authoring tools, scene lab, adaptive rendering, accessibility behavior, validation tools, recipes, Claude Code workflow and production documentation.

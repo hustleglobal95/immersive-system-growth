@@ -18,6 +18,10 @@ config.assets registers model, image, panorama, HDR environment and video instan
 
 Models clone hierarchy/skeleton per instance while sharing immutable geometry/material caches. Final owner release disposes cache resources after a short Strict Mode-safe grace period. Image instances use owned texture clones instead of modifying cached textures during render. Videos are created in effects and release their source, event listeners and texture on teardown. Per-asset boundaries isolate rejected loads; whole-world Suspense is not used.
 
+ProductRig is the specialized persistent-hero owner for named-node choreography. It clones mutable materials per instance, records authored node transforms once, restores those baselines before each sample and applies deterministic global tracks in one frame owner. The regular PersistentHero path remains unchanged for non-rig models.
+
+Semantic scene blocks are server-rendered inside the narrative document. WebGL never owns menu text, prices or conversion links. Their optional motion samples the same global progress without hiding the readable baseline.
+
 Draco and Basis decoders are copied from the locked Three version during dev/build and served from /decoders. Meshopt is supplied by Drei. Codec wiring is distinct from certifying every third-party compressed model. Test your actual files and all external texture URLs.
 
 ## Rendering and quality
