@@ -188,14 +188,43 @@ export const sceneAssetSchema = z.discriminatedUnion("kind", [
   panoramaAsset,
   environmentAsset,
 ]);
+export const maskPresetSchema = z.enum([
+  "linear-soft",
+  "radial-iris",
+  "diagonal-cut",
+  "split-center",
+  "pixel-grid",
+  "noise-dissolve",
+  "ink-spread",
+  "film-burn",
+]);
+export const maskRevealSchema = z
+  .object({
+    preset: maskPresetSchema,
+    renderer: z.enum(["auto", "dom", "webgl"]).default("auto"),
+    direction: z.enum(["left", "right", "up", "down"]).default("right"),
+    origin: z
+      .tuple([finite.min(0).max(100), finite.min(0).max(100)])
+      .default([50, 50]),
+    softness: finite.min(0).max(40).default(12),
+    scale: finite.min(0.5).max(2).default(1),
+    rotation: finite.min(-180).max(180).default(0),
+    intensity: finite.min(0).max(2).default(1),
+    seed: finite.int().min(0).max(9999).default(47),
+    invert: z.boolean().default(false),
+    edgeColor: color.default("#f97316"),
+    edgeWidth: finite.min(0).max(20).default(0),
+  })
+  .strict();
 export const sceneMediaSchema = z.object({
   kind: z.enum(["image", "video"]),
   src: assetUrl,
   poster: assetUrl.optional(),
   alt: z.string().min(1).max(300),
-  transition: z.enum(["slide", "curtain", "zoom", "dissolve", "wipe"]).default("slide"),
+  transition: z.enum(["slide", "curtain", "zoom", "dissolve", "wipe", "mask"]).default("slide"),
   blendColor: color.optional(),
   maskSoftness: finite.min(0).max(100).default(18),
+  mask: maskRevealSchema.optional(),
   position: z.tuple([finite.min(0).max(100),finite.min(0).max(100)]).default([50,50]),
   mobilePosition: z.tuple([finite.min(0).max(100),finite.min(0).max(100)]).default([50,50]),
   overlap: finite.min(.1).max(.45).default(.25),

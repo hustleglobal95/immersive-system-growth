@@ -4,6 +4,8 @@ import type {
   sceneAssetSchema,
   cameraSchema,
   productRigSchema,
+  maskRevealSchema,
+  maskPresetSchema,
 } from "@/src/lib/configSchema";
 export type Vec3 = [number, number, number];
 export type QualityTier = "low" | "medium" | "high";
@@ -14,6 +16,8 @@ export type SceneAsset = z.infer<typeof sceneAssetSchema>;
 export type CameraDefinition = z.infer<typeof cameraSchema>;
 export type ProductRigDefinition = z.infer<typeof productRigSchema>;
 export type ProductTrack = ProductRigDefinition["tracks"][number];
+export type MaskRevealDefinition = z.infer<typeof maskRevealSchema>;
+export type MaskPreset = z.infer<typeof maskPresetSchema>;
 export type SceneBlock = SceneDefinition["blocks"][number];
 export type SceneEasing = SceneDefinition["easing"];
 export type CameraPathPreset = CameraDefinition["path"];

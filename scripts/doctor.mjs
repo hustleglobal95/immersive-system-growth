@@ -15,6 +15,9 @@ const required = [
   "src/components/three/SceneCanvas.tsx",
   "src/lib/sampleExperience.ts",
   "src/studio/StudioWorkbench.tsx",
+  "src/studio/MaskLab.tsx",
+  "src/lib/maskReveal.ts",
+  "src/lib/maskShader.ts",
   "CLAUDE.md",
   "docs/ARCHITECTURE.md",
 ];

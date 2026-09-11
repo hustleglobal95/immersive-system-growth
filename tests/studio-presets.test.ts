@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import raw from "../config/experience.json";
 import { parseExperience } from "../src/lib/configSchema";
-import { applyMediaTransition, applyScenePreset, moveSceneBoundary, replaceScene } from "../src/platform/studioPresets";
+import { applyMaskPreset, applyMediaTransition, applyScenePreset, moveSceneBoundary, replaceScene } from "../src/platform/studioPresets";
 
 test("Studio presets remain schema-valid and deterministic", () => {
   const config = parseExperience(raw);
@@ -19,4 +19,9 @@ test("timeline boundaries stay contiguous and media transitions are editable", (
   assert.doesNotThrow(() => parseExperience(moved));
   const withMedia = { ...config.scenes[0], media: { kind: "image" as const, src: "/textures/test.jpg", alt: "Test", transition: "slide" as const, position: [50, 50] as [number, number], mobilePosition: [50, 50] as [number, number], overlap: 0.25, direction: "up" as const, zoom: 1.06, textEnd: 0.28, maskSoftness: 18 } };
   assert.equal(applyMediaTransition(withMedia, "wipe").media?.transition, "wipe");
+  const masked = applyMaskPreset(withMedia, "film-burn", { seed: 4096 });
+  assert.equal(masked.media?.transition, "mask");
+  assert.equal(masked.media?.mask?.preset, "film-burn");
+  assert.equal(masked.media?.mask?.seed, 4096);
+  assert.doesNotThrow(() => parseExperience(replaceScene(config, 0, masked)));
 });

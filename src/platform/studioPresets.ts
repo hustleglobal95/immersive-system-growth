@@ -1,6 +1,8 @@
 import type { ExperienceConfig, SceneDefinition } from "@/src/types/experience";
 import { createCameraShot, type CameraShotName } from "@/src/lib/cameraShots";
 import type { MediaTransition } from "@/src/lib/mediaPanels";
+import { createMaskReveal } from "@/src/lib/maskReveal";
+import type { MaskPreset, MaskRevealDefinition } from "@/src/types/experience";
 
 export const scenePresetNames = [
   "product-reveal",
@@ -44,7 +46,20 @@ export function applyScenePreset(
 }
 
 export function applyMediaTransition(scene: SceneDefinition, transition: MediaTransition): SceneDefinition {
-  return scene.media ? { ...scene, media: { ...scene.media, transition } } : scene;
+  if (!scene.media) return scene;
+  if (transition !== "mask") return { ...scene, media: { ...scene.media, transition } };
+  const mask = createMaskReveal(scene.media.mask?.preset ?? "linear-soft", scene.media.mask);
+  return { ...scene, media: { ...scene.media, transition, mask, maskSoftness: mask.softness } };
+}
+
+export function applyMaskPreset(
+  scene: SceneDefinition,
+  preset: MaskPreset,
+  changes?: Partial<MaskRevealDefinition>,
+): SceneDefinition {
+  if (!scene.media) return scene;
+  const mask = createMaskReveal(preset, { ...scene.media.mask, ...changes });
+  return { ...scene, media: { ...scene.media, transition: "mask", mask, maskSoftness: mask.softness } };
 }
 
 export function moveSceneBoundary(config: ExperienceConfig, boundary: number, value: number): ExperienceConfig {

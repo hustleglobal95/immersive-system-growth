@@ -34,3 +34,5 @@ Asset kinds are model, image, panorama, environment and video. Video may specify
 ScenePortal now renders children into a real MeshPortalMaterial destination, with a low-tier static fallback. GlassPortal is the separate transmissive threshold surface. ShaderSurface owns starter uniforms, time, transparency and depth-write policy. Transition helpers are pure values to bind to owned material/model state, not automatically active transitions. SceneZone is an optional transient-mount helper; do not use it for an object whose identity must persist.
 
 Avoid competing transform writers. GSAP reveal helpers are optional DOM utilities; the primary narrative does not depend on them. When adding a component, document asset ownership, release behavior, reduced motion, low-tier rendering and failure UI.
+
+For image and video transitions, choose `transition: "mask"` and author its nested mask definition in Studio. Start with DOM-friendly geometric presets. Use the organic presets when a high-tier shader result materially improves the handoff, and test the automatic CSS fallback. See [mask reveals](MASK_REVEALS.md).

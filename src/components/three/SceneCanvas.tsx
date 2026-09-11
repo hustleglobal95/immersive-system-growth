@@ -18,6 +18,7 @@ import { CinematicFrame } from "./CinematicFrame";
 import { RendererLifecycle } from "./RendererLifecycle";
 import { SceneAssets } from "./SceneAssets";
 import { AssetBoundary } from "./AssetBoundary";
+import { MaskedMediaLayer } from "./MaskedMediaLayer";
 function CanvasFallback() {
   useEffect(() => useExperienceStore.getState().setWebglStatus("failed"), []);
   return null;
@@ -77,6 +78,7 @@ export function SceneCanvas() {
           <SceneAssets />
           <Hotspots />
           <ParticleField />
+          <MaskedMediaLayer />
           <PostFX />
         </CinematicFrame>
       </Canvas>

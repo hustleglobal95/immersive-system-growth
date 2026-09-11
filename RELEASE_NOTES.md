@@ -1,5 +1,13 @@
 # Release Notes
 
+## 2.1.0
+
+- Added Forge Reveal Engine with eight original, schema-driven mask presets.
+- Added deterministic CPU reference sampling, CSS mask output and a shared-canvas WebGL shader path.
+- Added the Mask Lab with live DOM/WebGL previews, full parameter controls and reference media.
+- Added automatic quality, WebGL-loss and reduced-motion fallbacks.
+- Added endpoint, reverse-scroll, schema, backend-policy and browser preview coverage.
+
 ## 2.0.0
 
 - Added Forge Studio with project, timeline, model, integration, publish and telemetry workspaces.

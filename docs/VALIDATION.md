@@ -8,4 +8,6 @@ Both runtime and CLI use src/lib/configSchema.ts. Invalid nested configuration i
 
 Required release evidence: full gates green, no unexpected browser errors, readable arrival/final conversion, keyboard details/navigation, reduced motion, missing asset/renderer recovery, forward/reverse/jump/restore/resize, route/quality resource stability, and measured target-device budgets.
 
+Mask changes additionally require exact hidden/visible endpoints, reverse sampling equality, DOM fallback inspection in WebKit and shader inspection on a WebGL-capable Chromium target. Automated pixel sampling is regression evidence, not final art-direction approval.
+
 Do not modify assertions merely to accept a broken outcome. If a test was based on an incorrect assumption, document that distinction and preserve the intended user-facing invariant.

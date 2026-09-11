@@ -8,12 +8,13 @@ import { parseExperience } from "@/src/lib/configSchema";
 import { parseStudioProject } from "@/src/platform/studioSchema";
 import { GlbInspectorPanel } from "@/src/studio/GlbInspectorPanel";
 import { TimelineEditor } from "@/src/studio/TimelineEditor";
+import { MaskLab } from "@/src/studio/MaskLab";
 import { IntegrationsPanel, ProjectPanel, PublishPanel, TelemetryPanel } from "@/src/studio/ProjectPanels";
 import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
 
 const initialExperience = parseExperience(rawExperience);
 const initialProject = parseStudioProject(rawProject);
-const tabs = ["project", "timeline", "model", "integrations", "publish", "telemetry"] as const;
+const tabs = ["project", "timeline", "masks", "model", "integrations", "publish", "telemetry"] as const;
 type Tab = (typeof tabs)[number];
 
 export function StudioWorkbench() {
@@ -81,13 +82,14 @@ export function StudioWorkbench() {
 
       {tab === "project" && <ProjectPanel {...draft} />}
       {tab === "timeline" && <TimelineEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
+      {tab === "masks" && <MaskLab experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "model" && <GlbInspectorPanel experience={draft.experience} setExperience={draft.setExperience} />}
       {tab === "integrations" && <IntegrationsPanel project={draft.project} setProject={draft.setProject} />}
       {tab === "publish" && <PublishPanel project={draft.project} setProject={draft.setProject} />}
       {tab === "telemetry" && <TelemetryPanel project={draft.project} setProject={draft.setProject} />}
 
       <footer className="studio-footer">
-        <span>Forge Studio v2</span>
+        <span>Forge Studio v2.1</span>
         <span>One canvas / one timeline / validated output</span>
       </footer>
     </main>
@@ -98,6 +100,7 @@ function titleFor(tab: Tab) {
   return {
     project: "Project control",
     timeline: "Visual timeline",
+    masks: "Mask reveal laboratory",
     model: "Model inspection",
     integrations: "Content connections",
     publish: "Release pipeline",

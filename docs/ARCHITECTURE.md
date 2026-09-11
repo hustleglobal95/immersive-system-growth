@@ -10,6 +10,8 @@ External content is fetched only by the server integration route. URLs must use 
 
 The shared App Router layout owns ExperienceRuntime and its single unkeyed Canvas. / and /lab do not mount their own worlds. Only an explicit Retry 3D action replaces a failed renderer. Leaving /lab resets free camera, guides, debug and the motion preview; manual quality policy remains explicit.
 
+MaskedMediaLayer renders organic image and video reveals inside that same runtime Canvas. Geometric reveals use CSS masks in CinematicMedia. Automatic selection is capability-driven and a lost renderer returns media ownership to the DOM path. The isolated WebGL canvas in Studio exists only for authoring comparison because `/studio` does not mount ExperienceRuntime.
+
 The semantic document is the baseline. Every scene has a real anchored section, heading, body, CTA and native details for hotspot information. It is usable before hydration or when JavaScript/WebGL fails. The fixed 3D view enhances that document. No opacity or aria-hidden gate owns primary content.
 
 ## Time and transforms

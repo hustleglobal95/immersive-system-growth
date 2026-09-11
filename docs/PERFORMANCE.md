@@ -21,6 +21,7 @@ Treat these as starting points, not universal limits:
 - Avoid multiple real-time shadow-casting lights.
 - Use instancing for repeated objects.
 - Avoid allocating new Three.js objects every frame in hot loops.
+- Keep mask renderer on auto unless device evidence justifies forcing a path. Organic shader masks are high-tier only; geometric masks stay in CSS.
 
 ## Measure
 
