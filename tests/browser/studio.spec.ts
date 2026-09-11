@@ -47,7 +47,7 @@ test("Studio Pro composes a validated template, directed scene and live runtime"
   await page.getByRole("button", { name: "director", exact: true }).click();
   await expect(page.getByRole("img", { name: "Camera top path" })).toBeVisible();
   await page.getByLabel("Path preset").selectOption("orbit");
-  await page.getByLabel("Exposure").fill("1.2");
+  await page.locator(".director-range").filter({ hasText: "Exposure" }).locator("input").fill("1.2");
   await expect(page.getByText("Production schema valid")).toBeVisible();
 
   await page.getByRole("button", { name: "layers", exact: true }).click();
