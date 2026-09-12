@@ -10,7 +10,12 @@ import { useExperienceStore } from "@/src/store/experienceStore";
 import type { ProductRigDefinition, Vec3 } from "@/src/types/experience";
 import { applyHeroMaterial, captureHeroMaterial } from "@/src/lib/heroMaterial";
 import { registerMaterialShaderTarget, reapplyShaderTarget } from "@/src/runtime/shaderRegistry";
-import { captureSpatialObject, releaseSpatialObject } from "@/src/runtime/spatialRegistry";
+import {
+  captureSpatialObject,
+  captureSpatialSubjectParts,
+  releaseSpatialObject,
+  releaseSpatialSubjectParts,
+} from "@/src/runtime/spatialRegistry";
 
 interface Baseline {
   object: Object3D;
@@ -94,6 +99,7 @@ export function ProductRig({ url, rig }: { url: string; rig: ProductRigDefinitio
     return () => {
       unregister.forEach((dispose) => dispose());
       releaseSpatialObject("hero");
+      releaseSpatialSubjectParts("hero");
       prepared.baselines.forEach((baseline) => {
         if (baseline.previousInteraction === undefined) delete baseline.object.userData.forgeInteraction;
         else baseline.object.userData.forgeInteraction = baseline.previousInteraction;
@@ -195,7 +201,10 @@ export function ProductRig({ url, rig }: { url: string; rig: ProductRigDefinitio
     reapplyShaderTarget("hero");
     for (const name of prepared.baselines.keys()) reapplyShaderTarget(`rig:${name}`);
     frameCounter.current = (frameCounter.current + 1) % 12;
-    if (frameCounter.current === 0) captureSpatialObject("hero", group, "subject");
+    if (frameCounter.current === 0) {
+      captureSpatialObject("hero", group, "subject");
+      captureSpatialSubjectParts("hero", group);
+    }
   });
 
   return (
