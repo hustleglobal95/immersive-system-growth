@@ -5,15 +5,22 @@ import { Color, Material, Mesh, type Group, type MeshPhysicalMaterial } from "th
 import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { useCinematicFrame } from "@/src/components/three/CinematicFrame";
 import { useModelInstance } from "@/src/components/three/useModelInstance";
+import { useThreeInteraction } from "@/src/components/three/useThreeInteraction";
 import { useExperienceStore } from "@/src/store/experienceStore";
 import { ProductRig } from "@/src/components/three/ProductRig";
 import { applyHeroMaterial, captureHeroMaterial } from "@/src/lib/heroMaterial";
+import { registerMaterialShaderTarget } from "@/src/runtime/shaderRegistry";
+
 export function HeroFallback() {
-  const quality = useExperienceStore((s) => s.quality);
+  const quality = useExperienceStore((state) => state.quality);
   const frame = useCinematicFrame();
   const material = useRef<MeshPhysicalMaterial>(null);
   const tint = useRef(new Color());
   const baseline = useRef({ color: new Color("#f97316"), metalness: .72, roughness: .16, clearcoat: 1 });
+  useEffect(() => {
+    if (!material.current) return;
+    return registerMaterialShaderTarget("hero", material.current);
+  }, []);
   useFrame(() => {
     if (!material.current) return;
     tint.current.set(frame.current.material.tint);
@@ -39,18 +46,25 @@ export function HeroFallback() {
     </mesh>
   );
 }
+
 export function PersistentHero() {
   const experience = useExperienceConfig();
-  const quality=useExperienceStore(s=>s.quality);
-  const group = useRef<Group>(null),
-    frame = useCinematicFrame();
+  const quality = useExperienceStore((state) => state.quality);
+  const group = useRef<Group>(null);
+  const frame = useCinematicFrame();
+  const interaction = useThreeInteraction("hero");
   useFrame(() => {
-    const g = group.current;
-    if (!g) return;
-    const h = frame.current.hero;
-    g.position.set(...h.position);
-    g.rotation.set(...h.rotation);
-    g.scale.setScalar(h.scale);
+    const root = group.current;
+    if (!root) return;
+    const hero = frame.current.hero;
+    const orbit = useExperienceStore.getState().orbit;
+    root.position.set(...hero.position);
+    root.rotation.set(
+      hero.rotation[0] + (orbit.target === "hero" ? orbit.pitch : 0),
+      hero.rotation[1] + (orbit.target === "hero" ? orbit.yaw : 0),
+      hero.rotation[2],
+    );
+    root.scale.setScalar(hero.scale);
   });
   if (!experience.heroVisible) return null;
   if (experience.productRig && experience.heroModel)
@@ -61,9 +75,9 @@ export function PersistentHero() {
       />
     );
   return (
-    <group ref={group}>
+    <group ref={group} {...interaction}>
       {experience.heroModel ? (
-        <StyledHeroModel url={quality==="low"&&experience.heroLowModel?experience.heroLowModel:experience.heroModel} />
+        <StyledHeroModel url={quality === "low" && experience.heroLowModel ? experience.heroLowModel : experience.heroModel} />
       ) : (
         <HeroFallback />
       )}
@@ -91,7 +105,13 @@ function StyledHeroModel({ url }: { url: string }) {
     });
     return { owned, baselines };
   }, [scene]);
-  useEffect(() => () => prepared.owned.forEach((material) => material.dispose()), [prepared]);
+  useEffect(() => {
+    const unregister = [...prepared.owned].map((material) => registerMaterialShaderTarget("hero", material));
+    return () => {
+      unregister.forEach((dispose) => dispose());
+      prepared.owned.forEach((material) => material.dispose());
+    };
+  }, [prepared]);
   useFrame(() => {
     tint.current.set(frame.current.material.tint);
     prepared.baselines.forEach((baseline, material) => applyHeroMaterial(material, baseline, frame.current.material, tint.current));
