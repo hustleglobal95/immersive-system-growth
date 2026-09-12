@@ -3,6 +3,7 @@
   "id": "ember-bun-reference",
   "name": "Ember Bun Reference",
   "experiencePath": "config/experience.json",
+  "visualSystemsPath": "config/visual-systems.json",
   "contentSources": [],
   "deployment": {
     "provider": "vercel",

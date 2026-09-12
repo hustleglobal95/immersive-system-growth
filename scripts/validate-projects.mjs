@@ -4,6 +4,7 @@ import { parseExperience } from "../src/lib/configSchema.ts";
 import { parseStudioProject } from "../src/platform/studioSchema.ts";
 import { parseCreativeDirection } from "../src/platform/creativeDirectionSchema.ts";
 import { parseAssetManifest } from "../src/platform/assetManifestSchema.ts";
+import { parseVisualSystems } from "../src/platform/visualSystems.ts";
 import { parseForgeProject } from "../src/platform/forgeProjectSchema.ts";
 
 const root = process.cwd();
@@ -23,6 +24,7 @@ try {
   const experience = parseExperience(readJson(forge.paths.experience, "Experience"));
   parseCreativeDirection(readJson(forge.paths.creativeDirection, "Creative direction"));
   parseAssetManifest(readJson(forge.paths.assetManifest, "Asset manifest"));
+  parseVisualSystems(readJson(forge.paths.visualSystems, "Visual systems"));
   if (studio.experiencePath !== forge.paths.experience) {
     throw new Error("Forge project and Studio project point to different experience files");
   }
@@ -48,6 +50,7 @@ for (const projectPath of candidates) {
     const project = parseStudioProject(readJson(projectPath, "Studio project"));
     const experience = parseExperience(readJson(project.experiencePath, "Experience"));
     parseCreativeDirection(readJson(project.creativeDirectionPath, "Creative direction"));
+    parseVisualSystems(readJson(project.visualSystemsPath, "Visual systems"));
     console.log(`VALID ${projectPath}: ${project.name}, ${experience.scenes.length} scenes, ${project.contentSources.length} sources`);
   } catch (error) {
     failures++;

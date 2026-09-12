@@ -20,11 +20,14 @@ if (fs.existsSync(directory)) {
   process.exit(1);
 }
 const experience = parseExperience(JSON.parse(fs.readFileSync(sourcePath, "utf8")));
+const visualSystems = JSON.parse(fs.readFileSync("config/visual-systems.json", "utf8"));
 const project = parseStudioProject({
   version: 2,
   id: slug,
   name: slug.split("-").map((part) => part[0].toUpperCase() + part.slice(1)).join(" "),
   experiencePath: `clients/${slug}/experience.json`,
+  creativeDirectionPath: "config/creative-direction.json",
+  visualSystemsPath: `clients/${slug}/visual-systems.json`,
   contentSources: [],
   deployment: { provider: "vercel", projectName: slug, productionBranch: "main" },
   telemetry: { enabled: true, endpoint: "/api/telemetry", sampleRate: 1, consent: "analytics", respectDnt: true },
