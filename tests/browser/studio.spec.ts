@@ -17,6 +17,8 @@ test("Studio edits timelines and inspects GLB nodes without mounting the cinemat
   await page.getByLabel("Select a binary glTF model").setInputFiles("public/models/reference/burger.glb");
   await expect(page.getByText("top-bun", { exact: true })).toBeVisible();
   await expect(page.getByText("9 mapped")).toBeVisible();
+  await expect(page.getByText("Production guidance")).toBeVisible();
+  await expect(page.getByText("Triangles")).toBeVisible();
 });
 
 test("Studio exposes content, deployment and real-device telemetry controls", async ({ page }) => {
@@ -67,12 +69,16 @@ test("Motion sequencer authors curves, grouped history, responsive overrides and
   await page.goto("/studio");
   await page.getByRole("button", { name: "sequence", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Motion sequencer", level: 2 })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Play", exact: true })).toBeVisible();
+  await expect(page.getByLabel("Playback range start")).toHaveValue("0");
   await page.getByLabel("Motion preset").selectOption("copy-rise");
   await expect(page.locator(".sequencer-row")).toHaveCount(2);
 
   await page.getByRole("button", { name: /Copy opacity key at 0 percent/ }).click();
   await page.getByLabel("Keyframe easing").selectOption("cubic");
   await expect(page.getByRole("img", { name: "Cubic Bezier curve editor" })).toBeVisible();
+  await page.getByRole("button", { name: "Cinematic", exact: true }).click();
+  await expect(page.getByLabel("Curve x1")).toHaveValue("0.16");
   await page.getByLabel("Curve x1").fill("0.2");
   await page.getByRole("button", { name: "Copy", exact: true }).click();
   await page.getByLabel("Live preview progress").fill("0.09");

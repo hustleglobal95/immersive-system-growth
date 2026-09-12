@@ -4,10 +4,17 @@ import { useThree } from "@react-three/fiber";
 import { useExperienceStore } from "@/src/store/experienceStore";
 import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { qualityDpr } from "@/src/lib/quality";
+import { ACESFilmicToneMapping, ColorManagement, PCFSoftShadowMap, SRGBColorSpace } from "three";
 export function RendererLifecycle() {
   const experience = useExperienceConfig();
   const { gl, size, setDpr } = useThree();
   const quality = useExperienceStore((s) => s.quality);
+  useEffect(() => {
+    ColorManagement.enabled = true;
+    gl.outputColorSpace = SRGBColorSpace;
+    gl.toneMapping = ACESFilmicToneMapping;
+    gl.shadowMap.type = PCFSoftShadowMap;
+  }, [gl]);
   useEffect(() => {
     setDpr(
       qualityDpr(

@@ -13,7 +13,7 @@
 - Masks authors eight deterministic image/video reveals, compares CSS and shader output and persists bounded parameters in the experience schema.
 - Layers composes up to six bounded image/color overlays per media scene with blend, opacity, timing and motion controls.
 - Assets inspects local GLB, image and video files, calculates SHA-256, reports metadata/budgets and creates manifest records without uploading the binary.
-- Model inspects local GLB 2.0 files, reports structure and creates baseline deterministic tracks for selected named mesh nodes.
+- Model inspects local GLB 2.0 files, reports hierarchy and geometry complexity, scores suggested semantic mappings, provides optimization guidance and creates baseline deterministic tracks for selected named mesh nodes.
 - Integrations configures static data, HTTPS JSON feeds and Shopify Storefront data through explicit mappings.
 - Publish configures the release target and can send validated JSON to a server-only GitHub integration that opens a review pull request.
 - Telemetry configures consent, sampling and Do Not Track behavior and displays samples from the current device.

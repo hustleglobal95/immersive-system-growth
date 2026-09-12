@@ -46,7 +46,7 @@ export function SceneCanvas() {
           far: 100,
         }}
         dpr={1}
-        gl={{ antialias: false, alpha: false, powerPreference: "default" }}
+        gl={{ antialias: false, alpha: false, powerPreference: "high-performance" }}
         shadows={quality === "high"}
         fallback={<CanvasFallback />}
       >

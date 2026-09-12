@@ -11,6 +11,12 @@ test("GLB inspector reports production nodes, meshes, materials and animations",
   assert.ok(report.materials.length >= 5);
   assert.ok(report.suggestedRigNodes.includes("top-bun"));
   assert.ok(report.suggestedRigNodes.includes("patty-bottom"));
+  assert.ok(report.totals.triangles > 0);
+  assert.ok(report.totals.vertices > 0);
+  assert.equal(report.complexity, "light");
+  assert.ok(report.suggestedMappings.some((mapping) => mapping.node === "top-bun" && mapping.confidence > 0.5));
+  assert.ok(report.nodes.every((node) => node.path.length > 0));
+  assert.ok(report.recommendations.length > 0);
   assert.deepEqual(report.warnings, []);
 });
 
