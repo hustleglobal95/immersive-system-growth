@@ -4,6 +4,7 @@ import { useFrame } from "@react-three/fiber";
 import type { Group } from "three";
 import manifest from "@/config/asset-manifest.json";
 import { planSceneAssets } from "@/src/lib/assetPlan";
+import { spatialRoleForAsset } from "@/src/lib/spatialCamera";
 import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import type { SceneAsset } from "@/src/types/experience";
 import { useExperienceStore } from "@/src/store/experienceStore";
@@ -68,6 +69,7 @@ function InteractiveAsset({ asset, visible }: { asset: SceneAsset; visible: bool
   const target = `asset:${asset.id}`;
   const interaction = useThreeInteraction(target);
   const spatial = asset.kind !== "environment" && asset.kind !== "panorama";
+  const spatialRole = spatialRoleForAsset(asset);
   useEffect(() => () => releaseSpatialObject(target), [target]);
   useFrame(() => {
     const group = root.current;
@@ -85,7 +87,7 @@ function InteractiveAsset({ asset, visible }: { asset: SceneAsset; visible: bool
       return;
     }
     frameCounter.current = (frameCounter.current + 1) % 12;
-    if (frameCounter.current === 0) captureSpatialObject(target, group, "obstacle");
+    if (frameCounter.current === 0) captureSpatialObject(target, group, spatialRole);
   });
   return (
     <group
