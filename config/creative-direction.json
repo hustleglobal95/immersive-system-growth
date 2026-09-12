@@ -1,1 +1,131 @@
-{"version":1,"conceptId":"burger-craft-to-order","concept":"Follow the burger from craft to order.","audience":"Hungry guests deciding where to order.","promise":"A made-to-order burger with visible craft in every layer.","emotionalArc":["Context","Craft","Assembly","Decision"],"cta":"Build your order","visual":{"palette":["#0F0F0E","#F97316","#F6F1E8"],"typography":["Cormorant Garamond","DM Sans"],"materials":["charred steel","paper","glossy sauce"],"motion":["measured reveal","ingredient separation","finite camera move"],"sound":[]},"constraints":{"approved":["real product imagery","one dominant idea per viewport","native semantic copy"],"prohibited":["neon glow","decorative particles","fake claims","glassmorphism"]},"scenes":[{"id":"hero","purpose":"Establish appetite and product","subject":"Hero burger","copy":"Crafted with intent.","interaction":"Inspect ingredients","transitionIn":"fade from dark","transitionOut":"layers separate"},{"id":"assembly","purpose":"Prove the craft","subject":"Ingredient stack","copy":"Every layer has a reason.","interaction":"Orbit the stack","transitionIn":"ingredient separation","transitionOut":"reassemble"},{"id":"order","purpose":"Convert intent","subject":"Order card","copy":"Build your order.","interaction":"Choose a menu item","transitionIn":"card enters from stack","transitionOut":"native checkout link"}],"successEvent":"order-started"}
+{
+  "version": 1,
+  "conceptId": "burger-craft-to-order",
+  "concept": "Follow the burger from craft to order.",
+  "audience": "Hungry guests deciding where to order.",
+  "promise": "A made-to-order burger with visible craft in every layer.",
+  "emotionalArc": [
+    "Context",
+    "Craft",
+    "Assembly",
+    "Decision"
+  ],
+  "cta": "Build your order",
+  "visual": {
+    "palette": [
+      "#0F0F0E",
+      "#F97316",
+      "#F6F1E8"
+    ],
+    "typography": [
+      "Cormorant Garamond",
+      "DM Sans"
+    ],
+    "materials": [
+      "charred steel",
+      "paper",
+      "glossy sauce"
+    ],
+    "motion": [
+      "measured reveal",
+      "ingredient separation",
+      "finite camera move"
+    ],
+    "sound": []
+  },
+  "constraints": {
+    "approved": [
+      "real product imagery",
+      "one dominant idea per viewport",
+      "native semantic copy"
+    ],
+    "prohibited": [
+      "neon glow",
+      "decorative particles",
+      "fake claims",
+      "glassmorphism"
+    ]
+  },
+  "scenes": [
+    {
+      "id": "hero",
+      "purpose": "Establish appetite and product",
+      "subject": "Hero burger",
+      "copy": "Crafted with intent.",
+      "interaction": "Inspect ingredients",
+      "transitionIn": "fade from dark",
+      "transitionOut": "layers separate",
+      "runtime": {
+        "sceneId": "arrival",
+        "motionPreset": "cinematic-focus",
+        "actions": [
+          {
+            "type": "emit",
+            "name": "creative-hero-ready",
+            "payload": {
+              "scene": "hero"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "assembly",
+      "purpose": "Prove the craft",
+      "subject": "Ingredient stack",
+      "copy": "Every layer has a reason.",
+      "interaction": "Orbit the stack",
+      "transitionIn": "ingredient separation",
+      "transitionOut": "reassemble",
+      "runtime": {
+        "sceneId": "ingredients",
+        "motionPreset": "rig-cascade",
+        "trigger": {
+          "event": "click",
+          "target": "product-inspect",
+          "states": [
+            "exploring"
+          ]
+        },
+        "actions": [
+          {
+            "type": "orbit",
+            "target": "hero",
+            "command": "enable",
+            "sensitivity": 0.01
+          },
+          {
+            "type": "class",
+            "target": "product-inspect",
+            "className": "is-active",
+            "mode": "add"
+          }
+        ]
+      }
+    },
+    {
+      "id": "order",
+      "purpose": "Convert intent",
+      "subject": "Order card",
+      "copy": "Build your order.",
+      "interaction": "Choose a menu item",
+      "transitionIn": "card enters from stack",
+      "transitionOut": "native checkout link",
+      "runtime": {
+        "sceneId": "order",
+        "motionPreset": "copy-rise",
+        "trigger": {
+          "event": "click",
+          "target": "order-cta"
+        },
+        "actions": [
+          {
+            "type": "navigate",
+            "href": "#order"
+          }
+        ]
+      }
+    }
+  ],
+  "successEvent": "order-started"
+}
