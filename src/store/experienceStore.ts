@@ -1,9 +1,15 @@
 "use client";
 import { create } from "zustand";
-import type { QualityTier, QualityMode, Vec3, CameraDefinition } from "@/src/types/experience";
+import type { QualityTier, QualityMode, Vec3, CameraDefinition, CameraState } from "@/src/types/experience";
 import type { CameraShotName } from "@/src/lib/cameraShots";
-export interface CameraPreview { name: CameraShotName; sceneId: string; camera: CameraDefinition; mobileCamera: CameraDefinition }
 import { constrainQuality, nextQuality } from "@/src/lib/quality";
+
+export interface CameraPreview {
+  name: CameraShotName;
+  sceneId: string;
+  camera: CameraDefinition;
+  mobileCamera: CameraDefinition;
+}
 interface PointerState {
   x: number;
   y: number;
@@ -22,12 +28,19 @@ interface CameraTelemetry {
   target: Vec3;
   fov: number;
 }
+export interface RuntimeOrbitState {
+  target: string | null;
+  yaw: number;
+  pitch: number;
+  sensitivity: number;
+}
 interface ExperienceState {
   mediaPreview: boolean;
   setMediaPreview: (value: boolean) => void;
   cameraPreview: CameraPreview | null;
   setCameraPreview: (value: CameraPreview | null) => void;
-  guides:boolean; setGuides:(value:boolean)=>void;
+  guides: boolean;
+  setGuides: (value: boolean) => void;
   progress: number;
   velocity: number;
   direction: number;
@@ -49,6 +62,9 @@ interface ExperienceState {
   webglStatus: "loading" | "ready" | "lost" | "failed";
   assetErrors: Record<string, string>;
   retryGeneration: number;
+  runtimeProgress: number | null;
+  runtimeCamera: CameraState | null;
+  orbit: RuntimeOrbitState;
   setScrollState: (
     progress: number,
     velocity: number,
@@ -68,15 +84,30 @@ interface ExperienceState {
   setCameraTelemetry: (value: CameraTelemetry) => void;
   setWebglStatus: (status: ExperienceState["webglStatus"]) => void;
   setAssetError: (id: string, message: string | null) => void;
+  setRuntimeProgress: (progress: number | null) => void;
+  setRuntimeCamera: (camera: CameraState | null) => void;
+  setOrbitControl: (target: string | null, sensitivity?: number) => void;
+  adjustOrbit: (target: string | undefined, deltaX: number, deltaY: number) => void;
+  resetOrbit: (target?: string) => void;
+  resetRuntimeOverrides: () => void;
   retry: () => void;
   resetLab: () => void;
 }
+
+const defaultOrbit: RuntimeOrbitState = {
+  target: null,
+  yaw: 0,
+  pitch: 0,
+  sensitivity: 0.006,
+};
+
 export const useExperienceStore = create<ExperienceState>((set) => ({
   mediaPreview: false,
-  setMediaPreview: (mediaPreview) => set({mediaPreview}),
+  setMediaPreview: (mediaPreview) => set({ mediaPreview }),
   cameraPreview: null,
   setCameraPreview: (cameraPreview) => set({ cameraPreview, freeCamera: false }),
-  guides:false,setGuides:(guides)=>set({guides}),
+  guides: false,
+  setGuides: (guides) => set({ guides }),
   progress: 0,
   velocity: 0,
   direction: 0,
@@ -96,6 +127,9 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
   webglStatus: "loading",
   assetErrors: {},
   retryGeneration: 0,
+  runtimeProgress: null,
+  runtimeCamera: null,
+  orbit: { ...defaultOrbit },
   rendererStats: {
     calls: 0,
     triangles: 0,
@@ -110,9 +144,9 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
     set({ progress, velocity, direction, activeScene }),
   setPointer: (pointer) => set({ pointer }),
   setQuality: (qualityMode) =>
-    set((s) => ({
+    set((state) => ({
       qualityMode,
-      quality: constrainQuality(qualityMode, s.adaptiveTier, s.deviceCeiling),
+      quality: constrainQuality(qualityMode, state.adaptiveTier, state.deviceCeiling),
     })),
   setProfile: (deviceCeiling, qualityMode) =>
     set({
@@ -123,24 +157,23 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
       profileReady: true,
     }),
   adaptQuality: (direction) =>
-    set((s) => {
-      if (s.qualityMode !== "auto") return s;
-      const adaptiveTier =
-        direction === 0 ? "low" : nextQuality(s.adaptiveTier, direction);
+    set((state) => {
+      if (state.qualityMode !== "auto") return state;
+      const adaptiveTier = direction === 0 ? "low" : nextQuality(state.adaptiveTier, direction);
       return {
         adaptiveTier,
-        quality: constrainQuality("auto", adaptiveTier, s.deviceCeiling),
+        quality: constrainQuality("auto", adaptiveTier, state.deviceCeiling),
       };
     }),
   setReducedMotion: (motionOverride) =>
-    set((s) => ({
+    set((state) => ({
       motionOverride,
-      reducedMotion: motionOverride ?? s.systemReducedMotion,
+      reducedMotion: motionOverride ?? state.systemReducedMotion,
     })),
   setSystemReducedMotion: (systemReducedMotion) =>
-    set((s) => ({
+    set((state) => ({
       systemReducedMotion,
-      reducedMotion: s.motionOverride ?? systemReducedMotion,
+      reducedMotion: state.motionOverride ?? systemReducedMotion,
     })),
   setDebug: (debug) => set({ debug }),
   setSelectedHotspot: (selectedHotspot) => set({ selectedHotspot }),
@@ -149,26 +182,58 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
   setCameraTelemetry: (cameraTelemetry) => set({ cameraTelemetry }),
   setWebglStatus: (webglStatus) => set({ webglStatus }),
   setAssetError: (id, message) =>
-    set((s) => {
-      const assetErrors = { ...s.assetErrors };
+    set((state) => {
+      const assetErrors = { ...state.assetErrors };
       if (message) assetErrors[id] = message;
       else delete assetErrors[id];
       return { assetErrors };
     }),
+  setRuntimeProgress: (runtimeProgress) => set({ runtimeProgress }),
+  setRuntimeCamera: (runtimeCamera) => set({ runtimeCamera, freeCamera: false }),
+  setOrbitControl: (target, sensitivity) =>
+    set((state) => ({
+      orbit: {
+        ...state.orbit,
+        target,
+        sensitivity: sensitivity ?? state.orbit.sensitivity,
+      },
+    })),
+  adjustOrbit: (target, deltaX, deltaY) =>
+    set((state) => {
+      if (!target || state.orbit.target !== target || !Number.isFinite(deltaX) || !Number.isFinite(deltaY)) return state;
+      const dx = Math.max(-120, Math.min(120, deltaX));
+      const dy = Math.max(-120, Math.min(120, deltaY));
+      return {
+        orbit: {
+          ...state.orbit,
+          yaw: state.orbit.yaw + dx * state.orbit.sensitivity,
+          pitch: Math.max(-1.35, Math.min(1.35, state.orbit.pitch + dy * state.orbit.sensitivity)),
+        },
+      };
+    }),
+  resetOrbit: (target) =>
+    set((state) => {
+      if (target && state.orbit.target !== target) return state;
+      return { orbit: { ...state.orbit, yaw: 0, pitch: 0 } };
+    }),
+  resetRuntimeOverrides: () => set({ runtimeProgress: null, runtimeCamera: null, orbit: { ...defaultOrbit } }),
   retry: () =>
-    set((s) => ({
-      retryGeneration: s.retryGeneration + 1,
+    set((state) => ({
+      retryGeneration: state.retryGeneration + 1,
       webglStatus: "loading",
       assetErrors: {},
     })),
   resetLab: () =>
-    set((s) => ({
+    set((state) => ({
       mediaPreview: false,
       cameraPreview: null,
       freeCamera: false,
       guides: false,
       debug: false,
       motionOverride: null,
-      reducedMotion: s.systemReducedMotion,
+      reducedMotion: state.systemReducedMotion,
+      runtimeProgress: null,
+      runtimeCamera: null,
+      orbit: { ...defaultOrbit },
     })),
 }));
