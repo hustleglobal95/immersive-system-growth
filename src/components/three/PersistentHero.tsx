@@ -9,7 +9,7 @@ import { useThreeInteraction } from "@/src/components/three/useThreeInteraction"
 import { useExperienceStore } from "@/src/store/experienceStore";
 import { ProductRig } from "@/src/components/three/ProductRig";
 import { applyHeroMaterial, captureHeroMaterial } from "@/src/lib/heroMaterial";
-import { registerMaterialShaderTarget } from "@/src/runtime/shaderRegistry";
+import { registerMaterialShaderTarget, reapplyShaderTarget } from "@/src/runtime/shaderRegistry";
 
 export function HeroFallback() {
   const quality = useExperienceStore((state) => state.quality);
@@ -25,6 +25,7 @@ export function HeroFallback() {
     if (!material.current) return;
     tint.current.set(frame.current.material.tint);
     applyHeroMaterial(material.current, baseline.current, frame.current.material, tint.current);
+    reapplyShaderTarget("hero");
   });
   return (
     <mesh castShadow receiveShadow>
@@ -115,6 +116,7 @@ function StyledHeroModel({ url }: { url: string }) {
   useFrame(() => {
     tint.current.set(frame.current.material.tint);
     prepared.baselines.forEach((baseline, material) => applyHeroMaterial(material, baseline, frame.current.material, tint.current));
+    reapplyShaderTarget("hero");
   });
   return <primitive object={scene} dispose={null} />;
 }
