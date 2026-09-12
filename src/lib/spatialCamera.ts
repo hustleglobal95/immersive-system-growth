@@ -1,5 +1,5 @@
 import { sampleMotionTrack } from "@/src/lib/motionSequencer";
-import type { ExperienceConfig, MotionTrack, SceneDefinition, Vec3 } from "@/src/types/experience";
+import type { ExperienceConfig, MotionTrack, Vec3 } from "@/src/types/experience";
 
 export type SpatialRole = "subject" | "obstacle" | "set";
 export type SpatialSource = "live" | "geometry" | "proxy";
@@ -55,8 +55,6 @@ export interface LiveSpatialBoundInput {
   source?: SpatialSource;
 }
 
-const CAMERA_TARGETS = new Set(["camera.position", "camera.target", "camera.fov"]);
-
 export function buildSpatialScene(
   config: ExperienceConfig,
   sceneIndex: number,
@@ -68,8 +66,11 @@ export function buildSpatialScene(
   const liveHero = live.get("hero");
   const heroFrom = scene.hero.from.position;
   const heroTo = scene.hero.to.position;
-  const proxyRadius = Math.max(0.35, 1.05 * Math.max(scene.hero.from.scale, scene.hero.to.scale));
-  const heroRadius = liveHero ? boundRadius(liveHero) : proxyRadius;
+  const proxyBaseRadius = 1.05;
+  const measuredRadius = liveHero ? boundRadius(liveHero) : proxyBaseRadius;
+  const geometryScaled = liveHero?.source === "geometry";
+  const fromRadius = geometryScaled ? measuredRadius * scene.hero.from.scale : liveHero ? measuredRadius : measuredRadius * scene.hero.from.scale;
+  const toRadius = geometryScaled ? measuredRadius * scene.hero.to.scale : liveHero ? measuredRadius : measuredRadius * scene.hero.to.scale;
   const obstacles = config.assets
     .filter((asset) => (!asset.scenes || asset.scenes.includes(scene.id)) && asset.kind !== "environment" && asset.kind !== "panorama")
     .map((asset) => {
@@ -86,13 +87,13 @@ export function buildSpatialScene(
       id: "hero",
       fromCenter: [...heroFrom],
       toCenter: [...heroTo],
-      fromRadius: heroRadius * scene.hero.from.scale / Math.max(0.001, scene.hero.from.scale),
-      toRadius: heroRadius * scene.hero.to.scale / Math.max(0.001, scene.hero.from.scale),
+      fromRadius: Math.max(0.2, fromRadius),
+      toRadius: Math.max(0.2, toRadius),
       source: liveHero?.source ?? "proxy",
     },
     obstacles,
     floorY: -1.25,
-    desiredClearance: Math.max(0.28, heroRadius * 0.18),
+    desiredClearance: Math.max(0.28, Math.min(fromRadius, toRadius) * 0.18),
   };
 }
 
@@ -284,7 +285,9 @@ function bestDetourOffset(
   let bestScore = -Infinity;
   for (const offset of candidates) {
     const point = add(position, offset);
-    let clearance = distance(point, spatial.subject.fromCenter) - spatial.subject.fromRadius;
+    const subjectCenter = lerpVec(spatial.subject.fromCenter, spatial.subject.toCenter, 0.5);
+    const subjectRadius = Math.max(spatial.subject.fromRadius, spatial.subject.toRadius);
+    let clearance = distance(point, subjectCenter) - subjectRadius;
     for (const obstacle of spatial.obstacles) clearance = Math.min(clearance, pointAabbClearance(point, obstacle));
     const floor = point[1] - spatial.floorY;
     const score = Math.min(clearance, floor) - magnitude(offset) * 0.08 + offset[1] * 0.05;
