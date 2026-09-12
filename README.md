@@ -1,6 +1,6 @@
-# Immersive Site Forge 4.0
+# Immersive Site Forge 5.0
 
-A production platform for designing, validating, generating and deploying cinematic 3D websites. Forge Studio combines the actual production renderer with a frame-accurate motion sequencer, live camera and GLB-node recording, cubic curve editing, visual direction, layered image/video transitions, an eight-preset DOM/WebGL mask laboratory, private local asset inspection, six industry templates, CMS and commerce adapters, secure review-PR publishing, client generation, protected deployment automation and consent-aware real-device telemetry.
+A production platform for designing, validating, generating and deploying cinematic 3D websites. Forge Studio combines an ACES-managed adaptive renderer with a frame-accurate motion sequencer, preview transport, live camera and GLB-node recording, cubic curve presets, visual direction, layered image/video transitions, an eight-preset DOM/WebGL mask laboratory, geometry-aware local asset inspection, six industry templates, CMS and commerce adapters, secure review-PR publishing, client generation, protected deployment automation and consent-aware real-device telemetry.
 
 The production runtime keeps one Canvas alive across / and /lab. Accessible HTML remains usable without JavaScript or WebGL. `/studio` is an independent authoring surface, so editing tools never compete with the client experience for rendering resources. This repository includes six distinct reference recipes and original GLB fixtures, not photorealistic client artwork or a blanket hardware-performance guarantee.
 
@@ -21,7 +21,7 @@ For development use `npm run dev`. Dev/build prepares locally served Draco and B
 
 ## Forge Studio
 
-Open `/studio` to direct the production runtime without editing source code. The Sequence workspace provides a dope sheet, playhead, snapping, zoom, multi-key selection, grouped edits, copy/paste, undo/redo, reusable motion presets, desktop/mobile override tracks, cubic Bezier handles and Three.js transform gizmos for vector recording. Every authored value is sampled by the same runtime used by the public experience. Drafts stay in local browser storage until exported or explicitly published. GitHub credentials remain server-side.
+Open `/studio` to direct the production runtime without editing source code. The Sequence workspace provides a dope sheet, loopable real-time playback, in/out ranges, rate and duration controls, track filtering, snapping, zoom, multi-key selection, timing reversal and distribution, copy/paste, undo/redo, eight reusable motion presets, desktop/mobile override tracks, cubic Bezier handles and Three.js transform gizmos for vector recording. Every authored value is sampled by the same runtime used by the public experience. Drafts stay in local browser storage until exported or explicitly published. GitHub credentials remain server-side.
 
 ```bash
 npm run glb:inspect -- public/models/reference/burger.glb
