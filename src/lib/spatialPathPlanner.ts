@@ -161,6 +161,8 @@ function findFirstIssue(
     const camera = sampleMotionTrack(position, at) as Vec3;
     const subject = subjectCenterAt(spatial, at);
     if (camera[1] < spatial.floorY + 0.08) return { at, kind: "floor" };
+    const subjectPart = spatial.subjectParts.find((bound) => pointAabbClearance(camera, bound) < spatial.desiredClearance);
+    if (subjectPart) return { at, kind: "collision", obstacle: subjectPart };
     if (!pointSafe(camera, spatial, at)) {
       const obstacle = spatial.obstacles.find((bound) => pointAabbClearance(camera, bound) < spatial.desiredClearance);
       return { at, kind: "collision", obstacle };
@@ -239,14 +241,14 @@ function insertNumberKey(track: NumberTrack, at: number, value: number, suffix: 
 }
 
 function relevantObstacles(from: Vec3, to: Vec3, spatial: SpatialScene, focus?: SpatialBound) {
-  const ranked = spatial.obstacles
+  const ranked = [...spatial.obstacles, ...spatial.subjectParts]
     .map((bound) => ({ bound, distance: pointLineDistance(bound.center, from, to) }))
-    .sort((a, b) => a.distance - b.distance)
+    .sort((a, b) => a.distance - b.distance || a.bound.id.localeCompare(b.bound.id))
     .filter((item) => item.distance < Math.max(6, distance(from, to) * 1.25))
-    .slice(0, 16)
+    .slice(0, 20)
     .map((item) => item.bound);
   if (focus && !ranked.some((bound) => bound.id === focus.id)) ranked.unshift(focus);
-  return ranked.slice(0, 18);
+  return dedupeBounds(ranked).slice(0, 22);
 }
 
 function pointSafe(point: Vec3, spatial: SpatialScene, at: number) {
@@ -259,12 +261,14 @@ function pointSafe(point: Vec3, spatial: SpatialScene, at: number) {
       if (pointAabbClearance(point, bound) < spatial.desiredClearance) return false;
     } else if (distance(point, subject) < collisionRadiusAt(spatial, at) + spatial.desiredClearance) return false;
   }
+  if (spatial.subjectParts.some((bound) => pointAabbClearance(point, bound) < spatial.desiredClearance)) return false;
   return spatial.obstacles.every((bound) => pointAabbClearance(point, bound) >= spatial.desiredClearance);
 }
 
 function segmentSafe(from: Vec3, to: Vec3, spatial: SpatialScene, at: number) {
   if (Math.min(from[1], to[1]) < spatial.floorY + 0.08) return false;
   if (spatial.obstacles.some((bound) => segmentIntersectsExpandedAabb(from, to, bound, spatial.desiredClearance))) return false;
+  if (spatial.subjectParts.some((bound) => segmentIntersectsExpandedAabb(from, to, bound, spatial.desiredClearance))) return false;
   const subject = subjectCenterAt(spatial, at);
   if (!spatial.subject.collidable) return true;
   const half = collisionHalfSizeAt(spatial, at);
@@ -416,3 +420,7 @@ function magnitude(a: Vec3) { return Math.hypot(...a); }
 function normalize(a: Vec3): Vec3 { const m = magnitude(a); return m < 1e-8 ? [0, 0, 0] : mul(a, 1 / m); }
 function clamp(value: number, min: number, max: number) { return Math.max(min, Math.min(max, value)); }
 function uniqueNumbers(values: number[]) { return [...new Set(values.map((value) => Math.round(value * 1000) / 1000))]; }
+function dedupeBounds(bounds: SpatialBound[]) {
+  const seen = new Set<string>();
+  return bounds.filter((bound) => !seen.has(bound.id) && seen.add(bound.id));
+}
