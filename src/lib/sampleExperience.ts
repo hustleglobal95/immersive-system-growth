@@ -3,6 +3,7 @@ import { applyEasing } from "@/src/lib/easing";
 import { lerp, lerpVec3, remap01 } from "@/src/lib/math";
 import { lerpHex } from "@/src/lib/color";
 import { sampleCameraPath, sampleFov } from "@/src/lib/cameraPaths";
+import { sampleCameraProgress } from "@/src/lib/cameraTiming";
 import { sampleSplineArcLength } from "@/src/lib/spline";
 import { sampleObjectMotion } from "@/src/lib/objectMotion";
 import { applySceneMotion } from "@/src/lib/motionSequencer";
@@ -29,17 +30,18 @@ export function sampleExperience(
       ? cameraScene.mobileCamera
       : cameraScene.camera;
   const easedProgress = applyEasing(motionProgress, scene.easing);
+  const cameraProgress = reducedMotion ? 0 : sampleCameraProgress(localProgress, scene.easing);
   const worldT = reducedMotion ? 0 : easedProgress;
   const world = reducedMotion ? config.scenes[0].world : scene.world;
   const position = camera.waypoints?.length
     ? sampleSplineArcLength(
         [camera.from.position, ...camera.waypoints, camera.to.position],
-        easedProgress,
+        cameraProgress,
       )
     : sampleCameraPath(
         camera.from.position,
         camera.to.position,
-        easedProgress,
+        cameraProgress,
         camera.path,
         camera.from.target,
         camera.to.target,
@@ -47,9 +49,9 @@ export function sampleExperience(
   const target = camera.targetWaypoints?.length
     ? sampleSplineArcLength(
         [camera.from.target, ...camera.targetWaypoints, camera.to.target],
-        easedProgress,
+        cameraProgress,
       )
-    : lerpVec3(camera.from.target, camera.to.target, easedProgress);
+    : lerpVec3(camera.from.target, camera.to.target, cameraProgress);
 
   const state = {
     scene,
@@ -59,7 +61,7 @@ export function sampleExperience(
     camera: {
       position,
       target,
-      fov: sampleFov(camera.from.fov, camera.to.fov, easedProgress),
+      fov: sampleFov(camera.from.fov, camera.to.fov, cameraProgress),
     },
     hero: reducedMotion
       ? config.scenes[0].hero.from
