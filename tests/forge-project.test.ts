@@ -5,11 +5,12 @@ import { parseForgeProject } from "../src/platform/forgeProjectSchema";
 
 const project = parseForgeProject(rawForgeProject);
 
-test("the canonical manifest references the four validated project documents", () => {
+test("the canonical manifest references the five validated project documents", () => {
   assert.equal(project.paths.experience, "config/experience.json");
   assert.equal(project.paths.studioProject, "config/studio-project.json");
   assert.equal(project.paths.creativeDirection, "config/creative-direction.json");
   assert.equal(project.paths.assetManifest, "config/asset-manifest.json");
+  assert.equal(project.paths.visualSystems, "config/visual-systems.json");
 });
 
 test("the performance budgets are ordered from critical to total", () => {

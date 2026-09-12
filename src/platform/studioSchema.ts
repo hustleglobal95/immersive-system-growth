@@ -60,6 +60,7 @@ export const studioProjectSchema = z
     name: z.string().min(1).max(100),
     experiencePath: relativeJsonPath,
     creativeDirectionPath: relativeJsonPath.default("config/creative-direction.json"),
+    visualSystemsPath: relativeJsonPath.default("config/visual-systems.json"),
     contentSources: z.array(contentSourceSchema).max(20).default([]),
     deployment: z
       .object({
