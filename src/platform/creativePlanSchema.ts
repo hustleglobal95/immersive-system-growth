@@ -1,31 +1,47 @@
 import { z } from "zod";
 import { CreativeDirectionSchema } from "@/src/platform/creativeDirectionSchema";
-import { interactionEventTypeSchema } from "@/src/lib/interactionGraph";
+import {
+  interactionActionSchema,
+  interactionEventTypeSchema,
+} from "@/src/lib/interactionGraph";
 
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
-const motionPreset = z.enum(["camera-drift","product-lift","light-pulse","copy-rise","media-reveal","mobile-closeup","cinematic-focus","rig-cascade"]);
+const token = z.string().regex(/^[a-zA-Z0-9_.:-]{1,160}$/);
+const eventName = z.string().regex(/^[a-zA-Z0-9_.:-]{1,120}$/);
+
+const motionPreset = z.enum([
+  "camera-drift",
+  "product-lift",
+  "light-pulse",
+  "copy-rise",
+  "media-reveal",
+  "mobile-closeup",
+  "cinematic-focus",
+  "rig-cascade",
+]);
 
 const runtimeSchema = z.object({
   sceneId: slug.optional(),
   motionPreset: motionPreset.default("cinematic-focus"),
   trigger: z.object({
     event: interactionEventTypeSchema,
-    target: z.string().min(1).max(160).optional(),
-    name: z.string().min(1).max(120).optional(),
+    target: token.optional(),
+    name: eventName.optional(),
     sceneId: slug.optional(),
+    delayMs: z.number().int().min(250).max(120000).optional(),
     states: z.array(slug).max(24).default([]),
   }).strict().optional(),
-  actions: z.array(z.unknown()).max(8).default([]),
+  actions: z.array(interactionActionSchema).max(8).default([]),
 }).strict().default({});
 
 const planSceneSchema = z.object({
-  id: z.string().min(1),
-  purpose: z.string().min(1),
-  subject: z.string().min(1),
-  copy: z.string().min(1),
-  interaction: z.string().min(1),
-  transitionIn: z.string().min(1),
-  transitionOut: z.string().min(1),
+  id: z.string().min(1).max(80),
+  purpose: z.string().min(1).max(500),
+  subject: z.string().min(1).max(160),
+  copy: z.string().min(1).max(120),
+  interaction: z.string().min(1).max(240),
+  transitionIn: z.string().min(1).max(240),
+  transitionOut: z.string().min(1).max(240),
   runtime: runtimeSchema,
 }).strict();
 
