@@ -9,6 +9,7 @@
 - Preview scrubs or plays the production R3F scene, DOM media, masks and transition layers at desktop, tablet and mobile aspect ratios.
 - Director edits eleven camera paths, mobile framing, light colors/intensity, atmosphere, exposure, postprocessing and opt-in hero PBR overrides.
 - Timeline displays proportional scene ranges, moves shared boundaries, edits semantic copy and applies camera/object or media presets.
+- Sequence edits typed scene-local keyframes on a zoomable dope sheet, records vector values through viewport transform gizmos, edits cubic curves and authors responsive overrides.
 - Masks authors eight deterministic image/video reveals, compares CSS and shader output and persists bounded parameters in the experience schema.
 - Layers composes up to six bounded image/color overlays per media scene with blend, opacity, timing and motion controls.
 - Assets inspects local GLB, image and video files, calculates SHA-256, reports metadata/budgets and creates manifest records without uploading the binary.
@@ -25,10 +26,13 @@ Asset intake does not upload binary files. Copy approved optimized assets into t
 
 1. Create the client folder or apply an industry template.
 2. Inspect and optimize licensed assets, then register the final outputs.
-3. Map GLB nodes and author deterministic product tracks.
+3. Map GLB nodes, then add scene-local node tracks or global product choreography.
 4. Direct cameras, lights, materials, masks and transition layers in Studio.
-5. Scrub forward, backward and across scene boundaries in Preview.
-6. Export a handoff bundle or open a review PR.
-7. Run the complete validation and browser gates before protected deployment.
+5. Use Sequence for keyframe timing, responsive overrides, curves and record-mode adjustments.
+6. Scrub forward, backward and across scene boundaries in Preview.
+7. Export a handoff bundle or open a review PR.
+8. Run the complete validation and browser gates before protected deployment.
 
 The Mask Lab can add `/textures/reference/reveal-field.svg` to a scene as a safe authoring fixture. This is an original bundled texture, not client artwork. See [mask reveals](MASK_REVEALS.md).
+
+See [motion sequencer](MOTION_SEQUENCER.md) for the track contract, supported targets and editor controls.
