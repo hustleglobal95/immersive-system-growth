@@ -51,16 +51,21 @@ export function createInteractionSnapshot(graph: InteractionGraph): InteractionS
   return { state: graph.initialState, variables: structuredClone(graph.variables) };
 }
 
-export function normalizeInteractionEvent(
+export function expandInteractionEventForDevice(
   graph: InteractionGraph,
   event: InteractionEvent,
   coarsePointer: boolean,
-): InteractionEvent {
-  if (!coarsePointer) return event;
-  const substitution = graph.mobileSubstitutions.find(
-    (candidate) => candidate.from === event.type && (!candidate.target || candidate.target === event.target),
-  );
-  return substitution ? { ...event, type: substitution.to } : event;
+): InteractionEvent[] {
+  if (!coarsePointer) return [event];
+  const substitutes = graph.mobileSubstitutions
+    .filter((candidate) => candidate.to === event.type && (!candidate.target || candidate.target === event.target))
+    .map((candidate) => ({ ...event, type: candidate.from }));
+  const unique = new Map<string, InteractionEvent>();
+  for (const candidate of [event, ...substitutes]) {
+    const key = `${candidate.type}:${candidate.target ?? ""}:${candidate.sceneId ?? ""}:${candidate.name ?? ""}`;
+    unique.set(key, candidate);
+  }
+  return [...unique.values()];
 }
 
 export function runInteractionEvent(
@@ -78,9 +83,8 @@ export function runInteractionEvent(
   }
   for (const edges of outgoing.values()) edges.sort(edgeOrder);
 
-  const state = snapshot.state;
   const result: InteractionRunResult = {
-    state,
+    state: snapshot.state,
     variables: structuredClone(snapshot.variables),
     matchedTriggers: [],
     effects: [],
