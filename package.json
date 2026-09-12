@@ -22,7 +22,7 @@
     "recipe:list": "node scripts/recipe-list.mjs",
     "recipe:apply": "node --import tsx scripts/apply-recipe.mjs",
     "test": "node --import tsx --test tests/*.test.ts",
-    "check": "npm run doctor && npm run project:validate && npm run creative:audit && npm run creative:recipes && npm run experience:validate && npm run interaction:validate && npm run cinematic:audit && npm run rig:audit && npm run assets:audit && npm run test && npm run typecheck && npm run lint",
+    "check": "npm run doctor && npm run project:validate && npm run creative:audit && npm run creative:recipes && npm run experience:validate && npm run interaction:validate && npm run cinematic:audit && npm run rig:audit && npm run visual:audit && npm run assets:audit && npm run test && npm run typecheck && npm run lint",
     "cinematic:audit": "node --import tsx scripts/cinematic-audit.mjs",
     "rig:audit": "node --import tsx scripts/rig-audit.mjs",
     "glb:inspect": "node --import tsx scripts/inspect-glb.mjs",
@@ -44,7 +44,8 @@
     "bank:import": "node --import tsx scripts/asset-bank.mjs import",
     "bank:prepare": "node --import tsx scripts/asset-bank.mjs prepare",
     "forge:validate": "node --import tsx scripts/validate-projects.mjs",
-    "preset:list": "node --import tsx scripts/preset-list.mjs"
+    "preset:list": "node --import tsx scripts/preset-list.mjs",
+    "visual:audit": "node --import tsx scripts/visual-system-audit.mjs"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "5.3.0",
