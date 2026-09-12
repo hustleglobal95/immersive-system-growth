@@ -35,7 +35,8 @@ export function SceneDirector({
     setExperience(result.experience);
     setDirectorPlan(result.plan);
     const spatial = result.plan.spatial.evaluation;
-    setDirectorNotice(`${result.plan.shotLabel} · ${Math.round(result.plan.confidence * 100)}% confidence. ${result.plan.rationale} ${result.replacedTracks ? `Replaced ${result.replacedTracks} existing camera track${result.replacedTracks === 1 ? "" : "s"}.` : "Added editable camera tracks."} Spatial source: ${result.plan.spatial.boundsSource}. Minimum clearance ${spatial.minClearance.toFixed(2)}.`);
+    const planner = result.plan.spatial.planner;
+    setDirectorNotice(`${result.plan.shotLabel} · ${Math.round(result.plan.confidence * 100)}% confidence. ${result.plan.rationale} ${result.replacedTracks ? `Replaced ${result.replacedTracks} existing camera track${result.replacedTracks === 1 ? "" : "s"}.` : "Added editable camera tracks."} Spatial source: ${result.plan.spatial.boundsSource}. Minimum clearance ${spatial.minClearance.toFixed(2)}. Visibility waypoints ${planner.routeWaypoints}. Composition repairs ${planner.compositionRepairs}.`);
   };
 
   return (
@@ -93,10 +94,12 @@ export function SceneDirector({
 
 function SpatialDirectorReport({ plan }: { plan: CameraDirectorPlan }) {
   const spatial = plan.spatial.evaluation;
+  const planner = plan.spatial.planner;
   return <div className="director-auto" aria-label="Spatial camera diagnostics">
     <strong>Spatial camera intelligence</strong>
     <span>{plan.spatial.boundsSource} bounds · {plan.spatial.reroutes} reroute{plan.spatial.reroutes === 1 ? "" : "s"} · {plan.spatial.rejectedCandidates} rejected shot{plan.spatial.rejectedCandidates === 1 ? "" : "s"}</span>
     <span>Clearance {spatial.minClearance.toFixed(2)} · Occlusion {spatial.occlusionSamples}/{spatial.samples} · Framing violations {spatial.framingViolations}/{spatial.samples} · Max turn {spatial.maxTurnDegrees.toFixed(1)}°</span>
+    <span>Planner: {planner.routeWaypoints} route waypoint{planner.routeWaypoints === 1 ? "" : "s"} · {planner.occlusionReroutes} occlusion reroute{planner.occlusionReroutes === 1 ? "" : "s"} · {planner.compositionRepairs} composition repair{planner.compositionRepairs === 1 ? "" : "s"} · {planner.failedRoutes} failed route{planner.failedRoutes === 1 ? "" : "s"}</span>
     <span>Top alternatives: {plan.alternatives.slice(1, 4).map((item) => `${item.shotLabel.replace("Director · ", "")} ${item.hardInvalid ? "rejected" : item.score.toFixed(1)}`).join(" · ")}</span>
   </div>;
 }
