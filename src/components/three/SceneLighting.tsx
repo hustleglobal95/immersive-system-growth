@@ -3,7 +3,11 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import type { AmbientLight, DirectionalLight, PointLight } from "three";
 import { useCinematicFrame } from "@/src/components/three/CinematicFrame";
+import { useExperienceStore } from "@/src/store/experienceStore";
+import { cinematicRenderProfile } from "@/src/lib/renderProfile";
 export function SceneLighting() {
+  const quality = useExperienceStore((state) => state.quality);
+  const profile = cinematicRenderProfile(quality);
   const frame = useCinematicFrame(),
     ambient = useRef<AmbientLight>(null),
     key = useRef<DirectionalLight>(null),
@@ -22,7 +26,10 @@ export function SceneLighting() {
         position={[4, 6, 5]}
         color="#fff2df"
         castShadow
-        shadow-mapSize={[1024, 1024]}
+        shadow-mapSize={[profile.shadowMapSize, profile.shadowMapSize]}
+        shadow-radius={profile.shadowRadius}
+        shadow-bias={profile.shadowBias}
+        shadow-normalBias={0.025}
         shadow-camera-left={-8}
         shadow-camera-right={8}
         shadow-camera-top={8}
