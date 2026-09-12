@@ -125,7 +125,8 @@ export function StudioWorkbench() {
 
 function titleFor(tab: Tab) {
   return {
-    project: "Project control",\n    creative: "Creative direction",
+    project: "Project control",
+    creative: "Creative direction",
     templates: "Industry template gallery",
     preview: "Live production preview",
     director: "Camera and art direction",
