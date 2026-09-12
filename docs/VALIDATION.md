@@ -4,7 +4,7 @@
 
 Both runtime and CLI use src/lib/configSchema.ts. Invalid nested configuration is rejected with field paths. Optional defaults are defined in that schema, not scattered in validators. CLI recipe application validates before atomic replacement and preserves timestamped backups.
 
-Studio Pro tests additionally cover dynamic runtime configuration, art-direction defaults, duplicate transition-layer IDs, deterministic layer envelopes, asset path traversal, real Sharp image output, atomic manifest registration and mocked GitHub review-PR requests. Browser coverage applies a template, edits scene direction, composes a layer and mounts the production preview.
+Studio Pro tests additionally cover dynamic runtime configuration, art-direction defaults, duplicate transition-layer IDs, deterministic layer envelopes, asset path traversal, real Sharp image output, atomic manifest registration and mocked GitHub review-PR requests. Motion tests cover exact endpoints, cubic curves, reverse seeking, target bounds, duplicate targets, mapped GLB nodes, transition-layer references and desktop/mobile precedence. Browser coverage applies a template, edits scene direction, composes a layer, authors motion with undo/redo and mounts the production preview.
 
 `npm run test:browser` runs Playwright against the production server on Chromium and WebKit. Install browser binaries with the README command. Failure traces/screenshots are retained. Browser emulation does not certify Safari on physical iPhones, decoder thermal behavior or real GPU memory limits.
 
