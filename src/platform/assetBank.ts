@@ -3,6 +3,22 @@ import { parseAssetManifest } from "@/src/platform/assetManifestSchema";
 import { bankAssetSchema, bankQuerySchema, type BankAsset, type BankCollection } from "@/src/platform/assetBankSchema";
 import type { ExperienceConfig } from "@/src/types/experience";
 import type { AssetManifest } from "@/src/types/assets";
+import type { InteractionGraph } from "@/src/lib/interactionGraph";
+import { cameraShotNames } from "@/src/lib/cameraShots";
+
+export function incompatibleBankKitBindings(experience: ExperienceConfig, graph: InteractionGraph): string[] {
+  const scenes = new Set(experience.scenes.map((s) => s.id));
+  const hotspots = new Set(experience.hotspots.map((h) => h.id));
+  return graph.nodes.filter((node) => {
+    if (node.kind === "trigger") return Boolean(node.sceneId && !scenes.has(node.sceneId));
+    if (node.kind !== "action") return false;
+    const action = node.action;
+    if (action.type === "sequence") return !scenes.has(action.name);
+    if (action.type === "camera") return !scenes.has(action.name) && !(cameraShotNames as readonly string[]).includes(action.name);
+    if (action.type === "hotspot") return Boolean(action.id && !hotspots.has(action.id));
+    return false;
+  }).map((node) => node.label);
+}
 
 export function createBankSearch(bank: BankCollection) {
   // Built once per catalog generation on the server. No full catalog in the client bundle.

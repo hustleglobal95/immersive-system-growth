@@ -46,7 +46,12 @@ export async function writeBank(input: unknown, root = defaultBankRoot) {
       const content = JSON.stringify(ordered.slice(offset, offset + 250)) + "\n";
       if (Buffer.byteLength(content) > 4_000_000) throw new Error("Catalog shard too large");
       const name = createHash("sha256").update(content).digest("hex") + ".json";
-      await fs.writeFile(path.join(root, "shards", name), content);
+      const shardPath = path.join(root, "shards", name);
+      try { await fs.writeFile(shardPath, content, { flag: "wx" }); }
+      catch (error) {
+        if (!(error instanceof Error && "code" in error && error.code === "EEXIST")) throw error;
+        if (await fs.readFile(shardPath, "utf8") !== content) throw new Error("Existing catalog shard is corrupt");
+      }
       shards.push(name);
     }
     const temp = path.join(root, "index.next.json");

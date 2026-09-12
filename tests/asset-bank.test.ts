@@ -5,12 +5,23 @@ import path from "node:path";
 import test from "node:test";
 import rawExperience from "../config/experience.json";
 import rawManifest from "../config/asset-manifest.json";
+import rawGraph from "../config/interaction-graph.json";
+import { parseInteractionGraph } from "../src/lib/interactionGraph";
 import { parseExperience } from "../src/lib/configSchema";
 import { bankAssetSchema, bankCollectionSchema, bankUrl, type BankCollection } from "../src/platform/assetBankSchema";
 import { readBank, writeBank, mergeBank } from "../src/platform/assetBankStore";
-import { addBankFiles, createBankSearch, insertBankAsset } from "../src/platform/assetBank";
+import { addBankFiles, createBankSearch, incompatibleBankKitBindings, insertBankAsset } from "../src/platform/assetBank";
 
 const snapshot = readBank();
+
+test("kit replacement detects sequence and camera bindings even without scene triggers", () => {
+  const experience = parseExperience(rawExperience);
+  const graph = parseInteractionGraph(rawGraph);
+  graph.nodes = [{ id: "sequence", label: "Authored sequence", position: { x: 0, y: 0 }, kind: "action", action: { type: "sequence", name: "missing-scene", command: "play", loop: false, release: false } }, { id: "camera", label: "Authored camera", position: { x: 0, y: 0 }, kind: "action", action: { type: "camera", name: "missing-scene", command: "play", release: false } }];
+  graph.edges = [];
+  assert.deepEqual(incompatibleBankKitBindings(experience, graph), ["Authored sequence", "Authored camera"]);
+  assert.deepEqual(incompatibleBankKitBindings(experience, parseInteractionGraph(rawGraph)), []);
+});
 
 test("shipped bank has real source metadata, verified fixtures and resolvable reference kits", async () => {
   const bank = await snapshot;
@@ -117,5 +128,6 @@ test("content-addressed snapshots reject corruption and competing writers", asyn
     const index = JSON.parse(await fs.readFile(path.join(root, "index.json"), "utf8"));
     await fs.appendFile(path.join(root, "shards", index.shards[0]), " ");
     await assert.rejects(() => readBank(root), /integrity failure/);
+    await assert.rejects(() => writeBank(small, root), /shard is corrupt/);
   } finally { await fs.rm(root, { recursive: true, force: true }); }
 });

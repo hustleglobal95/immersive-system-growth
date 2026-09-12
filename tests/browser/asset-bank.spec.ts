@@ -58,7 +58,7 @@ test("kit replacement requires review, blocks incompatible interactions and supp
   await page.getByRole("button", { name: "Review restaurant kit", exact: true }).click();
   await expect(page.getByText(/Applying this kit replaces/)).toBeVisible();
   await page.getByRole("button", { name: "Apply reviewed kit", exact: true }).click();
-  await expect(page.getByText(/Existing interactions reference scenes outside this kit/)).toBeVisible();
+  await expect(page.getByText(/Existing interactions reference scenes or hotspots outside this kit/)).toBeVisible();
   await page.getByRole("button", { name: "Review burger-showcase kit", exact: true }).click();
   await page.getByRole("button", { name: "Apply reviewed kit", exact: true }).click();
   await expect(page.getByText(/Reference kit applied/)).toBeVisible();

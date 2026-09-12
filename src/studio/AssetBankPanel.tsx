@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { bankKinds, type BankAsset, type SceneKit } from "@/src/platform/assetBankSchema";
-import { addBankFiles, insertBankAsset } from "@/src/platform/assetBank";
+import { addBankFiles, incompatibleBankKitBindings, insertBankAsset } from "@/src/platform/assetBank";
 import { parseExperience } from "@/src/lib/configSchema";
 import type { ExperienceConfig } from "@/src/types/experience";
 import type { AssetManifest } from "@/src/types/assets";
@@ -74,9 +74,8 @@ export function AssetBankPanel({ experience, setExperience, assetManifest, setAs
   };
   const applyKit = () => {
     if (!kit) return;
-    const ids = new Set(kit.experience.scenes.map((s) => s.id));
-    const missing = interactionGraph.nodes.filter((n) => n.kind === "trigger" && n.sceneId && !ids.has(n.sceneId));
-    if (missing.length) { setMessage("Existing interactions reference scenes outside this kit. Export the kit for a new project, or update those interactions first."); return; }
+    const missing = incompatibleBankKitBindings(kit.experience, interactionGraph);
+    if (missing.length) { setMessage(`Existing interactions reference scenes or hotspots outside this kit: ${missing.join(", ")}. Export the kit for a new project, or update those interactions first.`); return; }
     try {
       const nextManifest = addBankFiles(kit.assets, assetManifest);
       setExperience(parseExperience(kit.experience)); setAssetManifest(nextManifest); setSceneId(kit.experience.scenes[0].id);
