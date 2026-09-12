@@ -10,7 +10,12 @@ import { useExperienceStore } from "@/src/store/experienceStore";
 import { ProductRig } from "@/src/components/three/ProductRig";
 import { applyHeroMaterial, captureHeroMaterial } from "@/src/lib/heroMaterial";
 import { registerMaterialShaderTarget, reapplyShaderTarget } from "@/src/runtime/shaderRegistry";
-import { captureSpatialObject, releaseSpatialObject } from "@/src/runtime/spatialRegistry";
+import {
+  captureSpatialObject,
+  captureSpatialSubjectParts,
+  releaseSpatialObject,
+  releaseSpatialSubjectParts,
+} from "@/src/runtime/spatialRegistry";
 
 export function HeroFallback() {
   const quality = useExperienceStore((state) => state.quality);
@@ -56,7 +61,10 @@ export function PersistentHero() {
   const frameCounter = useRef(0);
   const frame = useCinematicFrame();
   const interaction = useThreeInteraction("hero");
-  useEffect(() => () => releaseSpatialObject("hero"), []);
+  useEffect(() => () => {
+    releaseSpatialObject("hero");
+    releaseSpatialSubjectParts("hero");
+  }, []);
   useFrame(() => {
     const root = group.current;
     if (!root) return;
@@ -70,7 +78,10 @@ export function PersistentHero() {
     );
     root.scale.setScalar(hero.scale);
     frameCounter.current = (frameCounter.current + 1) % 12;
-    if (frameCounter.current === 0) captureSpatialObject("hero", root, "subject");
+    if (frameCounter.current === 0) {
+      captureSpatialObject("hero", root, "subject");
+      captureSpatialSubjectParts("hero", root);
+    }
   });
   if (!experience.heroVisible) return null;
   if (experience.productRig && experience.heroModel)
