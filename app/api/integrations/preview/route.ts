@@ -17,6 +17,7 @@ export async function POST(request: Request) {
         allowedHosts,
         environment: process.env,
         signal: controller.signal,
+        maxBytes: 2_000_000,
       });
       return Response.json({ ok: true, data });
     } finally {

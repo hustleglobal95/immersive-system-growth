@@ -20,6 +20,7 @@ for (const source of project.contentSources) {
   const data = await fetchContentSource(source, {
     allowedHosts: [...configuredHosts, ...sourceHosts],
     environment: process.env,
+    maxBytes: 2_000_000,
   });
   experience = parseExperience(applyContentMappings(experience, data, source.mappings));
   console.log(`SYNCED ${source.id}: ${source.mappings.length} mappings`);
