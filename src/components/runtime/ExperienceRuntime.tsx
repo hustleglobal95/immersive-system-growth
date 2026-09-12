@@ -14,6 +14,7 @@ import { PointerController } from "@/src/runtime/PointerController";
 import { SystemProfile } from "@/src/runtime/SystemProfile";
 import { KeyboardController } from "@/src/runtime/KeyboardController";
 import { InteractionGraphController } from "@/src/runtime/InteractionGraphController";
+import { RuntimeCommandController } from "@/src/runtime/RuntimeCommandController";
 import { TelemetryClient } from "@/src/components/runtime/TelemetryClient";
 import { useExperienceStore } from "@/src/store/experienceStore";
 const SceneCanvas = dynamic(
@@ -85,6 +86,7 @@ export function ExperienceRuntime({ children }: { children?: ReactNode }) {
       <ScrollController />
       <PointerController />
       <KeyboardController />
+      <RuntimeCommandController />
       <InteractionGraphController />
       <TelemetryClient />
       <SiteChrome />
