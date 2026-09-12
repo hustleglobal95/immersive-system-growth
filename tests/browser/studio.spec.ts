@@ -15,7 +15,7 @@ test("Studio edits timelines and inspects GLB nodes without mounting the cinemat
 
   await page.getByRole("button", { name: "model", exact: true }).click();
   await page.getByLabel("Select a binary glTF model").setInputFiles("public/models/reference/burger.glb");
-  await expect(page.getByText("top-bun", { exact: true })).toBeVisible();
+  await expect(page.locator(".node-list strong").filter({ hasText: "top-bun" })).toBeVisible();
   await expect(page.getByText("9 mapped")).toBeVisible();
   await expect(page.getByText("Production guidance")).toBeVisible();
   await expect(page.getByText("Triangles")).toBeVisible();
@@ -69,7 +69,7 @@ test("Motion sequencer authors curves, grouped history, responsive overrides and
   await page.goto("/studio");
   await page.getByRole("button", { name: "sequence", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Motion sequencer", level: 2 })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Play", exact: true })).toBeVisible();
+  await expect(page.locator(".sequencer-toolbar").getByRole("button", { name: "Play", exact: true })).toBeVisible();
   await expect(page.getByLabel("Playback range start")).toHaveValue("0");
   await page.getByLabel("Motion preset").selectOption("copy-rise");
   await expect(page.locator(".sequencer-row")).toHaveCount(2);
