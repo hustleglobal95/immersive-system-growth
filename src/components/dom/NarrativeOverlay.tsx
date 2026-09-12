@@ -61,12 +61,12 @@ export function NarrativeOverlay() {
               .filter((h) => h.sceneId === scene.id)
               .map((h) => (
                 <details key={h.id} className="story-detail">
-                  <summary>{h.label}</summary>
+                  <summary data-forge-interaction={`hotspot-${h.id}`}>{h.label}</summary>
                   <p>{h.description}</p>
                 </details>
               ))}
             {scene.copy.cta && (
-              <Link className="forge-button" href={scene.copy.cta.href}>
+              <Link className="forge-button" href={scene.copy.cta.href} data-forge-interaction={`cta-${scene.id}`}>
                 {scene.copy.cta.label}
               </Link>
             )}
