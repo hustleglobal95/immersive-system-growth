@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import raw from "../config/experience.json";
+import realEstateRaw from "../recipes/real-estate.json";
 import { parseExperience } from "../src/lib/configSchema";
 import { sampleMotionTrack } from "../src/lib/motionSequencer";
 import { sampleSpline, sampleSplineArcLength } from "../src/lib/spline";
@@ -9,6 +10,7 @@ import { sampleCameraProgress } from "../src/lib/cameraTiming";
 import { deriveCameraBank } from "../src/lib/cameraMotion";
 import { auditCameraMotion } from "../src/lib/cameraDiagnostics";
 import {
+  buildSpatialScene,
   evaluateSpatialCameraTracks,
   repairSpatialCameraTracks,
   type SpatialScene,
@@ -21,6 +23,7 @@ import { applyCameraDirector, directCamera } from "../src/platform/cameraDirecto
 import type { MotionTrack, Vec3 } from "../src/types/experience";
 
 const config = parseExperience(raw);
+const realEstate = parseExperience(realEstateRaw);
 
 test("arc-length camera splines reduce accidental speed variance while preserving endpoints", () => {
   const points: Vec3[] = [[0, 0, 0], [0.15, 0.2, 0], [4.5, 1.1, -1.4], [4.8, 1.2, -1.5]];
@@ -109,8 +112,19 @@ test("spatial camera planner detects collisions and inserts deterministic cleara
   const tracks = straightCameraTracks([0, 0, 5], [0, 0, -5], [6, 0, 0]);
   const spatial: SpatialScene = {
     sceneId: "test",
-    subject: { id: "hero", fromCenter: [6, 0, 0], toCenter: [6, 0, 0], fromRadius: 0.5, toRadius: 0.5, source: "proxy" },
+    subject: {
+      id: "hero",
+      fromCenter: [6, 0, 0],
+      toCenter: [6, 0, 0],
+      fromCollisionRadius: 0.5,
+      toCollisionRadius: 0.5,
+      fromFramingRadius: 0.5,
+      toFramingRadius: 0.5,
+      collidable: true,
+      source: "proxy",
+    },
     obstacles: [{ id: "wall", center: [0, 0, 0], halfSize: [1, 1, 1], role: "obstacle", source: "geometry" }],
+    sets: [],
     floorY: -3,
     desiredClearance: 0.3,
   };
@@ -126,14 +140,39 @@ test("spatial camera planner detects subject occlusion through scene geometry", 
   const tracks = straightCameraTracks([0, 0, 5], [0, 0, 5], [0, 0, 0]);
   const spatial: SpatialScene = {
     sceneId: "test",
-    subject: { id: "hero", fromCenter: [0, 0, 0], toCenter: [0, 0, 0], fromRadius: 0.6, toRadius: 0.6, source: "proxy" },
+    subject: {
+      id: "hero",
+      fromCenter: [0, 0, 0],
+      toCenter: [0, 0, 0],
+      fromCollisionRadius: 0.6,
+      toCollisionRadius: 0.6,
+      fromFramingRadius: 0.6,
+      toFramingRadius: 0.6,
+      collidable: true,
+      source: "proxy",
+    },
     obstacles: [{ id: "blocker", center: [0, 0, 2.5], halfSize: [0.5, 0.5, 0.5], role: "obstacle", source: "geometry" }],
+    sets: [],
     floorY: -3,
     desiredClearance: 0.3,
   };
   const evaluation = evaluateSpatialCameraTracks(tracks, spatial, "desktop", 24);
   assert.ok(evaluation.occlusionSamples > 0);
   assert.ok(evaluation.score < 8);
+});
+
+test("navigable sets use authored camera focus and structural blockers instead of a solid root box", () => {
+  const spatial = buildSpatialScene(realEstate, 2, [
+    { id: "asset:pavilion", min: [-3.2, -1.3, -3.2], max: [3.2, 1.7, 3.2], role: "set", source: "geometry" },
+    { id: "set:pavilion:left-wall-1", min: [-3.1, -1.2, -3], max: [-2.9, 1.6, 3], role: "obstacle", source: "geometry" },
+  ]);
+  assert.equal(spatial.subject.id, "set-focus");
+  assert.equal(spatial.subject.collidable, false);
+  assert.deepEqual(spatial.subject.fromCenter, realEstate.scenes[2].camera.from.target);
+  assert.deepEqual(spatial.subject.toCenter, realEstate.scenes[2].camera.to.target);
+  assert.ok(spatial.sets.some((bound) => bound.id === "pavilion"));
+  assert.ok(spatial.obstacles.some((bound) => bound.id.startsWith("set:pavilion:")));
+  assert.ok(!spatial.obstacles.some((bound) => bound.id === "pavilion"));
 });
 
 test("director banking is signed, bounded and absent on straight travel", () => {
