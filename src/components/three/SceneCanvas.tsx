@@ -19,6 +19,7 @@ import { RendererLifecycle } from "./RendererLifecycle";
 import { SceneAssets } from "./SceneAssets";
 import { AssetBoundary } from "./AssetBoundary";
 import { MaskedMediaLayer } from "./MaskedMediaLayer";
+import { useStudioEditor } from "@/src/components/runtime/StudioEditorContext";
 function CanvasFallback() {
   useEffect(() => useExperienceStore.getState().setWebglStatus("failed"), []);
   return null;
@@ -26,8 +27,12 @@ function CanvasFallback() {
 const LabGuides = lazy(() =>
   import("./LabGuides").then((m) => ({ default: m.LabGuides })),
 );
+const StudioTransformGizmo = lazy(() =>
+  import("./StudioTransformGizmo").then((m) => ({ default: m.StudioTransformGizmo })),
+);
 export function SceneCanvas() {
   const experience = useExperienceConfig();
+  const studioEditor = useStudioEditor();
   const guides = useExperienceStore((s) => s.guides);
   const quality = useExperienceStore((s) => s.quality);
   const camera = experience.scenes[0].camera.from;
@@ -77,6 +82,7 @@ export function SceneCanvas() {
             <PersistentHero />
           </AssetBoundary>
           <SceneAssets />
+          {studioEditor && <Suspense fallback={null}><StudioTransformGizmo /></Suspense>}
           <Hotspots />
           <ParticleField />
           <MaskedMediaLayer />
