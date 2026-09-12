@@ -14,11 +14,16 @@ interface ShaderBinding {
 }
 
 const targets = new Map<string, Set<ShaderBinding>>();
+const overrides = new Map<string, Map<string, ForgeShaderValue>>();
 
 export function registerShaderBinding(target: string, binding: ShaderBinding) {
   const bucket = targets.get(target) ?? new Set<ShaderBinding>();
   bucket.add(binding);
   targets.set(target, bucket);
+  const currentOverrides = overrides.get(target);
+  if (currentOverrides) {
+    for (const [parameter, value] of currentOverrides) binding.write(parameter, value);
+  }
   return () => {
     const current = targets.get(target);
     current?.delete(binding);
@@ -35,6 +40,8 @@ export function registerMaterialShaderTarget(target: string, material: Material)
 }
 
 export function readShaderTarget(target: string, parameter: string) {
+  const stored = overrides.get(target)?.get(parameter);
+  if (stored !== undefined) return stored;
   const bucket = targets.get(target);
   if (!bucket?.size) return undefined;
   for (const binding of bucket) {
@@ -49,7 +56,31 @@ export function writeShaderTarget(target: string, parameter: string, value: Forg
   if (!bucket?.size) return 0;
   let written = 0;
   for (const binding of bucket) if (binding.write(parameter, value)) written += 1;
+  if (written) {
+    const current = overrides.get(target) ?? new Map<string, ForgeShaderValue>();
+    current.set(parameter, value);
+    overrides.set(target, current);
+  }
   return written;
+}
+
+export function reapplyShaderTarget(target: string) {
+  const current = overrides.get(target);
+  const bucket = targets.get(target);
+  if (!current || !bucket?.size) return 0;
+  let written = 0;
+  for (const [parameter, value] of current) {
+    for (const binding of bucket) if (binding.write(parameter, value)) written += 1;
+  }
+  return written;
+}
+
+export function clearShaderTarget(target: string) {
+  overrides.delete(target);
+}
+
+export function clearShaderOverrides() {
+  overrides.clear();
 }
 
 export function hasShaderTarget(target: string) {
