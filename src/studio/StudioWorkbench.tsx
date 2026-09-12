@@ -104,7 +104,8 @@ export function StudioWorkbench() {
       {notice && <p className="studio-message" role="status">{notice}</p>}
 
       {tab === "project" && <ProjectPanel {...draft} />}
-      {tab === "creative" && <CreativeDirectionPanel direction={creative} setDirection={setCreative} />}\n      {tab === "recipe" && <RecipeEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
+      {tab === "creative" && <CreativeDirectionPanel direction={creative} setDirection={setCreative} />}
+      {tab === "recipe" && <RecipeEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "templates" && <TemplateGallery experience={draft.experience} setExperience={draft.setExperience} />}
       {tab === "preview" && <StudioLivePreview experience={draft.experience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "director" && <SceneDirector experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
@@ -131,7 +132,8 @@ export function StudioWorkbench() {
 function titleFor(tab: Tab) {
   return {
     project: "Project control",
-    creative: "Creative direction",\n    recipe: "Recipe editor",
+    creative: "Creative direction",
+    recipe: "Recipe editor",
     templates: "Industry template gallery",
     preview: "Live production preview",
     director: "Camera and art direction",
