@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { applyContentMappings, assertAllowedIntegrationUrl, getJsonPath } from "../src/platform/integrations";
+import { applyContentMappings, assertAllowedIntegrationUrl, assertJsonContentType, getJsonPath, readJsonResponse } from "../src/platform/integrations";
 
 test("content mappings update a cloned experience without mutating the source", () => {
   const target = { scenes: [{ copy: { headline: "Old" } }] };
