@@ -1,6 +1,6 @@
 {
   "name": "immersive-site-forge",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "private": true,
   "description": "A production starter for cinematic, scroll-driven 3D websites using Next.js, React Three Fiber, GSAP, Lenis, and a persistent WebGL world.",
   "license": "MIT",
