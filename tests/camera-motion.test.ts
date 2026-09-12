@@ -123,6 +123,7 @@ test("spatial camera planner detects collisions and inserts deterministic cleara
       collidable: true,
       source: "proxy",
     },
+    subjectParts: [],
     obstacles: [{ id: "wall", center: [0, 0, 0], halfSize: [1, 1, 1], role: "obstacle", source: "geometry" }],
     sets: [],
     floorY: -3,
@@ -151,6 +152,7 @@ test("spatial camera planner detects subject occlusion through scene geometry", 
       collidable: true,
       source: "proxy",
     },
+    subjectParts: [],
     obstacles: [{ id: "blocker", center: [0, 0, 2.5], halfSize: [0.5, 0.5, 0.5], role: "obstacle", source: "geometry" }],
     sets: [],
     floorY: -3,
@@ -159,6 +161,34 @@ test("spatial camera planner detects subject occlusion through scene geometry", 
   const evaluation = evaluateSpatialCameraTracks(tracks, spatial, "desktop", 24);
   assert.ok(evaluation.occlusionSamples > 0);
   assert.ok(evaluation.score < 8);
+});
+
+test("component subject hulls replace an over-conservative solid root envelope", () => {
+  const tracks = straightCameraTracks([-1, 0.1, 2], [2, 1, 0], [0, 0, 0]);
+  const spatial: SpatialScene = {
+    sceneId: "car",
+    subject: {
+      id: "hero",
+      fromCenter: [0, 0, 0],
+      toCenter: [0, 0, 0],
+      fromCollisionRadius: 0.5,
+      toCollisionRadius: 0.5,
+      fromFramingRadius: 0.5,
+      toFramingRadius: 0.5,
+      collidable: false,
+      source: "geometry",
+    },
+    subjectParts: [
+      { id: "subject:hero:chassis", center: [0, -0.6, 0], halfSize: [1.05, 0.3, 2], role: "subject", source: "geometry" },
+      { id: "subject:hero:cabin", center: [0, 0.05, -0.35], halfSize: [0.85, 0.4, 1.05], role: "subject", source: "geometry" },
+    ],
+    obstacles: [],
+    sets: [],
+    floorY: -3,
+    desiredClearance: 0.14,
+  };
+  const evaluation = evaluateSpatialCameraTracks(tracks, spatial, "desktop", 48);
+  assert.ok(evaluation.collisionSamples < 10);
 });
 
 test("navigable sets use authored camera focus and structural blockers instead of a solid root box", () => {
