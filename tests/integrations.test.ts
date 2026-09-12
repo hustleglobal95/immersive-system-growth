@@ -17,3 +17,12 @@ test("integration endpoints require HTTPS and an explicit host allowlist", () =>
   assert.throws(() => assertAllowedIntegrationUrl("http://example.com/feed", ["example.com"]), /HTTPS/);
   assert.throws(() => assertAllowedIntegrationUrl("https://attacker.test/feed", ["example.com"]), /not allowed/);
 });
+
+
+test("integration responses are JSON and bounded before parsing", async () => {
+  const response = new Response(JSON.stringify({ headline: "New" }), { headers: { "content-type": "application/json" } });
+  assert.deepEqual(await readJsonResponse(response, 1_000), { headline: "New" });
+  assert.throws(() => assertJsonContentType(new Response("<html>", { headers: { "content-type": "text/html" } })), /JSON/);
+  await assert.rejects(() => readJsonResponse(new Response("1234567890", { headers: { "content-length": "10" } }), 5), /exceeds/);
+  await assert.rejects(() => readJsonResponse(new Response("{bad", { headers: { "content-type": "application/json" } }), 1_000), /invalid JSON/);
+});
