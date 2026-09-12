@@ -15,6 +15,7 @@ import { SceneDirector } from "@/src/studio/SceneDirector";
 import { LayerEditor } from "@/src/studio/LayerEditor";
 import { AssetManager } from "@/src/studio/AssetManager";
 import { TemplateGallery } from "@/src/studio/TemplateGallery";
+import { SequencerEditor } from "@/src/studio/SequencerEditor";
 import type { AssetManifest } from "@/src/types/assets";
 import { IntegrationsPanel, ProjectPanel, PublishPanel, TelemetryPanel } from "@/src/studio/ProjectPanels";
 import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
@@ -22,7 +23,7 @@ import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
 const initialExperience = parseExperience(rawExperience);
 const initialProject = parseStudioProject(rawProject);
 const initialAssetManifest = rawAssetManifest as AssetManifest;
-const tabs = ["project", "templates", "preview", "director", "timeline", "masks", "layers", "assets", "model", "integrations", "publish", "telemetry"] as const;
+const tabs = ["project", "templates", "preview", "director", "timeline", "sequence", "masks", "layers", "assets", "model", "integrations", "publish", "telemetry"] as const;
 type Tab = (typeof tabs)[number];
 
 export function StudioWorkbench() {
@@ -94,6 +95,7 @@ export function StudioWorkbench() {
       {tab === "preview" && <StudioLivePreview experience={draft.experience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "director" && <SceneDirector experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "timeline" && <TimelineEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
+      {tab === "sequence" && <SequencerEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} beginGroup={draft.beginExperienceGroup} endGroup={draft.endExperienceGroup} undo={draft.undoExperience} redo={draft.redoExperience} canUndo={draft.canUndoExperience} canRedo={draft.canRedoExperience} />}
       {tab === "masks" && <MaskLab experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "layers" && <LayerEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "assets" && <AssetManager setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} active={Math.min(activeScene, draft.experience.scenes.length - 1)} />}
@@ -103,8 +105,8 @@ export function StudioWorkbench() {
       {tab === "telemetry" && <TelemetryPanel project={draft.project} setProject={draft.setProject} />}
 
       <footer className="studio-footer">
-        <span>Forge Studio v3.0</span>
-        <span>Live runtime / visual direction / review PR</span>
+        <span>Forge Studio v4.0</span>
+        <span>Live runtime / motion sequencer / review PR</span>
       </footer>
     </main>
   );
@@ -117,6 +119,7 @@ function titleFor(tab: Tab) {
     preview: "Live production preview",
     director: "Camera and art direction",
     timeline: "Visual timeline",
+    sequence: "Motion sequencer",
     masks: "Mask reveal laboratory",
     layers: "Transition layer composer",
     assets: "Asset intake and budgets",
