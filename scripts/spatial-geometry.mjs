@@ -12,7 +12,18 @@ const NON_BLOCKER_TERMS = ["floor", "roof", "ceiling", "door", "gate", "window",
 export function collectGeometryBounds(config) {
   const bounds = [];
   const hero = config.heroModel ? readGlbBounds(config.heroModel) : null;
-  if (hero) bounds.push({ id: "hero", min: hero.min, max: hero.max, role: "subject", source: "geometry" });
+  if (hero) {
+    bounds.push({ id: "hero", min: hero.min, max: hero.max, role: "subject", source: "geometry" });
+    for (const node of hero.nodes) {
+      bounds.push({
+        id: `subject:hero:${slug(node.name)}-${node.index}`,
+        min: node.min,
+        max: node.max,
+        role: "subject",
+        source: "geometry",
+      });
+    }
+  }
 
   for (const asset of config.assets) {
     if (asset.kind !== "model") continue;
