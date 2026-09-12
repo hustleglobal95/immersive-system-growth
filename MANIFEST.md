@@ -1,6 +1,6 @@
 # Repository Manifest
 
-Immersive Site Forge 3.0 is organized as a multi-project production platform rather than a one-off demo.
+Immersive Site Forge 4.0 is organized as a multi-project production platform rather than a one-off demo.
 
 ## Runtime
 
@@ -44,6 +44,11 @@ Immersive Site Forge 3.0 is organized as a multi-project production platform rat
 - live preview of the production R3F scene graph and media stack
 - visual camera, lighting, atmosphere, postprocessing and material direction
 - visual scene timeline and boundary editor
+- frame-accurate scene motion sequencer and deterministic typed sampler
+- zoomable dope sheet with snapping, multi-select, copy/paste and grouped undo/redo
+- cubic Bezier curve editor and reusable motion presets
+- live camera, hero and named GLB-node vector recording with Three.js transform gizmos
+- desktop and mobile motion override tracks
 - browser Mask Lab with DOM/WebGL comparison and preset controls
 - browser and CLI GLB inspection with named-node mapping
 - six reusable industry templates plus scene and media-transition presets
