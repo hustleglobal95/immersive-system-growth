@@ -9,6 +9,11 @@ import { sampleCameraProgress } from "../src/lib/cameraTiming";
 import { deriveCameraBank } from "../src/lib/cameraMotion";
 import { auditCameraMotion } from "../src/lib/cameraDiagnostics";
 import {
+  evaluateSpatialCameraTracks,
+  repairSpatialCameraTracks,
+  type SpatialScene,
+} from "../src/lib/spatialCamera";
+import {
   cameraChoreographyCatalog,
   createCameraChoreography,
 } from "../src/platform/cameraChoreography";
@@ -79,7 +84,7 @@ test("director camera choreography is deterministic, endpoint-safe and schema-va
   }
 });
 
-test("intent-aware camera director is deterministic and produces valid editable tracks", () => {
+test("intent-aware camera director is deterministic, spatially scored and produces valid editable tracks", () => {
   for (let sceneIndex = 0; sceneIndex < config.scenes.length; sceneIndex += 1) {
     const first = directCamera(config, sceneIndex);
     const second = directCamera(config, sceneIndex);
@@ -87,7 +92,9 @@ test("intent-aware camera director is deterministic and produces valid editable 
     assert.equal(first.intent, second.intent);
     assert.equal(first.rationale, second.rationale);
     assert.deepEqual(first.tracks, second.tracks);
-    assert.ok(first.confidence >= 0.55 && first.confidence <= 0.96);
+    assert.ok(first.confidence >= 0.5 && first.confidence <= 0.97);
+    assert.ok(first.alternatives.length >= 3);
+    assert.ok(Number.isFinite(first.spatial.evaluation.minClearance));
     const applied = applyCameraDirector(config, sceneIndex);
     assert.equal(applied.plan.shot, first.shot);
     assert.doesNotThrow(() => parseExperience(applied.experience));
@@ -96,6 +103,37 @@ test("intent-aware camera director is deterministic and produces valid editable 
     assert.ok(scene.motionTracks.some((track) => track.target === "camera.target"));
     assert.ok(scene.motionTracks.some((track) => track.target === "camera.fov"));
   }
+});
+
+test("spatial camera planner detects collisions and inserts deterministic clearance detours", () => {
+  const tracks = straightCameraTracks([0, 0, 5], [0, 0, -5], [6, 0, 0]);
+  const spatial: SpatialScene = {
+    sceneId: "test",
+    subject: { id: "hero", fromCenter: [6, 0, 0], toCenter: [6, 0, 0], fromRadius: 0.5, toRadius: 0.5, source: "proxy" },
+    obstacles: [{ id: "wall", center: [0, 0, 0], halfSize: [1, 1, 1], role: "obstacle", source: "geometry" }],
+    floorY: -3,
+    desiredClearance: 0.3,
+  };
+  const before = evaluateSpatialCameraTracks(tracks, spatial, "desktop", 64);
+  const repaired = repairSpatialCameraTracks(tracks, spatial, 3);
+  assert.ok(before.collisionSamples > 0);
+  assert.ok(repaired.reroutes > 0);
+  assert.ok(repaired.evaluation.collisionSamples < before.collisionSamples);
+  assert.deepEqual(repairSpatialCameraTracks(tracks, spatial, 3), repaired);
+});
+
+test("spatial camera planner detects subject occlusion through scene geometry", () => {
+  const tracks = straightCameraTracks([0, 0, 5], [0, 0, 5], [0, 0, 0]);
+  const spatial: SpatialScene = {
+    sceneId: "test",
+    subject: { id: "hero", fromCenter: [0, 0, 0], toCenter: [0, 0, 0], fromRadius: 0.6, toRadius: 0.6, source: "proxy" },
+    obstacles: [{ id: "blocker", center: [0, 0, 2.5], halfSize: [0.5, 0.5, 0.5], role: "obstacle", source: "geometry" }],
+    floorY: -3,
+    desiredClearance: 0.3,
+  };
+  const evaluation = evaluateSpatialCameraTracks(tracks, spatial, "desktop", 24);
+  assert.ok(evaluation.occlusionSamples > 0);
+  assert.ok(evaluation.score < 8);
 });
 
 test("director banking is signed, bounded and absent on straight travel", () => {
@@ -109,6 +147,23 @@ test("director banking is signed, bounded and absent on straight travel", () => 
 test("camera audit reports no hard errors for the shipped experience", () => {
   assert.equal(auditCameraMotion(config).filter((item) => item.level === "error").length, 0);
 });
+
+function straightCameraTracks(from: Vec3, to: Vec3, target: Vec3): MotionTrack[] {
+  return [
+    { id: "test-position", label: "Test position", type: "vector", target: "camera.position", blend: "absolute", viewport: "all", muted: false, locked: false, keyframes: [
+      { id: "test-position-a", at: 0, value: from, easing: "linear" },
+      { id: "test-position-b", at: 1, value: to, easing: "linear" },
+    ] },
+    { id: "test-target", label: "Test target", type: "vector", target: "camera.target", blend: "absolute", viewport: "all", muted: false, locked: false, keyframes: [
+      { id: "test-target-a", at: 0, value: target, easing: "linear" },
+      { id: "test-target-b", at: 1, value: target, easing: "linear" },
+    ] },
+    { id: "test-fov", label: "Test FOV", type: "number", target: "camera.fov", blend: "absolute", viewport: "all", muted: false, locked: false, keyframes: [
+      { id: "test-fov-a", at: 0, value: 45, easing: "linear" },
+      { id: "test-fov-b", at: 1, value: 45, easing: "linear" },
+    ] },
+  ] as MotionTrack[];
+}
 
 function distance(a: Vec3, b: Vec3) {
   return Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
