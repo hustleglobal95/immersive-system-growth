@@ -12,7 +12,7 @@ const transitionPresetSchema = z.object({
   maskPreset: z.enum(["linear-soft", "radial-iris", "diagonal-cut", "split-center", "pixel-grid", "noise-dissolve", "ink-spread", "film-burn"]).optional(),
   maskDirection: z.enum(["left", "right", "up", "down"]).optional(),
   maskSoftness: z.number().finite().min(0).max(100).optional(),
-  blendColor: z.string().regex(/^#(?:[\da-f]{3}|[\\da-f]{6})$/i).optional(),
+  blendColor: z.string().regex(/^#(?:[\da-f]{3}|[\da-f]{6})$/i).optional(),
 }).strict();
 
 export const forgePresetSchema = z.object({
