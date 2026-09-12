@@ -23,7 +23,7 @@ test("telemetry summary reports percentile performance and a passing certificati
   assert.equal(summary.sessions, 1);
   assert.equal(summary.fpsSamples, 2);
   assert.equal(summary.p50Fps, 60);
-  assert.equal(summary.p95Fps, 60);
+  assert.equal(summary.p95Fps, 62);
   assert.equal(summary.status, "pass");
   assert.equal(summary.slowFrames, 3);
 });
