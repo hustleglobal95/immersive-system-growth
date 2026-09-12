@@ -19,6 +19,7 @@ import { LayerEditor } from "@/src/studio/LayerEditor";
 import { AssetManager } from "@/src/studio/AssetManager";
 import { AssetBankPanel } from "@/src/studio/AssetBankPanel";
 import { TemplateGallery } from "@/src/studio/TemplateGallery";
+import { RecipeEditor } from "@/src/studio/RecipeEditor";
 import { SequencerEditor } from "@/src/studio/SequencerEditor";
 import { InteractionGraphEditor } from "@/src/studio/InteractionGraphEditor";
 import type { AssetManifest } from "@/src/types/assets";
@@ -32,7 +33,7 @@ const initialProject = parseStudioProject(rawProject);
 const initialAssetManifest = rawAssetManifest as AssetManifest;
 const initialInteractionGraph = parseInteractionGraph(rawInteractionGraph);
 const initialCreativeDirection = parseCreativeDirection(rawCreativeDirection);
-const tabs = ["project", "creative", "templates", "preview", "director", "timeline", "sequence", "interactions", "masks", "layers", "assets", "bank", "model", "integrations", "publish", "telemetry"] as const;
+const tabs = ["project", "creative", "recipe", "templates", "preview", "director", "timeline", "sequence", "interactions", "masks", "layers", "assets", "bank", "model", "integrations", "publish", "telemetry"] as const;
 type Tab = (typeof tabs)[number];
 
 export function StudioWorkbench() {
@@ -104,6 +105,7 @@ export function StudioWorkbench() {
 
       {tab === "project" && <ProjectPanel {...draft} />}
       {tab === "creative" && <CreativeDirectionPanel direction={creative} setDirection={setCreative} />}
+      {tab === "recipe" && <RecipeEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "templates" && <TemplateGallery experience={draft.experience} setExperience={draft.setExperience} />}
       {tab === "preview" && <StudioLivePreview experience={draft.experience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "director" && <SceneDirector experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
@@ -120,7 +122,7 @@ export function StudioWorkbench() {
       {tab === "telemetry" && <TelemetryPanel project={draft.project} setProject={draft.setProject} />}
 
       <footer className="studio-footer">
-        <span>Forge Studio v6.0</span>
+        <span>Forge Studio v7.0</span>
         <span>Live runtime / motion sequencer / interaction graph / review PR</span>
       </footer>
     </main>
@@ -131,6 +133,7 @@ function titleFor(tab: Tab) {
   return {
     project: "Project control",
     creative: "Creative direction",
+    recipe: "Recipe editor",
     templates: "Industry template gallery",
     preview: "Live production preview",
     director: "Camera and art direction",
