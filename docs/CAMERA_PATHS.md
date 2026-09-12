@@ -14,6 +14,14 @@ Forge ships with camera path presets in `src/lib/cameraPaths.ts`.
 - `pullback`: creates a broader reveal by adding retreat through the middle of the path.
 - `subject-orbit`: spherical interpolation around the look-at target, using the shortest azimuth sweep and interpolated radius/elevation. Preserves exact endpoints and avoids the straight-line chord through the target. Unlike legacy `orbit`, this is subject-relative rather than a sinusoidal offset.
 
+All nonlinear procedural presets are now sampled through a cached arc-length lookup. Their artistic shape is preserved, but progress maps to approximate traveled distance instead of the preset's raw parameter. This removes large unintended speed changes from procedural curvature while keeping exact authored endpoints.
+
+## Stabilized camera timing
+
+Scene timing still controls objects, lighting, media and other authored motion. Camera timing is sampled separately through `sampleCameraProgress` so an aggressive cinematic scene curve does not force the camera to nearly stop at both boundaries and then surge through the middle.
+
+The stabilized timing curve keeps the scene easing character but mixes in a linear velocity floor. This gives the renderer and camera damping a physically steadier target without changing scene ranges, endpoints or reduced-motion behavior.
+
 ## Director choreography
 
 The two-point presets are intentionally simple building blocks. For premium camera direction, use the Director presets in Studio's Sequencer. They compile into ordinary deterministic motion tracks for `camera.position`, `camera.target` and `camera.fov`, so every move remains editable, seekable and reversible instead of becoming an opaque animation.
@@ -29,9 +37,55 @@ Director presets:
 - `Director · Macro approach`: close detail approach with target settling and lens choreography.
 - `Director · Dolly zoom`: distance/FOV counter-motion for a restrained vertigo effect.
 
-If a scene has a dedicated `mobileCamera`, a Director preset generates separate desktop and mobile tracks. Otherwise it generates one all-viewport set. Every Director position/target/lens track starts at the scene's authored `from` value and ends at its authored `to` value, preserving scene continuity.
+If a scene has a dedicated `mobileCamera`, a Director preset generates separate desktop and mobile tracks. Otherwise it generates one all-viewport set. Every Director position, target and lens track starts at the scene's authored `from` value and ends at its authored `to` value, preserving scene continuity.
 
 Director paths also enable restrained curvature banking in the runtime camera rig. Bank is derived from the sampled path, capped at five degrees and disabled for legacy scenes, reduced motion, camera previews and runtime camera overrides. This keeps roll motivated by actual camera travel rather than adding arbitrary rotation.
+
+## Auto Director
+
+Studio exposes `Auto Director · Camera` in the existing motion preset menu. Auto Director evaluates the current scene and deterministically chooses one of the Director choreographies.
+
+The scoring model considers:
+
+- camera travel and subject-distance change
+- horizontal and vertical travel ratios
+- hero translation, rotation and scale change
+- active scene assets and their spatial spread
+- hotspots, scene blocks and media
+- scene semantics from IDs, labels, copy and structured blocks
+- scene position within the overall narrative
+
+The inferred intent is one of `reveal`, `inspect`, `enter`, `environment`, `showcase`, `journey` or `convert`. The winning shot still compiles to normal Sequencer tracks, so the automatic decision is only a starting point and remains fully editable.
+
+Auto Director is deterministic. It does not call an LLM, network service or generative model at runtime.
+
+### Command line
+
+Preview the Director decision for the first scene:
+
+```bash
+npm run camera:direct
+```
+
+Preview a named scene:
+
+```bash
+npm run camera:direct -- --scene ingredients
+```
+
+Preview every scene:
+
+```bash
+npm run camera:direct -- --all
+```
+
+Author the selected camera tracks into the experience:
+
+```bash
+npm run camera:direct -- --all --write
+```
+
+Use `--file recipes/automotive.json` to evaluate another experience file. Write mode replaces camera position, target and FOV motion tracks in the selected scenes while preserving non-camera tracks.
 
 ## Cinematic rules
 
@@ -60,6 +114,8 @@ Use spline waypoints sparingly. Too many points still produce a floating drone-c
 ## Camera audit
 
 Run `npm run camera:audit` to sample every shipped project and recipe in desktop and portrait framing. The audit fails on non-finite camera states or near-zero camera/target separation and reports warnings for strong sampled speed spikes, view-direction jumps and abrupt FOV changes. `npm run check` includes this audit.
+
+The audit measures the final sampled camera after timing, path sampling and motion tracks. It therefore catches the actual runtime movement rather than only inspecting authored control points.
 
 ## Subject camera shots in the lab
 
