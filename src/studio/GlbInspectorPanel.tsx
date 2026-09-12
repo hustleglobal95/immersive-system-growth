@@ -41,6 +41,16 @@ export function GlbInspectorPanel({
       heroModel: modelPath,
       productRig: {
         nodes: selected,
+        mapping: (report?.suggestedMappings ?? [])
+          .filter((mapping) => selected.includes(mapping.node))
+          .map((mapping) => ({
+            id: mapping.id,
+            node: mapping.node,
+            path: mapping.path,
+            role: mapping.role,
+            confidence: mapping.confidence,
+            required: mapping.role === "primary" || mapping.role === "animated",
+          })),
         tracks: selected.map((node) => ({
           node,
           property: "position" as const,

@@ -45,6 +45,7 @@ export interface GlbInspection {
   complexity: "light" | "moderate" | "heavy";
   suggestedRigNodes: string[];
   suggestedMappings: Array<{
+    id: string;
     node: string;
     path: string;
     role: "primary" | "component" | "accent" | "animated";
@@ -79,6 +80,19 @@ interface GltfJson {
   }>;
 }
 
+function hashPath(value: string): string {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(16).padStart(8, "0");
+}
+
+export function stableNodeId(path: string): string {
+  const normalized = path.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return `node-${(normalized || "unnamed").slice(0, 80)}-${hashPath(path)}`;
+}
 const GLB_MAGIC = 0x46546c67;
 const JSON_CHUNK = 0x4e4f534a;
 
@@ -189,7 +203,7 @@ export function inspectGlb(input: ArrayBuffer): GlbInspection {
       const accent = /(^|[-_. ])(accent|logo|badge|light|screen|glass|trim)([-_. ]|$)/.test(name);
       const role = animated ? "animated" : primary ? "primary" : accent ? "accent" : "component";
       const confidence = animated || primary ? 0.98 : accent ? 0.9 : suggestedRigNodes.length <= 24 ? 0.82 : 0.68;
-      return { node: node.name, path: node.path, role, confidence } as const;
+      return { id: stableNodeId(node.path), node: node.name, path: node.path, role, confidence } as const;
     });
   const totals = {
     vertices: meshes.reduce((sum, mesh) => sum + mesh.vertices, 0),
