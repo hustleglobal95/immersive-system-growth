@@ -14,6 +14,8 @@ export const motionPresetCatalog = [
   { id: "copy-rise", label: "Copy rise", description: "Fade and settle the scene copy." },
   { id: "media-reveal", label: "Media reveal", description: "Author a reversible reveal envelope." },
   { id: "mobile-closeup", label: "Mobile close-up", description: "Override camera framing only on narrow viewports." },
+  { id: "cinematic-focus", label: "Cinematic focus", description: "Combine a focal-length push with restrained bloom and copy settling." },
+  { id: "rig-cascade", label: "Rig component cascade", description: "Stagger mapped GLB components into their assembled positions." },
 ] as const;
 
 export type MotionPresetName = (typeof motionPresetCatalog)[number]["id"];
@@ -56,6 +58,24 @@ export function createMotionPreset(
   if (name === "media-reveal") return [
     numberTrack("media-reveal", "Media reveal", "media.reveal", [key("media-reveal-a", 0, 0, "smooth"), key("media-reveal-b", 0.3, 1, "cubic", [0.25, 0, 0.1, 1]), key("media-reveal-c", 1, 1, "linear")]),
   ];
+  if (name === "cinematic-focus") return [
+    numberTrack("focus-fov", "Focus focal length", "camera.fov", [key("focus-fov-a", 0, Math.min(90, base.camera.fov + 8), "cubic", [0.16, 1, 0.3, 1]), key("focus-fov-b", 0.62, base.camera.fov, "smooth"), key("focus-fov-c", 1, scene.camera.to.fov, "ease-in-out")]),
+    numberTrack("focus-bloom", "Focus bloom", "post.bloom", [key("focus-bloom-a", 0, 0, "linear"), key("focus-bloom-b", 0.28, Math.min(4, scene.post.bloom + 0.3), "cubic", [0.2, 0.8, 0.2, 1]), key("focus-bloom-c", 1, scene.post.bloom, "ease-out")]),
+    numberTrack("focus-copy", "Focus copy", "copy.opacity", [key("focus-copy-a", 0, 0, "smooth"), key("focus-copy-b", 0.45, 1, "cubic", [0.16, 1, 0.3, 1]), key("focus-copy-c", 1, 1, "linear")]),
+  ];
+  if (name === "rig-cascade") {
+    return (config.productRig?.nodes ?? []).slice(0, 24).map((node, index, nodes) => {
+      const angle = index / Math.max(1, nodes.length) * Math.PI * 2;
+      const radius = 0.55 + (index % 3) * 0.18;
+      const settle = Math.min(0.88, 0.38 + index * 0.025);
+      const id = `cascade-${slug(node)}`;
+      return vectorTrack(id, `${node} cascade`, `rig:${node}:position`, [
+        key(`${id}-a`, 0, [Math.cos(angle) * radius, (index % 4 - 1.5) * 0.24, Math.sin(angle) * radius] as Vec3, "smooth"),
+        key(`${id}-b`, settle, [0, 0, 0] as Vec3, "cubic", [0.16, 1, 0.3, 1]),
+        key(`${id}-c`, 1, [0, 0, 0] as Vec3, "linear"),
+      ], "all", "offset");
+    });
+  }
   const mobile = scene.mobileCamera ?? scene.camera;
   return [vectorTrack("mobile-camera", "Mobile camera", "camera.position", [
     key("mobile-camera-a", 0, mobile.from.position, "smooth"),
@@ -143,8 +163,8 @@ function numberTrack(id: string, label: string, target: Extract<MotionTrack, { t
   return { id, label, type: "number", target, blend: "absolute", viewport: "all", muted: false, locked: false, keyframes };
 }
 
-function vectorTrack(id: string, label: string, target: Extract<MotionTrack, { type: "vector" }>["target"], keyframes: Extract<MotionTrack, { type: "vector" }>["keyframes"], viewport: MotionViewport = "all"): MotionTrack {
-  return { id, label, type: "vector", target, blend: "absolute", viewport, muted: false, locked: false, keyframes };
+function vectorTrack(id: string, label: string, target: Extract<MotionTrack, { type: "vector" }>["target"], keyframes: Extract<MotionTrack, { type: "vector" }>["keyframes"], viewport: MotionViewport = "all", blend: "absolute" | "offset" = "absolute"): MotionTrack {
+  return { id, label, type: "vector", target, blend, viewport, muted: false, locked: false, keyframes };
 }
 
 function key<T>(id: string, at: number, value: T, easing: MotionTrack["keyframes"][number]["easing"], curve?: [number, number, number, number]) {
