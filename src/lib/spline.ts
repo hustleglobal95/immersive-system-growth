@@ -29,3 +29,36 @@ export function sampleSpline(points: Vec3[], t: number): Vec3 {
     catmull(p0[2], p1[2], p2[2], p3[2], local),
   ];
 }
+
+/**
+ * Re-parameterizes a Catmull-Rom spline by approximate traveled distance.
+ * Camera waypoints use this sampler so uneven control-point spacing does not
+ * turn into accidental speed ramps. The spline shape and exact endpoints stay unchanged.
+ */
+export function sampleSplineArcLength(points: Vec3[], t: number, samples?: number): Vec3 {
+  const progress = clamp01(t);
+  if (points.length < 2 || progress <= 0 || progress >= 1) return sampleSpline(points, progress);
+  const divisions = Math.max(24, Math.min(320, samples ?? (points.length - 1) * 32));
+  const distances = new Float64Array(divisions + 1);
+  let previous = sampleSpline(points, 0);
+  let total = 0;
+  for (let index = 1; index <= divisions; index += 1) {
+    const point = sampleSpline(points, index / divisions);
+    total += Math.hypot(point[0] - previous[0], point[1] - previous[1], point[2] - previous[2]);
+    distances[index] = total;
+    previous = point;
+  }
+  if (total < 0.000001) return sampleSpline(points, progress);
+  const target = total * progress;
+  let low = 0;
+  let high = divisions;
+  while (low + 1 < high) {
+    const middle = (low + high) >> 1;
+    if (distances[middle] < target) low = middle;
+    else high = middle;
+  }
+  const span = Math.max(0.000001, distances[high] - distances[low]);
+  const local = (target - distances[low]) / span;
+  const parameter = (low + local) / divisions;
+  return sampleSpline(points, parameter);
+}
