@@ -12,7 +12,12 @@ import { AssetBoundary } from "@/src/components/three/AssetBoundary";
 import { GLTFModel } from "@/src/components/three/GLTFModel";
 import { ScrubbedGLTF } from "@/src/components/three/ScrubbedGLTF";
 import { useThreeInteraction } from "@/src/components/three/useThreeInteraction";
-import { captureSpatialObject, releaseSpatialObject } from "@/src/runtime/spatialRegistry";
+import {
+  captureSpatialObject,
+  captureSpatialSet,
+  releaseSpatialObject,
+  releaseSpatialSet,
+} from "@/src/runtime/spatialRegistry";
 const VideoPlane = lazy(() =>
   import("./VideoPlane").then((module) => ({ default: module.VideoPlane })),
 );
@@ -70,7 +75,10 @@ function InteractiveAsset({ asset, visible }: { asset: SceneAsset; visible: bool
   const interaction = useThreeInteraction(target);
   const spatial = asset.kind !== "environment" && asset.kind !== "panorama";
   const spatialRole = spatialRoleForAsset(asset);
-  useEffect(() => () => releaseSpatialObject(target), [target]);
+  useEffect(() => () => {
+    releaseSpatialObject(target);
+    releaseSpatialSet(asset.id);
+  }, [asset.id, target]);
   useFrame(() => {
     const group = root.current;
     if (!group) return;
@@ -84,10 +92,15 @@ function InteractiveAsset({ asset, visible }: { asset: SceneAsset; visible: bool
     group.scale.setScalar(asset.scale);
     if (!spatial || !visible) {
       releaseSpatialObject(target);
+      releaseSpatialSet(asset.id);
       return;
     }
     frameCounter.current = (frameCounter.current + 1) % 12;
-    if (frameCounter.current === 0) captureSpatialObject(target, group, spatialRole);
+    if (frameCounter.current === 0) {
+      captureSpatialObject(target, group, spatialRole);
+      if (spatialRole === "set" && asset.kind === "model") captureSpatialSet(asset.id, group);
+      else releaseSpatialSet(asset.id);
+    }
   });
   return (
     <group
