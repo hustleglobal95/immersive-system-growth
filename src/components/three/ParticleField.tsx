@@ -3,13 +3,10 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import manifest from "@/config/visual-systems.json";
-import { parseVisualSystems, qualityInstanceCount, sampleInstancedField, visualSystemMode } from "@/src/platform/visualSystems";
+import { qualityInstanceCount, sampleInstancedField, visualSystemMode } from "@/src/platform/visualSystems";
 import { useExperienceStore } from "@/src/store/experienceStore";
 
-const visualSystems = parseVisualSystems(manifest);
-const defaultSystem = visualSystems.systems.find((system) => system.id === "product-particles");
-const particleSamples = (system: typeof defaultSystem, count: number) =>
+const particleSamples = (system: Parameters<typeof sampleInstancedField>[0] | undefined, count: number) =>
   system ? sampleInstancedField(system, count) : [];
 
 export function ParticleField({
@@ -19,6 +16,7 @@ export function ParticleField({
 }) {
   const quality = useExperienceStore((state) => state.quality);
   const reducedMotion = useExperienceStore((state) => state.reducedMotion);
+  const visualSystems = useExperienceStore((state) => state.visualSystems);
   const system = visualSystems.systems.find(
     (candidate) => candidate.id === systemId && candidate.kind === "particle-field",
   );

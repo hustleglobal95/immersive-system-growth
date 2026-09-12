@@ -165,3 +165,17 @@ test("Interaction graph authors and simulates deterministic branching", async ({
   await expect(page.getByTestId("interaction-sim-state")).toHaveText("detail");
   await expect(page.getByText(/detail-event: emit/)).toBeVisible();
 });
+
+
+test("Studio authors deterministic visual systems for live preview", async ({ page }) => {
+  await page.goto("/studio");
+  await page.getByRole("button", { name: "visuals", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Visual systems", level: 2 })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Ambient instanced field/ })).toBeVisible();
+  await page.getByRole("button", { name: /Product particle field/ }).click();
+  await expect(page.getByRole("slider", { name: "Instance count" })).toBeVisible();
+  await page.getByRole("slider", { name: "Instance count" }).fill("120");
+  await expect(page.getByText("Runtime preview updated.")).toBeVisible();
+  await expect(page.getByText("Deterministic sample")).toBeVisible();
+  await expect(page.getByText("Quality budget")).toBeVisible();
+});
