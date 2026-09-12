@@ -63,6 +63,39 @@ test("Studio Pro composes a validated template, directed scene and live runtime"
   await expect(page.locator(".studio-preview__transport output")).toHaveText("0.500");
 });
 
+test("Motion sequencer authors curves, grouped history, responsive overrides and record gizmos", async ({ page }) => {
+  await page.goto("/studio");
+  await page.getByRole("button", { name: "sequence", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Motion sequencer" })).toBeVisible();
+  await page.getByLabel("Motion preset").selectOption("copy-rise");
+  await expect(page.locator(".sequencer-row")).toHaveCount(2);
+
+  await page.getByRole("button", { name: /Copy opacity key at 0 percent/ }).click();
+  await page.getByLabel("Keyframe easing").selectOption("cubic");
+  await expect(page.getByRole("img", { name: "Cubic Bezier curve editor" })).toBeVisible();
+  await page.getByLabel("Curve x1").fill("0.2");
+  await page.getByRole("button", { name: "Copy", exact: true }).click();
+  await page.getByLabel("Live preview progress").fill("0.09");
+  await page.getByRole("button", { name: "Paste", exact: true }).click();
+  await expect(page.getByRole("button", { name: /Copy opacity key at 50 percent/ })).toBeVisible();
+  await page.getByRole("button", { name: "Undo motion edit" }).click();
+  await expect(page.getByRole("button", { name: /Copy opacity key at 50 percent/ })).toHaveCount(0);
+  await page.getByRole("button", { name: "Redo motion edit" }).click();
+  await expect(page.getByRole("button", { name: /Copy opacity key at 50 percent/ })).toBeVisible();
+
+  await page.getByLabel("Motion target").selectOption("camera.position");
+  await page.getByRole("button", { name: "Add track" }).click();
+  await expect(page.locator(".sequencer-row")).toHaveCount(3);
+  await page.getByRole("button", { name: "Enable gizmo" }).click();
+  await expect(page.getByRole("button", { name: "Recording gizmo" })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".studio-preview__canvas canvas")).toHaveCount(1);
+
+  await page.getByLabel("Motion viewport").selectOption("mobile");
+  await page.getByRole("button", { name: "Add track" }).click();
+  await expect(page.locator(".sequencer-row")).toHaveCount(4);
+  await expect(page.getByText("Production schema valid")).toBeVisible();
+});
+
 test("Mask Lab authors all presets and renders deterministic DOM and WebGL previews", async ({ page }) => {
   await page.goto("/studio");
   await page.getByRole("button", { name: "masks", exact: true }).click();
