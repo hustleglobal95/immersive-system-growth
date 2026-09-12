@@ -19,12 +19,16 @@ const required = [
   "src/studio/StudioLivePreview.tsx",
   "src/studio/SceneDirector.tsx",
   "src/studio/LayerEditor.tsx",
+  "src/studio/SequencerEditor.tsx",
   "src/platform/studioPublish.ts",
+  "src/platform/motionPresets.ts",
   "src/lib/maskReveal.ts",
+  "src/lib/motionSequencer.ts",
   "scripts/asset-optimize-lib.mjs",
   "src/lib/maskShader.ts",
   "CLAUDE.md",
   "docs/ARCHITECTURE.md",
+  "docs/MOTION_SEQUENCER.md",
 ];
 
 const [major, minor] = process.versions.node.split(".").map(Number);
