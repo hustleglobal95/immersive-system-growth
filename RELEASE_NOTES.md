@@ -1,5 +1,15 @@
 # Release Notes
 
+## 5.0.0
+
+- Added tiered cinematic render profiles with ACES filmic tone mapping, sRGB output, PCF soft shadows, adaptive 512/1024/2048 shadow maps and SMAA on capable tiers.
+- Added real-time sequencer playback with loop, rate, duration and bounded in/out preview controls.
+- Added track filtering, selection timing reversal/distribution and five reusable cubic curve presets.
+- Added cinematic focus and mapped-node cascade choreography presets for coordinated multi-property and multi-part motion.
+- Expanded local GLB inspection with hierarchy paths, parent/skin references, vertices, estimated triangles, morph targets, textures, complexity grading and production recommendations.
+- Added confidence-scored semantic node mapping and richer model diagnostics in Forge Studio.
+- Expanded deterministic unit and browser coverage for rendering profiles, transport, retiming and model inspection.
+
 ## 4.0.0
 
 - Added a first-party Forge Motion Sequencer driven by the production normalized timeline and deterministic sampler.
