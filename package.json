@@ -45,7 +45,8 @@
     "bank:prepare": "node --import tsx scripts/asset-bank.mjs prepare",
     "forge:validate": "node --import tsx scripts/validate-projects.mjs",
     "preset:list": "node --import tsx scripts/preset-list.mjs",
-    "visual:audit": "node --import tsx scripts/visual-system-audit.mjs"
+    "visual:audit": "node --import tsx scripts/visual-system-audit.mjs",
+    "performance:audit": "node --import tsx scripts/performance-audit.mjs"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "5.3.0",
