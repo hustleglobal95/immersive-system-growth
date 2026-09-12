@@ -2,6 +2,8 @@
 import { create } from "zustand";
 import type { QualityTier, QualityMode, Vec3, CameraDefinition, CameraState } from "@/src/types/experience";
 import type { CameraShotName } from "@/src/lib/cameraShots";
+import rawVisualSystems from "@/config/visual-systems.json";
+import { parseVisualSystems, type VisualSystemsManifest } from "@/src/platform/visualSystems";
 import { constrainQuality, nextQuality } from "@/src/lib/quality";
 
 export interface CameraPreview {
@@ -58,6 +60,7 @@ interface ExperienceState {
   freeCamera: boolean;
   selectedHotspot: string | null;
   rendererStats: RendererStats;
+  visualSystems: VisualSystemsManifest;
   cameraTelemetry: CameraTelemetry;
   webglStatus: "loading" | "ready" | "lost" | "failed";
   assetErrors: Record<string, string>;
@@ -80,6 +83,8 @@ interface ExperienceState {
   setDebug: (value: boolean) => void;
   setSelectedHotspot: (id: string | null) => void;
   setRendererStats: (stats: RendererStats) => void;
+  setVisualSystems: (manifest: VisualSystemsManifest) => void;
+  resetVisualSystems: () => void;
   setFreeCamera: (value: boolean) => void;
   setCameraTelemetry: (value: CameraTelemetry) => void;
   setWebglStatus: (status: ExperienceState["webglStatus"]) => void;
@@ -93,6 +98,8 @@ interface ExperienceState {
   retry: () => void;
   resetLab: () => void;
 }
+
+const defaultVisualSystems = parseVisualSystems(rawVisualSystems);
 
 const defaultOrbit: RuntimeOrbitState = {
   target: null,
@@ -130,6 +137,7 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
   runtimeProgress: null,
   runtimeCamera: null,
   orbit: { ...defaultOrbit },
+  visualSystems: defaultVisualSystems,
   rendererStats: {
     calls: 0,
     triangles: 0,
@@ -178,6 +186,8 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
   setDebug: (debug) => set({ debug }),
   setSelectedHotspot: (selectedHotspot) => set({ selectedHotspot }),
   setRendererStats: (rendererStats) => set({ rendererStats }),
+  setVisualSystems: (visualSystems) => set({ visualSystems }),
+  resetVisualSystems: () => set({ visualSystems: defaultVisualSystems }),
   setFreeCamera: (freeCamera) => set({ freeCamera }),
   setCameraTelemetry: (cameraTelemetry) => set({ cameraTelemetry }),
   setWebglStatus: (webglStatus) => set({ webglStatus }),

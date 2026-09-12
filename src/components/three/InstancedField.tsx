@@ -3,16 +3,13 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import manifest from "@/config/visual-systems.json";
 import { useExperienceStore } from "@/src/store/experienceStore";
 import {
-  parseVisualSystems,
   qualityInstanceCount,
   sampleInstancedField,
   visualSystemMode,
 } from "@/src/platform/visualSystems";
 
-const visualSystems = parseVisualSystems(manifest);
 const instance = new THREE.Object3D();
 
 export function InstancedField({
@@ -22,6 +19,7 @@ export function InstancedField({
 }) {
   const quality = useExperienceStore((state) => state.quality);
   const reducedMotion = useExperienceStore((state) => state.reducedMotion);
+  const visualSystems = useExperienceStore((state) => state.visualSystems);
   const system = visualSystems.systems.find(
     (candidate) => candidate.id === systemId && candidate.kind === "instanced-field",
   );

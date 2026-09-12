@@ -26,6 +26,7 @@ import type { AssetManifest } from "@/src/types/assets";
 import { IntegrationsPanel, ProjectPanel, PublishPanel, TelemetryPanel } from "@/src/studio/ProjectPanels";
 import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
 import { CreativeDirectionPanel } from "@/src/studio/CreativeDirectionPanel";
+import { VisualSystemsPanel } from "@/src/studio/VisualSystemsPanel";
 import { parseCreativeDirection } from "@/src/platform/creativeDirectionSchema";
 
 const initialExperience = parseExperience(rawExperience);
@@ -33,7 +34,7 @@ const initialProject = parseStudioProject(rawProject);
 const initialAssetManifest = rawAssetManifest as AssetManifest;
 const initialInteractionGraph = parseInteractionGraph(rawInteractionGraph);
 const initialCreativeDirection = parseCreativeDirection(rawCreativeDirection);
-const tabs = ["project", "creative", "recipe", "templates", "preview", "director", "timeline", "sequence", "interactions", "masks", "layers", "assets", "bank", "model", "integrations", "publish", "telemetry"] as const;
+const tabs = ["project", "creative", "visuals", "recipe", "templates", "preview", "director", "timeline", "sequence", "interactions", "masks", "layers", "assets", "bank", "model", "integrations", "publish", "telemetry"] as const;
 type Tab = (typeof tabs)[number];
 
 export function StudioWorkbench() {
@@ -105,6 +106,7 @@ export function StudioWorkbench() {
 
       {tab === "project" && <ProjectPanel {...draft} />}
       {tab === "creative" && <CreativeDirectionPanel direction={creative} setDirection={setCreative} />}
+      {tab === "visuals" && <VisualSystemsPanel />}
       {tab === "recipe" && <RecipeEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "templates" && <TemplateGallery experience={draft.experience} setExperience={draft.setExperience} />}
       {tab === "preview" && <StudioLivePreview experience={draft.experience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
@@ -133,6 +135,7 @@ function titleFor(tab: Tab) {
   return {
     project: "Project control",
     creative: "Creative direction",
+    visuals: "Visual systems",
     recipe: "Recipe editor",
     templates: "Industry template gallery",
     preview: "Live production preview",
