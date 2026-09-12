@@ -251,6 +251,169 @@ export const sceneMediaSchema = z.object({
     ids.add(layer.id);
   });
 });
+
+export const motionEasingSchema = z.enum([
+  "hold",
+  "linear",
+  "smooth",
+  "ease-in",
+  "ease-out",
+  "ease-in-out",
+  "cubic",
+]);
+const motionCurve = z
+  .tuple([
+    finite.min(0).max(1),
+    finite.min(-2).max(3),
+    finite.min(0).max(1),
+    finite.min(-2).max(3),
+  ])
+  .default([0.33, 0, 0.67, 1]);
+const motionKeyBase = {
+  id,
+  at: finite.min(0).max(1),
+  easing: motionEasingSchema.default("smooth"),
+  curve: motionCurve.optional(),
+};
+const orderedMotionKeys = <T extends z.ZodTypeAny>(schema: T) =>
+  z
+    .array(schema)
+    .min(1)
+    .max(80)
+    .refine(
+      (frames) =>
+        frames.every(
+          (frame, index) =>
+            !index ||
+            (frame as { at: number }).at >
+              (frames[index - 1] as { at: number }).at,
+        ),
+      "Keyframes must be strictly ordered",
+    )
+    .refine(
+      (frames) =>
+        new Set(frames.map((frame) => (frame as { id: string }).id)).size ===
+        frames.length,
+      "Keyframe IDs must be unique",
+    );
+const motionTrackBase = {
+  id,
+  label: z.string().min(1).max(80),
+  viewport: z.enum(["all", "desktop", "mobile"]).default("all"),
+  muted: z.boolean().default(false),
+  locked: z.boolean().default(false),
+};
+const scalarMotionTarget = z.union([
+  z.enum([
+    "camera.fov",
+    "hero.scale",
+    "world.fogDensity",
+    "world.ambient",
+    "world.key",
+    "world.rim",
+    "world.exposure",
+    "material.tintStrength",
+    "material.metalness",
+    "material.roughness",
+    "material.clearcoat",
+    "post.bloom",
+    "post.vignette",
+    "copy.opacity",
+    "copy.y",
+    "copy.blur",
+    "media.reveal",
+    "media.opacity",
+  ]),
+  z.string().regex(/^layer:[a-z0-9]+(?:-[a-z0-9]+)*:opacity$/),
+  z.string().regex(/^rig:[^:]{1,120}:opacity$/),
+]);
+const vectorMotionTarget = z.union([
+  z.enum([
+    "camera.position",
+    "camera.target",
+    "hero.position",
+    "hero.rotation",
+  ]),
+  z.string().regex(/^rig:[^:]{1,120}:(?:position|rotation|scale)$/),
+]);
+const colorMotionTarget = z.enum([
+  "world.background",
+  "world.fog",
+  "world.keyColor",
+  "world.rimColor",
+  "material.tint",
+]);
+const booleanMotionTarget = z.string().regex(/^rig:[^:]{1,120}:visible$/);
+const scalarMotionTrack = z
+  .object({
+    ...motionTrackBase,
+    type: z.literal("number"),
+    target: scalarMotionTarget,
+    blend: z.enum(["absolute", "add", "multiply"]).default("absolute"),
+    keyframes: orderedMotionKeys(
+      z.object({ ...motionKeyBase, value: finite }).strict(),
+    ),
+  })
+  .strict()
+  .superRefine((track, ctx) => {
+    const range = scalarMotionBounds(track.target);
+    track.keyframes.forEach((keyframe, index) => {
+      if (track.blend === "multiply" && (keyframe.value < 0 || keyframe.value > 100))
+        ctx.addIssue({ code: "custom", path: ["keyframes", index, "value"], message: "Multiply values must be between 0 and 100" });
+      if (track.blend === "absolute" && (keyframe.value < range[0] || keyframe.value > range[1]))
+        ctx.addIssue({ code: "custom", path: ["keyframes", index, "value"], message: `Value must be between ${range[0]} and ${range[1]} for ${track.target}` });
+    });
+  });
+const vectorMotionTrack = z
+  .object({
+    ...motionTrackBase,
+    type: z.literal("vector"),
+    target: vectorMotionTarget,
+    blend: z.enum(["absolute", "offset"]).default("absolute"),
+    keyframes: orderedMotionKeys(
+      z.object({ ...motionKeyBase, value: vec3 }).strict(),
+    ),
+  })
+  .strict();
+const colorMotionTrack = z
+  .object({
+    ...motionTrackBase,
+    type: z.literal("color"),
+    target: colorMotionTarget,
+    keyframes: orderedMotionKeys(
+      z.object({ ...motionKeyBase, value: color }).strict(),
+    ),
+  })
+  .strict();
+const booleanMotionTrack = z
+  .object({
+    ...motionTrackBase,
+    type: z.literal("boolean"),
+    target: booleanMotionTarget,
+    keyframes: orderedMotionKeys(
+      z.object({ ...motionKeyBase, value: z.boolean() }).strict(),
+    ),
+  })
+  .strict();
+export const motionTrackSchema = z.discriminatedUnion("type", [
+  scalarMotionTrack,
+  vectorMotionTrack,
+  colorMotionTrack,
+  booleanMotionTrack,
+]);
+
+function scalarMotionBounds(target: string): [number, number] {
+  if (target === "camera.fov") return [15, 90];
+  if (target === "hero.scale") return [0.001, 100];
+  if (target === "world.fogDensity") return [0, 0.15];
+  if (target === "world.ambient") return [0, 20];
+  if (target === "world.key" || target === "world.rim") return [0, 50];
+  if (target === "world.exposure") return [0.25, 3];
+  if (target === "post.bloom") return [0, 2];
+  if (target === "copy.y") return [-500, 500];
+  if (target === "copy.blur") return [0, 100];
+  return [0, 1];
+}
 export const sceneSchema = z
   .object({
     id,
@@ -261,6 +424,7 @@ export const sceneSchema = z
     easing: z.enum(["linear", "smooth", "cinematic"]),
     camera: cameraSchema,
     mobileCamera: cameraSchema.optional(),
+    motionTracks: z.array(motionTrackSchema).max(120).default([]),
     media: sceneMediaSchema.optional(),
     blocks: z.array(sceneBlockSchema).max(6).default([]),
     hero: z
@@ -379,6 +543,25 @@ export const experienceSchema = z
       ids.add(s.id);
       if (i && Math.abs(c.scenes[i - 1].range[1] - s.range[0]) > 1e-9)
         issue(["scenes", i, "range"], "Timeline gap or overlap");
+      const trackIds = new Set<string>();
+      const trackTargets = new Set<string>();
+      s.motionTracks.forEach((track, trackIndex) => {
+        if (trackIds.has(track.id))
+          issue(["scenes", i, "motionTracks", trackIndex, "id"], "Duplicate motion track ID");
+        trackIds.add(track.id);
+        const targetKey = `${track.viewport}:${track.target}`;
+        if (trackTargets.has(targetKey))
+          issue(["scenes", i, "motionTracks", trackIndex, "target"], "Duplicate target for this viewport");
+        trackTargets.add(targetKey);
+        const layer = /^layer:([^:]+):opacity$/.exec(track.target)?.[1];
+        if (layer && !s.media?.layers.some((item) => item.id === layer))
+          issue(["scenes", i, "motionTracks", trackIndex, "target"], "Transition layer target does not exist in this scene");
+        const node = /^rig:([^:]+):/.exec(track.target)?.[1];
+        if (node && !c.productRig?.nodes.includes(node))
+          issue(["scenes", i, "motionTracks", trackIndex, "target"], "Product rig node target is not mapped");
+        if (track.target.startsWith("media.") && !s.media)
+          issue(["scenes", i, "motionTracks", trackIndex, "target"], "Media target requires scene media");
+      });
     });
     if (c.scenes[0].range[0] !== 0)
       issue(["scenes", 0, "range"], "Timeline must start at 0");
