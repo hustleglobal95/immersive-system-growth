@@ -90,9 +90,20 @@ const visibilityTrack = z
     keyframes: booleanKeyframes,
   })
   .strict();
+const rigMappingSchema = z
+  .object({
+    id,
+    node: z.string().min(1).max(120),
+    path: z.string().min(1).max(240),
+    role: z.enum(["primary", "component", "accent", "animated"]),
+    confidence: finite.min(0).max(1),
+    required: z.boolean().default(false),
+  })
+  .strict();
 export const productRigSchema = z
   .object({
     nodes: z.array(z.string().min(1).max(120)).min(1).max(100),
+    mapping: z.array(rigMappingSchema).max(100).default([]),
     tracks: z.array(z.union([transformTrack, opacityTrack, visibilityTrack])).min(1).max(300),
   })
   .strict()
@@ -100,6 +111,18 @@ export const productRigSchema = z
     const nodes = new Set(rig.nodes);
     if (nodes.size !== rig.nodes.length)
       ctx.addIssue({ code: "custom", path: ["nodes"], message: "Product rig node names must be unique" });
+    const mappingIds = new Set<string>();
+    const mappingPaths = new Set<string>();
+    rig.mapping.forEach((mapping, index) => {
+      if (!nodes.has(mapping.node))
+        ctx.addIssue({ code: "custom", path: ["mapping", index, "node"], message: "Mapping node is not declared by this rig" });
+      if (mappingIds.has(mapping.id))
+        ctx.addIssue({ code: "custom", path: ["mapping", index, "id"], message: "Mapping IDs must be unique" });
+      if (mappingPaths.has(mapping.path))
+        ctx.addIssue({ code: "custom", path: ["mapping", index, "path"], message: "Mapping paths must be unique" });
+      mappingIds.add(mapping.id);
+      mappingPaths.add(mapping.path);
+    });
     const keys = new Set<string>();
     rig.tracks.forEach((track, index) => {
       if (!nodes.has(track.node))

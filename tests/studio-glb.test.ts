@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
-import { inspectGlb } from "../src/platform/glbInspector";
+import { inspectGlb, stableNodeId } from "../src/platform/glbInspector";
 
 test("GLB inspector reports production nodes, meshes, materials and animations", () => {
   const file = fs.readFileSync("public/models/reference/burger.glb");
@@ -14,7 +14,10 @@ test("GLB inspector reports production nodes, meshes, materials and animations",
   assert.ok(report.totals.triangles > 0);
   assert.ok(report.totals.vertices > 0);
   assert.equal(report.complexity, "light");
-  assert.ok(report.suggestedMappings.some((mapping) => mapping.node === "top-bun" && mapping.confidence > 0.5));
+  const topBunMapping = report.suggestedMappings.find((mapping) => mapping.node === "top-bun");
+  assert.ok(topBunMapping);
+  assert.equal(topBunMapping.id, stableNodeId(topBunMapping.path));
+  assert.match(topBunMapping.id, /^node-[a-z0-9-]+-[a-f0-9]{8}$/);
   assert.ok(report.nodes.every((node) => node.path.length > 0));
   assert.ok(report.recommendations.length > 0);
   assert.deepEqual(report.warnings, []);
