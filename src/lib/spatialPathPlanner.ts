@@ -37,6 +37,13 @@ interface RouteResult {
   cost: number;
 }
 
+interface SafeRouteWindow {
+  beforeAt: number;
+  afterAt: number;
+  from: Vec3;
+  to: Vec3;
+}
+
 export function repairSpatialCameraTracksWithPlanner(
   tracks: MotionTrack[],
   spatial: SpatialScene,
@@ -65,17 +72,17 @@ export function repairSpatialCameraTracksWithPlanner(
 
       const position = cameraTrack(current, "camera.position", viewport);
       if (!position || position.type !== "vector") break;
-      const beforeAt = clamp(issue.at - 0.085, 0.025, 0.94);
-      const afterAt = clamp(issue.at + 0.085, 0.06, 0.975);
-      if (afterAt - beforeAt < 0.03) break;
-      const from = sampleMotionTrack(position, beforeAt) as Vec3;
-      const to = sampleMotionTrack(position, afterAt) as Vec3;
-      const route = planVisibilityRoute(from, to, spatial, issue.at, issue.obstacle);
+      const window = findSafeRouteWindow(position, spatial, issue.at);
+      if (!window) {
+        stats.failedRoutes += 1;
+        break;
+      }
+      const route = planVisibilityRoute(window.from, window.to, spatial, issue.at, issue.obstacle);
       if (!route || route.points.length <= 2) {
         stats.failedRoutes += 1;
         break;
       }
-      const next = insertRoute(position, beforeAt, afterAt, route.points, pass + 1);
+      const next = insertRoute(position, window.beforeAt, window.afterAt, route.points, pass + 1);
       current = current.map((track) => track.id === position.id ? next : track);
       stats.reroutes += 1;
       stats.routeWaypoints += Math.max(0, route.points.length - 2);
@@ -143,6 +150,31 @@ export function planVisibilityRoute(
   const route = dijkstra(nodes, edges, 0, 1);
   if (!route) return null;
   return { points: simplifyRoute(route.map((index) => nodes[index].point), spatial, at), cost: routeCost(route, nodes) };
+}
+
+function findSafeRouteWindow(track: VectorTrack, spatial: SpatialScene, issueAt: number): SafeRouteWindow | null {
+  const step = 0.035;
+  let beforeAt = clamp(issueAt - 0.055, 0, 1);
+  let afterAt = clamp(issueAt + 0.055, 0, 1);
+
+  for (let index = 0; index < 30; index += 1) {
+    const point = sampleMotionTrack(track, beforeAt) as Vec3;
+    if (pointSafe(point, spatial, beforeAt)) break;
+    if (beforeAt <= 0) return null;
+    beforeAt = Math.max(0, beforeAt - step);
+  }
+  for (let index = 0; index < 30; index += 1) {
+    const point = sampleMotionTrack(track, afterAt) as Vec3;
+    if (pointSafe(point, spatial, afterAt)) break;
+    if (afterAt >= 1) return null;
+    afterAt = Math.min(1, afterAt + step);
+  }
+
+  const from = sampleMotionTrack(track, beforeAt) as Vec3;
+  const to = sampleMotionTrack(track, afterAt) as Vec3;
+  if (!pointSafe(from, spatial, beforeAt) || !pointSafe(to, spatial, afterAt)) return null;
+  if (afterAt - beforeAt < 0.03) return null;
+  return { beforeAt, afterAt, from, to };
 }
 
 function findFirstIssue(
