@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "systems": [
+    {
+      "id": "ambient-field",
+      "label": "Ambient instanced field",
+      "kind": "instanced-field",
+      "enabled": true,
+      "seed": 73,
+      "instanceCount": 160,
+      "spread": [10, 4.5, 8],
+      "size": 0.08,
+      "color": "#f97316",
+      "accent": "#ffd1a6",
+      "motion": 0.7,
+      "fallback": "static",
+      "reducedMotion": "freeze"
+    },
+    {
+      "id": "product-particles",
+      "label": "Product particle field",
+      "kind": "particle-field",
+      "enabled": true,
+      "seed": 17,
+      "instanceCount": 96,
+      "spread": [3, 2, 3],
+      "size": 0.04,
+      "color": "#f8fafc",
+      "accent": "#f97316",
+      "motion": 1,
+      "fallback": "static",
+      "reducedMotion": "freeze"
+    }
+  ]
+}

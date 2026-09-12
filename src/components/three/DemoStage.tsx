@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { ReflectiveFloor } from "@/src/components/three/ReflectiveFloor";
+import { InstancedField } from "@/src/components/three/InstancedField";
 import { useExperienceStore } from "@/src/store/experienceStore";
 
 function Frame({
@@ -62,6 +63,7 @@ export function DemoStage() {
 
   return (
     <group ref={architecture}>
+      <InstancedField />
       {quality === "low" ? (
         <mesh
           rotation={[-Math.PI / 2, 0, 0]}
