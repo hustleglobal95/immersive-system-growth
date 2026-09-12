@@ -1,7 +1,7 @@
 "use client";
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
+import { Bloom, EffectComposer, SMAA, Vignette } from "@react-three/postprocessing";
 import {
   BlendFunction,
   type BloomEffect,
@@ -9,27 +9,30 @@ import {
 } from "postprocessing";
 import { useExperienceStore } from "@/src/store/experienceStore";
 import { useCinematicFrame } from "@/src/components/three/CinematicFrame";
+import { cinematicRenderProfile } from "@/src/lib/renderProfile";
 export function PostFX() {
   const quality = useExperienceStore((s) => s.quality),
     motion = useExperienceStore((s) => s.reducedMotion);
   const frame = useCinematicFrame(),
     bloom = useRef<BloomEffect>(null),
     vignette = useRef<VignetteEffect>(null);
+  const profile = cinematicRenderProfile(quality);
   useFrame(() => {
     if (bloom.current) bloom.current.intensity = frame.current.post.bloom;
     if (vignette.current)
       vignette.current.darkness = frame.current.post.vignette;
   });
-  if (quality === "low" || motion) return null;
+  if (motion || (!profile.bloom && profile.antialias === "none")) return null;
   return (
-    <EffectComposer multisampling={quality === "high" ? 4 : 0}>
-      <Bloom
+    <EffectComposer multisampling={profile.composerMultisampling}>
+      {profile.antialias === "smaa" && <SMAA />}
+      {profile.bloom && <Bloom
         ref={bloom}
         intensity={0.25}
         luminanceThreshold={0.7}
         luminanceSmoothing={0.5}
-        mipmapBlur
-      />
+        mipmapBlur={profile.bloomMipmap}
+      />}
       <Vignette
         ref={vignette}
         offset={0.22}
