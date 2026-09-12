@@ -4,6 +4,7 @@ import {
   createCameraChoreography,
   isCameraChoreographyName,
 } from "@/src/platform/cameraChoreography";
+import { directCamera } from "@/src/platform/cameraDirector";
 import type {
   ExperienceConfig,
   MotionTrack,
@@ -13,6 +14,7 @@ import type {
 } from "@/src/types/experience";
 
 export const motionPresetCatalog = [
+  { id: "auto-direct-camera", label: "Auto Director · Camera", description: "Analyze scene intent and geometry, then choose a Director-grade camera choreography." },
   ...cameraChoreographyCatalog,
   { id: "camera-drift", label: "Camera drift", description: "A restrained three-point camera arc." },
   { id: "product-lift", label: "Product lift", description: "Rise, hold and settle the persistent hero." },
@@ -31,6 +33,7 @@ export function createMotionPreset(
   config: ExperienceConfig,
   sceneIndex: number,
 ): MotionTrack[] {
+  if (name === "auto-direct-camera") return directCamera(config, sceneIndex).tracks;
   if (isCameraChoreographyName(name)) return createCameraChoreography(name, config, sceneIndex);
   const scene = config.scenes[sceneIndex];
   const base = sampleExperience(scene.range[0], false, { ...config, scenes: config.scenes.map((item, index) => index === sceneIndex ? { ...item, motionTracks: [] } : item) });
