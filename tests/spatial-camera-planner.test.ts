@@ -18,6 +18,7 @@ const spatial: SpatialScene = {
     collidable: false,
     source: "geometry",
   },
+  subjectParts: [],
   obstacles: [
     { id: "column", center: [0, 1, 0], halfSize: [0.55, 1, 0.55], role: "obstacle", source: "geometry" },
   ],
