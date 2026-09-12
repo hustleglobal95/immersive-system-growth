@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { parseExperience } from "@/src/lib/configSchema";
 import { parseStudioProject, type StudioProject } from "@/src/platform/studioSchema";
 import type { ExperienceConfig } from "@/src/types/experience";
@@ -15,7 +15,12 @@ interface StoredDraft {
 }
 
 export function useStudioDraft(initialExperience: ExperienceConfig, initialProject: StudioProject, initialAssetManifest: AssetManifest) {
-  const [experience, setExperience] = useState(initialExperience);
+  const [experience, setExperienceState] = useState(initialExperience);
+  const experienceRef = useRef(initialExperience);
+  const undoStack = useRef<ExperienceConfig[]>([]);
+  const redoStack = useRef<ExperienceConfig[]>([]);
+  const groupBase = useRef<ExperienceConfig | null>(null);
+  const [history, setHistory] = useState({ undo: 0, redo: 0 });
   const [project, setProject] = useState(initialProject);
   const [assetManifest, setAssetManifest] = useState(initialAssetManifest);
   const [hydrated, setHydrated] = useState(false);
@@ -29,7 +34,8 @@ export function useStudioDraft(initialExperience: ExperienceConfig, initialProje
         const nextProject = parseStudioProject(draft.project);
         const nextManifest = isAssetManifest(draft.assetManifest) ? draft.assetManifest : initialAssetManifest;
         queueMicrotask(() => {
-          setExperience(nextExperience);
+          experienceRef.current = nextExperience;
+          setExperienceState(nextExperience);
           setProject(nextProject);
           setAssetManifest(nextManifest);
         });
@@ -46,6 +52,51 @@ export function useStudioDraft(initialExperience: ExperienceConfig, initialProje
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ experience, project, assetManifest }));
   }, [assetManifest, experience, hydrated, project]);
 
+  const setExperience = useCallback<Dispatch<SetStateAction<ExperienceConfig>>>((update) => {
+    const current = experienceRef.current;
+    const next = typeof update === "function" ? update(current) : update;
+    if (next === current) return;
+    if (!groupBase.current) {
+      undoStack.current = [...undoStack.current.slice(-79), current];
+      redoStack.current = [];
+    }
+    experienceRef.current = next;
+    setExperienceState(next);
+    setHistory({ undo: undoStack.current.length, redo: 0 });
+  }, []);
+
+  const beginExperienceGroup = useCallback(() => {
+    groupBase.current ??= experienceRef.current;
+  }, []);
+
+  const endExperienceGroup = useCallback(() => {
+    const base = groupBase.current;
+    groupBase.current = null;
+    if (!base || base === experienceRef.current) return;
+    undoStack.current = [...undoStack.current.slice(-79), base];
+    redoStack.current = [];
+    setHistory({ undo: undoStack.current.length, redo: 0 });
+  }, []);
+
+  const undoExperience = useCallback(() => {
+    if (groupBase.current) endExperienceGroup();
+    const prior = undoStack.current.pop();
+    if (!prior) return;
+    redoStack.current.push(experienceRef.current);
+    experienceRef.current = prior;
+    setExperienceState(prior);
+    setHistory({ undo: undoStack.current.length, redo: redoStack.current.length });
+  }, [endExperienceGroup]);
+
+  const redoExperience = useCallback(() => {
+    const next = redoStack.current.pop();
+    if (!next) return;
+    undoStack.current.push(experienceRef.current);
+    experienceRef.current = next;
+    setExperienceState(next);
+    setHistory({ undo: undoStack.current.length, redo: redoStack.current.length });
+  }, []);
+
   const validation = useMemo(() => {
     const issues: string[] = [];
     const experienceIssue = parseSafe(() => parseExperience(experience));
@@ -56,13 +107,34 @@ export function useStudioDraft(initialExperience: ExperienceConfig, initialProje
   }, [experience, project]);
 
   const reset = useCallback(() => {
-    setExperience(initialExperience);
+    experienceRef.current = initialExperience;
+    setExperienceState(initialExperience);
     setProject(initialProject);
     setAssetManifest(initialAssetManifest);
+    undoStack.current = [];
+    redoStack.current = [];
+    groupBase.current = null;
+    setHistory({ undo: 0, redo: 0 });
     localStorage.removeItem(STORAGE_KEY);
   }, [initialAssetManifest, initialExperience, initialProject]);
 
-  return { experience, setExperience, project, setProject, assetManifest, setAssetManifest, validation, hydrated, reset };
+  return {
+    experience,
+    setExperience,
+    beginExperienceGroup,
+    endExperienceGroup,
+    undoExperience,
+    redoExperience,
+    canUndoExperience: history.undo > 0,
+    canRedoExperience: history.redo > 0,
+    project,
+    setProject,
+    assetManifest,
+    setAssetManifest,
+    validation,
+    hydrated,
+    reset,
+  };
 }
 
 function isAssetManifest(value: unknown): value is AssetManifest {
