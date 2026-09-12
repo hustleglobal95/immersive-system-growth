@@ -7,6 +7,8 @@ import { cinematicProgress } from "@/src/lib/cinematicProgress";
 import { getMediaPanelWindow, sampleMediaPanel } from "@/src/lib/mediaPanels";
 import { createCssMaskStyle, createMaskReveal, resolveMaskBackend } from "@/src/lib/maskReveal";
 import { useExperienceStore } from "@/src/store/experienceStore";
+import { remap01 } from "@/src/lib/math";
+import { sampleSceneMotion } from "@/src/lib/motionSequencer";
 
 export function CinematicMedia() {
   const experience = useExperienceConfig();
@@ -36,14 +38,14 @@ export function CinematicMedia() {
       const video=panel.querySelector("video");
       let playing=false;
       const mask=scene.media?.transition==="mask"?createMaskReveal(scene.media.mask?.preset??"linear-soft",scene.media.mask??{softness:scene.media.maskSoftness}):null;
-      return {panel,image,video,mask,
+      return {panel,image,video,mask,scene,
         window:getMediaPanelWindow(experience.scenes,index),
         panelY:gsap.quickSetter(panel,"yPercent"),imageY:gsap.quickSetter(image,"yPercent"),scale:gsap.quickSetter(image,"scale"),
         playback(visible:boolean){const play=visible&&!document.hidden;if(!video||play===playing)return;playing=play;if(play)void video.play().catch(()=>{/* Keep poster; don't retry a blocked play every frame. */});else video.pause();},
       };
     });
     const render=(p:number)=>{
-      for(const t of tracks){const state=sampleMediaPanel(p,t.window,compact.matches);t.panel.style.visibility=state.visible?"visible":"hidden";t.panel.style.opacity=String(state.opacity);t.panel.style.filter=`blur(${state.blur}px)`;t.panel.style.clipPath=state.transition==="curtain"?`inset(${state.clip/2}% 0 ${state.clip/2}% 0)`:state.transition==="wipe"?`inset(0 ${state.clip}% 0 0)`:"none";if(t.mask){const css=createCssMaskStyle(state.reveal,t.mask);const image=String(css.maskImage??"");const size=String(css.maskSize??"100% 100%");const repeat=String(css.maskRepeat??"no-repeat");const position=String(css.maskPosition??"center");t.image.style.webkitMaskImage=image;t.image.style.maskImage=image;t.image.style.webkitMaskSize=size;t.image.style.maskSize=size;t.image.style.webkitMaskRepeat=repeat;t.image.style.maskRepeat=repeat;t.image.style.webkitMaskPosition=position;t.image.style.maskPosition=position;t.panel.dataset.maskPreset=t.mask.preset;t.panel.style.setProperty("--mask-edge-color",t.mask.edgeColor);t.panel.style.setProperty("--mask-edge-width",`${t.mask.edgeWidth}%`);}else{t.image.style.webkitMaskImage="";t.image.style.maskImage="";delete t.panel.dataset.maskPreset;}t.panelY(state.panelY);t.imageY(state.imageY);t.scale(state.scale);t.playback(state.visible);}
+      for(const t of tracks){const state=sampleMediaPanel(p,t.window,compact.matches);const motion=sampleSceneMotion(t.scene,remap01(p,t.scene.range[0],t.scene.range[1]),compact.matches).media;const reveal=motion.reveal??state.reveal;t.panel.style.visibility=state.visible?"visible":"hidden";t.panel.style.opacity=String(motion.opacity??state.opacity);t.panel.style.filter=`blur(${state.blur}px)`;t.panel.style.clipPath=state.transition==="curtain"?`inset(${state.clip/2}% 0 ${state.clip/2}% 0)`:state.transition==="wipe"?`inset(0 ${state.clip}% 0 0)`:"none";if(t.mask){const css=createCssMaskStyle(reveal,t.mask);const image=String(css.maskImage??"");const size=String(css.maskSize??"100% 100%");const repeat=String(css.maskRepeat??"no-repeat");const position=String(css.maskPosition??"center");t.image.style.webkitMaskImage=image;t.image.style.maskImage=image;t.image.style.webkitMaskSize=size;t.image.style.maskSize=size;t.image.style.webkitMaskRepeat=repeat;t.image.style.maskRepeat=repeat;t.image.style.webkitMaskPosition=position;t.image.style.maskPosition=position;t.panel.dataset.maskPreset=t.mask.preset;t.panel.style.setProperty("--mask-edge-color",t.mask.edgeColor);t.panel.style.setProperty("--mask-edge-width",`${t.mask.edgeWidth}%`);}else{t.image.style.webkitMaskImage="";t.image.style.maskImage="";delete t.panel.dataset.maskPreset;}t.panelY(state.panelY);t.imageY(state.imageY);t.scale(state.scale);t.playback(state.visible);}
     };
     const refresh=()=>render(progress.current);
     const frame=cinematicProgress.subscribe(render);

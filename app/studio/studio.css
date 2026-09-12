@@ -381,6 +381,59 @@
 .telemetry-list > div { padding: 12px 0; display: grid; gap: 6px; border-bottom: 1px solid var(--studio-line); }
 .telemetry-list strong { color: var(--studio-accent); font-size: 10px; text-transform: uppercase; }
 .telemetry-list code { overflow: hidden; color: #aaa69e; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.sequencer-workspace { max-width: 1480px; display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 14px; }
+.sequencer-workspace > .studio-preview { grid-column: 1 / -1; }
+.sequencer { min-width: 0; overflow: hidden; }
+.sequencer-scenes { margin: 4px 0 12px; display: flex; gap: 5px; overflow-x: auto; }
+.sequencer-scenes button { flex: 0 0 auto; font-size: 8px; }
+.sequencer-scenes button.is-active { border-color: var(--studio-accent); background: #2a160f; }
+.sequencer-toolbar,.sequencer-add { padding: 8px; display: flex; align-items: center; gap: 6px; overflow-x: auto; border: 1px solid var(--studio-line); background: #0c0c0c; }
+.sequencer-toolbar { border-radius: 8px 8px 0 0; }
+.sequencer-add { border-top: 0; border-radius: 0 0 8px 8px; }
+.sequencer-toolbar button,.sequencer-add button { min-height: 30px; padding: 5px 8px; flex: 0 0 auto; font-size: 8px; }
+.sequencer-toolbar label { display: flex; align-items: center; gap: 5px; color: var(--studio-muted); font-size: 8px; }
+.sequencer-toolbar label:has(input[type="range"]) { min-width: 130px; }
+.sequencer-toolbar select,.sequencer-add select { width: auto; min-width: 108px; min-height: 30px; padding: 5px 7px; font-size: 8px; }
+.sequencer-add select:first-child { min-width: 180px; }
+.sequencer-add button.is-recording { border-color: #ff3d2e; background: #45130f; color: #ffc0b8; }
+.sequencer-add button.is-recording::before { content: ""; width: 6px; height: 6px; margin-right: 5px; display: inline-block; border-radius: 50%; background: #ff3d2e; box-shadow: 0 0 10px #ff3d2e; }
+.sequencer-notice { margin: 8px 0; color: #c8c3b9; font-size: 9px; }
+.sequencer-sheet { --sequence-width: 720px; margin-top: 12px; max-height: 520px; overflow: auto; border: 1px solid var(--studio-line); border-radius: 8px; background: #090909; }
+.sequencer-ruler,.sequencer-row { width: calc(220px + var(--sequence-width)); min-width: 100%; display: grid; grid-template-columns: 220px var(--sequence-width); }
+.sequencer-ruler { height: 34px; position: sticky; z-index: 5; top: 0; border-bottom: 1px solid var(--studio-line); background: #101010; }
+.sequencer-ruler > strong { padding: 12px; position: sticky; z-index: 3; left: 0; border-right: 1px solid var(--studio-line); background: #111; color: var(--studio-muted); font-size: 7px; letter-spacing: .12em; }
+.sequencer-ruler > div { position: relative; cursor: crosshair; background: repeating-linear-gradient(90deg,#ffffff10 0 1px,transparent 1px 10%); }
+.sequencer-ruler span { position: absolute; top: 8px; color: #77736c; font: 7px ui-monospace, monospace; translate: -50% 0; }
+.sequencer-ruler i,.sequencer-playhead { width: 1px; position: absolute; z-index: 3; top: 0; bottom: 0; background: #ff6a2b; pointer-events: none; }
+.sequencer-ruler i::after { content: ""; width: 7px; height: 7px; position: absolute; top: 0; left: -3px; background: #ff6a2b; clip-path: polygon(0 0,100% 0,50% 100%); }
+.sequencer-row { min-height: 44px; border-bottom: 1px solid #242424; }
+.sequencer-row[data-muted="true"] { opacity: .45; }
+.sequencer-row__label { min-width: 0; padding: 8px 11px !important; position: sticky; z-index: 4; left: 0; border: 0 !important; border-right: 1px solid var(--studio-line) !important; border-radius: 0 !important; display: grid; gap: 4px; background: #101010 !important; text-align: left; }
+.sequencer-row[data-selected="true"] .sequencer-row__label { box-shadow: inset 3px 0 0 var(--studio-accent); background: #18120f !important; }
+.sequencer-row__label span { overflow: hidden; font-size: 9px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+.sequencer-row__label small { overflow: hidden; color: var(--studio-muted); font: 7px ui-monospace, monospace; text-overflow: ellipsis; white-space: nowrap; }
+.sequencer-rail { position: relative; background: repeating-linear-gradient(90deg,#ffffff08 0 1px,transparent 1px 5%); cursor: crosshair; }
+.sequencer-key { width: 18px; height: 28px; min-height: 0 !important; padding: 0 !important; position: absolute; z-index: 2; top: 8px; border: 0 !important; background: transparent !important; translate: -50% 0; touch-action: none; cursor: ew-resize; }
+.sequencer-key span { width: 9px; height: 9px; display: block; border: 1px solid #ffc2a9; background: #a13f1e; rotate: 45deg; }
+.sequencer-key[aria-pressed="true"] span { border-color: #fff; background: var(--studio-accent); box-shadow: 0 0 0 3px #ff5a1f33; }
+.sequencer-empty { min-height: 150px; padding: 35px; display: grid; place-content: center; gap: 7px; color: var(--studio-muted); font-size: 9px; text-align: center; }
+.sequencer-empty strong { color: #d7d2c8; font-size: 11px; }
+.sequencer-inspector { min-width: 0; align-self: start; }
+.sequencer-inspector > label,.key-inspector > label { margin-top: 11px; display: grid; gap: 6px; color: var(--studio-muted); font-size: 9px; font-weight: 700; }
+.sequencer-toggles { margin-top: 12px; padding: 9px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 7px; border-block: 1px solid var(--studio-line); }
+.sequencer-toggles button { grid-column: 1 / -1; color: #ff9c84; }
+.key-inspector { margin-top: 16px; }
+.key-inspector h3 { margin: 0 0 10px; color: #d7d2c8; font-size: 9px; letter-spacing: .09em; text-transform: uppercase; }
+.curve-editor { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--studio-line); }
+.curve-editor > span { color: var(--studio-muted); font-size: 9px; font-weight: 700; }
+.curve-editor svg { width: 100%; height: auto; margin-top: 8px; display: block; overflow: visible; border: 1px solid var(--studio-line); background: #080808; touch-action: none; }
+.curve-grid { fill: none; stroke: #ffffff0d; stroke-width: 1; }
+.curve-handles { fill: none; stroke: #a35137; stroke-width: 1; }
+.curve-line { fill: none; stroke: var(--studio-accent); stroke-width: 2.5; }
+.curve-editor circle { fill: #f3eee4; stroke: var(--studio-accent); stroke-width: 3; cursor: grab; }
+.curve-values { margin-top: 7px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+.curve-values label { display: grid; gap: 4px; color: var(--studio-muted); font-size: 7px; }
+.curve-values input { min-width: 0; padding-inline: 5px !important; }
 .studio-footer { margin-top: 56px; padding-top: 16px; display: flex; justify-content: space-between; border-top: 1px solid var(--studio-line); color: var(--studio-muted); font-size: 9px; letter-spacing: .1em; }
 @media (max-width: 900px) {
   .template-grid { grid-template-columns: repeat(2, 1fr); }
@@ -392,7 +445,9 @@
   .studio-grid--director,
   .studio-grid--layers,
   .studio-grid--assets,
+  .sequencer-workspace,
   .mask-lab { grid-template-columns: 1fr; }
+  .sequencer-workspace > .studio-preview { grid-column: 1; }
   .studio-title { align-items: flex-start; flex-direction: column; }
 }
 @media (max-width: 600px) {
@@ -409,4 +464,5 @@
   .studio-stats { grid-template-columns: repeat(2, 1fr); }
   .timeline-track button strong { display: none; }
   .studio-title > div:last-child { align-items: flex-start; flex-direction: column; }
+  .sequencer-ruler,.sequencer-row { grid-template-columns: 160px var(--sequence-width); width: calc(160px + var(--sequence-width)); }
 }

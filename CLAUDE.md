@@ -27,6 +27,11 @@ Build cinematic, spatial, interactive websites that feel like one continuous exp
 17. Studio live preview must receive the current validated draft through ExperienceConfigProvider; production runtime continues to use the checked-in default.
 18. Studio publishing may create review branches and pull requests only. Repository tokens stay server-side and publishing never implies merge or deployment.
 19. Transition-layer IDs are unique per media scene, timing ranges are bounded and reverse sampling must reconstruct the same frame.
+20. Scene motion uses `motionTracks` and the first-party deterministic sampler. Do not introduce another playback clock.
+21. All-viewport motion applies before the matching desktop or mobile override.
+22. Motion targets that reference transition layers or GLB nodes must resolve during schema validation.
+23. Viewport gizmos may write selected keyframes, but they must not own production transforms or ship active in the public runtime.
+24. Editor dependencies with reciprocal network-copyleft or custom commercial licenses are not accepted into the Studio client bundle.
 
 ## Before implementation
 

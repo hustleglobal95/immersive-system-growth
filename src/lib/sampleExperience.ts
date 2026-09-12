@@ -5,6 +5,7 @@ import { lerpHex } from "@/src/lib/color";
 import { sampleCameraPath, sampleFov } from "@/src/lib/cameraPaths";
 import { sampleSpline } from "@/src/lib/spline";
 import { sampleObjectMotion } from "@/src/lib/objectMotion";
+import { applySceneMotion } from "@/src/lib/motionSequencer";
 import type {
   ExperienceConfig,
   SampledExperienceState,
@@ -50,7 +51,7 @@ export function sampleExperience(
       )
     : lerpVec3(camera.from.target, camera.to.target, easedProgress);
 
-  return {
+  const state = {
     scene,
     sceneIndex,
     localProgress,
@@ -91,6 +92,7 @@ export function sampleExperience(
       vignette: lerp(scene.post.vignette, nextScene.post.vignette, worldT),
     },
   };
+  return applySceneMotion(state, scene, motionProgress, aspect < 0.85);
 }
 
 function interpolateNullable(from: number | null, to: number | null, progress: number) {

@@ -3,11 +3,14 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { ExperienceConfigProvider } from "@/src/components/runtime/ExperienceConfigContext";
+import { StudioEditorProvider, type StudioGizmoState } from "@/src/components/runtime/StudioEditorContext";
 import { CinematicMedia } from "@/src/components/dom/CinematicMedia";
 import { CinematicTransitionLayers } from "@/src/components/dom/CinematicTransitionLayers";
 import { getSceneIndex } from "@/src/lib/experience";
 import { useExperienceStore } from "@/src/store/experienceStore";
 import type { ExperienceConfig, QualityMode } from "@/src/types/experience";
+import { sampleExperience } from "@/src/lib/sampleExperience";
+import type { CSSProperties } from "react";
 
 const SceneCanvas = dynamic(
   () => import("@/src/components/three/SceneCanvas").then((module) => module.SceneCanvas),
@@ -20,15 +23,23 @@ export function StudioLivePreview({
   experience,
   active,
   setActive,
+  progress: controlledProgress,
+  onProgressChange,
+  gizmo = null,
 }: {
   experience: ExperienceConfig;
   active: number;
   setActive: (index: number) => void;
+  progress?: number;
+  onProgressChange?: (progress: number) => void;
+  gizmo?: StudioGizmoState | null;
 }) {
-  const [progress, setProgress] = useState(() => midpoint(experience.scenes[active].range));
+  const [internalProgress, setInternalProgress] = useState(() => midpoint(experience.scenes[active].range));
+  const progress = controlledProgress ?? internalProgress;
   const [viewport, setViewport] = useState<Viewport>("desktop");
   const [playing, setPlaying] = useState(false);
   const progressRef = useRef(progress);
+  const onProgressChangeRef = useRef(onProgressChange);
   const quality = useExperienceStore((state) => state.qualityMode);
   const webgl = useExperienceStore((state) => state.webglStatus);
   const stats = useExperienceStore((state) => state.rendererStats);
@@ -45,6 +56,9 @@ export function StudioLivePreview({
     };
   }, []);
 
+  useEffect(() => { progressRef.current = progress; }, [progress]);
+  useEffect(() => { onProgressChangeRef.current = onProgressChange; }, [onProgressChange]);
+
   useEffect(() => {
     const sceneIndex = getSceneIndex(progress, experience);
     useExperienceStore.getState().setScrollState(progress, 0, 0, sceneIndex);
@@ -59,7 +73,8 @@ export function StudioLivePreview({
       const next = (progressRef.current + (now - prior) / 18_000) % 1;
       prior = now;
       progressRef.current = next;
-      setProgress(next);
+      if (onProgressChangeRef.current) onProgressChangeRef.current(next);
+      else setInternalProgress(next);
       frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
@@ -69,8 +84,11 @@ export function StudioLivePreview({
   const seek = (value: number) => {
     const next = Math.max(0, Math.min(1, value));
     progressRef.current = next;
-    setProgress(next);
+    if (onProgressChangeRef.current) onProgressChangeRef.current(next);
+    else setInternalProgress(next);
   };
+  const aspect = viewport === "mobile" ? 9 / 16 : viewport === "tablet" ? 4 / 3 : 16 / 9;
+  const sampled = sampleExperience(progress, false, experience, aspect);
 
   const selectScene = (index: number) => {
     setPlaying(false);
@@ -93,8 +111,8 @@ export function StudioLivePreview({
       </div>
       <div className="studio-preview__viewport" data-viewport={viewport}>
         <div className="studio-preview__canvas">
-          <ExperienceConfigProvider value={experience}><SceneCanvas /><CinematicMedia /><CinematicTransitionLayers /></ExperienceConfigProvider>
-          <div className="studio-preview__copy">
+          <ExperienceConfigProvider value={experience}><StudioEditorProvider value={gizmo}><SceneCanvas /><CinematicMedia /><CinematicTransitionLayers /></StudioEditorProvider></ExperienceConfigProvider>
+          <div className="studio-preview__copy" style={{ opacity: sampled.motion.copy.opacity, translate: `0 ${sampled.motion.copy.y}px`, filter: `blur(${sampled.motion.copy.blur}px)` } as CSSProperties}>
             <span>{experience.scenes[active].copy.eyebrow}</span>
             <strong>{experience.scenes[active].copy.headline}</strong>
           </div>

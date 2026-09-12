@@ -7,6 +7,8 @@ import type {
   maskRevealSchema,
   maskPresetSchema,
   transitionLayerSchema,
+  motionTrackSchema,
+  motionEasingSchema,
 } from "@/src/lib/configSchema";
 export type Vec3 = [number, number, number];
 export type QualityTier = "low" | "medium" | "high";
@@ -20,6 +22,10 @@ export type ProductTrack = ProductRigDefinition["tracks"][number];
 export type MaskRevealDefinition = z.infer<typeof maskRevealSchema>;
 export type MaskPreset = z.infer<typeof maskPresetSchema>;
 export type TransitionLayerDefinition = z.infer<typeof transitionLayerSchema>;
+export type MotionTrack = z.infer<typeof motionTrackSchema>;
+export type MotionKeyframe = MotionTrack["keyframes"][number];
+export type MotionEasing = z.infer<typeof motionEasingSchema>;
+export type MotionViewport = MotionTrack["viewport"];
 export type SceneBlock = SceneDefinition["blocks"][number];
 export type SceneEasing = SceneDefinition["easing"];
 export type CameraPathPreset = CameraDefinition["path"];
@@ -40,4 +46,17 @@ export interface SampledExperienceState {
   world: WorldState;
   material: SceneDefinition["material"];
   post: PostState;
+  motion: SampledMotionState;
+}
+
+export interface SampledRigProperty {
+  value: number | boolean | Vec3;
+  blend: "absolute" | "add" | "multiply" | "offset";
+}
+
+export interface SampledMotionState {
+  copy: { opacity: number; y: number; blur: number };
+  media: { reveal?: number; opacity?: number };
+  layers: Record<string, number>;
+  rig: Record<string, Partial<Record<"position" | "rotation" | "scale" | "opacity" | "visible", SampledRigProperty>>>;
 }

@@ -22,6 +22,12 @@ CinematicFrame samples once per changed rendered progress/aspect. It uses one da
 
 CameraRig owns camera position, look target and FOV unless free camera is enabled. LabOrbitControls adopts the actual target on entry. PersistentHero owns its parent transform; autonomous Float motion was removed so poses are reproducible. Animation clips own transforms inside independent cloned asset roots. Do not animate the same transform using React props, GSAP and a mixer.
 
+Scene `motionTracks` are evaluated after the existing camera-path, object-motion, lighting, material and postprocessing sample. An all-viewport track applies first, then a matching desktop or mobile track may override it. The evaluation is pure and depends only on normalized local scene progress, viewport class and validated configuration. The editor never creates a second playback engine.
+
+Auxiliary motion output carries DOM copy, media reveal/opacity, transition-layer opacity and named product-rig node values. DOM consumers sample the same scene-local time. ProductRig restores GLB baselines, applies its existing global choreography, then applies scene-local sequencer values from the shared cinematic frame. This order keeps legacy tracks compatible while making a local scene override explicit.
+
+Studio transform controls are present only when the Sequence workspace enables record mode. They edit the selected vector key through a context that is null in the public runtime. Gizmo events are grouped into one undo command and cannot become autonomous render owners.
+
 ## Assets and ownership
 
 config.assets registers model, image, panorama, HDR environment and video instances. Models may declare lowUrl, scene membership, persistence and a scene-scrubbed animation clip. SceneAssets mounts required models and budgeted immediate neighbors. Nonpersistent inactive video is not prefetched. A persisted asset retains its world identity through all scenes; transient assets release their resource ownership after leaving the neighborhood.

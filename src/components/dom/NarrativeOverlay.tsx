@@ -25,7 +25,7 @@ export function NarrativeOverlay() {
     100 / Math.min(...experience.scenes.map((s) => s.range[1] - s.range[0])),
   );
   return (
-    <CinematicDomMotion cues={cues}>
+    <CinematicDomMotion cues={cues} experience={experience}>
     <main
       id="experience-content"
       className="narrative-document"

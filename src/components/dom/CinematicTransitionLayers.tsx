@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react";
 import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { cinematicProgress } from "@/src/lib/cinematicProgress";
 import { sampleTransitionLayer } from "@/src/lib/transitionLayers";
+import { remap01 } from "@/src/lib/math";
+import { sampleSceneMotion } from "@/src/lib/motionSequencer";
 import { useExperienceStore } from "@/src/store/experienceStore";
 
 export function CinematicTransitionLayers() {
@@ -18,11 +20,14 @@ export function CinematicTransitionLayers() {
       const layer = scene.media?.layers.find((item) => item.id === node.dataset.transitionLayer);
       return layer ? { node, scene, layer } : null;
     }).filter((item): item is NonNullable<typeof item> => Boolean(item));
+    const compact = matchMedia("(max-width: 760px)");
     const render = (progress: number) => {
       for (const item of layers) {
         const state = sampleTransitionLayer(progress, item.scene.range, item.layer);
+        const motion = sampleSceneMotion(item.scene, remap01(progress, item.scene.range[0], item.scene.range[1]), compact.matches);
+        const opacity = motion.layers[item.layer.id] ?? state.opacity;
         item.node.hidden = !state.visible;
-        item.node.style.opacity = String(state.opacity);
+        item.node.style.opacity = String(opacity);
         item.node.style.transform = `translate3d(0,${state.translateY}%,0) scale(${state.scale})`;
       }
     };
