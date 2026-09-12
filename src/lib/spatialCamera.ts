@@ -257,7 +257,7 @@ export function repairSpatialCameraTracks(
   spatial: SpatialScene,
   maxReroutes = 3,
 ): SpatialRepairResult {
-  let current = structuredClone(tracks) as MotionTrack[];
+  const current = structuredClone(tracks) as MotionTrack[];
   let reroutes = 0;
   for (const viewport of ["desktop", "mobile"] as const) {
     for (let attempt = 0; attempt < maxReroutes; attempt += 1) {
