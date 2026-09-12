@@ -6,8 +6,7 @@ import { extractGlbSpatialBounds } from "../src/platform/glbSpatialBounds";
 
 test("GLB inspector reports production nodes, meshes, materials and animations", () => {
   const file = fs.readFileSync("public/models/reference/burger.glb");
-  const buffer = file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength);
-  const report = inspectGlb(buffer);
+  const report = inspectGlb(file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength));
   assert.equal(report.version, 2);
   assert.ok(report.meshes.length >= 9);
   assert.ok(report.materials.length >= 5);
@@ -25,17 +24,22 @@ test("GLB inspector reports production nodes, meshes, materials and animations",
   assert.deepEqual(report.warnings, []);
 });
 
-test("GLB spatial bounds extract finite production geometry hulls", () => {
-  const file = fs.readFileSync("public/models/reference/burger.glb");
-  const buffer = file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength);
-  const bounds = extractGlbSpatialBounds(buffer);
-  assert.ok(bounds);
-  assert.ok(bounds.positionAccessors > 0);
-  assert.ok(bounds.radius > 0);
-  assert.ok(bounds.min.every(Number.isFinite));
-  assert.ok(bounds.max.every(Number.isFinite));
-  assert.ok(bounds.halfSize.every((value) => value > 0));
-  assert.ok(bounds.max.every((value, index) => value > bounds.min[index]));
+test("spatial GLB inspection applies node transforms and exposes structural nodes", () => {
+  const file = fs.readFileSync("public/models/reference/pavilion.glb");
+  const report = extractGlbSpatialBounds(file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength));
+  assert.ok(report);
+  assert.ok(Math.abs(report.min[0] + 3.2) < 0.001);
+  assert.ok(Math.abs(report.max[0] - 3.2) < 0.001);
+  assert.ok(Math.abs(report.min[2] + 3.2) < 0.001);
+  assert.ok(Math.abs(report.max[2] - 3.2) < 0.001);
+  assert.ok(report.min[1] < -1.27 && report.max[1] > 1.68);
+  const wall = report.nodes.find((node) => node.name === "left-wall");
+  const door = report.nodes.find((node) => node.name === "door");
+  assert.ok(wall);
+  assert.ok(door);
+  assert.ok(wall.halfSize[2] > 2.9);
+  assert.equal(wall.animated, false);
+  assert.equal(door.animated, true);
 });
 
 test("GLB inspector rejects malformed input", () => {
