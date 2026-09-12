@@ -16,6 +16,7 @@ import type { CameraDefinition, CameraState } from "@/src/types/experience";
 import { useExperienceStore } from "@/src/store/experienceStore";
 import { dispatchForgeLifecycle } from "@/src/runtime/interactionEvents";
 import {
+  clearShaderOverrides,
   readShaderTarget,
   writeShaderTarget,
   type ForgeShaderValue,
@@ -60,6 +61,7 @@ export function RuntimeCommandController() {
       if (!current) return;
       if (current.frame !== null) cancelAnimationFrame(current.frame);
       current.frame = null;
+      sequence.current = null;
       if (emit) dispatchForgeLifecycle("action-cancelled", current.name, { kind: "sequence", reason });
     };
 
@@ -83,7 +85,6 @@ export function RuntimeCommandController() {
       if (detail.command === "stop") {
         const current = sequence.current;
         if (current?.name === detail.name) cancelSequence("stopped", false);
-        sequence.current = null;
         useExperienceStore.getState().setRuntimeProgress(null);
         dispatchForgeLifecycle("sequence-complete", detail.name, { completed: false, reason: "stopped" });
         return;
@@ -114,6 +115,7 @@ export function RuntimeCommandController() {
         playback.current = end;
         useExperienceStore.getState().setRuntimeProgress(end);
         if (playback.release) useExperienceStore.getState().setRuntimeProgress(null);
+        if (sequence.current === playback) sequence.current = null;
         dispatchForgeLifecycle("sequence-complete", detail.name, { completed: true, reason: "finished" });
         return;
       }
@@ -141,6 +143,7 @@ export function RuntimeCommandController() {
           }
           playback.current = end;
           if (playback.release) useExperienceStore.getState().setRuntimeProgress(null);
+          if (sequence.current === playback) sequence.current = null;
           dispatchForgeLifecycle("sequence-complete", detail.name, { completed: true, reason: "finished" });
         };
         playback.frame = requestAnimationFrame(tick);
@@ -153,6 +156,7 @@ export function RuntimeCommandController() {
       if (!current) return;
       if (current.frame !== null) cancelAnimationFrame(current.frame);
       current.frame = null;
+      camera.current = null;
       if (emit) dispatchForgeLifecycle("action-cancelled", current.name, { kind: "camera", reason });
     };
 
@@ -170,6 +174,7 @@ export function RuntimeCommandController() {
         const duration = detail.durationMs ?? 700;
         if (!store.runtimeCamera || store.reducedMotion || duration === 0) {
           store.setRuntimeCamera(null);
+          camera.current = null;
           dispatchForgeLifecycle("camera-complete", detail.name, { completed: true, reason: "reset" });
           return;
         }
@@ -185,6 +190,7 @@ export function RuntimeCommandController() {
           else {
             playback.frame = null;
             store.setRuntimeCamera(null);
+            if (camera.current === playback) camera.current = null;
             dispatchForgeLifecycle("camera-complete", detail.name, { completed: true, reason: "reset" });
           }
         };
@@ -204,6 +210,7 @@ export function RuntimeCommandController() {
       if (store.reducedMotion || duration === 0) {
         store.setRuntimeCamera(definition.to);
         if (detail.release) store.setRuntimeCamera(null);
+        if (camera.current === playback) camera.current = null;
         dispatchForgeLifecycle("camera-complete", detail.name, { completed: true, reason: "finished" });
         return;
       }
@@ -217,6 +224,7 @@ export function RuntimeCommandController() {
         else {
           playback.frame = null;
           if (detail.release) useExperienceStore.getState().setRuntimeCamera(null);
+          if (camera.current === playback) camera.current = null;
           dispatchForgeLifecycle("camera-complete", detail.name, { completed: true, reason: "finished" });
         }
       };
@@ -351,6 +359,7 @@ export function RuntimeCommandController() {
         cue.element.onended = null;
       }
       audio.current.clear();
+      clearShaderOverrides();
       useExperienceStore.getState().resetRuntimeOverrides();
     };
   }, []);
