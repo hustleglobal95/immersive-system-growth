@@ -1,3 +1,18 @@
+test("Studio edits a recipe in the browser and applies portable presets", async ({ page }) => {
+  await page.goto("/studio");
+  await page.getByRole("button", { name: "recipe", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Recipe editor" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Start from a visual system" })).toBeVisible();
+  await page.getByLabel("Recipe search").fill("restaurant");
+  await expect(page.getByText("Restaurant journey")).toBeVisible();
+  await page.getByRole("button", { name: "Select recipe" }).click();
+  await page.getByRole("button", { name: "Use selected recipe" }).click();
+  await expect(page.getByText("Restaurant journey recipe loaded into the draft.")).toBeVisible();
+  await page.getByLabel("Recipe headline").fill("A directed restaurant story");
+  await page.getByLabel("Recipe motion preset").selectOption("cinematic-focus");
+  await expect(page.getByText("Applied cinematic-focus")).toBeVisible();
+  await expect(page.getByText("Production schema valid")).toBeVisible();
+});
 import { expect, test } from "@playwright/test";
 
 test("Studio edits timelines and inspects GLB nodes without mounting the cinematic runtime", async ({ page }) => {
