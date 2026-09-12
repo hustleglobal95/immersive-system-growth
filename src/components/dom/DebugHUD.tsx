@@ -1,12 +1,17 @@
 "use client";
 import { useExperienceStore } from "@/src/store/experienceStore";
+import { useInteractionStore } from "@/src/store/interactionStore";
 import { experience } from "@/src/lib/experience";
 export function DebugHUD() {
   const scene = useExperienceStore((s) => s.activeScene),
     quality = useExperienceStore((s) => s.quality),
     mode = useExperienceStore((s) => s.qualityMode),
     stats = useExperienceStore((s) => s.rendererStats),
-    camera = useExperienceStore((s) => s.cameraTelemetry);
+    camera = useExperienceStore((s) => s.cameraTelemetry),
+    interactionState = useInteractionStore((s) => s.state),
+    lastEvent = useInteractionStore((s) => s.lastEvent),
+    matchedTriggers = useInteractionStore((s) => s.matchedTriggers),
+    graphHalted = useInteractionStore((s) => s.halted);
   return (
     <aside className="debug-hud" aria-label="3D debug information">
       <strong>FORGE HUD</strong>
@@ -14,6 +19,10 @@ export function DebugHUD() {
         {Object.entries({
           scene: experience.scenes[scene]?.label,
           quality: `${quality} (${mode})`,
+          interaction: interactionState,
+          "graph event": lastEvent ? [lastEvent.type, lastEvent.target ?? lastEvent.sceneId ?? lastEvent.name].filter(Boolean).join(" / ") : "none",
+          "graph triggers": matchedTriggers.length ? matchedTriggers.join(", ") : "none",
+          "graph guard": graphHalted ? "HALTED" : "ok",
           camera: camera.position.map((n) => n.toFixed(2)).join(", "),
           target: camera.target.map((n) => n.toFixed(2)).join(", "),
           fov: camera.fov.toFixed(1),
