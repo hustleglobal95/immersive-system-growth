@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import { sampleExperience } from "@/src/lib/sampleExperience";
 import { applyCameraDirector, type CameraDirectorPlan } from "@/src/platform/cameraDirector";
 import { replaceScene } from "@/src/platform/studioPresets";
 import { getSpatialBoundsSnapshot } from "@/src/runtime/spatialRegistry";
+import { StudioLivePreview } from "@/src/studio/StudioLivePreview";
 import type { CameraDefinition, ExperienceConfig, SceneDefinition, Vec3 } from "@/src/types/experience";
 
 const paths: CameraDefinition["path"][] = ["linear", "dolly", "arc", "orbit", "crane", "threshold", "flyby", "swoop", "macro", "pullback", "subject-orbit"];
@@ -23,12 +24,28 @@ export function SceneDirector({
   const scene = experience.scenes[active];
   const [directorNotice, setDirectorNotice] = useState("");
   const [directorPlan, setDirectorPlan] = useState<CameraDirectorPlan | null>(null);
+  const [previewProgress, setPreviewProgress] = useState(() => midpoint(scene.range));
+  const [liveSpatialCount, setLiveSpatialCount] = useState(0);
   const update = (changes: Partial<SceneDefinition>) => setExperience((current) => replaceScene(current, active, { ...current.scenes[active], ...changes }));
   const updateCamera = (camera: CameraDefinition) => update({ camera });
   const points = useMemo(() => Array.from({ length: 49 }, (_, index) => {
     const progress = scene.range[0] + (scene.range[1] - scene.range[0]) * index / 48;
     return sampleExperience(progress, false, experience).camera.position;
   }), [experience, scene.range]);
+
+  useEffect(() => {
+    setPreviewProgress(midpoint(scene.range));
+    setDirectorPlan(null);
+    setDirectorNotice("");
+  }, [active, scene.range]);
+
+  useEffect(() => {
+    const refresh = () => setLiveSpatialCount(getSpatialBoundsSnapshot().length);
+    refresh();
+    const timer = window.setInterval(refresh, 250);
+    return () => window.clearInterval(timer);
+  }, [active, experience.heroModel, experience.assets]);
+
   const autoDirect = () => {
     const liveBounds = getSpatialBoundsSnapshot();
     const result = applyCameraDirector(experience, active, { liveBounds });
@@ -38,16 +55,23 @@ export function SceneDirector({
     const planner = result.plan.spatial.planner;
     setDirectorNotice(`${result.plan.shotLabel} · ${Math.round(result.plan.confidence * 100)}% confidence. ${result.plan.rationale} ${result.replacedTracks ? `Replaced ${result.replacedTracks} existing camera track${result.replacedTracks === 1 ? "" : "s"}.` : "Added editable camera tracks."} Spatial source: ${result.plan.spatial.boundsSource}. Minimum clearance ${spatial.minClearance.toFixed(2)}. Visibility waypoints ${planner.routeWaypoints}. Composition repairs ${planner.compositionRepairs}.`);
   };
+  const chooseScene = (index: number) => {
+    setActive(index);
+    setPreviewProgress(midpoint(experience.scenes[index].range));
+    setDirectorNotice("");
+    setDirectorPlan(null);
+  };
 
   return (
     <div className="studio-grid studio-grid--director">
       <section className="studio-card director-camera">
         <div className="studio-card__head"><div><span>CAMERA DIRECTOR</span><h2>Path and framing</h2></div><code>{scene.id}</code></div>
-        <label>Scene<select value={active} onChange={(event) => { setActive(Number(event.target.value)); setDirectorNotice(""); setDirectorPlan(null); }}>{experience.scenes.map((item, index) => <option key={item.id} value={index}>{String(index + 1).padStart(2, "0")} / {item.label}</option>)}</select></label>
+        <label>Scene<select value={active} onChange={(event) => chooseScene(Number(event.target.value))}>{experience.scenes.map((item, index) => <option key={item.id} value={index}>{String(index + 1).padStart(2, "0")} / {item.label}</option>)}</select></label>
         <CameraPathDiagram points={points} />
         <div className="director-auto">
           <button type="button" className="studio-primary" onClick={autoDirect}>Auto-direct camera</button>
           <span>Scores every Director shot against scene intent, live geometry, subject visibility, safe framing, floor clearance and scene-to-scene continuity, then authors editable tracks.</span>
+          <strong data-testid="director-spatial-status">{liveSpatialCount > 0 ? `Live geometry ready · ${liveSpatialCount} spatial hull${liveSpatialCount === 1 ? "" : "s"}` : "Geometry preview warming up · proxy safety active"}</strong>
         </div>
         {directorNotice && <p className="sequencer-notice" role="status">{directorNotice}</p>}
         {directorPlan && <SpatialDirectorReport plan={directorPlan} />}
@@ -88,6 +112,14 @@ export function SceneDirector({
         <NullableControl label="Clearcoat" value={scene.material.clearcoat} onChange={(clearcoat) => update({ material: { ...scene.material, clearcoat } })} />
         <p className="studio-muted">Asset values remain untouched until an override is enabled. Tint is blended against each cloned source material instead of replacing its texture.</p>
       </section>
+
+      <StudioLivePreview
+        experience={experience}
+        active={active}
+        setActive={chooseScene}
+        progress={previewProgress}
+        onProgressChange={setPreviewProgress}
+      />
     </div>
   );
 }
@@ -135,4 +167,8 @@ function ColorControl({ label, value, onChange }: { label: string; value: string
 
 function NullableControl({ label, value, onChange }: { label: string; value: number | null; onChange: (value: number | null) => void }) {
   return <div className="nullable-control"><label className="studio-check"><input type="checkbox" checked={value !== null} onChange={(event) => onChange(event.target.checked ? .5 : null)} />Override {label.toLowerCase()}</label><NumberControl label={label} value={value ?? .5} min={0} max={1} step={.01} onChange={(next) => onChange(next)} /></div>;
+}
+
+function midpoint(range: [number, number]) {
+  return range[0] + (range[1] - range[0]) * 0.5;
 }
