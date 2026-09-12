@@ -17,6 +17,7 @@ import { StudioLivePreview } from "@/src/studio/StudioLivePreview";
 import { SceneDirector } from "@/src/studio/SceneDirector";
 import { LayerEditor } from "@/src/studio/LayerEditor";
 import { AssetManager } from "@/src/studio/AssetManager";
+import { AssetBankPanel } from "@/src/studio/AssetBankPanel";
 import { TemplateGallery } from "@/src/studio/TemplateGallery";
 import { SequencerEditor } from "@/src/studio/SequencerEditor";
 import { InteractionGraphEditor } from "@/src/studio/InteractionGraphEditor";
@@ -31,7 +32,7 @@ const initialProject = parseStudioProject(rawProject);
 const initialAssetManifest = rawAssetManifest as AssetManifest;
 const initialInteractionGraph = parseInteractionGraph(rawInteractionGraph);
 const initialCreativeDirection = parseCreativeDirection(rawCreativeDirection);
-const tabs = ["project", "creative", "templates", "preview", "director", "timeline", "sequence", "interactions", "masks", "layers", "assets", "model", "integrations", "publish", "telemetry"] as const;
+const tabs = ["project", "creative", "templates", "preview", "director", "timeline", "sequence", "interactions", "masks", "layers", "assets", "bank", "model", "integrations", "publish", "telemetry"] as const;
 type Tab = (typeof tabs)[number];
 
 export function StudioWorkbench() {
@@ -72,7 +73,8 @@ export function StudioWorkbench() {
           <button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Export experience</button>
           <button type="button" onClick={() => downloadJson("interaction-graph.json", draft.interactionGraph)}>Export interactions</button>
           <button type="button" onClick={() => downloadJson("studio-project.json", draft.project)}>Export project</button>
-          <button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Export assets</button>\n          <button type="button" onClick={() => downloadJson("creative-direction.json", creative)}>Export direction</button>
+          <button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Export assets</button>
+          <button type="button" onClick={() => downloadJson("creative-direction.json", creative)}>Export direction</button>
         </div>
       </header>
 
@@ -100,7 +102,8 @@ export function StudioWorkbench() {
       )}
       {notice && <p className="studio-message" role="status">{notice}</p>}
 
-      {tab === "project" && <ProjectPanel {...draft} />}\n      {tab === "creative" && <CreativeDirectionPanel direction={creative} setDirection={setCreative} />}
+      {tab === "project" && <ProjectPanel {...draft} />}
+      {tab === "creative" && <CreativeDirectionPanel direction={creative} setDirection={setCreative} />}
       {tab === "templates" && <TemplateGallery experience={draft.experience} setExperience={draft.setExperience} />}
       {tab === "preview" && <StudioLivePreview experience={draft.experience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "director" && <SceneDirector experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
@@ -110,6 +113,7 @@ export function StudioWorkbench() {
       {tab === "masks" && <MaskLab experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "layers" && <LayerEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "assets" && <AssetManager setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} active={Math.min(activeScene, draft.experience.scenes.length - 1)} />}
+      {tab === "bank" && <AssetBankPanel experience={draft.experience} setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} interactionGraph={draft.interactionGraph} undo={draft.undoExperience} canUndo={draft.canUndoExperience} />}
       {tab === "model" && <GlbInspectorPanel experience={draft.experience} setExperience={draft.setExperience} />}
       {tab === "integrations" && <IntegrationsPanel project={draft.project} setProject={draft.setProject} />}
       {tab === "publish" && <PublishPanel project={draft.project} setProject={draft.setProject} experience={draft.experience} assetManifest={draft.assetManifest} />}
@@ -136,6 +140,7 @@ function titleFor(tab: Tab) {
     masks: "Mask reveal laboratory",
     layers: "Transition layer composer",
     assets: "Asset intake and budgets",
+    bank: "Asset bank",
     model: "Model inspection",
     integrations: "Content connections",
     publish: "Release pipeline",

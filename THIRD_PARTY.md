@@ -8,4 +8,6 @@ GSAP is distributed under GreenSock's current standard no-charge license rather 
 
 Optional integrations documented but not vendored include r3f-scroll-rig, UI/UX Pro Max and Theatre.js.
 
+The asset bank includes metadata retrieved from the [Poly Haven public API](https://github.com/Poly-Haven/Public-API) and displays provider-hosted previews under its [API terms](https://github.com/Poly-Haven/Public-API/blob/master/ToS.md). Powered by Poly Haven credit is visible in Studio. Source assets are offered under [CC0](https://polyhaven.com/license); that designation does not relicense Poly Haven website content or previews. No Poly Haven application source or source-asset binaries are vendored. Each catalog record retains provider, author, origin and license information.
+
 Before commercial redistribution, review the exact licenses and versions resolved by your package manager. This repository intentionally does not copy source code from those optional projects.

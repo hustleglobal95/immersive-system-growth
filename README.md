@@ -76,6 +76,12 @@ The scene lab provides timeline scrubbing, actual camera/target/FOV telemetry, c
 
 Read [architecture](docs/ARCHITECTURE.md), [Studio](docs/STUDIO.md), [production offer](docs/PRODUCTION_OFFER.md), [product rigs](docs/PRODUCT_RIGS.md), [asset pipeline](docs/ASSET_PIPELINE.md), [authoring](docs/AUTHORING.md), [accessibility](docs/ACCESSIBILITY.md), [validation](docs/VALIDATION.md) and [deployment](docs/DEPLOYMENT.md). `CLAUDE.md` is the contribution and agent operating contract.
 
+## Asset bank
+
+Studio's **bank** tab searches a checked-in catalog of 2,375 Poly Haven source listings, seven verified Forge reference assets and six coordinated reference kits. Filter and shortlist sources, inspect GLB nodes and previews, and insert prepared assets into a scene. Source listings require preparation before insertion; the seed does not contain client-approved artwork.
+
+Run `npm run bank:validate` to check catalog integrity. See [asset bank operations](docs/ASSET_BANK.md) for provider sync, imports, preparation, storage configuration and scene-kit review. Large source binaries remain outside Git and the client bundle.
+
 ## Verification
 
 ```bash

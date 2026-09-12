@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "assets": 2382,
+  "shards": [
+    "c0dcf448ceb64837040a7a140179b7af22a8dfe41913611ddd33ec487c7acc51.json",
+    "8126e22dea34b4265d5d3632961ed044a350a726d1faa4e3edced2314b8e48f6.json",
+    "f4164712f4618df58787f9f0cede301c9a8981eacfce8e82c59f1c9a04efe187.json",
+    "9de21a147e44b1584cef62b44e188236efc4bb904012d2b5bbedd26076f7dcfb.json",
+    "1316e280cfdea82bfba2f780a42853a2fe63e20cc2710887a2f57ac50d15de30.json",
+    "e6e9cf872303388f48a53da899aae83cd5b4cff33e93bf2e1da0c629c74d6a6f.json",
+    "f164aa2e8ea8648691c32783c882e9492727809e5f90fd882ba6e2ab663889c6.json",
+    "766dffd18fe59b8ecd79c712bf1244522d67ea7072effac3c9c049ba040036ed.json",
+    "006f235d4e10165f65f1d8b49aa1eb4469a907d33e35d0036bb87e44c9f00c12.json",
+    "35721ea8736255dc1896e279acc48c8cc7d9188faac4cc50f93af01ffeb008ec.json"
+  ],
+  "kits": [
+    {
+      "id": "forge-automotive-kit",
+      "title": "Velocity — Automotive reference",
+      "description": "6 coordinated reference scenes with model, lighting, cameras, copy and motion. Review the concept content before client use.",
+      "industry": "automotive",
+      "assetIds": [
+        "forge-automotive"
+      ],
+      "recipe": "automotive",
+      "status": "reference",
+      "artDirection": "Original automotive cinematic reference with real GLB loading, accessible content and responsive camera choreography."
+    },
+    {
+      "id": "forge-burger-showcase-kit",
+      "title": "Ember Bun — Fire-built burger story",
+      "description": "6 coordinated reference scenes with model, lighting, cameras, copy and motion. Review the concept content before client use.",
+      "industry": "burger-showcase",
+      "assetIds": [
+        "forge-burger"
+      ],
+      "recipe": "burger-showcase",
+      "status": "reference",
+      "artDirection": "Original product-assembly restaurant experience with named ingredients, semantic menu modules and reversible scroll choreography."
+    },
+    {
+      "id": "forge-product-kit",
+      "title": "Form — Product reference",
+      "description": "6 coordinated reference scenes with model, lighting, cameras, copy and motion. Review the concept content before client use.",
+      "industry": "product",
+      "assetIds": [
+        "forge-product"
+      ],
+      "recipe": "product",
+      "status": "reference",
+      "artDirection": "Original product cinematic reference with real GLB loading, accessible content and responsive camera choreography."
+    },
+    {
+      "id": "forge-real-estate-kit",
+      "title": "Pavilion — A spatial property journey",
+      "description": "6 coordinated reference scenes with model, lighting, cameras, copy and motion. Review the concept content before client use.",
+      "industry": "real-estate",
+      "assetIds": [
+        "forge-pavilion"
+      ],
+      "recipe": "real-estate",
+      "status": "reference",
+      "artDirection": "Original real-estate cinematic reference with real GLB loading, accessible content and responsive camera choreography."
+    },
+    {
+      "id": "forge-restaurant-kit",
+      "title": "At the table — Restaurant reference",
+      "description": "6 coordinated reference scenes with model, lighting, cameras, copy and motion. Review the concept content before client use.",
+      "industry": "restaurant",
+      "assetIds": [
+        "forge-restaurant"
+      ],
+      "recipe": "restaurant",
+      "status": "reference",
+      "artDirection": "Original restaurant cinematic reference with real GLB loading, accessible content and responsive camera choreography."
+    },
+    {
+      "id": "forge-saas-kit",
+      "title": "Signal — Spatial interface reference",
+      "description": "6 coordinated reference scenes with model, lighting, cameras, copy and motion. Review the concept content before client use.",
+      "industry": "saas",
+      "assetIds": [
+        "forge-saas"
+      ],
+      "recipe": "saas",
+      "status": "reference",
+      "artDirection": "Original saas cinematic reference with real GLB loading, accessible content and responsive camera choreography."
+    }
+  ]
+}
