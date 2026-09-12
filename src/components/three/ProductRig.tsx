@@ -9,7 +9,7 @@ import { sampleProductTrack } from "@/src/lib/productRig";
 import { useExperienceStore } from "@/src/store/experienceStore";
 import type { ProductRigDefinition, Vec3 } from "@/src/types/experience";
 import { applyHeroMaterial, captureHeroMaterial } from "@/src/lib/heroMaterial";
-import { registerMaterialShaderTarget } from "@/src/runtime/shaderRegistry";
+import { registerMaterialShaderTarget, reapplyShaderTarget } from "@/src/runtime/shaderRegistry";
 
 interface Baseline {
   object: Object3D;
@@ -188,6 +188,9 @@ export function ProductRig({ url, rig }: { url: string; rig: ProductRigDefinitio
         baseline.object.rotation.y += orbit.yaw;
       }
     }
+
+    reapplyShaderTarget("hero");
+    for (const name of prepared.baselines.keys()) reapplyShaderTarget(`rig:${name}`);
   });
 
   return (
