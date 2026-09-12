@@ -8,6 +8,16 @@ const className = z.string().regex(/^[a-zA-Z_][a-zA-Z0-9_-]{0,79}$/);
 const primitive = z.union([z.string().max(500), finite, z.boolean(), z.null()]);
 const primitiveRecord = z.record(z.string().min(1).max(80), primitive);
 const position = z.object({ x: finite.min(-5000).max(5000), y: finite.min(-5000).max(5000) }).strict();
+const durationMs = finite.int().min(0).max(120000);
+const audioUrl = z.string().refine(
+  (value) => /^\/(?!\/)[^\s?#]*$/.test(value) || /^https:\/\/[^\s]+$/.test(value),
+  "Use a root-relative path or HTTPS URL",
+);
+const navigationUrl = z.string().refine(
+  (value) => /^(?:\/(?!\/)|#[a-z]|https:\/\/|mailto:)/i.test(value) && !/[\s<>]/.test(value),
+  "Unsafe or unsupported navigation URL",
+);
+const runtimeEasing = z.enum(["linear", "smooth", "ease-in", "ease-out", "ease-in-out"]);
 
 export const interactionEventTypeSchema = z.enum([
   "scene-enter",
@@ -16,11 +26,56 @@ export const interactionEventTypeSchema = z.enum([
   "hover-enter",
   "hover-leave",
   "pointer",
+  "drag-start",
+  "drag",
+  "drag-end",
+  "key",
+  "wheel",
+  "orientation",
+  "video-time",
   "custom",
   "hotspot-open",
   "hotspot-close",
   "idle",
+  "sequence-complete",
+  "camera-complete",
+  "audio-complete",
+  "shader-complete",
+  "action-cancelled",
 ]);
+
+const sequenceAction = z.object({
+  type: z.literal("sequence"),
+  name: eventName,
+  command: z.enum(["play", "pause", "stop"]),
+  durationMs: durationMs.optional(),
+  loop: z.boolean().default(false),
+  release: z.boolean().default(false),
+}).strict();
+const cameraAction = z.object({
+  type: z.literal("camera"),
+  name: eventName,
+  command: z.enum(["play", "reset"]).default("play"),
+  durationMs: durationMs.optional(),
+  release: z.boolean().default(false),
+}).strict();
+const audioAction = z.object({
+  type: z.literal("audio"),
+  name: eventName,
+  command: z.enum(["play", "pause", "stop"]),
+  src: audioUrl.optional(),
+  volume: finite.min(0).max(1).optional(),
+  loop: z.boolean().optional(),
+  fadeMs: durationMs.max(10000).optional(),
+}).strict();
+const shaderAction = z.object({
+  type: z.literal("shader"),
+  target: token,
+  parameter: token,
+  value: z.union([finite, z.string().max(120), z.boolean()]),
+  durationMs: durationMs.max(30000).optional(),
+  easing: runtimeEasing.default("smooth"),
+}).strict();
 
 export const interactionActionSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("set-variable"), key: id, value: primitive }).strict(),
@@ -31,10 +86,17 @@ export const interactionActionSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("class"), target: token, className, mode: z.enum(["add", "remove", "toggle"]) }).strict(),
   z.object({ type: z.literal("seek"), progress: finite.min(0).max(1), behavior: z.enum(["auto", "smooth"]).default("smooth") }).strict(),
   z.object({ type: z.literal("emit"), name: eventName, payload: primitiveRecord.default({}) }).strict(),
-  z.object({ type: z.literal("sequence"), name: eventName, command: z.enum(["play", "pause", "stop"]) }).strict(),
-  z.object({ type: z.literal("camera"), name: eventName, command: z.enum(["play", "reset"]).default("play") }).strict(),
-  z.object({ type: z.literal("audio"), name: eventName, command: z.enum(["play", "pause", "stop"]), volume: finite.min(0).max(1).optional() }).strict(),
-  z.object({ type: z.literal("shader"), target: token, parameter: token, value: z.union([finite, z.string().max(120), z.boolean()]) }).strict(),
+  sequenceAction,
+  cameraAction,
+  audioAction,
+  shaderAction,
+  z.object({
+    type: z.literal("orbit"),
+    target: token,
+    command: z.enum(["enable", "disable", "reset"]),
+    sensitivity: finite.min(0.0005).max(0.05).optional(),
+  }).strict(),
+  z.object({ type: z.literal("navigate"), href: navigationUrl, replace: z.boolean().default(false) }).strict(),
 ]);
 
 const nodeBase = {
@@ -42,6 +104,23 @@ const nodeBase = {
   label: z.string().min(1).max(80),
   position,
 };
+
+const targetedEvents = new Set([
+  "click",
+  "hover-enter",
+  "hover-leave",
+  "drag-start",
+  "drag",
+  "drag-end",
+]);
+const namedEvents = new Set([
+  "custom",
+  "sequence-complete",
+  "camera-complete",
+  "audio-complete",
+  "shader-complete",
+  "action-cancelled",
+]);
 
 export const interactionTriggerNodeSchema = z.object({
   ...nodeBase,
@@ -53,14 +132,14 @@ export const interactionTriggerNodeSchema = z.object({
   delayMs: finite.int().min(250).max(120000).optional(),
   states: z.array(id).max(24).default([]),
 }).strict().superRefine((node, context) => {
-  if (["click", "hover-enter", "hover-leave"].includes(node.event) && !node.target) {
+  if (targetedEvents.has(node.event) && !node.target) {
     context.addIssue({ code: "custom", path: ["target"], message: `${node.event} triggers require a target` });
   }
   if (["scene-enter", "scene-exit"].includes(node.event) && !node.sceneId) {
     context.addIssue({ code: "custom", path: ["sceneId"], message: `${node.event} triggers require a sceneId` });
   }
-  if (node.event === "custom" && !node.name) {
-    context.addIssue({ code: "custom", path: ["name"], message: "Custom triggers require a name" });
+  if (namedEvents.has(node.event) && !node.name) {
+    context.addIssue({ code: "custom", path: ["name"], message: `${node.event} triggers require a name` });
   }
   if (node.event === "idle" && node.delayMs === undefined) {
     context.addIssue({ code: "custom", path: ["delayMs"], message: "Idle triggers require delayMs" });
@@ -174,6 +253,7 @@ export type InteractionConditionNode = z.infer<typeof interactionConditionNodeSc
 export type InteractionEdge = z.infer<typeof interactionEdgeSchema>;
 export type InteractionGraph = z.infer<typeof interactionGraphSchema>;
 export type InteractionPrimitive = z.infer<typeof primitive>;
+export type RuntimeEasing = z.infer<typeof runtimeEasing>;
 
 export function parseInteractionGraph(value: unknown): InteractionGraph {
   return interactionGraphSchema.parse(value);

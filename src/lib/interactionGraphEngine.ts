@@ -159,7 +159,7 @@ function matchesTrigger(node: InteractionTriggerNode, event: InteractionEvent, s
   if (node.states.length && !node.states.includes(state)) return false;
   if (node.target && node.target !== event.target) return false;
   if (node.sceneId && node.sceneId !== event.sceneId) return false;
-  if (node.event === "custom" && node.name !== event.name) return false;
+  if (node.name && node.name !== event.name) return false;
   if (node.event === "idle" && event.name && event.name !== node.id) return false;
   return true;
 }
@@ -235,5 +235,7 @@ function describeAction(action: InteractionAction) {
     case "camera": return `${action.command} camera ${action.name}`;
     case "audio": return `${action.command} audio ${action.name}`;
     case "shader": return `shader ${action.target}.${action.parameter}`;
+    case "orbit": return `${action.command} orbit ${action.target}`;
+    case "navigate": return `navigate ${action.href}`;
   }
 }

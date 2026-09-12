@@ -95,3 +95,64 @@ test("cycle guard halts runaway graphs instead of locking the runtime", () => {
   assert.equal(result.halted, true);
   assert.ok(result.trace.some((entry) => entry.kind === "guard"));
 });
+
+test("Forge 6 runtime action contracts validate with bounded production controls", () => {
+  const actions = [
+    { type: "sequence", name: "ingredients", command: "play", durationMs: 2200, loop: false, release: true },
+    { type: "camera", name: "detail-approach", command: "play", durationMs: 1200, release: false },
+    { type: "audio", name: "ambient", command: "play", src: "/audio/ambient.mp3", volume: .6, loop: true, fadeMs: 800 },
+    { type: "shader", target: "hero", parameter: "roughness", value: .2, durationMs: 500, easing: "ease-in-out" },
+    { type: "orbit", target: "rig:top-bun", command: "enable", sensitivity: .006 },
+    { type: "navigate", href: "/contact", replace: false },
+  ];
+  const runtimeGraph = parseInteractionGraph({
+    version: 1,
+    id: "runtime-actions",
+    initialState: "idle",
+    states: ["idle"],
+    variables: {},
+    nodes: [
+      { id: "start", kind: "trigger", label: "Start", position: { x: 0, y: 0 }, event: "custom", name: "start", states: [] },
+      ...actions.map((action, index) => ({ id: `action-${index + 1}`, kind: "action", label: `Action ${index + 1}`, position: { x: index + 1, y: 0 }, action })),
+    ],
+    edges: actions.map((_, index) => ({ id: `edge-${index + 1}`, from: index ? `action-${index}` : "start", to: `action-${index + 1}`, branch: "always", priority: 0 })),
+    mobileSubstitutions: [],
+  });
+  const result = runInteractionEvent(runtimeGraph, createInteractionSnapshot(runtimeGraph), { type: "custom", name: "start" }, { quality: "high", reducedMotion: false });
+  assert.deepEqual(result.effects.map((effect) => effect.action.type), ["sequence", "camera", "audio", "shader", "orbit", "navigate"]);
+});
+
+test("lifecycle event names match deterministically", () => {
+  const lifecycle = parseInteractionGraph({
+    version: 1,
+    id: "lifecycle",
+    initialState: "idle",
+    states: ["idle"],
+    variables: {},
+    nodes: [
+      { id: "done", kind: "trigger", label: "Sequence done", position: { x: 0, y: 0 }, event: "sequence-complete", name: "ingredients", states: [] },
+      { id: "mark", kind: "action", label: "Mark", position: { x: 1, y: 0 }, action: { type: "emit", name: "advanced", payload: {} } },
+    ],
+    edges: [{ id: "done-mark", from: "done", to: "mark", branch: "always", priority: 0 }],
+    mobileSubstitutions: [],
+  });
+  const wrong = runInteractionEvent(lifecycle, createInteractionSnapshot(lifecycle), { type: "sequence-complete", name: "arrival" }, { quality: "high", reducedMotion: false });
+  assert.equal(wrong.effects.length, 0);
+  const correct = runInteractionEvent(lifecycle, createInteractionSnapshot(lifecycle), { type: "sequence-complete", name: "ingredients" }, { quality: "high", reducedMotion: false });
+  assert.equal(correct.effects[0]?.action.type, "emit");
+});
+
+test("drag targets are required and navigation and audio URLs fail closed", () => {
+  const base = {
+    version: 1,
+    id: "validation",
+    initialState: "idle",
+    states: ["idle"],
+    variables: {},
+    edges: [],
+    mobileSubstitutions: [],
+  } as const;
+  assert.throws(() => parseInteractionGraph({ ...base, nodes: [{ id: "drag", kind: "trigger", label: "Drag", position: { x: 0, y: 0 }, event: "drag", states: [] }] }));
+  assert.throws(() => parseInteractionGraph({ ...base, nodes: [{ id: "nav", kind: "action", label: "Nav", position: { x: 0, y: 0 }, action: { type: "navigate", href: "javascript:alert(1)" } }] }));
+  assert.throws(() => parseInteractionGraph({ ...base, nodes: [{ id: "audio", kind: "action", label: "Audio", position: { x: 0, y: 0 }, action: { type: "audio", name: "cue", command: "play", src: "http://unsafe.test/a.mp3" } }] }));
+});

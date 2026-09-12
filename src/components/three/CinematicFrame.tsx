@@ -27,13 +27,17 @@ export function CinematicFrame({ children }: { children: ReactNode }) {
   const previous = useRef({ aspect: 0, motion: true, initialized: false, config: experience });
   const previousPreview = useRef(useExperienceStore.getState().cameraPreview);
   useFrame(({ size }, delta) => {
-    const s = useExperienceStore.getState(),
-      aspect = size.width / Math.max(1, size.height);
+    const state = useExperienceStore.getState();
+    const aspect = size.width / Math.max(1, size.height);
+    const targetProgress = state.runtimeProgress ?? state.progress;
+    const runtimeDriven = state.runtimeProgress !== null;
     const immediate =
       !previous.current.initialized ||
-      s.reducedMotion ||
-      Math.abs(value.progress - s.progress) > 0.2;
-    // One shared damped time drives camera, object, world and effects. A seek snaps as a unit.
+      state.reducedMotion ||
+      runtimeDriven ||
+      Math.abs(value.progress - targetProgress) > 0.2;
+    // One shared time drives camera, object, world and effects. Runtime sequences are exact;
+    // ordinary scroll remains damped so user input keeps the original cinematic feel.
     const alpha = immediate
       ? 1
       : 1 -
@@ -43,23 +47,26 @@ export function CinematicFrame({ children }: { children: ReactNode }) {
             experience.runtime.objectDamping,
           ) * Math.min(delta, 0.1),
         );
-    let p = value.progress + (s.progress - value.progress) * alpha;
-    if (Math.abs(p - s.progress) < 0.00001) p = s.progress;
+    let progress = value.progress + (targetProgress - value.progress) * alpha;
+    if (Math.abs(progress - targetProgress) < 0.00001) progress = targetProgress;
     if (
-      p !== value.progress ||
+      progress !== value.progress ||
       previous.current.aspect !== aspect ||
-      previous.current.motion !== s.reducedMotion ||
-      previousPreview.current !== s.cameraPreview ||
+      previous.current.motion !== state.reducedMotion ||
+      previousPreview.current !== state.cameraPreview ||
       previous.current.config !== experience ||
       !previous.current.initialized
     ) {
-      value.progress = p;
-      value.current = sampleExperience(p, s.reducedMotion, experience, aspect);
-      if (!s.reducedMotion && s.cameraPreview?.sceneId === value.current.scene.id) {
-        value.current.camera = sampleCameraShot(aspect < .85 ? s.cameraPreview.mobileCamera : s.cameraPreview.camera, value.current.easedProgress);
+      value.progress = progress;
+      value.current = sampleExperience(progress, state.reducedMotion, experience, aspect);
+      if (!state.reducedMotion && state.cameraPreview?.sceneId === value.current.scene.id) {
+        value.current.camera = sampleCameraShot(
+          aspect < .85 ? state.cameraPreview.mobileCamera : state.cameraPreview.camera,
+          value.current.easedProgress,
+        );
       }
-      previousPreview.current = s.cameraPreview;
-      previous.current = { aspect, motion: s.reducedMotion, initialized: true, config: experience };
+      previousPreview.current = state.cameraPreview;
+      previous.current = { aspect, motion: state.reducedMotion, initialized: true, config: experience };
     }
     cinematicProgress.publish(value.progress);
   }, -100);

@@ -4,10 +4,12 @@ import { useFrame } from "@react-three/fiber";
 import { Color, Material, Mesh, Object3D, type Group, type MeshStandardMaterial } from "three";
 import { useModelInstance } from "@/src/components/three/useModelInstance";
 import { useCinematicFrame } from "@/src/components/three/CinematicFrame";
+import { useThreeInteraction } from "@/src/components/three/useThreeInteraction";
 import { sampleProductTrack } from "@/src/lib/productRig";
 import { useExperienceStore } from "@/src/store/experienceStore";
 import type { ProductRigDefinition, Vec3 } from "@/src/types/experience";
 import { applyHeroMaterial, captureHeroMaterial } from "@/src/lib/heroMaterial";
+import { registerMaterialShaderTarget, reapplyShaderTarget } from "@/src/runtime/shaderRegistry";
 
 interface Baseline {
   object: Object3D;
@@ -17,6 +19,7 @@ interface Baseline {
   visible: boolean;
   materials: Material[];
   opacity: number[];
+  previousInteraction: unknown;
 }
 
 function materialsFor(object: Object3D) {
@@ -33,6 +36,7 @@ export function ProductRig({ url, rig }: { url: string; rig: ProductRigDefinitio
   const root = useRef<Group>(null);
   const tint = useRef(new Color());
   const frame = useCinematicFrame();
+  const interaction = useThreeInteraction("hero");
   const { scene } = useModelInstance(url);
   const prepared = useMemo(() => {
     const ownedMaterials = new Set<Material>();
@@ -59,6 +63,8 @@ export function ProductRig({ url, rig }: { url: string; rig: ProductRigDefinitio
         continue;
       }
       const materials = materialsFor(object);
+      const previousInteraction = object.userData.forgeInteraction as unknown;
+      object.userData.forgeInteraction = `rig:${name}`;
       baselines.set(name, {
         object,
         position: object.position.toArray() as Vec3,
@@ -67,6 +73,7 @@ export function ProductRig({ url, rig }: { url: string; rig: ProductRigDefinitio
         visible: object.visible,
         materials,
         opacity: materials.map((material) => material.opacity),
+        previousInteraction,
       });
     }
     if (missing.length)
@@ -75,19 +82,37 @@ export function ProductRig({ url, rig }: { url: string; rig: ProductRigDefinitio
     return { baselines, ownedMaterials, materialBaselines };
   }, [rig.nodes, scene]);
 
-  useEffect(
-    () => () => prepared.ownedMaterials.forEach((material) => material.dispose()),
-    [prepared],
-  );
+  useEffect(() => {
+    const unregister = [
+      ...[...prepared.ownedMaterials].map((material) => registerMaterialShaderTarget("hero", material)),
+      ...[...prepared.baselines.entries()].flatMap(([name, baseline]) =>
+        baseline.materials.map((material) => registerMaterialShaderTarget(`rig:${name}`, material)),
+      ),
+    ];
+    return () => {
+      unregister.forEach((dispose) => dispose());
+      prepared.baselines.forEach((baseline) => {
+        if (baseline.previousInteraction === undefined) delete baseline.object.userData.forgeInteraction;
+        else baseline.object.userData.forgeInteraction = baseline.previousInteraction;
+      });
+      prepared.ownedMaterials.forEach((material) => material.dispose());
+    };
+  }, [prepared]);
 
   useFrame(() => {
     const group = root.current;
     if (!group) return;
     const hero = frame.current.hero;
+    const store = useExperienceStore.getState();
+    const orbit = store.orbit;
     group.position.set(...hero.position);
-    group.rotation.set(...hero.rotation);
+    group.rotation.set(
+      hero.rotation[0] + (orbit.target === "hero" ? orbit.pitch : 0),
+      hero.rotation[1] + (orbit.target === "hero" ? orbit.yaw : 0),
+      hero.rotation[2],
+    );
     group.scale.setScalar(hero.scale);
-    const progress = useExperienceStore.getState().reducedMotion ? 0 : frame.progress;
+    const progress = store.reducedMotion ? 0 : frame.progress;
     tint.current.set(frame.current.material.tint);
     prepared.materialBaselines.forEach((baseline, material) => applyHeroMaterial(material, baseline, frame.current.material, tint.current));
 
@@ -155,10 +180,21 @@ export function ProductRig({ url, rig }: { url: string; rig: ProductRigDefinitio
         }
       }
     }
+
+    if (orbit.target?.startsWith("rig:")) {
+      const baseline = prepared.baselines.get(orbit.target.slice(4));
+      if (baseline) {
+        baseline.object.rotation.x += orbit.pitch;
+        baseline.object.rotation.y += orbit.yaw;
+      }
+    }
+
+    reapplyShaderTarget("hero");
+    for (const name of prepared.baselines.keys()) reapplyShaderTarget(`rig:${name}`);
   });
 
   return (
-    <group ref={root}>
+    <group ref={root} {...interaction}>
       <primitive object={scene} dispose={null} />
     </group>
   );

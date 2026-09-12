@@ -11,32 +11,33 @@ export function CameraRig() {
   const target = useRef(new THREE.Vector3());
   const tick = useRef(0);
   useFrame(({ camera, size }) => {
-    const s = useExperienceStore.getState();
-    if (s.freeCamera) return;
-    const c = frame.current.camera;
+    const state = useExperienceStore.getState();
+    if (state.freeCamera) return;
+    const cinematic = frame.current.camera;
+    const current = state.runtimeCamera ?? cinematic;
     const influence =
-      s.reducedMotion || size.width < 760 || s.cameraPreview
+      state.reducedMotion || size.width < 760 || state.cameraPreview || state.runtimeCamera
         ? 0
         : experience.runtime.pointerInfluence;
     camera.position.set(
-      c.position[0] + s.pointer.x * influence,
-      c.position[1] + s.pointer.y * influence * 0.65,
-      c.position[2],
+      current.position[0] + state.pointer.x * influence,
+      current.position[1] + state.pointer.y * influence * 0.65,
+      current.position[2],
     );
-    target.current.set(...c.target);
+    target.current.set(...current.target);
     camera.lookAt(target.current);
     if (
       camera instanceof THREE.PerspectiveCamera &&
-      Math.abs(camera.fov - c.fov) > 0.0001
+      Math.abs(camera.fov - current.fov) > 0.0001
     ) {
-      camera.fov = c.fov;
+      camera.fov = current.fov;
       camera.updateProjectionMatrix();
     }
-    if (s.debug && ++tick.current % 12 === 0)
-      s.setCameraTelemetry({
+    if (state.debug && ++tick.current % 12 === 0)
+      state.setCameraTelemetry({
         position: camera.position.toArray() as [number, number, number],
-        target: [...c.target],
-        fov: camera instanceof THREE.PerspectiveCamera ? camera.fov : c.fov,
+        target: [...current.target],
+        fov: camera instanceof THREE.PerspectiveCamera ? camera.fov : current.fov,
       });
   });
   return null;
