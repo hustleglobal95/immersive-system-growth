@@ -4,6 +4,8 @@ Creative direction is a versioned production input, not an afterthought to runti
 
 Run `npm run creative:audit`. A scene is incomplete when it lacks a purpose, subject, copy, interaction or causal transition. Keep one dominant idea per viewport, use real proof, preserve semantic HTML, and treat prohibited patterns as release constraints.
 
-Compile a validated brief into a safe runtime draft with `npm run creative:compile`. The command writes ignored files under `generated/` and emits a provenance sidecar. It changes scene copy and semantic blocks only; camera choreography, frame-accurate motion and interaction runtime ownership stay in their existing systems.
+Compile a validated brief into a safe runtime draft with `npm run creative:compile`. The command writes ignored files under `generated/`, emits a provenance sidecar, and now produces both `experience.compiled.json` and `interaction-graph.compiled.json`. Each plan scene can select a source scene, a finite motion preset, a graph trigger and up to eight validated actions.
+
+Generated motion tracks and graph nodes use the `creative-` namespace. Re-running the compiler removes only that namespace, preserves authored tracks and graph behavior, and produces deterministic output. Existing camera, motion, interaction and accessibility contracts remain owned by their runtime systems.
 
 `config/creative-recipes.json` is the approved starting language for burger, real-estate, restaurant, automotive, product and SaaS experiences. Recipes define the narrative arc and conversion anchor; they are starting points, not permission to reuse an untouched template.
