@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "id": "ember-bun-reference",
+  "name": "Ember Bun Reference",
+  "description": "Canonical Forge project manifest for the reference commerce experience.",
+  "paths": {
+    "experience": "config/experience.json",
+    "studioProject": "config/studio-project.json",
+    "creativeDirection": "config/creative-direction.json",
+    "assetManifest": "config/asset-manifest.json"
+  },
+  "performance": {
+    "initialCriticalMb": 8,
+    "scenePreloadMb": 20,
+    "maxActiveMb": 96,
+    "maxTotalMb": 256,
+    "maxDrawCalls": 250,
+    "maxTriangles": 750000,
+    "targetFps": 60
+  },
+  "capabilities": {
+    "webgl": "enhanced",
+    "webgpu": "off",
+    "xr": "off",
+    "spatialAudio": "off"
+  },
+  "release": {
+    "provider": "vercel",
+    "productionBranch": "main",
+    "requireReview": true,
+    "immutableAssets": true
+  }
+}
