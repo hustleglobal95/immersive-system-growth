@@ -95,6 +95,17 @@ test("sequencer presets and dynamic GLB targets are valid and do not mutate the 
   assert.deepEqual(base, snapshot);
 });
 
+test("cinematic focus and mapped-node cascade presets produce valid coordinated tracks", () => {
+  const focus = createMotionPreset("cinematic-focus", base, 0);
+  const cascade = createMotionPreset("rig-cascade", base, 0);
+  assert.deepEqual(focus.map((track) => track.target), ["camera.fov", "post.bloom", "copy.opacity"]);
+  assert.equal(cascade.length, Math.min(24, base.productRig?.nodes.length ?? 0));
+  assert.ok(cascade.every((track) => track.target.startsWith("rig:") && "blend" in track && track.blend === "offset"));
+  const config = structuredClone(base);
+  config.scenes[0].motionTracks = [...focus, ...cascade];
+  assert.doesNotThrow(() => parseExperience(config));
+});
+
 test("motion validation rejects duplicate targets, unsafe values and missing mapped resources", () => {
   const duplicate = structuredClone(base);
   duplicate.scenes[0].motionTracks = [number("one", "copy.opacity", 0, 1), number("two", "copy.opacity", 1, 0)];
