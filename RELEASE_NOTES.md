@@ -1,5 +1,16 @@
 # Release Notes
 
+## 4.0.0
+
+- Added a first-party Forge Motion Sequencer driven by the production normalized timeline and deterministic sampler.
+- Added typed number, vector, color and boolean tracks for camera, hero, lighting, atmosphere, materials, postprocessing, DOM copy, media, transition layers and mapped GLB nodes.
+- Added a zoomable dope sheet with playhead seeking, time snapping, multi-key selection, dragging, nudging, copy/paste and deletion.
+- Added bounded undo/redo history with grouped pointer and viewport-gizmo edits.
+- Added cubic Bezier handles, seven easing modes and exact reversible sampling.
+- Added camera, hero and GLB-node record mode through Three.js transform controls in the real production preview.
+- Added all, desktop and mobile track precedence plus six reusable motion presets.
+- Added schema/resource validation, deterministic unit coverage and an end-to-end Studio authoring flow for the sequencer.
+
 ## 3.0.0
 
 - Added a Studio live preview that mounts the same production R3F scene graph, media panels, masks and transition layers used by the public runtime.
