@@ -32,7 +32,7 @@ const runtimeSchema = z.object({
     states: z.array(slug).max(24).default([]),
   }).strict().optional(),
   actions: z.array(interactionActionSchema).max(8).default([]),
-}).strict().default({});
+}).strict().default({ motionPreset: "cinematic-focus", actions: [] });
 
 const planSceneSchema = z.object({
   id: z.string().min(1).max(80),
