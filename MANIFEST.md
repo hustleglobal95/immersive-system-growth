@@ -1,6 +1,6 @@
 # Repository Manifest
 
-Immersive Site Forge 4.0 is organized as a multi-project production platform rather than a one-off demo.
+Immersive Site Forge 5.0 is organized as a multi-project production platform rather than a one-off demo.
 
 ## Runtime
 
@@ -47,10 +47,12 @@ Immersive Site Forge 4.0 is organized as a multi-project production platform rat
 - frame-accurate scene motion sequencer and deterministic typed sampler
 - zoomable dope sheet with snapping, multi-select, copy/paste and grouped undo/redo
 - cubic Bezier curve editor and reusable motion presets
+- real-time sequencer transport with loop, rate, duration and in/out preview ranges
+- selection retiming, track filtering and five production curve presets
 - live camera, hero and named GLB-node vector recording with Three.js transform gizmos
 - desktop and mobile motion override tracks
 - browser Mask Lab with DOM/WebGL comparison and preset controls
-- browser and CLI GLB inspection with named-node mapping
+- browser and CLI GLB inspection with hierarchy paths, geometry totals, complexity grading and confidence-scored node mapping
 - six reusable industry templates plus scene and media-transition presets
 - bounded image and color transition-layer composition
 - browser asset intake with hashes, media metadata, GLB structure and budget checks
