@@ -14,6 +14,25 @@ Forge ships with camera path presets in `src/lib/cameraPaths.ts`.
 - `pullback`: creates a broader reveal by adding retreat through the middle of the path.
 - `subject-orbit`: spherical interpolation around the look-at target, using the shortest azimuth sweep and interpolated radius/elevation. Preserves exact endpoints and avoids the straight-line chord through the target. Unlike legacy `orbit`, this is subject-relative rather than a sinusoidal offset.
 
+## Director choreography
+
+The two-point presets are intentionally simple building blocks. For premium camera direction, use the Director presets in Studio's Sequencer. They compile into ordinary deterministic motion tracks for `camera.position`, `camera.target` and `camera.fov`, so every move remains editable, seekable and reversible instead of becoming an opaque animation.
+
+Director presets:
+
+- `Director · Precision push`: forward pressure, a restrained lateral reveal and mild lens compression.
+- `Director · Pullback reveal`: retreat plus rise to expose more environment without dropping the subject.
+- `Director · Parallax truck`: lateral truck with counter-targeting for strong depth separation.
+- `Director · Crane reveal`: vertical lift, slight retreat and reframing.
+- `Director · Hero orbit`: subject-centered orbital sweep with authored endpoints preserved.
+- `Director · S-curve`: alternating lateral travel for a deliberate multi-beat path.
+- `Director · Macro approach`: close detail approach with target settling and lens choreography.
+- `Director · Dolly zoom`: distance/FOV counter-motion for a restrained vertigo effect.
+
+If a scene has a dedicated `mobileCamera`, a Director preset generates separate desktop and mobile tracks. Otherwise it generates one all-viewport set. Every Director position/target/lens track starts at the scene's authored `from` value and ends at its authored `to` value, preserving scene continuity.
+
+Director paths also enable restrained curvature banking in the runtime camera rig. Bank is derived from the sampled path, capped at five degrees and disabled for legacy scenes, reduced motion, camera previews and runtime camera overrides. This keeps roll motivated by actual camera travel rather than adding arbitrary rotation.
+
 ## Cinematic rules
 
 Prefer motivated camera movement. The camera moves because the visitor is approaching, inspecting, entering, revealing or leaving something. Avoid random rotations. Keep FOV changes subtle unless the lens shift is itself part of the transition.
@@ -23,6 +42,8 @@ For photoreal architecture, keep most FOV values roughly in the 32 to 55 range a
 ## Multi-point spline paths
 
 For moves that cannot be described by a two-point preset, add `waypoints` to the scene camera. Forge samples a Catmull-Rom spline from the start position through those points to the end position. `targetWaypoints` can independently curve the look-at target.
+
+Camera spline traversal is re-parameterized by approximate arc length. Uneven waypoint spacing therefore changes the shape of a path without accidentally creating large speed surges between control points. The curve still preserves exact start/end states and remains deterministic when scrubbed backward.
 
 ```json
 "camera": {
@@ -34,7 +55,11 @@ For moves that cannot be described by a two-point preset, add `waypoints` to the
 }
 ```
 
-Use spline waypoints sparingly. Too many points produce a floating drone-camera look.
+Use spline waypoints sparingly. Too many points still produce a floating drone-camera look even when travel speed is regularized.
+
+## Camera audit
+
+Run `npm run camera:audit` to sample every shipped project and recipe in desktop and portrait framing. The audit fails on non-finite camera states or near-zero camera/target separation and reports warnings for strong sampled speed spikes, view-direction jumps and abrupt FOV changes. `npm run check` includes this audit.
 
 ## Subject camera shots in the lab
 
@@ -42,6 +67,6 @@ In `/lab`, set the subject's bounding-sphere radius in world units, then select 
 
 For a specific close-up, clear the preview, enable Free camera, aim at the detail and wait for camera telemetry to update, then choose Detail approach with a smaller radius. Radius is supplied by the author, not inferred from the mesh. The radius input is applied when choosing a shot or pressing Apply radius to shot.
 
-Export camera shot JSON provides desktop and portrait camera definitions. Copy these into a scene's `camera` and `mobileCamera`. Reconcile neighboring endpoints, scene purpose and easing, then run cinematic audit. Exporting is intentionally separate from changing the configured narrative.
+Export camera shot JSON provides desktop and portrait camera definitions. Copy these into a scene's `camera` and `mobileCamera`. Reconcile neighboring endpoints, scene purpose and easing, then run cinematic audit and camera audit. Exporting is intentionally separate from changing the configured narrative.
 
 The fit calculation uses the narrower of vertical and horizontal field of view and a 15% margin. It frames a sphere at the focus, not an arbitrary environment. The low shot can go below ground; check clearance and edit endpoints for the actual scene. Portrait export is designed for 9:16. Test narrower screens separately. No collision avoidance, focus blur, lighting upgrade or photoreal assets are implied by these camera moves.
