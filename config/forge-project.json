@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "id": "ember-bun-reference",
-  "name": "Ember Bun Reference",
-  "description": "Canonical Forge project manifest for the reference commerce experience.",
+  "id": "nocterra-residences",
+  "name": "NOCTERRA Residences",
+  "description": "Canonical Forge project manifest for the NOCTERRA cinematic luxury residence showcase.",
   "paths": {
     "experience": "config/experience.json",
     "studioProject": "config/studio-project.json",

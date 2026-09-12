@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "id": "ember-bun-reference",
-  "name": "Ember Bun Reference",
+  "id": "nocterra-residences",
+  "name": "NOCTERRA Residences",
   "experiencePath": "config/experience.json",
   "visualSystemsPath": "config/visual-systems.json",
   "contentSources": [],
   "deployment": {
     "provider": "vercel",
-    "projectName": "ember-bun-reference",
+    "projectName": "nocterra-residences",
     "productionBranch": "main"
   },
   "telemetry": {
