@@ -68,10 +68,53 @@
       }
     },
     {
+      "id": "play-ingredients",
+      "kind": "trigger",
+      "label": "Play ingredients sequence",
+      "position": { "x": 40, "y": 420 },
+      "event": "custom",
+      "name": "play-ingredients",
+      "states": ["exploring", "detail"]
+    },
+    {
+      "id": "ingredients-sequence",
+      "kind": "action",
+      "label": "Ingredients sequence",
+      "position": { "x": 300, "y": 420 },
+      "action": {
+        "type": "sequence",
+        "name": "ingredients",
+        "command": "play",
+        "durationMs": 350,
+        "loop": false,
+        "release": true
+      }
+    },
+    {
+      "id": "ingredients-finished",
+      "kind": "trigger",
+      "label": "Ingredients sequence finished",
+      "position": { "x": 560, "y": 420 },
+      "event": "sequence-complete",
+      "name": "ingredients",
+      "states": ["exploring", "detail"]
+    },
+    {
+      "id": "sequence-done-event",
+      "kind": "action",
+      "label": "Emit sequence complete",
+      "position": { "x": 810, "y": 420 },
+      "action": {
+        "type": "emit",
+        "name": "sequence-demo-complete",
+        "payload": { "source": "runtime-consumer" }
+      }
+    },
+    {
       "id": "leave-ingredients",
       "kind": "trigger",
       "label": "Leave ingredients",
-      "position": { "x": 40, "y": 440 },
+      "position": { "x": 40, "y": 600 },
       "event": "scene-exit",
       "sceneId": "ingredients",
       "states": ["exploring", "detail"]
@@ -80,14 +123,14 @@
       "id": "clear-engaged",
       "kind": "action",
       "label": "Clear engaged",
-      "position": { "x": 300, "y": 440 },
+      "position": { "x": 300, "y": 600 },
       "action": { "type": "set-variable", "key": "engaged", "value": false }
     },
     {
       "id": "state-idle",
       "kind": "state",
       "label": "Idle state",
-      "position": { "x": 560, "y": 440 },
+      "position": { "x": 560, "y": 600 },
       "state": "idle"
     }
   ],
@@ -97,6 +140,8 @@
     { "id": "inspect-check", "from": "inspect-product", "to": "can-inspect", "branch": "always", "priority": 0 },
     { "id": "inspect-detail", "from": "can-inspect", "to": "state-detail", "branch": "true", "priority": 0 },
     { "id": "detail-emit", "from": "state-detail", "to": "detail-event", "branch": "always", "priority": 0 },
+    { "id": "play-sequence", "from": "play-ingredients", "to": "ingredients-sequence", "branch": "always", "priority": 0 },
+    { "id": "finished-emit", "from": "ingredients-finished", "to": "sequence-done-event", "branch": "always", "priority": 0 },
     { "id": "leave-clear", "from": "leave-ingredients", "to": "clear-engaged", "branch": "always", "priority": 0 },
     { "id": "clear-idle", "from": "clear-engaged", "to": "state-idle", "branch": "always", "priority": 0 }
   ],
