@@ -53,7 +53,7 @@ test("Studio exposes content, deployment and real-device telemetry controls", as
   await expect(page.getByLabel("Sample rate")).toBeVisible();
 });
 
-test("Studio Pro composes a validated template, directed scene and live runtime", async ({ page }) => {
+test("Studio Pro composes a validated template, spatially directed scene and live runtime", async ({ page }) => {
   await page.goto("/studio");
   await page.getByRole("button", { name: "templates", exact: true }).click();
   await expect(page.locator(".template-grid article")).toHaveCount(6);
@@ -63,6 +63,11 @@ test("Studio Pro composes a validated template, directed scene and live runtime"
 
   await page.getByRole("button", { name: "director", exact: true }).click();
   await expect(page.getByRole("img", { name: "Camera top path" })).toBeVisible();
+  await expect(page.locator(".studio-preview__canvas canvas")).toHaveCount(1);
+  await expect(page.getByTestId("director-spatial-status")).toContainText("Live geometry ready", { timeout: 15_000 });
+  await page.getByRole("button", { name: "Auto-direct camera" }).click();
+  await expect(page.getByLabel("Spatial camera diagnostics")).toBeVisible();
+  await expect(page.getByText(/Spatial source: (live|mixed)/)).toBeVisible();
   await page.getByLabel("Path preset").selectOption("orbit");
   await page.locator(".director-range").filter({ hasText: "Exposure" }).locator("input").fill("1.2");
   await expect(page.getByText("Production schema valid")).toBeVisible();
