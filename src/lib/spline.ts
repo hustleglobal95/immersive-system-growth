@@ -37,7 +37,10 @@ export function sampleSpline(points: Vec3[], t: number): Vec3 {
  */
 export function sampleSplineArcLength(points: Vec3[], t: number, samples?: number): Vec3 {
   const progress = clamp01(t);
-  if (points.length < 2 || progress <= 0 || progress >= 1) return sampleSpline(points, progress);
+  if (points.length === 0) return [0, 0, 0];
+  if (points.length === 1) return [...points[0]];
+  if (progress <= 0) return [...points[0]];
+  if (progress >= 1) return [...points[points.length - 1]];
   const divisions = Math.max(24, Math.min(320, samples ?? (points.length - 1) * 32));
   const distances = new Float64Array(divisions + 1);
   let previous = sampleSpline(points, 0);
