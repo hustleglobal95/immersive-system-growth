@@ -1,5 +1,21 @@
 # Release Notes
 
+## 6.0.0
+
+- Added a deterministic visual interaction graph with trigger, condition, action and state nodes, bounded execution, cycle guards, variables, branch priorities, mobile substitutions and Studio simulation.
+- Added production sequence consumers with play, pause, stop, looping, bounded duration, exact cinematic progress ownership and optional release back to scroll.
+- Added named camera command playback with live-camera blending, reset handoff, scene-shot resolution, built-in shot presets and completion/cancellation lifecycle events.
+- Added an audio runtime with lazy cue creation, safe sources, volume, looping, fades, browser autoplay failure reporting and lifecycle completion.
+- Added registered shader/material targets with animated numeric and color parameters plus persistent overrides that survive authored cinematic material updates.
+- Added direct R3F raycast interaction for the hero, mapped GLB nodes and scene assets using one logical target namespace shared with DOM interaction.
+- Added graph-controlled drag/orbit inspection for hero, rig-node and scene-asset targets.
+- Added keyboard, wheel, device-orientation, video-time, drag and runtime lifecycle trigger types.
+- Added safe navigation actions and cancelable navigation interception.
+- Added sequence, camera, audio, shader and action-cancelled lifecycle events that re-enter the deterministic graph.
+- Expanded Studio to author all runtime commands, durations, loops, release policies, shader easing, audio sources/fades, orbit settings and lifecycle triggers.
+- Added end-to-end production sequence lifecycle coverage in Chromium and WebKit plus unit coverage for runtime camera sampling, action schemas and persistent shader state.
+- Updated Forge doctor, architecture, interaction documentation and repository positioning for the stateful interactive runtime.
+
 ## 5.0.0
 
 - Added tiered cinematic render profiles with ACES filmic tone mapping, sRGB output, PCF soft shadows, adaptive 512/1024/2048 shadow maps and SMAA on capable tiers.
