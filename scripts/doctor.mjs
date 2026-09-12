@@ -11,9 +11,15 @@ const required = [
   "config/experience.json",
   "config/studio-project.json",
   "config/asset-manifest.json",
+  "config/interaction-graph.json",
   "src/components/runtime/ExperienceRuntime.tsx",
   "src/components/three/SceneCanvas.tsx",
   "src/lib/sampleExperience.ts",
+  "src/lib/interactionGraph.ts",
+  "src/lib/interactionGraphEngine.ts",
+  "src/runtime/InteractionGraphController.tsx",
+  "src/store/interactionStore.ts",
+  "src/studio/InteractionGraphEditor.tsx",
   "src/studio/StudioWorkbench.tsx",
   "src/studio/MaskLab.tsx",
   "src/studio/StudioLivePreview.tsx",
@@ -33,6 +39,7 @@ const required = [
   "CLAUDE.md",
   "docs/ARCHITECTURE.md",
   "docs/MOTION_SEQUENCER.md",
+  "docs/INTERACTION_GRAPH.md",
 ];
 
 const [major, minor] = process.versions.node.split(".").map(Number);
