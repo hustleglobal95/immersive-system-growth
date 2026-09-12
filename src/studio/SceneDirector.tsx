@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, type Dispatch, type SetStateAction } from "react";
+import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import { sampleExperience } from "@/src/lib/sampleExperience";
+import { applyCameraDirector } from "@/src/platform/cameraDirector";
 import { replaceScene } from "@/src/platform/studioPresets";
 import type { CameraDefinition, ExperienceConfig, SceneDefinition, Vec3 } from "@/src/types/experience";
 
@@ -19,19 +20,30 @@ export function SceneDirector({
   setActive: (index: number) => void;
 }) {
   const scene = experience.scenes[active];
+  const [directorNotice, setDirectorNotice] = useState("");
   const update = (changes: Partial<SceneDefinition>) => setExperience((current) => replaceScene(current, active, { ...current.scenes[active], ...changes }));
   const updateCamera = (camera: CameraDefinition) => update({ camera });
   const points = useMemo(() => Array.from({ length: 49 }, (_, index) => {
     const progress = scene.range[0] + (scene.range[1] - scene.range[0]) * index / 48;
     return sampleExperience(progress, false, experience).camera.position;
   }), [experience, scene.range]);
+  const autoDirect = () => {
+    const result = applyCameraDirector(experience, active);
+    setExperience(result.experience);
+    setDirectorNotice(`${result.plan.shotLabel} · ${Math.round(result.plan.confidence * 100)}% confidence. ${result.plan.rationale} ${result.replacedTracks ? `Replaced ${result.replacedTracks} existing camera track${result.replacedTracks === 1 ? "" : "s"}.` : "Added editable camera tracks."}`);
+  };
 
   return (
     <div className="studio-grid studio-grid--director">
       <section className="studio-card director-camera">
         <div className="studio-card__head"><div><span>CAMERA DIRECTOR</span><h2>Path and framing</h2></div><code>{scene.id}</code></div>
-        <label>Scene<select value={active} onChange={(event) => setActive(Number(event.target.value))}>{experience.scenes.map((item, index) => <option key={item.id} value={index}>{String(index + 1).padStart(2, "0")} / {item.label}</option>)}</select></label>
+        <label>Scene<select value={active} onChange={(event) => { setActive(Number(event.target.value)); setDirectorNotice(""); }}>{experience.scenes.map((item, index) => <option key={item.id} value={index}>{String(index + 1).padStart(2, "0")} / {item.label}</option>)}</select></label>
         <CameraPathDiagram points={points} />
+        <div className="director-auto">
+          <button type="button" className="studio-primary" onClick={autoDirect}>Auto-direct camera</button>
+          <span>Analyzes scene intent, camera geometry, subject motion and visual complexity, then authors editable position, target and lens tracks.</span>
+        </div>
+        {directorNotice && <p className="sequencer-notice" role="status">{directorNotice}</p>}
         <div className="studio-field-row">
           <label>Path preset<select value={scene.camera.path} onChange={(event) => updateCamera({ ...scene.camera, path: event.target.value as CameraDefinition["path"] })}>{paths.map((path) => <option key={path}>{path}</option>)}</select></label>
           <label>Easing<select value={scene.easing} onChange={(event) => update({ easing: event.target.value as SceneDefinition["easing"] })}><option>linear</option><option>smooth</option><option>cinematic</option></select></label>
