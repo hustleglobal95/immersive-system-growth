@@ -66,7 +66,7 @@ test("Studio Pro composes a validated template, directed scene and live runtime"
 test("Motion sequencer authors curves, grouped history, responsive overrides and record gizmos", async ({ page }) => {
   await page.goto("/studio");
   await page.getByRole("button", { name: "sequence", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Motion sequencer" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Motion sequencer", level: 2 })).toBeVisible();
   await page.getByLabel("Motion preset").selectOption("copy-rise");
   await expect(page.locator(".sequencer-row")).toHaveCount(2);
 
