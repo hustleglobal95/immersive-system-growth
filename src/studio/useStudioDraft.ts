@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { parseExperience } from "@/src/lib/configSchema";
+import { parseInteractionGraph, type InteractionGraph } from "@/src/lib/interactionGraph";
 import { parseStudioProject, type StudioProject } from "@/src/platform/studioSchema";
 import type { ExperienceConfig } from "@/src/types/experience";
 import type { AssetManifest } from "@/src/types/assets";
@@ -12,9 +13,15 @@ interface StoredDraft {
   experience: unknown;
   project: unknown;
   assetManifest?: unknown;
+  interactionGraph?: unknown;
 }
 
-export function useStudioDraft(initialExperience: ExperienceConfig, initialProject: StudioProject, initialAssetManifest: AssetManifest) {
+export function useStudioDraft(
+  initialExperience: ExperienceConfig,
+  initialProject: StudioProject,
+  initialAssetManifest: AssetManifest,
+  initialInteractionGraph: InteractionGraph,
+) {
   const [experience, setExperienceState] = useState(initialExperience);
   const experienceRef = useRef(initialExperience);
   const undoStack = useRef<ExperienceConfig[]>([]);
@@ -23,6 +30,7 @@ export function useStudioDraft(initialExperience: ExperienceConfig, initialProje
   const [history, setHistory] = useState({ undo: 0, redo: 0 });
   const [project, setProject] = useState(initialProject);
   const [assetManifest, setAssetManifest] = useState(initialAssetManifest);
+  const [interactionGraph, setInteractionGraph] = useState(initialInteractionGraph);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -33,11 +41,15 @@ export function useStudioDraft(initialExperience: ExperienceConfig, initialProje
         const nextExperience = parseExperience(draft.experience);
         const nextProject = parseStudioProject(draft.project);
         const nextManifest = isAssetManifest(draft.assetManifest) ? draft.assetManifest : initialAssetManifest;
+        const nextInteractionGraph = draft.interactionGraph
+          ? parseInteractionGraph(draft.interactionGraph)
+          : initialInteractionGraph;
         queueMicrotask(() => {
           experienceRef.current = nextExperience;
           setExperienceState(nextExperience);
           setProject(nextProject);
           setAssetManifest(nextManifest);
+          setInteractionGraph(nextInteractionGraph);
         });
       }
     } catch {
@@ -45,12 +57,12 @@ export function useStudioDraft(initialExperience: ExperienceConfig, initialProje
     } finally {
       queueMicrotask(() => setHydrated(true));
     }
-  }, [initialAssetManifest]);
+  }, [initialAssetManifest, initialInteractionGraph]);
 
   useEffect(() => {
     if (!hydrated) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ experience, project, assetManifest }));
-  }, [assetManifest, experience, hydrated, project]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ experience, project, assetManifest, interactionGraph }));
+  }, [assetManifest, experience, hydrated, interactionGraph, project]);
 
   const setExperience = useCallback<Dispatch<SetStateAction<ExperienceConfig>>>((update) => {
     const current = experienceRef.current;
@@ -101,22 +113,25 @@ export function useStudioDraft(initialExperience: ExperienceConfig, initialProje
     const issues: string[] = [];
     const experienceIssue = parseSafe(() => parseExperience(experience));
     const projectIssue = parseSafe(() => parseStudioProject(project));
+    const graphIssue = parseSafe(() => parseInteractionGraph(interactionGraph));
     if (experienceIssue) issues.push(experienceIssue);
     if (projectIssue) issues.push(projectIssue);
+    if (graphIssue) issues.push(graphIssue);
     return issues;
-  }, [experience, project]);
+  }, [experience, interactionGraph, project]);
 
   const reset = useCallback(() => {
     experienceRef.current = initialExperience;
     setExperienceState(initialExperience);
     setProject(initialProject);
     setAssetManifest(initialAssetManifest);
+    setInteractionGraph(initialInteractionGraph);
     undoStack.current = [];
     redoStack.current = [];
     groupBase.current = null;
     setHistory({ undo: 0, redo: 0 });
     localStorage.removeItem(STORAGE_KEY);
-  }, [initialAssetManifest, initialExperience, initialProject]);
+  }, [initialAssetManifest, initialExperience, initialInteractionGraph, initialProject]);
 
   return {
     experience,
@@ -131,6 +146,8 @@ export function useStudioDraft(initialExperience: ExperienceConfig, initialProje
     setProject,
     assetManifest,
     setAssetManifest,
+    interactionGraph,
+    setInteractionGraph,
     validation,
     hydrated,
     reset,
