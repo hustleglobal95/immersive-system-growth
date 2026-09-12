@@ -1,4 +1,9 @@
 import { sampleExperience } from "@/src/lib/sampleExperience";
+import {
+  cameraChoreographyCatalog,
+  createCameraChoreography,
+  isCameraChoreographyName,
+} from "@/src/platform/cameraChoreography";
 import type {
   ExperienceConfig,
   MotionTrack,
@@ -8,6 +13,7 @@ import type {
 } from "@/src/types/experience";
 
 export const motionPresetCatalog = [
+  ...cameraChoreographyCatalog,
   { id: "camera-drift", label: "Camera drift", description: "A restrained three-point camera arc." },
   { id: "product-lift", label: "Product lift", description: "Rise, hold and settle the persistent hero." },
   { id: "light-pulse", label: "Light pulse", description: "Build and release key-light intensity." },
@@ -25,6 +31,7 @@ export function createMotionPreset(
   config: ExperienceConfig,
   sceneIndex: number,
 ): MotionTrack[] {
+  if (isCameraChoreographyName(name)) return createCameraChoreography(name, config, sceneIndex);
   const scene = config.scenes[sceneIndex];
   const base = sampleExperience(scene.range[0], false, { ...config, scenes: config.scenes.map((item, index) => index === sceneIndex ? { ...item, motionTracks: [] } : item) });
   if (name === "camera-drift") {
@@ -40,7 +47,7 @@ export function createMotionPreset(
     return [vectorTrack("product-lift", "Hero position", "hero.position", [
       key("product-lift-a", 0, from, "ease-out"),
       key("product-lift-b", 0.55, [from[0], from[1] + 0.45, from[2]], "cubic", [0.16, 1, 0.3, 1]),
-      key("product-lift-c", 1, scene.hero.to.position, "ease-in-out"),
+      key("product-lift-c", 1, scene.hero.to.position, "smooth"),
     ])];
   }
   if (name === "light-pulse") {
@@ -60,7 +67,7 @@ export function createMotionPreset(
   ];
   if (name === "cinematic-focus") return [
     numberTrack("focus-fov", "Focus focal length", "camera.fov", [key("focus-fov-a", 0, Math.min(90, base.camera.fov + 8), "cubic", [0.16, 1, 0.3, 1]), key("focus-fov-b", 0.62, base.camera.fov, "smooth"), key("focus-fov-c", 1, scene.camera.to.fov, "ease-in-out")]),
-    numberTrack("focus-bloom", "Focus bloom", "post.bloom", [key("focus-bloom-a", 0, 0, "linear"), key("focus-bloom-b", 0.28, Math.min(4, scene.post.bloom + 0.3), "cubic", [0.2, 0.8, 0.2, 1]), key("focus-bloom-c", 1, scene.post.bloom, "ease-out")]),
+    numberTrack("focus-bloom", "Focus bloom", "post.bloom", [key("focus-bloom-a", 0, 0, "linear"), key("focus-bloom-b", 0.28, Math.min(2, scene.post.bloom + 0.3), "cubic", [0.2, 0.8, 0.2, 1]), key("focus-bloom-c", 1, scene.post.bloom, "ease-out")]),
     numberTrack("focus-copy", "Focus copy", "copy.opacity", [key("focus-copy-a", 0, 0, "smooth"), key("focus-copy-b", 0.45, 1, "cubic", [0.16, 1, 0.3, 1]), key("focus-copy-c", 1, 1, "linear")]),
   ];
   if (name === "rig-cascade") {
