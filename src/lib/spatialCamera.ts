@@ -1,5 +1,5 @@
 import { sampleMotionTrack } from "@/src/lib/motionSequencer";
-import type { ExperienceConfig, MotionTrack, Vec3 } from "@/src/types/experience";
+import type { ExperienceConfig, MotionTrack, SceneAsset, Vec3 } from "@/src/types/experience";
 
 export type SpatialRole = "subject" | "obstacle" | "set";
 export type SpatialSource = "live" | "geometry" | "proxy";
@@ -12,16 +12,21 @@ export interface SpatialBound {
   source: SpatialSource;
 }
 
+export interface SpatialSubject {
+  id: string;
+  fromCenter: Vec3;
+  toCenter: Vec3;
+  fromCollisionRadius: number;
+  toCollisionRadius: number;
+  fromFramingRadius: number;
+  toFramingRadius: number;
+  collidable: boolean;
+  source: SpatialSource;
+}
+
 export interface SpatialScene {
   sceneId: string;
-  subject: {
-    id: string;
-    fromCenter: Vec3;
-    toCenter: Vec3;
-    fromRadius: number;
-    toRadius: number;
-    source: SpatialSource;
-  };
+  subject: SpatialSubject;
   obstacles: SpatialBound[];
   floorY: number;
   desiredClearance: number;
@@ -55,6 +60,18 @@ export interface LiveSpatialBoundInput {
   source?: SpatialSource;
 }
 
+const SET_TERMS = [
+  "pavilion", "building", "architecture", "architectural", "house", "home", "property",
+  "interior", "room", "apartment", "venue", "restaurant", "office", "store", "stage",
+  "environment", "world", "landscape", "showroom", "gallery", "lobby", "cabin-space",
+];
+
+export function spatialRoleForAsset(asset: SceneAsset): SpatialRole {
+  if (asset.kind === "environment" || asset.kind === "panorama") return "set";
+  const semantic = `${asset.id} ${asset.url}`.toLowerCase();
+  return SET_TERMS.some((term) => semantic.includes(term)) ? "set" : "obstacle";
+}
+
 export function buildSpatialScene(
   config: ExperienceConfig,
   sceneIndex: number,
@@ -63,37 +80,24 @@ export function buildSpatialScene(
   const scene = config.scenes[sceneIndex];
   if (!scene) throw new RangeError(`Unknown scene index ${sceneIndex}`);
   const live = new Map(liveBounds.map((bound) => [bound.id, normalizeLiveBound(bound)]));
-  const liveHero = live.get("hero");
-  const heroFrom = scene.hero.from.position;
-  const heroTo = scene.hero.to.position;
-  const proxyBaseRadius = 1.05;
-  const measuredRadius = liveHero ? boundRadius(liveHero) : proxyBaseRadius;
-  const geometryScaled = liveHero?.source === "geometry";
-  const fromRadius = geometryScaled ? measuredRadius * scene.hero.from.scale : liveHero ? measuredRadius : measuredRadius * scene.hero.from.scale;
-  const toRadius = geometryScaled ? measuredRadius * scene.hero.to.scale : liveHero ? measuredRadius : measuredRadius * scene.hero.to.scale;
-  const obstacles = config.assets
-    .filter((asset) => (!asset.scenes || asset.scenes.includes(scene.id)) && asset.kind !== "environment" && asset.kind !== "panorama")
-    .map((asset) => {
-      const exact = live.get(`asset:${asset.id}`) ?? live.get(asset.id);
-      if (exact) return { ...exact, id: asset.id, role: "obstacle" as const };
-      const halfSize: Vec3 = asset.kind === "model"
-        ? [1.1 * asset.scale, 1.1 * asset.scale, 1.1 * asset.scale]
-        : [1.55 * asset.scale, 0.9 * asset.scale, 0.08 * asset.scale];
-      return { id: asset.id, center: [...asset.position] as Vec3, halfSize, role: "obstacle" as const, source: "proxy" as const };
-    });
+  const activeAssets = config.assets.filter((asset) => !asset.scenes || asset.scenes.includes(scene.id));
+  const subjectAsset = config.heroVisible
+    ? undefined
+    : activeAssets.find((asset) => asset.kind === "model" && spatialRoleForAsset(asset) === "set")
+      ?? activeAssets.find((asset) => asset.kind === "model");
+  const subject = subjectAsset
+    ? subjectFromAsset(subjectAsset, live)
+    : subjectFromHero(config, sceneIndex, live.get("hero"));
+  const obstacles = activeAssets
+    .filter((asset) => asset.kind !== "environment" && asset.kind !== "panorama" && asset.id !== subjectAsset?.id)
+    .map((asset) => boundForAsset(asset, live));
+  const physicalRadius = Math.min(subject.fromCollisionRadius || subject.fromFramingRadius, subject.toCollisionRadius || subject.toFramingRadius);
   return {
     sceneId: scene.id,
-    subject: {
-      id: "hero",
-      fromCenter: [...heroFrom],
-      toCenter: [...heroTo],
-      fromRadius: Math.max(0.2, fromRadius),
-      toRadius: Math.max(0.2, toRadius),
-      source: liveHero?.source ?? "proxy",
-    },
+    subject,
     obstacles,
     floorY: -1.25,
-    desiredClearance: Math.max(0.28, Math.min(fromRadius, toRadius) * 0.18),
+    desiredClearance: Math.max(0.28, Math.min(1.1, physicalRadius * 0.18)),
   };
 }
 
@@ -111,7 +115,7 @@ export function evaluateSpatialCameraTracks(
   let occlusionSamples = 0;
   let framingViolations = 0;
   let floorViolations = 0;
-  let minClearance = Number.POSITIVE_INFINITY;
+  let minClearance = 1000;
   let fillTotal = 0;
   let pathLength = 0;
   let maxTurnDegrees = 0;
@@ -125,18 +129,22 @@ export function evaluateSpatialCameraTracks(
     const fov = sampleMotionTrack(fovTrack, at) as number;
     if (!finiteVec(position) || !finiteVec(target) || !Number.isFinite(fov)) return invalidEvaluation(samples);
     const subjectCenter = lerpVec(spatial.subject.fromCenter, spatial.subject.toCenter, at);
-    const subjectRadius = lerp(spatial.subject.fromRadius, spatial.subject.toRadius, at);
-    const subjectClearance = distance(position, subjectCenter) - subjectRadius;
-    minClearance = Math.min(minClearance, subjectClearance);
-    if (subjectClearance < spatial.desiredClearance) collisionSamples += 1;
+    const collisionRadius = lerp(spatial.subject.fromCollisionRadius, spatial.subject.toCollisionRadius, at);
+    const framingRadius = lerp(spatial.subject.fromFramingRadius, spatial.subject.toFramingRadius, at);
+    if (spatial.subject.collidable) {
+      const subjectClearance = distance(position, subjectCenter) - collisionRadius;
+      minClearance = Math.min(minClearance, subjectClearance);
+      if (subjectClearance < spatial.desiredClearance) collisionSamples += 1;
+    }
     for (const obstacle of spatial.obstacles) {
+      if (obstacle.role !== "obstacle") continue;
       const clearance = pointAabbClearance(position, obstacle);
       minClearance = Math.min(minClearance, clearance);
       if (clearance < spatial.desiredClearance) collisionSamples += 1;
       if (segmentIntersectsExpandedAabb(position, subjectCenter, obstacle, 0.04)) occlusionSamples += 1;
     }
     if (position[1] < spatial.floorY + 0.08) floorViolations += 1;
-    const framing = projectSubject(position, target, fov, viewport === "mobile" ? 9 / 16 : 16 / 9, subjectCenter, subjectRadius);
+    const framing = projectSubject(position, target, fov, viewport === "mobile" ? 9 / 16 : 16 / 9, subjectCenter, framingRadius);
     fillTotal += framing.fill;
     if (!framing.visible || framing.safeZonePenalty > 0 || framing.fill > 0.92 || framing.fill < 0.025) framingViolations += 1;
     if (previous) {
@@ -156,9 +164,10 @@ export function evaluateSpatialCameraTracks(
   const occlusionRate = occlusionSamples / denominator;
   const framingRate = framingViolations / denominator;
   const floorRate = floorViolations / denominator;
-  const clearancePenalty = minClearance < spatial.desiredClearance
-    ? Math.min(18, (spatial.desiredClearance - minClearance) * 8)
-    : Math.max(0, 0.4 - Math.min(0.4, minClearance - spatial.desiredClearance));
+  const physicalClearance = minClearance === 1000 ? 999 : minClearance;
+  const clearancePenalty = physicalClearance < spatial.desiredClearance
+    ? Math.min(18, (spatial.desiredClearance - physicalClearance) * 8)
+    : 0;
   const turnPenalty = Math.max(0, maxTurnDegrees - 34) * 0.07;
   const score = 8
     - collisionRate * 36
@@ -171,7 +180,7 @@ export function evaluateSpatialCameraTracks(
   return {
     score,
     hardInvalid,
-    minClearance: Number.isFinite(minClearance) ? minClearance : 0,
+    minClearance: physicalClearance,
     collisionSamples,
     occlusionSamples,
     framingViolations,
@@ -198,8 +207,7 @@ export function repairSpatialCameraTracks(
       if (!collision) break;
       const index = current.findIndex((track) => track.id === collision.track.id);
       if (index < 0) break;
-      const repaired = insertDetour(collision.track, collision.at, collision.offset, attempt + 1);
-      current[index] = repaired;
+      current[index] = insertDetour(collision.track, collision.at, collision.offset, attempt + 1);
       reroutes += 1;
     }
   }
@@ -232,6 +240,55 @@ export function transformSpatialBound(bound: SpatialBound, position: Vec3, scale
   };
 }
 
+function subjectFromHero(config: ExperienceConfig, sceneIndex: number, exact?: SpatialBound): SpatialSubject {
+  const scene = config.scenes[sceneIndex];
+  const maxExtent = exact ? boundExtent(exact) : 1.05;
+  const geometryLocal = exact?.source === "geometry";
+  const liveWorld = exact?.source === "live";
+  const fromCollisionRadius = liveWorld ? maxExtent : maxExtent * scene.hero.from.scale;
+  const toCollisionRadius = liveWorld ? maxExtent : maxExtent * scene.hero.to.scale;
+  return {
+    id: "hero",
+    fromCenter: [...scene.hero.from.position],
+    toCenter: [...scene.hero.to.position],
+    fromCollisionRadius: Math.max(0.18, fromCollisionRadius),
+    toCollisionRadius: Math.max(0.18, toCollisionRadius),
+    fromFramingRadius: Math.max(0.16, fromCollisionRadius * 0.9),
+    toFramingRadius: Math.max(0.16, toCollisionRadius * 0.9),
+    collidable: true,
+    source: exact?.source ?? "proxy",
+  };
+}
+
+function subjectFromAsset(asset: SceneAsset, live: Map<string, SpatialBound>): SpatialSubject {
+  const bound = boundForAsset(asset, live);
+  const extent = boundExtent(bound);
+  const role = spatialRoleForAsset(asset);
+  const setFramingRadius = Math.min(1.25, Math.max(0.42, extent * 0.42));
+  const framingRadius = role === "set" ? setFramingRadius : Math.max(0.2, extent * 0.9);
+  return {
+    id: `asset:${asset.id}`,
+    fromCenter: [...bound.center],
+    toCenter: [...bound.center],
+    fromCollisionRadius: role === "set" ? 0 : extent,
+    toCollisionRadius: role === "set" ? 0 : extent,
+    fromFramingRadius: framingRadius,
+    toFramingRadius: framingRadius,
+    collidable: role !== "set",
+    source: bound.source,
+  };
+}
+
+function boundForAsset(asset: SceneAsset, live: Map<string, SpatialBound>): SpatialBound {
+  const exact = live.get(`asset:${asset.id}`) ?? live.get(asset.id);
+  const role = spatialRoleForAsset(asset);
+  if (exact) return { ...exact, id: asset.id, role };
+  const halfSize: Vec3 = asset.kind === "model"
+    ? [1.1 * asset.scale, 1.1 * asset.scale, 1.1 * asset.scale]
+    : [1.55 * asset.scale, 0.9 * asset.scale, 0.08 * asset.scale];
+  return { id: asset.id, center: [...asset.position] as Vec3, halfSize, role, source: "proxy" };
+}
+
 function firstCollision(
   tracks: MotionTrack[],
   spatial: SpatialScene,
@@ -246,14 +303,15 @@ function firstCollision(
     const position = sampleMotionTrack(positionTrack, at) as Vec3;
     const target = sampleMotionTrack(targetTrack, at) as Vec3;
     const subjectCenter = lerpVec(spatial.subject.fromCenter, spatial.subject.toCenter, at);
-    const subjectRadius = lerp(spatial.subject.fromRadius, spatial.subject.toRadius, at) + spatial.desiredClearance;
-    if (distance(position, subjectCenter) < subjectRadius) {
+    const subjectRadius = lerp(spatial.subject.fromCollisionRadius, spatial.subject.toCollisionRadius, at) + spatial.desiredClearance;
+    if (spatial.subject.collidable && distance(position, subjectCenter) < subjectRadius) {
       return { track: positionTrack, at, offset: bestDetourOffset(position, target, subjectCenter, [subjectRadius, subjectRadius, subjectRadius], spatial) };
     }
     if (position[1] < spatial.floorY + 0.08) {
       return { track: positionTrack, at, offset: [0, spatial.floorY + spatial.desiredClearance + 0.2 - position[1], 0] };
     }
     for (const obstacle of spatial.obstacles) {
+      if (obstacle.role !== "obstacle") continue;
       if (pointAabbClearance(position, obstacle) < spatial.desiredClearance) {
         return { track: positionTrack, at, offset: bestDetourOffset(position, target, obstacle.center, obstacle.halfSize, spatial) };
       }
@@ -285,10 +343,15 @@ function bestDetourOffset(
   let bestScore = -Infinity;
   for (const offset of candidates) {
     const point = add(position, offset);
-    const subjectCenter = lerpVec(spatial.subject.fromCenter, spatial.subject.toCenter, 0.5);
-    const subjectRadius = Math.max(spatial.subject.fromRadius, spatial.subject.toRadius);
-    let clearance = distance(point, subjectCenter) - subjectRadius;
-    for (const obstacle of spatial.obstacles) clearance = Math.min(clearance, pointAabbClearance(point, obstacle));
+    let clearance = 999;
+    if (spatial.subject.collidable) {
+      const subjectCenter = lerpVec(spatial.subject.fromCenter, spatial.subject.toCenter, 0.5);
+      const subjectRadius = Math.max(spatial.subject.fromCollisionRadius, spatial.subject.toCollisionRadius);
+      clearance = distance(point, subjectCenter) - subjectRadius;
+    }
+    for (const obstacle of spatial.obstacles) {
+      if (obstacle.role === "obstacle") clearance = Math.min(clearance, pointAabbClearance(point, obstacle));
+    }
     const floor = point[1] - spatial.floorY;
     const score = Math.min(clearance, floor) - magnitude(offset) * 0.08 + offset[1] * 0.05;
     if (score > bestScore) { best = offset; bestScore = score; }
@@ -389,7 +452,7 @@ function normalizeLiveBound(bound: LiveSpatialBoundInput): SpatialBound {
   return spatialBoundFromMinMax(bound.id, bound.min, bound.max, bound.role, bound.source ?? "live");
 }
 
-function boundRadius(bound: SpatialBound) { return Math.hypot(...bound.halfSize); }
+function boundExtent(bound: SpatialBound) { return Math.max(...bound.halfSize); }
 function finiteVec(value: Vec3) { return value.every(Number.isFinite); }
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
 function lerpVec(a: Vec3, b: Vec3, t: number): Vec3 { return [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)]; }
