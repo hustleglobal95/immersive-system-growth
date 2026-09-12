@@ -132,6 +132,29 @@ export function ProductRig({ url, rig }: { url: string; rig: ProductRigDefinitio
           );
       }
     }
+
+    for (const [node, properties] of Object.entries(frame.current.motion.rig)) {
+      const baseline = prepared.baselines.get(node);
+      if (!baseline) continue;
+      for (const [property, sampled] of Object.entries(properties)) {
+        if (!sampled) continue;
+        if (property === "visible") baseline.object.visible = sampled.value as boolean;
+        else if (property === "opacity") {
+          for (const material of baseline.materials) {
+            const value = sampled.value as number;
+            material.opacity = sampled.blend === "multiply" ? material.opacity * value : sampled.blend === "add" ? material.opacity + value : value;
+            material.transparent = material.opacity < 1;
+            (material as MeshStandardMaterial).depthWrite = material.opacity >= 0.98;
+          }
+        } else {
+          const target = baseline.object[property as "position" | "rotation" | "scale"];
+          const value = sampled.value as Vec3;
+          if (sampled.blend === "absolute") target.set(...value);
+          else if (property === "scale") target.set(target.x * value[0], target.y * value[1], target.z * value[2]);
+          else target.set(target.x + value[0], target.y + value[1], target.z + value[2]);
+        }
+      }
+    }
   });
 
   return (
