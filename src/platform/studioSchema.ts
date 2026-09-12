@@ -59,6 +59,7 @@ export const studioProjectSchema = z
     id: slug,
     name: z.string().min(1).max(100),
     experiencePath: relativeJsonPath,
+    creativeDirectionPath: relativeJsonPath.default("config/creative-direction.json"),
     contentSources: z.array(contentSourceSchema).max(20).default([]),
     deployment: z
       .object({
