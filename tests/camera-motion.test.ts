@@ -4,12 +4,15 @@ import raw from "../config/experience.json";
 import { parseExperience } from "../src/lib/configSchema";
 import { sampleMotionTrack } from "../src/lib/motionSequencer";
 import { sampleSpline, sampleSplineArcLength } from "../src/lib/spline";
+import { sampleCameraPath } from "../src/lib/cameraPaths";
+import { sampleCameraProgress } from "../src/lib/cameraTiming";
 import { deriveCameraBank } from "../src/lib/cameraMotion";
 import { auditCameraMotion } from "../src/lib/cameraDiagnostics";
 import {
   cameraChoreographyCatalog,
   createCameraChoreography,
 } from "../src/platform/cameraChoreography";
+import { applyCameraDirector, directCamera } from "../src/platform/cameraDirector";
 import type { MotionTrack, Vec3 } from "../src/types/experience";
 
 const config = parseExperience(raw);
@@ -25,6 +28,32 @@ test("arc-length camera splines reduce accidental speed variance while preservin
   assert.deepEqual(sampleSplineArcLength(points, 0), points[0]);
   assert.deepEqual(sampleSplineArcLength(points, 1), points.at(-1));
   assert.ok(variation(sampleSplineArcLength) < variation(sampleSpline) * 0.55);
+});
+
+test("procedural camera paths preserve exact endpoints and regularize traveled distance", () => {
+  const from: Vec3 = [0, 0.3, 8];
+  const to: Vec3 = [2.1, 1.2, 5.8];
+  for (const preset of ["arc", "orbit", "crane", "threshold", "flyby", "swoop", "macro", "pullback", "subject-orbit"] as const) {
+    const samples = Array.from({ length: 97 }, (_, index) => sampleCameraPath(from, to, index / 96, preset));
+    assert.deepEqual(samples[0], from);
+    assert.deepEqual(samples.at(-1), to);
+    const steps = samples.slice(1).map((point, index) => distance(samples[index], point)).filter((value) => value > 1e-8);
+    const mean = steps.reduce((sum, value) => sum + value, 0) / steps.length;
+    const maxDeviation = Math.max(...steps.map((value) => Math.abs(value - mean) / mean));
+    assert.ok(maxDeviation < 0.16, `${preset} path should maintain controlled travel speed`);
+  }
+});
+
+test("camera timing keeps cinematic character without endpoint stalls", () => {
+  for (const easing of ["smooth", "cinematic"] as const) {
+    const samples = Array.from({ length: 101 }, (_, index) => sampleCameraProgress(index / 100, easing));
+    assert.equal(samples[0], 0);
+    assert.equal(samples.at(-1), 1);
+    assert.ok(samples.every((value, index) => index === 0 || value > samples[index - 1]));
+    const steps = samples.slice(1).map((value, index) => value - samples[index]);
+    const ratio = Math.max(...steps) / Math.min(...steps);
+    assert.ok(ratio < 3.25, `${easing} camera timing should remain physically controlled`);
+  }
 });
 
 test("director camera choreography is deterministic, endpoint-safe and schema-valid", () => {
@@ -47,6 +76,25 @@ test("director camera choreography is deterministic, endpoint-safe and schema-va
     const candidate = structuredClone(config);
     candidate.scenes[0].motionTracks = tracks as MotionTrack[];
     assert.doesNotThrow(() => parseExperience(candidate));
+  }
+});
+
+test("intent-aware camera director is deterministic and produces valid editable tracks", () => {
+  for (let sceneIndex = 0; sceneIndex < config.scenes.length; sceneIndex += 1) {
+    const first = directCamera(config, sceneIndex);
+    const second = directCamera(config, sceneIndex);
+    assert.equal(first.shot, second.shot);
+    assert.equal(first.intent, second.intent);
+    assert.equal(first.rationale, second.rationale);
+    assert.deepEqual(first.tracks, second.tracks);
+    assert.ok(first.confidence >= 0.55 && first.confidence <= 0.96);
+    const applied = applyCameraDirector(config, sceneIndex);
+    assert.equal(applied.plan.shot, first.shot);
+    assert.doesNotThrow(() => parseExperience(applied.experience));
+    const scene = applied.experience.scenes[sceneIndex];
+    assert.ok(scene.motionTracks.some((track) => track.target === "camera.position"));
+    assert.ok(scene.motionTracks.some((track) => track.target === "camera.target"));
+    assert.ok(scene.motionTracks.some((track) => track.target === "camera.fov"));
   }
 });
 
