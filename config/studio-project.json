@@ -15,5 +15,6 @@
     "sampleRate": 1,
     "consent": "analytics",
     "respectDnt": true
-  }
+  },
+  "creativeDirectionPath": "config/creative-direction.json"
 }

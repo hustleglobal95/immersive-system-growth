@@ -1,0 +1,4 @@
+import fs from "node:fs";
+import { parseCreativeDirection } from "../src/platform/creativeDirectionSchema.ts";
+const file=process.argv[2]||"config/creative-direction.json";
+try { const d=parseCreativeDirection(JSON.parse(fs.readFileSync(file,"utf8"))); const ids=new Set(); for(const s of d.scenes){if(ids.has(s.id)) throw new Error(`duplicate scene id: ${s.id}`); ids.add(s.id);} const checks=[d.concept&&d.audience&&d.promise,d.constraints.approved.length>0,d.visual.palette.length>0&&d.visual.typography.length>0,d.scenes.every(s=>s.purpose.length>8&&s.interaction.length>3),d.cta&&d.successEvent,d.scenes.every(s=>s.transitionIn&&s.transitionOut),d.scenes.length>=d.emotionalArc.length-1]; if(checks.some(x=>!x)) throw new Error("creative quality gates failed"); console.log(`CREATIVE VALID ${file}: ${d.conceptId}, ${d.scenes.length} scenes, 7/7 quality gates`); } catch(e){ console.error(`CREATIVE INVALID ${file}: ${e instanceof Error?e.message:e}`); process.exit(1); }

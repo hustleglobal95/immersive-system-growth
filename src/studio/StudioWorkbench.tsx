@@ -5,6 +5,7 @@ import Link from "next/link";
 import rawExperience from "@/config/experience.json";
 import rawProject from "@/config/studio-project.json";
 import rawAssetManifest from "@/config/asset-manifest.json";
+import rawCreativeDirection from "@/config/creative-direction.json";
 import rawInteractionGraph from "@/config/interaction-graph.json";
 import { parseExperience } from "@/src/lib/configSchema";
 import { parseInteractionGraph } from "@/src/lib/interactionGraph";
@@ -22,17 +23,21 @@ import { InteractionGraphEditor } from "@/src/studio/InteractionGraphEditor";
 import type { AssetManifest } from "@/src/types/assets";
 import { IntegrationsPanel, ProjectPanel, PublishPanel, TelemetryPanel } from "@/src/studio/ProjectPanels";
 import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
+import { CreativeDirectionPanel } from "@/src/studio/CreativeDirectionPanel";
+import { parseCreativeDirection } from "@/src/platform/creativeDirectionSchema";
 
 const initialExperience = parseExperience(rawExperience);
 const initialProject = parseStudioProject(rawProject);
 const initialAssetManifest = rawAssetManifest as AssetManifest;
 const initialInteractionGraph = parseInteractionGraph(rawInteractionGraph);
-const tabs = ["project", "templates", "preview", "director", "timeline", "sequence", "interactions", "masks", "layers", "assets", "model", "integrations", "publish", "telemetry"] as const;
+const initialCreativeDirection = parseCreativeDirection(rawCreativeDirection);
+const tabs = ["project", "creative", "templates", "preview", "director", "timeline", "sequence", "interactions", "masks", "layers", "assets", "model", "integrations", "publish", "telemetry"] as const;
 type Tab = (typeof tabs)[number];
 
 export function StudioWorkbench() {
   const draft = useStudioDraft(initialExperience, initialProject, initialAssetManifest, initialInteractionGraph);
   const [tab, setTab] = useState<Tab>("project");
+  const [creative, setCreative] = useState(initialCreativeDirection);
   const [activeScene, setActiveScene] = useState(0);
   const [notice, setNotice] = useState("");
   const importRef = useRef<HTMLInputElement>(null);
@@ -67,7 +72,7 @@ export function StudioWorkbench() {
           <button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Export experience</button>
           <button type="button" onClick={() => downloadJson("interaction-graph.json", draft.interactionGraph)}>Export interactions</button>
           <button type="button" onClick={() => downloadJson("studio-project.json", draft.project)}>Export project</button>
-          <button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Export assets</button>
+          <button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Export assets</button>\n          <button type="button" onClick={() => downloadJson("creative-direction.json", creative)}>Export direction</button>
         </div>
       </header>
 
@@ -95,7 +100,7 @@ export function StudioWorkbench() {
       )}
       {notice && <p className="studio-message" role="status">{notice}</p>}
 
-      {tab === "project" && <ProjectPanel {...draft} />}
+      {tab === "project" && <ProjectPanel {...draft} />}\n      {tab === "creative" && <CreativeDirectionPanel direction={creative} setDirection={setCreative} />}
       {tab === "templates" && <TemplateGallery experience={draft.experience} setExperience={draft.setExperience} />}
       {tab === "preview" && <StudioLivePreview experience={draft.experience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "director" && <SceneDirector experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
@@ -121,6 +126,7 @@ export function StudioWorkbench() {
 function titleFor(tab: Tab) {
   return {
     project: "Project control",
+    creative: "Creative direction",
     templates: "Industry template gallery",
     preview: "Live production preview",
     director: "Camera and art direction",

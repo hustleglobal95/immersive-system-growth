@@ -16,3 +16,4 @@ test-results/
 config/backups/
 public/decoders/draco/
 public/decoders/basis/
+generated/

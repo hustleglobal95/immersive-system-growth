@@ -1,0 +1,4 @@
+import fs from "node:fs";
+import { parseCreativeDirection } from "../src/platform/creativeDirectionSchema.ts";
+const d=parseCreativeDirection(JSON.parse(fs.readFileSync(process.argv[2]||"config/creative-direction.json","utf8")));
+console.log([`CREATIVE BRIEF: ${d.conceptId}`,`Concept: ${d.concept}`,`Audience: ${d.audience}`,`Promise: ${d.promise}`,`Arc: ${d.emotionalArc.join(" -> ")}`,`CTA: ${d.cta}`,`Visual: ${d.visual.palette.join(", ")} | ${d.visual.typography.join(", ")} | ${d.visual.materials.join(", ")}`,`Approved: ${d.constraints.approved.join("; ")}`,`Prohibited: ${d.constraints.prohibited.join("; ")}`,"Generate only grounded concepts and shot lists from these facts. Do not invent claims, metrics, testimonials, assets or product behavior.",...d.scenes.map((s,i)=>`${i+1}. ${s.id}: ${s.purpose}; subject=${s.subject}; copy=${s.copy}; interaction=${s.interaction}; in=${s.transitionIn}; out=${s.transitionOut}`)].join("\n"));

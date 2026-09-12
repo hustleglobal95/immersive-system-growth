@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { parseExperience } from "../src/lib/configSchema.ts";
 import { parseStudioProject } from "../src/platform/studioSchema.ts";
+import { parseCreativeDirection } from "../src/platform/creativeDirectionSchema.ts";
 
 const root = process.cwd();
 const candidates = ["config/studio-project.json"];
@@ -19,6 +20,9 @@ for (const projectPath of candidates) {
     const experiencePath = path.resolve(root, project.experiencePath);
     if (!experiencePath.startsWith(root + path.sep)) throw new Error("Experience path escapes the repository");
     const experience = parseExperience(JSON.parse(fs.readFileSync(experiencePath, "utf8")));
+    const creativePath = path.resolve(root, project.creativeDirectionPath);
+    if (!creativePath.startsWith(root + path.sep)) throw new Error("Creative direction path escapes the repository");
+    parseCreativeDirection(JSON.parse(fs.readFileSync(creativePath, "utf8")));
     console.log(`VALID ${projectPath}: ${project.name}, ${experience.scenes.length} scenes, ${project.contentSources.length} sources`);
   } catch (error) {
     failures++;
