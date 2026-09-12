@@ -73,7 +73,8 @@ export function StudioWorkbench() {
           <button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Export experience</button>
           <button type="button" onClick={() => downloadJson("interaction-graph.json", draft.interactionGraph)}>Export interactions</button>
           <button type="button" onClick={() => downloadJson("studio-project.json", draft.project)}>Export project</button>
-          <button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Export assets</button>\n          <button type="button" onClick={() => downloadJson("creative-direction.json", creative)}>Export direction</button>
+          <button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Export assets</button>
+          <button type="button" onClick={() => downloadJson("creative-direction.json", creative)}>Export direction</button>
         </div>
       </header>
 
@@ -101,7 +102,8 @@ export function StudioWorkbench() {
       )}
       {notice && <p className="studio-message" role="status">{notice}</p>}
 
-      {tab === "project" && <ProjectPanel {...draft} />}\n      {tab === "creative" && <CreativeDirectionPanel direction={creative} setDirection={setCreative} />}
+      {tab === "project" && <ProjectPanel {...draft} />}
+      {tab === "creative" && <CreativeDirectionPanel direction={creative} setDirection={setCreative} />}
       {tab === "templates" && <TemplateGallery experience={draft.experience} setExperience={draft.setExperience} />}
       {tab === "preview" && <StudioLivePreview experience={draft.experience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "director" && <SceneDirector experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}

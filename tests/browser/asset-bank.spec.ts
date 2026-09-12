@@ -16,10 +16,10 @@ test("catalog API bounds responses, validates queries and resolves kit dependenc
 test("Studio searches sources, exports provenance and inserts with undo and draft persistence", async ({ page }) => {
   await page.goto("/studio");
   await page.getByRole("button", { name: "bank", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Asset bank", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Asset bank", level: 2, exact: true })).toBeVisible();
   await expect(page.getByText("2382 matching entries", { exact: true })).toBeVisible();
   await expect(page.locator("canvas")).toHaveCount(0);
-  await page.getByLabel("Preparation", { exact: true }).selectOption("source");
+  await page.getByRole("combobox", { name: "Preparation", exact: true }).selectOption("source");
   await expect(page.getByText("2375 matching entries", { exact: true })).toBeVisible();
   await page.locator('button[aria-pressed="false"]').filter({ hasText: "Needs preparation" }).first().click();
   await expect(page.getByRole("button", { name: "Insert asset into scene" })).toHaveCount(0);
@@ -27,7 +27,7 @@ test("Studio searches sources, exports provenance and inserts with undo and draf
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "Export shortlist (1)", exact: true }).click();
   expect((await download).suggestedFilename()).toBe("asset-bank-selection.json");
-  await page.getByLabel("Preparation", { exact: true }).selectOption("reference");
+  await page.getByRole("combobox", { name: "Preparation", exact: true }).selectOption("reference");
   await page.getByLabel("Search assets").fill("burger");
   await expect(page.getByText("1 matching entries", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: /Burger reference model/ }).click();
@@ -72,7 +72,7 @@ test("asset bank filters remain usable at a narrow viewport", async ({ page }) =
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/studio");
   await page.getByRole("button", { name: "bank", exact: true }).click();
-  await page.getByLabel("Preparation", { exact: true }).selectOption("prepared");
+  await page.getByRole("combobox", { name: "Preparation", exact: true }).selectOption("prepared");
   await expect(page.getByText("No matching assets. Try fewer filters.")).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
 });
