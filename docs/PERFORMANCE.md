@@ -4,9 +4,11 @@ Cinematic does not mean unlimited rendering cost.
 
 ## Default quality tiers
 
-- High: up to configured max DPR, shadows enabled, higher particles, multisampled post FX.
-- Medium: capped DPR around 1.5, fewer particles, reduced post cost.
-- Low: DPR 1, no decorative particles, postprocessing disabled.
+- High: up to configured max DPR, 2048 shadow maps, soft shadow filtering, SMAA and mipmapped bloom.
+- Medium: capped DPR around 1.5, 1024 shadow maps, SMAA and restrained bloom.
+- Low: minimum configured DPR, 512 shadow maps when used, no decorative particles and no postprocessing.
+
+The renderer uses sRGB output, ACES filmic tone mapping and PCF soft shadows. WebGL MSAA stays disabled at context creation so medium and high tiers can use predictable post-process SMAA while low-tier devices avoid the composer entirely.
 
 The runtime selects an initial tier using screen width, memory hints and CPU concurrency, then `PerformanceMonitor` can reduce quality if the renderer struggles.
 
