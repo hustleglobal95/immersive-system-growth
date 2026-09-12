@@ -10,6 +10,12 @@ export default defineConfig([
     files: ["src/components/three/**/*.{ts,tsx}"],
     rules: { "react-hooks/immutability": "off" },
   },
+  // The graph simulator intentionally resets its isolated local snapshot when a different graph identity/initial state is loaded.
+  // It does not synchronize production runtime state and only runs in the authoring surface.
+  {
+    files: ["src/studio/InteractionGraphEditor.tsx"],
+    rules: { "react-hooks/set-state-in-effect": "off" },
+  },
   globalIgnores([
     ".next/**",
     "test-results/**",

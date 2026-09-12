@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "id": "ember-interactions",
+  "initialState": "idle",
+  "states": ["idle", "exploring", "detail"],
+  "variables": {
+    "engaged": false
+  },
+  "nodes": [
+    {
+      "id": "enter-ingredients",
+      "kind": "trigger",
+      "label": "Enter ingredients",
+      "position": { "x": 40, "y": 80 },
+      "event": "scene-enter",
+      "sceneId": "ingredients",
+      "states": ["idle"]
+    },
+    {
+      "id": "mark-engaged",
+      "kind": "action",
+      "label": "Mark engaged",
+      "position": { "x": 300, "y": 80 },
+      "action": { "type": "set-variable", "key": "engaged", "value": true }
+    },
+    {
+      "id": "state-exploring",
+      "kind": "state",
+      "label": "Exploring state",
+      "position": { "x": 560, "y": 80 },
+      "state": "exploring"
+    },
+    {
+      "id": "inspect-product",
+      "kind": "trigger",
+      "label": "Inspect product",
+      "position": { "x": 40, "y": 260 },
+      "event": "custom",
+      "name": "inspect-product",
+      "states": ["exploring"]
+    },
+    {
+      "id": "can-inspect",
+      "kind": "condition",
+      "label": "Engaged?",
+      "position": { "x": 300, "y": 260 },
+      "source": "variable",
+      "key": "engaged",
+      "operator": "eq",
+      "value": true
+    },
+    {
+      "id": "state-detail",
+      "kind": "state",
+      "label": "Detail state",
+      "position": { "x": 560, "y": 220 },
+      "state": "detail"
+    },
+    {
+      "id": "detail-event",
+      "kind": "action",
+      "label": "Emit detail event",
+      "position": { "x": 810, "y": 220 },
+      "action": {
+        "type": "emit",
+        "name": "detail-entered",
+        "payload": { "source": "interaction-graph" }
+      }
+    },
+    {
+      "id": "leave-ingredients",
+      "kind": "trigger",
+      "label": "Leave ingredients",
+      "position": { "x": 40, "y": 440 },
+      "event": "scene-exit",
+      "sceneId": "ingredients",
+      "states": ["exploring", "detail"]
+    },
+    {
+      "id": "clear-engaged",
+      "kind": "action",
+      "label": "Clear engaged",
+      "position": { "x": 300, "y": 440 },
+      "action": { "type": "set-variable", "key": "engaged", "value": false }
+    },
+    {
+      "id": "state-idle",
+      "kind": "state",
+      "label": "Idle state",
+      "position": { "x": 560, "y": 440 },
+      "state": "idle"
+    }
+  ],
+  "edges": [
+    { "id": "enter-engaged", "from": "enter-ingredients", "to": "mark-engaged", "branch": "always", "priority": 0 },
+    { "id": "engaged-exploring", "from": "mark-engaged", "to": "state-exploring", "branch": "always", "priority": 0 },
+    { "id": "inspect-check", "from": "inspect-product", "to": "can-inspect", "branch": "always", "priority": 0 },
+    { "id": "inspect-detail", "from": "can-inspect", "to": "state-detail", "branch": "true", "priority": 0 },
+    { "id": "detail-emit", "from": "state-detail", "to": "detail-event", "branch": "always", "priority": 0 },
+    { "id": "leave-clear", "from": "leave-ingredients", "to": "clear-engaged", "branch": "always", "priority": 0 },
+    { "id": "clear-idle", "from": "clear-engaged", "to": "state-idle", "branch": "always", "priority": 0 }
+  ],
+  "mobileSubstitutions": [
+    { "from": "hover-enter", "to": "click", "target": "product-inspect" }
+  ]
+}

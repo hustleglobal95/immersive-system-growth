@@ -5,7 +5,9 @@ import Link from "next/link";
 import rawExperience from "@/config/experience.json";
 import rawProject from "@/config/studio-project.json";
 import rawAssetManifest from "@/config/asset-manifest.json";
+import rawInteractionGraph from "@/config/interaction-graph.json";
 import { parseExperience } from "@/src/lib/configSchema";
+import { parseInteractionGraph } from "@/src/lib/interactionGraph";
 import { parseStudioProject } from "@/src/platform/studioSchema";
 import { GlbInspectorPanel } from "@/src/studio/GlbInspectorPanel";
 import { TimelineEditor } from "@/src/studio/TimelineEditor";
@@ -16,6 +18,7 @@ import { LayerEditor } from "@/src/studio/LayerEditor";
 import { AssetManager } from "@/src/studio/AssetManager";
 import { TemplateGallery } from "@/src/studio/TemplateGallery";
 import { SequencerEditor } from "@/src/studio/SequencerEditor";
+import { InteractionGraphEditor } from "@/src/studio/InteractionGraphEditor";
 import type { AssetManifest } from "@/src/types/assets";
 import { IntegrationsPanel, ProjectPanel, PublishPanel, TelemetryPanel } from "@/src/studio/ProjectPanels";
 import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
@@ -23,11 +26,12 @@ import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
 const initialExperience = parseExperience(rawExperience);
 const initialProject = parseStudioProject(rawProject);
 const initialAssetManifest = rawAssetManifest as AssetManifest;
-const tabs = ["project", "templates", "preview", "director", "timeline", "sequence", "masks", "layers", "assets", "model", "integrations", "publish", "telemetry"] as const;
+const initialInteractionGraph = parseInteractionGraph(rawInteractionGraph);
+const tabs = ["project", "templates", "preview", "director", "timeline", "sequence", "interactions", "masks", "layers", "assets", "model", "integrations", "publish", "telemetry"] as const;
 type Tab = (typeof tabs)[number];
 
 export function StudioWorkbench() {
-  const draft = useStudioDraft(initialExperience, initialProject, initialAssetManifest);
+  const draft = useStudioDraft(initialExperience, initialProject, initialAssetManifest, initialInteractionGraph);
   const [tab, setTab] = useState<Tab>("project");
   const [activeScene, setActiveScene] = useState(0);
   const [notice, setNotice] = useState("");
@@ -61,6 +65,7 @@ export function StudioWorkbench() {
           <input ref={importRef} hidden type="file" accept="application/json,.json" onChange={(event) => void importExperience(event.target.files?.[0])} />
           <button type="button" onClick={() => importRef.current?.click()}>Import</button>
           <button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Export experience</button>
+          <button type="button" onClick={() => downloadJson("interaction-graph.json", draft.interactionGraph)}>Export interactions</button>
           <button type="button" onClick={() => downloadJson("studio-project.json", draft.project)}>Export project</button>
           <button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Export assets</button>
         </div>
@@ -96,6 +101,7 @@ export function StudioWorkbench() {
       {tab === "director" && <SceneDirector experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "timeline" && <TimelineEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "sequence" && <SequencerEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} beginGroup={draft.beginExperienceGroup} endGroup={draft.endExperienceGroup} undo={draft.undoExperience} redo={draft.redoExperience} canUndo={draft.canUndoExperience} canRedo={draft.canRedoExperience} />}
+      {tab === "interactions" && <InteractionGraphEditor graph={draft.interactionGraph} setGraph={draft.setInteractionGraph} />}
       {tab === "masks" && <MaskLab experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "layers" && <LayerEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "assets" && <AssetManager setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} active={Math.min(activeScene, draft.experience.scenes.length - 1)} />}
@@ -105,8 +111,8 @@ export function StudioWorkbench() {
       {tab === "telemetry" && <TelemetryPanel project={draft.project} setProject={draft.setProject} />}
 
       <footer className="studio-footer">
-        <span>Forge Studio v4.0</span>
-        <span>Live runtime / motion sequencer / review PR</span>
+        <span>Forge Studio v6.0</span>
+        <span>Live runtime / motion sequencer / interaction graph / review PR</span>
       </footer>
     </main>
   );
@@ -120,6 +126,7 @@ function titleFor(tab: Tab) {
     director: "Camera and art direction",
     timeline: "Visual timeline",
     sequence: "Motion sequencer",
+    interactions: "Interaction graph",
     masks: "Mask reveal laboratory",
     layers: "Transition layer composer",
     assets: "Asset intake and budgets",
