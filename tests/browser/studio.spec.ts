@@ -173,8 +173,8 @@ test("Studio authors deterministic visual systems for live preview", async ({ pa
   await expect(page.getByRole("heading", { name: "Visual systems", level: 2 })).toBeVisible();
   await expect(page.getByRole("button", { name: /Ambient instanced field/ })).toBeVisible();
   await page.getByRole("button", { name: /Product particle field/ }).click();
-  await expect(page.getByLabel("Instance count")).toBeVisible();
-  await page.getByLabel("Instance count").fill("120");
+  await expect(page.getByRole("slider", { name: "Instance count" })).toBeVisible();
+  await page.getByRole("slider", { name: "Instance count" }).fill("120");
   await expect(page.getByText("Runtime preview updated.")).toBeVisible();
   await expect(page.getByText("Deterministic sample")).toBeVisible();
   await expect(page.getByText("Quality budget")).toBeVisible();
