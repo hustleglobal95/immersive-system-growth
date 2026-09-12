@@ -1,9 +1,15 @@
 "use client";
 
-import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import type { ExperienceConfig } from "@/src/types/experience";
 import type { AssetManifest } from "@/src/types/assets";
 import { contentSourceSchema, type ContentSource, type StudioProject } from "@/src/platform/studioSchema";
+import rawForgeProject from "@/config/forge-project.json";
+import { parseForgeProject } from "@/src/platform/forgeProjectSchema";
+import { telemetryEventSchema, type TelemetryEvent } from "@/src/platform/telemetry";
+import { summarizeTelemetry } from "@/src/platform/telemetrySummary";
+
+const forgeProject = parseForgeProject(rawForgeProject);
 
 export function ProjectPanel({
   experience,
@@ -143,20 +149,23 @@ export function PublishPanel({ project, setProject, experience, assetManifest }:
 }
 
 export function TelemetryPanel({ project, setProject }: Pick<StudioPanelProps, "project" | "setProject">) {
-  const [events, setEvents] = useState<Array<Record<string, unknown>>>([]);
+  const [events, setEvents] = useState<TelemetryEvent[]>([]);
+  const summary = useMemo(() => summarizeTelemetry(events, forgeProject.performance.targetFps), [events]);
   useEffect(() => {
     const stored = localStorage.getItem("forge-telemetry-preview");
     if (stored) {
       try {
-        const parsed = JSON.parse(stored) as Array<Record<string, unknown>>;
-        queueMicrotask(() => setEvents(parsed));
+        const parsed = JSON.parse(stored);
+        const safe = Array.isArray(parsed) ? parsed.flatMap((item) => { const result = telemetryEventSchema.safeParse(item); return result.success ? [result.data] : []; }) : [];
+        queueMicrotask(() => setEvents(safe));
       } catch {
         localStorage.removeItem("forge-telemetry-preview");
       }
     }
     const listener = (event: Event) => {
-      const detail = (event as CustomEvent<Record<string, unknown>>).detail;
-      setEvents((current) => [detail, ...current].slice(0, 30));
+      const result = telemetryEventSchema.safeParse((event as CustomEvent<unknown>).detail);
+      if (!result.success) return;
+      setEvents((current) => [result.data, ...current].slice(0, 30));
     };
     window.addEventListener("forge:telemetry", listener);
     return () => window.removeEventListener("forge:telemetry", listener);
@@ -173,9 +182,22 @@ export function TelemetryPanel({ project, setProject }: Pick<StudioPanelProps, "
       <section className="studio-card">
         <div className="studio-card__head"><div><span>THIS DEVICE</span><h2>Recent samples</h2></div><output>{events.length}</output></div>
         <div className="telemetry-list">
-          {events.map((event, index) => <div key={index}><strong>{String(event.type ?? "metric")}</strong><code>{JSON.stringify(event.metrics ?? event).slice(0, 180)}</code></div>)}
+          {events.map((event, index) => <div key={index}><strong>{event.type}</strong><code>{JSON.stringify(event.metrics).slice(0, 180)}</code></div>)}
           {!events.length && <p className="studio-muted">Performance samples appear after consent is enabled on the live experience.</p>}
         </div>
+      </section>
+      <section className="studio-card studio-card--wide telemetry-summary" aria-label="Device performance certification">
+        <div className="studio-card__head"><div><span>RELEASE CONFIDENCE</span><h2>Device certification</h2></div><output data-status={summary.status}>{summary.status}</output></div>
+        <p>{summary.status === "ready" ? "Collect FPS and WebGL events from real devices to certify this release." : summary.status === "pass" ? "Observed median frame rate meets the project target with no recorded WebGL failures." : "Observed devices need attention before this release can be certified."}</p>
+        <div className="telemetry-summary__stats">
+          <div><span>Sessions</span><strong>{summary.sessions}</strong></div>
+          <div><span>FPS p50</span><strong>{summary.p50Fps === null ? "—" : summary.p50Fps.toFixed(1)}</strong></div>
+          <div><span>FPS p95</span><strong>{summary.p95Fps === null ? "—" : summary.p95Fps.toFixed(1)}</strong></div>
+          <div><span>Target</span><strong>{forgeProject.performance.targetFps}</strong></div>
+          <div><span>Slow frames</span><strong>{summary.slowFrameRate === null ? "—" : `${(summary.slowFrameRate * 100).toFixed(1)}%`}</strong></div>
+          <div><span>WebGL failures</span><strong>{summary.webglFailures}</strong></div>
+        </div>
+        {!!Object.keys(summary.quality).length && <p className="studio-muted">Quality distribution: {Object.entries(summary.quality).map(([quality, count]) => `${quality} ${count}`).join(" · ")}</p>}
       </section>
     </div>
   );
