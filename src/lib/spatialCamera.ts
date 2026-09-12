@@ -29,6 +29,7 @@ export interface SpatialSubject {
 export interface SpatialScene {
   sceneId: string;
   subject: SpatialSubject;
+  subjectParts: SpatialBound[];
   obstacles: SpatialBound[];
   sets: SpatialBound[];
   floorY: number;
@@ -91,15 +92,19 @@ export function buildSpatialScene(
   const fallbackSubjectAsset = !config.heroVisible && !navigableSet
     ? activeAssets.find((asset) => asset.kind === "model")
     : undefined;
+  const subjectParts = config.heroVisible
+    ? [...live.values()].filter((bound) => bound.role === "subject" && bound.id.startsWith("subject:hero:"))
+    : [];
 
   const setRoot = navigableSet ? boundForAsset(navigableSet, live) : undefined;
-  const subject = config.heroVisible
+  const baseSubject = config.heroVisible
     ? subjectFromHero(config, sceneIndex, live.get("hero"))
     : navigableSet
       ? subjectFromNavigableSet(scene, setRoot?.source ?? "proxy")
       : fallbackSubjectAsset
         ? subjectFromAsset(fallbackSubjectAsset, live, scene)
         : subjectFromFocus(scene, "proxy");
+  const subject = subjectParts.length ? { ...baseSubject, collidable: false } : baseSubject;
 
   const ordinaryObstacles = activeAssets
     .filter((asset) => asset.kind !== "environment" && asset.kind !== "panorama")
@@ -112,7 +117,8 @@ export function buildSpatialScene(
     ...activeAssets.flatMap((asset) => [asset.id, `asset:${asset.id}`]),
   ]);
   const auxiliaryObstacles = [...live.values()]
-    .filter((bound) => bound.role === "obstacle" && !consumedIds.has(bound.id));
+    .filter((bound) => bound.role === "obstacle" && !consumedIds.has(bound.id))
+    .filter((bound) => auxiliaryBoundApplies(bound.id, activeAssets));
   const obstacles = dedupeBounds([...ordinaryObstacles, ...auxiliaryObstacles]);
   const sets = dedupeBounds([
     ...setAssets.map((asset) => boundForAsset(asset, live)),
@@ -129,10 +135,11 @@ export function buildSpatialScene(
   return {
     sceneId: scene.id,
     subject,
+    subjectParts,
     obstacles,
     sets,
     floorY: -1.25,
-    desiredClearance: Math.max(0.18, Math.min(0.55, physicalRadius * 0.14)),
+    desiredClearance: Math.max(0.14, Math.min(0.45, physicalRadius * 0.12)),
   };
 }
 
@@ -173,6 +180,11 @@ export function evaluateSpatialCameraTracks(
       const subjectClearance = subjectClearanceAt(position, subjectCenter, collisionRadius, spatial.subject, at);
       minClearance = Math.min(minClearance, subjectClearance);
       if (subjectClearance < spatial.desiredClearance) sampleCollision = true;
+    }
+    for (const part of spatial.subjectParts) {
+      const clearance = pointAabbClearance(position, part);
+      minClearance = Math.min(minClearance, clearance);
+      if (clearance < spatial.desiredClearance) sampleCollision = true;
     }
     for (const obstacle of spatial.obstacles) {
       const clearance = pointAabbClearance(position, obstacle);
@@ -394,6 +406,11 @@ function firstSpatialIssue(
         ?? [subjectRadius, subjectRadius, subjectRadius];
       return { track: positionTrack, at, offset: bestDetourOffset(position, target, subjectCenter, halfSize, spatial) };
     }
+    for (const part of spatial.subjectParts) {
+      if (pointAabbClearance(position, part) < spatial.desiredClearance) {
+        return { track: positionTrack, at, offset: bestDetourOffset(position, target, part.center, part.halfSize, spatial) };
+      }
+    }
     if (position[1] < spatial.floorY + 0.08) {
       return { track: positionTrack, at, offset: [0, spatial.floorY + spatial.desiredClearance + 0.2 - position[1], 0] };
     }
@@ -440,6 +457,7 @@ function bestDetourOffset(
       const subjectRadius = Math.max(spatial.subject.fromCollisionRadius, spatial.subject.toCollisionRadius);
       clearance = subjectClearanceAt(point, subjectCenter, subjectRadius, spatial.subject, 0.5);
     }
+    for (const part of spatial.subjectParts) clearance = Math.min(clearance, pointAabbClearance(point, part));
     for (const obstacle of spatial.obstacles) clearance = Math.min(clearance, pointAabbClearance(point, obstacle));
     const floor = point[1] - spatial.floorY;
     const score = Math.min(clearance, floor) - magnitude(offset) * 0.08 + offset[1] * 0.05;
@@ -572,6 +590,12 @@ function rotateHalfSize(halfSize: Vec3, rotation: Vec3): Vec3 {
 function lerpOptionalHalfSize(from: Vec3 | undefined, to: Vec3 | undefined, at: number): Vec3 | undefined {
   if (!from || !to) return undefined;
   return lerpVec(from, to, at);
+}
+
+function auxiliaryBoundApplies(id: string, activeAssets: SceneAsset[]) {
+  if (!id.startsWith("set:")) return true;
+  const assetId = id.split(":")[1];
+  return activeAssets.some((asset) => asset.id === assetId);
 }
 
 function dedupeBounds(bounds: SpatialBound[]) {
