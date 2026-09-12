@@ -4,7 +4,7 @@ test("Studio edits a recipe in the browser and applies portable presets", async 
   await expect(page.getByRole("heading", { name: "Recipe editor" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Start from a visual system" })).toBeVisible();
   await page.getByLabel("Recipe search").fill("restaurant");
-  await expect(page.getByText("Restaurant journey")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Restaurant journey", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Select recipe" }).click();
   await page.getByRole("button", { name: "Use selected recipe" }).click();
   await expect(page.getByText("Restaurant journey recipe loaded into the draft.")).toBeVisible();
