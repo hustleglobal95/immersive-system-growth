@@ -2,8 +2,9 @@
 
 import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import { sampleExperience } from "@/src/lib/sampleExperience";
-import { applyCameraDirector } from "@/src/platform/cameraDirector";
+import { applyCameraDirector, type CameraDirectorPlan } from "@/src/platform/cameraDirector";
 import { replaceScene } from "@/src/platform/studioPresets";
+import { getSpatialBoundsSnapshot } from "@/src/runtime/spatialRegistry";
 import type { CameraDefinition, ExperienceConfig, SceneDefinition, Vec3 } from "@/src/types/experience";
 
 const paths: CameraDefinition["path"][] = ["linear", "dolly", "arc", "orbit", "crane", "threshold", "flyby", "swoop", "macro", "pullback", "subject-orbit"];
@@ -21,6 +22,7 @@ export function SceneDirector({
 }) {
   const scene = experience.scenes[active];
   const [directorNotice, setDirectorNotice] = useState("");
+  const [directorPlan, setDirectorPlan] = useState<CameraDirectorPlan | null>(null);
   const update = (changes: Partial<SceneDefinition>) => setExperience((current) => replaceScene(current, active, { ...current.scenes[active], ...changes }));
   const updateCamera = (camera: CameraDefinition) => update({ camera });
   const points = useMemo(() => Array.from({ length: 49 }, (_, index) => {
@@ -28,22 +30,26 @@ export function SceneDirector({
     return sampleExperience(progress, false, experience).camera.position;
   }), [experience, scene.range]);
   const autoDirect = () => {
-    const result = applyCameraDirector(experience, active);
+    const liveBounds = getSpatialBoundsSnapshot();
+    const result = applyCameraDirector(experience, active, { liveBounds });
     setExperience(result.experience);
-    setDirectorNotice(`${result.plan.shotLabel} · ${Math.round(result.plan.confidence * 100)}% confidence. ${result.plan.rationale} ${result.replacedTracks ? `Replaced ${result.replacedTracks} existing camera track${result.replacedTracks === 1 ? "" : "s"}.` : "Added editable camera tracks."}`);
+    setDirectorPlan(result.plan);
+    const spatial = result.plan.spatial.evaluation;
+    setDirectorNotice(`${result.plan.shotLabel} · ${Math.round(result.plan.confidence * 100)}% confidence. ${result.plan.rationale} ${result.replacedTracks ? `Replaced ${result.replacedTracks} existing camera track${result.replacedTracks === 1 ? "" : "s"}.` : "Added editable camera tracks."} Spatial source: ${result.plan.spatial.boundsSource}. Minimum clearance ${spatial.minClearance.toFixed(2)}.`);
   };
 
   return (
     <div className="studio-grid studio-grid--director">
       <section className="studio-card director-camera">
         <div className="studio-card__head"><div><span>CAMERA DIRECTOR</span><h2>Path and framing</h2></div><code>{scene.id}</code></div>
-        <label>Scene<select value={active} onChange={(event) => { setActive(Number(event.target.value)); setDirectorNotice(""); }}>{experience.scenes.map((item, index) => <option key={item.id} value={index}>{String(index + 1).padStart(2, "0")} / {item.label}</option>)}</select></label>
+        <label>Scene<select value={active} onChange={(event) => { setActive(Number(event.target.value)); setDirectorNotice(""); setDirectorPlan(null); }}>{experience.scenes.map((item, index) => <option key={item.id} value={index}>{String(index + 1).padStart(2, "0")} / {item.label}</option>)}</select></label>
         <CameraPathDiagram points={points} />
         <div className="director-auto">
           <button type="button" className="studio-primary" onClick={autoDirect}>Auto-direct camera</button>
-          <span>Analyzes scene intent, camera geometry, subject motion and visual complexity, then authors editable position, target and lens tracks.</span>
+          <span>Scores every Director shot against scene intent, live geometry, subject visibility, safe framing, floor clearance and scene-to-scene continuity, then authors editable tracks.</span>
         </div>
         {directorNotice && <p className="sequencer-notice" role="status">{directorNotice}</p>}
+        {directorPlan && <SpatialDirectorReport plan={directorPlan} />}
         <div className="studio-field-row">
           <label>Path preset<select value={scene.camera.path} onChange={(event) => updateCamera({ ...scene.camera, path: event.target.value as CameraDefinition["path"] })}>{paths.map((path) => <option key={path}>{path}</option>)}</select></label>
           <label>Easing<select value={scene.easing} onChange={(event) => update({ easing: event.target.value as SceneDefinition["easing"] })}><option>linear</option><option>smooth</option><option>cinematic</option></select></label>
@@ -83,6 +89,16 @@ export function SceneDirector({
       </section>
     </div>
   );
+}
+
+function SpatialDirectorReport({ plan }: { plan: CameraDirectorPlan }) {
+  const spatial = plan.spatial.evaluation;
+  return <div className="director-auto" aria-label="Spatial camera diagnostics">
+    <strong>Spatial camera intelligence</strong>
+    <span>{plan.spatial.boundsSource} bounds · {plan.spatial.reroutes} reroute{plan.spatial.reroutes === 1 ? "" : "s"} · {plan.spatial.rejectedCandidates} rejected shot{plan.spatial.rejectedCandidates === 1 ? "" : "s"}</span>
+    <span>Clearance {spatial.minClearance.toFixed(2)} · Occlusion {spatial.occlusionSamples}/{spatial.samples} · Framing violations {spatial.framingViolations}/{spatial.samples} · Max turn {spatial.maxTurnDegrees.toFixed(1)}°</span>
+    <span>Top alternatives: {plan.alternatives.slice(1, 4).map((item) => `${item.shotLabel.replace("Director · ", "")} ${item.hardInvalid ? "rejected" : item.score.toFixed(1)}`).join(" · ")}</span>
+  </div>;
 }
 
 function CameraPathDiagram({ points }: { points: Vec3[] }) {
