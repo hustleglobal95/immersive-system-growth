@@ -6,6 +6,10 @@ import {
   type SpatialCameraEvaluation,
   type SpatialScene,
 } from "@/src/lib/spatialCamera";
+import {
+  repairSpatialCameraTracksWithPlanner,
+  type SpatialPlannerStats,
+} from "@/src/lib/spatialPathPlanner";
 import { cameraChoreographyCatalog, createCameraChoreography, type CameraChoreographyName } from "@/src/platform/cameraChoreography";
 import type { ExperienceConfig, MotionTrack, SceneDefinition, Vec3 } from "@/src/types/experience";
 
@@ -42,6 +46,7 @@ export interface CameraDirectorAlternative {
   continuityPenalty: number;
   hardInvalid: boolean;
   reroutes: number;
+  planner: SpatialPlannerStats;
 }
 
 export interface CameraDirectorSpatialPlan {
@@ -50,6 +55,7 @@ export interface CameraDirectorSpatialPlan {
   continuityPenalty: number;
   boundsSource: "live" | "mixed" | "proxy";
   rejectedCandidates: number;
+  planner: SpatialPlannerStats;
 }
 
 export interface CameraDirectorPlan {
@@ -91,18 +97,26 @@ export function directCamera(
 
   const candidates = cameraChoreographyCatalog.map((item) => {
     const baseTracks = createCameraChoreography(item.id, config, sceneIndex);
-    const repaired = repairSpatialCameraTracks(baseTracks, spatialScene, 3);
-    const continuityPenalty = cameraContinuityPenalty(config, sceneIndex, repaired.tracks);
-    const spatialScore = repaired.evaluation.score - continuityPenalty;
-    const invalidPenalty = repaired.evaluation.hardInvalid ? 120 : 0;
-    const score = semanticScores[item.id] + spatialScore * 0.72 - invalidPenalty;
+    const coarse = repairSpatialCameraTracks(baseTracks, spatialScene, 2);
+    const planned = repairSpatialCameraTracksWithPlanner(coarse.tracks, spatialScene, 5);
+    const reroutes = coarse.reroutes + planned.stats.reroutes;
+    const continuityPenalty = cameraContinuityPenalty(config, sceneIndex, planned.tracks);
+    const spatialScore = planned.evaluation.score - continuityPenalty;
+    const invalidPenalty = planned.evaluation.hardInvalid ? 120 : 0;
+    const planningPenalty = planned.stats.failedRoutes * 4 + planned.stats.routeWaypoints * 0.035;
+    const score = semanticScores[item.id] + spatialScore * 0.72 - invalidPenalty - planningPenalty;
     return {
       item,
       score,
       semanticScore: semanticScores[item.id],
       spatialScore,
       continuityPenalty,
-      repair: repaired,
+      repair: {
+        tracks: planned.tracks,
+        evaluation: planned.evaluation,
+        reroutes,
+        planner: planned.stats,
+      },
     };
   }).sort((a, b) => b.score - a.score || a.item.id.localeCompare(b.item.id));
 
@@ -112,8 +126,18 @@ export function directCamera(
   const spatialConfidence = top.repair.evaluation.hardInvalid
     ? -0.18
     : Math.min(0.16, Math.max(0, top.repair.evaluation.score) * 0.012);
-  const confidence = clamp(0.56 + gap * 0.035 + spatialConfidence, 0.5, 0.97);
-  const rationale = explainChoice(intent, top.item.id, metrics, semantics, top.repair.evaluation, top.repair.reroutes, top.continuityPenalty);
+  const feasibilityBonus = top.repair.planner.failedRoutes === 0 ? 0.025 : -0.06;
+  const confidence = clamp(0.56 + gap * 0.035 + spatialConfidence + feasibilityBonus, 0.5, 0.97);
+  const rationale = explainChoice(
+    intent,
+    top.item.id,
+    metrics,
+    semantics,
+    top.repair.evaluation,
+    top.repair.reroutes,
+    top.continuityPenalty,
+    top.repair.planner,
+  );
   const scores = Object.fromEntries(candidates.map((candidate) => [candidate.item.id, candidate.score])) as Record<CameraChoreographyName, number>;
   const alternatives = candidates.slice(0, 4).map((candidate) => ({
     shot: candidate.item.id,
@@ -124,6 +148,7 @@ export function directCamera(
     continuityPenalty: candidate.continuityPenalty,
     hardInvalid: candidate.repair.evaluation.hardInvalid,
     reroutes: candidate.repair.reroutes,
+    planner: candidate.repair.planner,
   }));
 
   return {
@@ -141,6 +166,7 @@ export function directCamera(
       continuityPenalty: top.continuityPenalty,
       boundsSource: spatialBoundsSource(spatialScene),
       rejectedCandidates: candidates.filter((candidate) => candidate.repair.evaluation.hardInvalid).length,
+      planner: top.repair.planner,
     },
     alternatives,
     tracks: top.repair.tracks,
@@ -288,7 +314,7 @@ function cameraContinuityPenalty(config: ExperienceConfig, sceneIndex: number, t
 }
 
 function spatialBoundsSource(spatial: SpatialScene): "live" | "mixed" | "proxy" {
-  const sources = new Set([spatial.subject.source, ...spatial.obstacles.map((obstacle) => obstacle.source)]);
+  const sources = new Set([spatial.subject.source, ...spatial.obstacles.map((obstacle) => obstacle.source), ...spatial.sets.map((set) => set.source)]);
   if (sources.size === 1 && sources.has("live")) return "live";
   if (sources.size === 1 && sources.has("proxy")) return "proxy";
   return "mixed";
@@ -302,6 +328,7 @@ function explainChoice(
   spatial: SpatialCameraEvaluation,
   reroutes: number,
   continuityPenalty: number,
+  planner: SpatialPlannerStats,
 ) {
   const reasons: string[] = [`${intent} intent`];
   if (metrics.approach > 0.5) reasons.push("camera closes on the subject");
@@ -311,12 +338,14 @@ function explainChoice(
   if (metrics.heroRotation > 0.35) reasons.push("subject rotation supports dimensional reveal");
   if (metrics.activeAssets + metrics.hotspots + metrics.blocks >= 5) reasons.push("scene has multiple visual beats");
   if (hasAny(text, ["detail", "material", "texture", "ingredient"])) reasons.push("copy calls for close inspection");
-  if (reroutes > 0) reasons.push(`${reroutes} geometry avoidance correction${reroutes === 1 ? "" : "s"}`);
+  if (planner.routeWaypoints > 0) reasons.push(`${planner.routeWaypoints} obstacle-aware route waypoint${planner.routeWaypoints === 1 ? "" : "s"}`);
+  else if (reroutes > 0) reasons.push(`${reroutes} geometry avoidance correction${reroutes === 1 ? "" : "s"}`);
+  if (planner.compositionRepairs > 0) reasons.push(`${planner.compositionRepairs} composition repair${planner.compositionRepairs === 1 ? "" : "s"}`);
   if (spatial.occlusionSamples === 0) reasons.push("clear subject sightline");
   if (spatial.framingViolations === 0) reasons.push("subject stays inside composition safe zones");
   if (continuityPenalty < 0.25) reasons.push("clean scene-to-scene heading continuity");
   const label = cameraChoreographyCatalog.find((item) => item.id === shot)?.label.replace("Director · ", "") ?? shot;
-  return `${label} selected from ${reasons.slice(0, 5).join(", ")}.`;
+  return `${label} selected from ${reasons.slice(0, 6).join(", ")}.`;
 }
 
 function semanticText(scene: SceneDefinition) {
