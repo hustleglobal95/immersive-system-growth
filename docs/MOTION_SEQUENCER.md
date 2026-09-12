@@ -28,13 +28,17 @@ Layer and rig targets must resolve against the current scene and mapped product 
 ## Authoring workflow
 
 1. Open Studio and choose Sequence.
-2. Choose a scene and add a typed target or one of the six motion presets.
+2. Choose a scene and add a typed target or one of the eight motion presets.
 3. Seek with the ruler or production preview, then record a key.
 4. Shift-select keys to move or delete them as a group. Copy/paste preserves track ownership and offsets the copied group to the playhead.
-5. Use cubic easing to expose the curve graph and handles.
+5. Use cubic easing to expose the curve graph, handles and five production curve presets.
 6. Select a vector key and enable the gizmo to record translation, rotation or scale in the production R3F viewport.
 7. Add a mobile override when framing or timing must differ on narrow screens.
 8. Scrub forward, backward and across exact endpoints before export or review publishing.
+
+The preview transport plays normalized scene time at a configurable duration and rate. In/out values isolate a difficult transition without changing serialized keyframe time. Looping is an editor-only review control. Track filtering changes only the dope-sheet view, never runtime output. Selected keys can be distributed across their current time window or reversed while preserving that window.
+
+The cinematic-focus preset coordinates focal length, bloom and copy timing. The rig-component-cascade preset creates staggered offset tracks for up to 24 mapped GLB nodes and returns each node to its captured baseline. Both remain ordinary validated tracks after creation.
 
 Pointer drags and transform-control sessions are grouped into one undo step. History is bounded to 80 experience snapshots. It is an editor concern and is not serialized into project output.
 
