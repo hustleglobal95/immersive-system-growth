@@ -297,7 +297,7 @@ export function SequencerEditor({
           {experience.scenes.map((item, index) => <button role="listitem" type="button" key={item.id} className={active === index ? "is-active" : ""} onClick={() => chooseScene(index)}>{String(index + 1).padStart(2, "0")} {item.label}</button>)}
         </div>
         <div className="sequencer-toolbar">
-          <button type="button" className={playing ? "is-playing" : ""} aria-pressed={playing} onClick={() => setPlaying((value) => !value)}>{playing ? "Pause" : "Play"}</button>
+          <button type="button" className={playing ? "is-playing" : ""} aria-label={playing ? "Pause sequencer" : "Play sequencer"} aria-pressed={playing} onClick={() => setPlaying((value) => !value)}>{playing ? "Pause" : "Play"}</button>
           <button type="button" onClick={() => { setPlaying(false); setPlayhead(playbackRange[0]); }}>Stop</button>
           <label className="studio-check"><input type="checkbox" checked={loop} onChange={(event) => setLoop(event.target.checked)} />Loop</label>
           <label>Rate<select aria-label="Playback rate" value={playbackRate} onChange={(event) => setPlaybackRate(Number(event.target.value))}><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1">1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
