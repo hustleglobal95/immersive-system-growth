@@ -1,7 +1,7 @@
 import type { RuntimeEasing } from "@/src/lib/interactionGraph";
 import { sampleCameraPath, sampleFov } from "@/src/lib/cameraPaths";
 import { lerp, lerpVec3 } from "@/src/lib/math";
-import { sampleSpline } from "@/src/lib/spline";
+import { sampleSplineArcLength } from "@/src/lib/spline";
 import type { CameraDefinition, CameraState } from "@/src/types/experience";
 
 export function runtimeEase(progress: number, easing: RuntimeEasing = "smooth") {
@@ -16,7 +16,7 @@ export function runtimeEase(progress: number, easing: RuntimeEasing = "smooth") 
 export function sampleCameraDefinition(camera: CameraDefinition, progress: number): CameraState {
   const p = clamp01(progress);
   const position = camera.waypoints?.length
-    ? sampleSpline([camera.from.position, ...camera.waypoints, camera.to.position], p)
+    ? sampleSplineArcLength([camera.from.position, ...camera.waypoints, camera.to.position], p)
     : sampleCameraPath(
         camera.from.position,
         camera.to.position,
@@ -26,7 +26,7 @@ export function sampleCameraDefinition(camera: CameraDefinition, progress: numbe
         camera.to.target,
       );
   const target = camera.targetWaypoints?.length
-    ? sampleSpline([camera.from.target, ...camera.targetWaypoints, camera.to.target], p)
+    ? sampleSplineArcLength([camera.from.target, ...camera.targetWaypoints, camera.to.target], p)
     : lerpVec3(camera.from.target, camera.to.target, p);
   return {
     position,
