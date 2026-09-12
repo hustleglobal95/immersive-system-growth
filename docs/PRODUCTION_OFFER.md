@@ -1,6 +1,6 @@
 # Production offer boundary
 
-Forge 3.0 is designed to support premium, custom marketing experiences with a repeatable production workflow. The repository supplies the engine and control plane; a project fee must still cover original art direction, licensed assets, copy, integration work, device QA, launch and client-specific risk.
+Forge 4.0 is designed to support premium, custom marketing experiences with a repeatable production workflow. The repository supplies the engine and control plane; a project fee must still cover original art direction, licensed assets, copy, integration work, device QA, launch and client-specific risk.
 
 ## What can be delivered efficiently
 
