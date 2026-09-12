@@ -132,3 +132,21 @@ test("Mask Lab authors all presets and renders deterministic DOM and WebGL previ
   if (start && end) expect(end).not.toEqual(start);
   await expect(page.getByText("Production schema valid")).toBeVisible();
 });
+
+test("Interaction graph authors and simulates deterministic branching", async ({ page }) => {
+  await page.goto("/studio");
+  await page.getByRole("button", { name: "interactions", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Interaction graph", level: 2 })).toBeVisible();
+  await expect(page.getByRole("application", { name: "Interaction node graph" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Enter ingredients trigger" })).toBeVisible();
+  await page.getByRole("button", { name: "Enter ingredients trigger" }).click();
+  await page.getByRole("button", { name: "Run selected trigger" }).click();
+  await expect(page.getByTestId("interaction-sim-state")).toHaveText("exploring");
+  await expect(page.getByText("mark-engaged", { exact: true })).toBeVisible();
+  await expect(page.getByText("Production schema valid")).toBeVisible();
+
+  await page.getByRole("button", { name: "Inspect product trigger" }).click();
+  await page.getByRole("button", { name: "Run selected trigger" }).click();
+  await expect(page.getByTestId("interaction-sim-state")).toHaveText("detail");
+  await expect(page.getByText(/detail-event: emit/)).toBeVisible();
+});
