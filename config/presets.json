@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "presets": [
+    { "id": "camera-drift", "revision": 1, "kind": "motion", "label": "Camera drift", "description": "A restrained three-point camera arc.", "tags": ["camera", "depth"], "motionPreset": "camera-drift" },
+    { "id": "product-lift", "revision": 1, "kind": "motion", "label": "Product lift", "description": "Rise, hold, and settle the persistent hero.", "tags": ["hero", "product"], "motionPreset": "product-lift" },
+    { "id": "light-pulse", "revision": 1, "kind": "motion", "label": "Light pulse", "description": "Build and release key-light intensity.", "tags": ["lighting", "focus"], "motionPreset": "light-pulse" },
+    { "id": "copy-rise", "revision": 1, "kind": "motion", "label": "Copy rise", "description": "Fade and settle the scene copy.", "tags": ["dom", "typography"], "motionPreset": "copy-rise" },
+    { "id": "media-reveal", "revision": 1, "kind": "motion", "label": "Media reveal", "description": "Author a reversible media reveal envelope.", "tags": ["media", "reveal"], "motionPreset": "media-reveal" },
+    { "id": "mobile-closeup", "revision": 1, "kind": "motion", "label": "Mobile close-up", "description": "Override camera framing on narrow viewports.", "tags": ["mobile", "camera"], "motionPreset": "mobile-closeup" },
+    { "id": "cinematic-focus", "revision": 1, "kind": "motion", "label": "Cinematic focus", "description": "Combine focal length, bloom, and copy settling.", "tags": ["camera", "light", "dom"], "motionPreset": "cinematic-focus" },
+    { "id": "rig-cascade", "revision": 1, "kind": "motion", "label": "Rig component cascade", "description": "Stagger mapped GLB components into their assembled positions.", "tags": ["glb", "rig", "product"], "motionPreset": "rig-cascade" },
+    { "id": "transition-slide-up", "revision": 1, "kind": "transition", "label": "Slide up", "description": "Bring the next media frame up through the current scene.", "tags": ["media", "spatial"], "transition": { "transition": "slide", "direction": "up" } },
+    { "id": "transition-curtain-down", "revision": 1, "kind": "transition", "label": "Curtain down", "description": "Close and reopen the scene with a directional curtain.", "tags": ["media", "curtain"], "transition": { "transition": "curtain", "direction": "down" } },
+    { "id": "transition-dissolve-warm", "revision": 1, "kind": "transition", "label": "Warm dissolve", "description": "Dissolve through a restrained brand-color field.", "tags": ["media", "dissolve"], "transition": { "transition": "dissolve", "blendColor": "#f97316" } },
+    { "id": "transition-noise-mask", "revision": 1, "kind": "transition", "label": "Noise mask", "description": "Use a seeded organic reveal with a controlled edge.", "tags": ["mask", "shader"], "transition": { "transition": "mask", "maskPreset": "noise-dissolve", "maskDirection": "right", "maskSoftness": 18 } },
+    { "id": "transition-film-burn", "revision": 1, "kind": "transition", "label": "Film burn", "description": "Use a directional film-burn reveal for campaign imagery.", "tags": ["mask", "campaign"], "transition": { "transition": "mask", "maskPreset": "film-burn", "maskDirection": "up", "maskSoftness": 14, "blendColor": "#f97316" } },
+    { "id": "transition-ink-spread", "revision": 1, "kind": "transition", "label": "Ink spread", "description": "Spread the next image from a seeded organic edge.", "tags": ["mask", "editorial"], "transition": { "transition": "mask", "maskPreset": "ink-spread", "maskDirection": "left", "maskSoftness": 22 } }
+  ]
+}
