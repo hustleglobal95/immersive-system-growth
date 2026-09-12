@@ -21,21 +21,12 @@ export function captureSpatialObject(id: string, object: Object3D, role: Spatial
 
 export function captureSpatialSet(id: string, object: Object3D) {
   object.updateWorldMatrix(true, true);
-  const prefix = `set:${id}:`;
-  const active = new Set<string>();
-  let index = 0;
-  object.traverse((child) => {
-    if (!(child instanceof Mesh)) return;
-    const name = (child.name || `mesh-${index}`).toLowerCase();
-    const key = `${prefix}${slug(name)}-${index}`;
-    index += 1;
-    if (!isStructuralBlocker(name)) return;
-    if (captureBox(key, child, "obstacle")) active.add(key);
-  });
-  for (const key of registry.keys()) {
-    if (key.startsWith(prefix) && !active.has(key)) registry.delete(key);
-  }
-  return active.size;
+  return captureMeshGroup(`set:${id}:`, object, "obstacle", (_mesh, name) => isStructuralBlocker(name));
+}
+
+export function captureSpatialSubjectParts(id: string, object: Object3D) {
+  object.updateWorldMatrix(true, true);
+  return captureMeshGroup(`subject:${id}:`, object, "subject", (mesh) => mesh.visible);
 }
 
 export function releaseSpatialObject(id: string) {
@@ -43,8 +34,11 @@ export function releaseSpatialObject(id: string) {
 }
 
 export function releaseSpatialSet(id: string) {
-  const prefix = `set:${id}:`;
-  for (const key of registry.keys()) if (key.startsWith(prefix)) registry.delete(key);
+  releasePrefix(`set:${id}:`);
+}
+
+export function releaseSpatialSubjectParts(id: string) {
+  releasePrefix(`subject:${id}:`);
 }
 
 export function getSpatialBoundsSnapshot(maxAgeMs = 5000): LiveSpatialBoundInput[] {
@@ -56,6 +50,28 @@ export function getSpatialBoundsSnapshot(maxAgeMs = 5000): LiveSpatialBoundInput
 
 export function clearSpatialRegistry() {
   registry.clear();
+}
+
+function captureMeshGroup(
+  prefix: string,
+  object: Object3D,
+  role: SpatialRole,
+  include: (mesh: Mesh, name: string) => boolean,
+) {
+  const active = new Set<string>();
+  let index = 0;
+  object.traverse((child) => {
+    if (!(child instanceof Mesh)) return;
+    const name = (child.name || `mesh-${index}`).toLowerCase();
+    const key = `${prefix}${slug(name)}-${index}`;
+    index += 1;
+    if (!include(child, name)) return;
+    if (captureBox(key, child, role)) active.add(key);
+  });
+  for (const key of registry.keys()) {
+    if (key.startsWith(prefix) && !active.has(key)) registry.delete(key);
+  }
+  return active.size;
 }
 
 function captureBox(id: string, object: Object3D, role: SpatialRole) {
@@ -79,6 +95,10 @@ function captureBox(id: string, object: Object3D, role: SpatialRole) {
     updatedAt: performanceNow(),
   });
   return true;
+}
+
+function releasePrefix(prefix: string) {
+  for (const key of registry.keys()) if (key.startsWith(prefix)) registry.delete(key);
 }
 
 function isStructuralBlocker(name: string) {
