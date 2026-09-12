@@ -1,0 +1,4 @@
+{
+  "allowedHosts": ["cdn.polyhaven.com"],
+  "notes": "Add your public CDN hostname before importing prepared remote files. Store permanent public URLs only; never signed URLs or storage credentials. Provider thumbnails remain provider content. Catalog entries marked source are not downloaded or runtime-ready."
+}

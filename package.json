@@ -37,7 +37,12 @@
     "creative:audit": "node --import tsx scripts/creative-audit.mjs",
     "creative:recipes": "node scripts/creative-recipe-audit.mjs",
     "creative:prompt": "node --import tsx scripts/creative-prompt.mjs",
-    "creative:compile": "node --import tsx scripts/creative-compile.mjs"
+    "creative:compile": "node --import tsx scripts/creative-compile.mjs",
+    "bank:validate": "node --import tsx scripts/asset-bank.mjs validate",
+    "bank:seed": "node --import tsx scripts/asset-bank.mjs seed",
+    "bank:sync": "node --import tsx scripts/asset-bank.mjs sync-polyhaven",
+    "bank:import": "node --import tsx scripts/asset-bank.mjs import",
+    "bank:prepare": "node --import tsx scripts/asset-bank.mjs prepare"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "5.3.0",
