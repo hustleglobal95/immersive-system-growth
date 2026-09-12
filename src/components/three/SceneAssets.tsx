@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, lazy, useRef } from "react";
+import { Suspense, lazy, useEffect, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import type { Group } from "three";
 import manifest from "@/config/asset-manifest.json";
@@ -11,6 +11,7 @@ import { AssetBoundary } from "@/src/components/three/AssetBoundary";
 import { GLTFModel } from "@/src/components/three/GLTFModel";
 import { ScrubbedGLTF } from "@/src/components/three/ScrubbedGLTF";
 import { useThreeInteraction } from "@/src/components/three/useThreeInteraction";
+import { captureSpatialObject, releaseSpatialObject } from "@/src/runtime/spatialRegistry";
 const VideoPlane = lazy(() =>
   import("./VideoPlane").then((module) => ({ default: module.VideoPlane })),
 );
@@ -63,8 +64,11 @@ function Asset({ asset }: { asset: SceneAsset }) {
 
 function InteractiveAsset({ asset, visible }: { asset: SceneAsset; visible: boolean }) {
   const root = useRef<Group>(null);
+  const frameCounter = useRef(0);
   const target = `asset:${asset.id}`;
   const interaction = useThreeInteraction(target);
+  const spatial = asset.kind !== "environment" && asset.kind !== "panorama";
+  useEffect(() => () => releaseSpatialObject(target), [target]);
   useFrame(() => {
     const group = root.current;
     if (!group) return;
@@ -76,6 +80,12 @@ function InteractiveAsset({ asset, visible }: { asset: SceneAsset; visible: bool
       asset.rotation[2],
     );
     group.scale.setScalar(asset.scale);
+    if (!spatial || !visible) {
+      releaseSpatialObject(target);
+      return;
+    }
+    frameCounter.current = (frameCounter.current + 1) % 12;
+    if (frameCounter.current === 0) captureSpatialObject(target, group, "obstacle");
   });
   return (
     <group
