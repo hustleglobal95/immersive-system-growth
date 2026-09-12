@@ -10,6 +10,10 @@ import type { CameraDefinition, ExperienceConfig, SceneDefinition, Vec3 } from "
 
 const paths: CameraDefinition["path"][] = ["linear", "dolly", "arc", "orbit", "crane", "threshold", "flyby", "swoop", "macro", "pullback", "subject-orbit"];
 
+type ScopedDirectorPlan = { sceneId: string; plan: CameraDirectorPlan } | null;
+type ScopedNotice = { sceneId: string; text: string } | null;
+type ScopedPreview = { sceneId: string; progress: number };
+
 export function SceneDirector({
   experience,
   setExperience,
@@ -22,10 +26,13 @@ export function SceneDirector({
   setActive: (index: number) => void;
 }) {
   const scene = experience.scenes[active];
-  const [directorNotice, setDirectorNotice] = useState("");
-  const [directorPlan, setDirectorPlan] = useState<CameraDirectorPlan | null>(null);
-  const [previewProgress, setPreviewProgress] = useState(() => midpoint(scene.range));
+  const [noticeState, setNoticeState] = useState<ScopedNotice>(null);
+  const [planState, setPlanState] = useState<ScopedDirectorPlan>(null);
+  const [previewState, setPreviewState] = useState<ScopedPreview>(() => ({ sceneId: scene.id, progress: midpoint(scene.range) }));
   const [liveSpatialCount, setLiveSpatialCount] = useState(0);
+  const directorNotice = noticeState?.sceneId === scene.id ? noticeState.text : "";
+  const directorPlan = planState?.sceneId === scene.id ? planState.plan : null;
+  const previewProgress = previewState.sceneId === scene.id ? previewState.progress : midpoint(scene.range);
   const update = (changes: Partial<SceneDefinition>) => setExperience((current) => replaceScene(current, active, { ...current.scenes[active], ...changes }));
   const updateCamera = (camera: CameraDefinition) => update({ camera });
   const points = useMemo(() => Array.from({ length: 49 }, (_, index) => {
@@ -34,14 +41,7 @@ export function SceneDirector({
   }), [experience, scene.range]);
 
   useEffect(() => {
-    setPreviewProgress(midpoint(scene.range));
-    setDirectorPlan(null);
-    setDirectorNotice("");
-  }, [active, scene.range]);
-
-  useEffect(() => {
     const refresh = () => setLiveSpatialCount(getSpatialBoundsSnapshot().length);
-    refresh();
     const timer = window.setInterval(refresh, 250);
     return () => window.clearInterval(timer);
   }, [active, experience.heroModel, experience.assets]);
@@ -50,17 +50,22 @@ export function SceneDirector({
     const liveBounds = getSpatialBoundsSnapshot();
     const result = applyCameraDirector(experience, active, { liveBounds });
     setExperience(result.experience);
-    setDirectorPlan(result.plan);
+    setPlanState({ sceneId: scene.id, plan: result.plan });
     const spatial = result.plan.spatial.evaluation;
     const planner = result.plan.spatial.planner;
-    setDirectorNotice(`${result.plan.shotLabel} · ${Math.round(result.plan.confidence * 100)}% confidence. ${result.plan.rationale} ${result.replacedTracks ? `Replaced ${result.replacedTracks} existing camera track${result.replacedTracks === 1 ? "" : "s"}.` : "Added editable camera tracks."} Spatial source: ${result.plan.spatial.boundsSource}. Minimum clearance ${spatial.minClearance.toFixed(2)}. Visibility waypoints ${planner.routeWaypoints}. Composition repairs ${planner.compositionRepairs}.`);
+    setNoticeState({
+      sceneId: scene.id,
+      text: `${result.plan.shotLabel} · ${Math.round(result.plan.confidence * 100)}% confidence. ${result.plan.rationale} ${result.replacedTracks ? `Replaced ${result.replacedTracks} existing camera track${result.replacedTracks === 1 ? "" : "s"}.` : "Added editable camera tracks."} Spatial source: ${result.plan.spatial.boundsSource}. Minimum clearance ${spatial.minClearance.toFixed(2)}. Visibility waypoints ${planner.routeWaypoints}. Composition repairs ${planner.compositionRepairs}.`,
+    });
   };
   const chooseScene = (index: number) => {
+    const next = experience.scenes[index];
     setActive(index);
-    setPreviewProgress(midpoint(experience.scenes[index].range));
-    setDirectorNotice("");
-    setDirectorPlan(null);
+    setPreviewState({ sceneId: next.id, progress: midpoint(next.range) });
+    setNoticeState(null);
+    setPlanState(null);
   };
+  const changePreviewProgress = (progress: number) => setPreviewState({ sceneId: scene.id, progress });
 
   return (
     <div className="studio-grid studio-grid--director">
@@ -118,7 +123,7 @@ export function SceneDirector({
         active={active}
         setActive={chooseScene}
         progress={previewProgress}
-        onProgressChange={setPreviewProgress}
+        onProgressChange={changePreviewProgress}
       />
     </div>
   );
