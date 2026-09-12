@@ -1,3 +1,11 @@
+import { sampleMotionTrack } from "@/src/lib/motionSequencer";
+import {
+  buildSpatialScene,
+  repairSpatialCameraTracks,
+  type LiveSpatialBoundInput,
+  type SpatialCameraEvaluation,
+  type SpatialScene,
+} from "@/src/lib/spatialCamera";
 import { cameraChoreographyCatalog, createCameraChoreography, type CameraChoreographyName } from "@/src/platform/cameraChoreography";
 import type { ExperienceConfig, MotionTrack, SceneDefinition, Vec3 } from "@/src/types/experience";
 
@@ -20,6 +28,30 @@ export interface CameraDirectorMetrics {
   hasMedia: boolean;
 }
 
+export interface CameraDirectorOptions {
+  liveBounds?: LiveSpatialBoundInput[];
+  spatialScene?: SpatialScene;
+}
+
+export interface CameraDirectorAlternative {
+  shot: CameraChoreographyName;
+  shotLabel: string;
+  score: number;
+  semanticScore: number;
+  spatialScore: number;
+  continuityPenalty: number;
+  hardInvalid: boolean;
+  reroutes: number;
+}
+
+export interface CameraDirectorSpatialPlan {
+  evaluation: SpatialCameraEvaluation;
+  reroutes: number;
+  continuityPenalty: number;
+  boundsSource: "live" | "mixed" | "proxy";
+  rejectedCandidates: number;
+}
+
 export interface CameraDirectorPlan {
   sceneId: string;
   intent: CameraIntent;
@@ -29,6 +61,8 @@ export interface CameraDirectorPlan {
   rationale: string;
   metrics: CameraDirectorMetrics;
   scores: Record<CameraChoreographyName, number>;
+  spatial: CameraDirectorSpatialPlan;
+  alternatives: CameraDirectorAlternative[];
   tracks: MotionTrack[];
 }
 
@@ -38,27 +72,59 @@ export interface CameraDirectorResult {
   replacedTracks: number;
 }
 
-export function directCamera(config: ExperienceConfig, sceneIndex: number): CameraDirectorPlan {
+export function directCamera(
+  config: ExperienceConfig,
+  sceneIndex: number,
+  options: CameraDirectorOptions = {},
+): CameraDirectorPlan {
   const scene = config.scenes[sceneIndex];
   if (!scene) throw new RangeError(`Unknown scene index ${sceneIndex}`);
   const metrics = measureScene(config, scene);
   const semantics = semanticText(scene);
   const intent = inferIntent(semantics, metrics, sceneIndex, config.scenes.length);
-  const scores = initialScores();
+  const semanticScores = initialScores();
+  scoreIntent(semanticScores, intent);
+  scoreSemantics(semanticScores, semantics);
+  scoreGeometry(semanticScores, metrics);
+  scoreNarrativePosition(semanticScores, sceneIndex, config.scenes.length);
+  const spatialScene = options.spatialScene ?? buildSpatialScene(config, sceneIndex, options.liveBounds ?? []);
 
-  scoreIntent(scores, intent);
-  scoreSemantics(scores, semantics);
-  scoreGeometry(scores, metrics);
-  scoreNarrativePosition(scores, sceneIndex, config.scenes.length);
+  const candidates = cameraChoreographyCatalog.map((item) => {
+    const baseTracks = createCameraChoreography(item.id, config, sceneIndex);
+    const repaired = repairSpatialCameraTracks(baseTracks, spatialScene, 3);
+    const continuityPenalty = cameraContinuityPenalty(config, sceneIndex, repaired.tracks);
+    const spatialScore = repaired.evaluation.score - continuityPenalty;
+    const invalidPenalty = repaired.evaluation.hardInvalid ? 120 : 0;
+    const score = semanticScores[item.id] + spatialScore * 0.72 - invalidPenalty;
+    return {
+      item,
+      score,
+      semanticScore: semanticScores[item.id],
+      spatialScore,
+      continuityPenalty,
+      repair: repaired,
+    };
+  }).sort((a, b) => b.score - a.score || a.item.id.localeCompare(b.item.id));
 
-  const ranked = cameraChoreographyCatalog
-    .map((item) => ({ item, score: scores[item.id] }))
-    .sort((a, b) => b.score - a.score || a.item.id.localeCompare(b.item.id));
-  const top = ranked[0];
-  const second = ranked[1];
+  const top = candidates[0];
+  const second = candidates[1];
   const gap = Math.max(0, top.score - second.score);
-  const confidence = clamp(0.55 + gap * 0.08 + Math.min(0.12, top.score * 0.012), 0.55, 0.96);
-  const rationale = explainChoice(intent, top.item.id, metrics, semantics);
+  const spatialConfidence = top.repair.evaluation.hardInvalid
+    ? -0.18
+    : Math.min(0.16, Math.max(0, top.repair.evaluation.score) * 0.012);
+  const confidence = clamp(0.56 + gap * 0.035 + spatialConfidence, 0.5, 0.97);
+  const rationale = explainChoice(intent, top.item.id, metrics, semantics, top.repair.evaluation, top.repair.reroutes, top.continuityPenalty);
+  const scores = Object.fromEntries(candidates.map((candidate) => [candidate.item.id, candidate.score])) as Record<CameraChoreographyName, number>;
+  const alternatives = candidates.slice(0, 4).map((candidate) => ({
+    shot: candidate.item.id,
+    shotLabel: candidate.item.label,
+    score: candidate.score,
+    semanticScore: candidate.semanticScore,
+    spatialScore: candidate.spatialScore,
+    continuityPenalty: candidate.continuityPenalty,
+    hardInvalid: candidate.repair.evaluation.hardInvalid,
+    reroutes: candidate.repair.reroutes,
+  }));
 
   return {
     sceneId: scene.id,
@@ -69,12 +135,24 @@ export function directCamera(config: ExperienceConfig, sceneIndex: number): Came
     rationale,
     metrics,
     scores,
-    tracks: createCameraChoreography(top.item.id, config, sceneIndex),
+    spatial: {
+      evaluation: top.repair.evaluation,
+      reroutes: top.repair.reroutes,
+      continuityPenalty: top.continuityPenalty,
+      boundsSource: spatialBoundsSource(spatialScene),
+      rejectedCandidates: candidates.filter((candidate) => candidate.repair.evaluation.hardInvalid).length,
+    },
+    alternatives,
+    tracks: top.repair.tracks,
   };
 }
 
-export function applyCameraDirector(config: ExperienceConfig, sceneIndex: number): CameraDirectorResult {
-  const plan = directCamera(config, sceneIndex);
+export function applyCameraDirector(
+  config: ExperienceConfig,
+  sceneIndex: number,
+  options: CameraDirectorOptions = {},
+): CameraDirectorResult {
+  const plan = directCamera(config, sceneIndex, options);
   const scene = config.scenes[sceneIndex];
   const retained = scene.motionTracks.filter((track) => !isCameraTrack(track));
   const replacedTracks = scene.motionTracks.length - retained.length;
@@ -186,7 +264,45 @@ function scoreNarrativePosition(scores: Record<CameraChoreographyName, number>, 
   if (index > 0 && index < count - 1) scores["director-parallax-truck"] += 0.25;
 }
 
-function explainChoice(intent: CameraIntent, shot: CameraChoreographyName, metrics: CameraDirectorMetrics, text: string) {
+function cameraContinuityPenalty(config: ExperienceConfig, sceneIndex: number, tracks: MotionTrack[]) {
+  const position = tracks.find((track) => track.target === "camera.position" && track.viewport !== "mobile");
+  if (!position) return 20;
+  const start = sampleMotionTrack(position, 0) as Vec3;
+  const early = sampleMotionTrack(position, 0.06) as Vec3;
+  const late = sampleMotionTrack(position, 0.94) as Vec3;
+  const end = sampleMotionTrack(position, 1) as Vec3;
+  let penalty = 0;
+  const previous = config.scenes[sceneIndex - 1];
+  if (previous) {
+    const incoming = sub(previous.camera.to.position, previous.camera.from.position);
+    const outgoing = sub(early, start);
+    if (magnitude(incoming) > 0.01 && magnitude(outgoing) > 0.01) penalty += Math.max(0, angleDegrees(incoming, outgoing) - 80) * 0.035;
+  }
+  const next = config.scenes[sceneIndex + 1];
+  if (next) {
+    const outgoing = sub(end, late);
+    const nextDirection = sub(next.camera.to.position, next.camera.from.position);
+    if (magnitude(outgoing) > 0.01 && magnitude(nextDirection) > 0.01) penalty += Math.max(0, angleDegrees(outgoing, nextDirection) - 80) * 0.035;
+  }
+  return penalty;
+}
+
+function spatialBoundsSource(spatial: SpatialScene): "live" | "mixed" | "proxy" {
+  const sources = new Set([spatial.subject.source, ...spatial.obstacles.map((obstacle) => obstacle.source)]);
+  if (sources.size === 1 && sources.has("live")) return "live";
+  if (sources.size === 1 && sources.has("proxy")) return "proxy";
+  return "mixed";
+}
+
+function explainChoice(
+  intent: CameraIntent,
+  shot: CameraChoreographyName,
+  metrics: CameraDirectorMetrics,
+  text: string,
+  spatial: SpatialCameraEvaluation,
+  reroutes: number,
+  continuityPenalty: number,
+) {
   const reasons: string[] = [`${intent} intent`];
   if (metrics.approach > 0.5) reasons.push("camera closes on the subject");
   else if (metrics.approach < -0.5) reasons.push("camera opens away from the subject");
@@ -195,8 +311,12 @@ function explainChoice(intent: CameraIntent, shot: CameraChoreographyName, metri
   if (metrics.heroRotation > 0.35) reasons.push("subject rotation supports dimensional reveal");
   if (metrics.activeAssets + metrics.hotspots + metrics.blocks >= 5) reasons.push("scene has multiple visual beats");
   if (hasAny(text, ["detail", "material", "texture", "ingredient"])) reasons.push("copy calls for close inspection");
+  if (reroutes > 0) reasons.push(`${reroutes} geometry avoidance correction${reroutes === 1 ? "" : "s"}`);
+  if (spatial.occlusionSamples === 0) reasons.push("clear subject sightline");
+  if (spatial.framingViolations === 0) reasons.push("subject stays inside composition safe zones");
+  if (continuityPenalty < 0.25) reasons.push("clean scene-to-scene heading continuity");
   const label = cameraChoreographyCatalog.find((item) => item.id === shot)?.label.replace("Director · ", "") ?? shot;
-  return `${label} selected from ${reasons.slice(0, 4).join(", ")}.`;
+  return `${label} selected from ${reasons.slice(0, 5).join(", ")}.`;
 }
 
 function semanticText(scene: SceneDefinition) {
@@ -213,4 +333,8 @@ function hasAny(text: string, words: string[]) { return words.some((word) => tex
 function distance(a: Vec3, b: Vec3) { return Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]); }
 function midpoint(a: Vec3, b: Vec3): Vec3 { return [(a[0] + b[0]) * 0.5, (a[1] + b[1]) * 0.5, (a[2] + b[2]) * 0.5]; }
 function sub(a: Vec3, b: Vec3): Vec3 { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; }
+function magnitude(a: Vec3) { return Math.hypot(...a); }
+function normalize(a: Vec3): Vec3 { const length = magnitude(a); return length > 1e-8 ? [a[0] / length, a[1] / length, a[2] / length] : [0, 0, 0]; }
+function dot(a: Vec3, b: Vec3) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
+function angleDegrees(a: Vec3, b: Vec3) { return Math.acos(clamp(dot(normalize(a), normalize(b)), -1, 1)) * 180 / Math.PI; }
 function clamp(value: number, min: number, max: number) { return Math.max(min, Math.min(max, value)); }
