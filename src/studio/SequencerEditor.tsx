@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useRef, useState, type CSSProperties, type Dispatch, type PointerEvent, type SetStateAction } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type Dispatch, type PointerEvent, type SetStateAction } from "react";
 import { sampleMotionTrack } from "@/src/lib/motionSequencer";
 import { sampleExperience } from "@/src/lib/sampleExperience";
+import { advancePlayhead, curvePresets } from "@/src/lib/sequencerTransport";
+import { retimeSelection, type RetimeOperation } from "@/src/lib/keyframeOperations";
 import {
   createMotionPreset,
   createTrackForTarget,
@@ -50,6 +52,13 @@ export function SequencerEditor({
 }) {
   const scene = experience.scenes[active];
   const [playhead, setPlayhead] = useState(0);
+  const playheadRef = useRef(0);
+  const [playing, setPlaying] = useState(false);
+  const [loop, setLoop] = useState(true);
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const [duration, setDuration] = useState(5);
+  const [playbackRange, setPlaybackRange] = useState<[number, number]>([0, 1]);
+  const [trackFilter, setTrackFilter] = useState("");
   const [zoom, setZoom] = useState(1);
   const [snap, setSnap] = useState(0.05);
   const [viewport, setViewport] = useState<MotionViewport>("all");
@@ -62,12 +71,40 @@ export function SequencerEditor({
   const [clipboardSize, setClipboardSize] = useState(0);
   const drag = useRef<DragState | null>(null);
   const options = useMemo(() => motionTargetOptions(experience, scene), [experience, scene]);
+  const visibleTracks = useMemo(() => {
+    const query = trackFilter.trim().toLowerCase();
+    return query ? scene.motionTracks.filter((track) => `${track.label} ${track.target} ${track.viewport}`.toLowerCase().includes(query)) : scene.motionTracks;
+  }, [scene.motionTracks, trackFilter]);
   const selectedTrack = scene.motionTracks.find((track) => track.id === selectedTrackId) ?? scene.motionTracks[0];
   const selectedKey = selectedTrack ? keysOf(selectedTrack).find((key) => selection.some((item) => item.trackId === selectedTrack.id && item.keyId === key.id)) : undefined;
   const globalProgress = scene.range[0] + (scene.range[1] - scene.range[0]) * playhead;
 
+  useEffect(() => { playheadRef.current = playhead; }, [playhead]);
+  useEffect(() => {
+    if (!playing) return;
+    let request = 0;
+    let previous = performance.now();
+    const tick = (now: number) => {
+      const result = advancePlayhead(playheadRef.current, Math.min(0.1, (now - previous) / 1000), {
+        playing: true,
+        loop,
+        rate: playbackRate,
+        range: playbackRange,
+        duration,
+      });
+      previous = now;
+      playheadRef.current = result.playhead;
+      setPlayhead(result.playhead);
+      if (result.ended) { setPlaying(false); return; }
+      request = requestAnimationFrame(tick);
+    };
+    request = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(request);
+  }, [duration, loop, playbackRange, playbackRate, playing]);
+
   const commitTracks = (tracks: MotionTrack[]) => setExperience((current) => replaceTracks(current, active, tracks));
   const chooseScene = (index: number) => {
+    setPlaying(false);
     setActive(index);
     setPlayhead(0);
     setSelection([]);
@@ -172,6 +209,26 @@ export function SequencerEditor({
     setNotice(`${nextSelection.length} keyframe${nextSelection.length === 1 ? "" : "s"} pasted.`);
   };
   const nudge = (direction: -1 | 1) => moveSelection(experience, selection, direction * snap);
+  const retime = (operation: RetimeOperation) => {
+    if (selection.length < 2) return;
+    const tokens = selectionTokens(selection);
+    const values = scene.motionTracks.flatMap((track) => keysOf(track)
+      .filter((key) => tokens.has(`${track.id}:${key.id}`))
+      .map((key) => ({ token: `${track.id}:${key.id}`, at: key.at })));
+    const times = retimeSelection(values, operation);
+    beginGroup();
+    const tracks = scene.motionTracks.map((track) => {
+      const moved = keysOf(track).map((key) => {
+        const at = times[`${track.id}:${key.id}`];
+        return at === undefined ? key : { ...key, at: snapTime(at, snap) };
+      });
+      const occupied = new Set(moved.filter((key) => tokens.has(`${track.id}:${key.id}`)).map((key) => key.at.toFixed(6)));
+      return withKeys(track, moved.filter((key) => tokens.has(`${track.id}:${key.id}`) || !occupied.has(key.at.toFixed(6))));
+    });
+    commitTracks(tracks);
+    endGroup();
+    setNotice(operation === "reverse" ? "Selected timing reversed." : "Selected keys distributed evenly.");
+  };
   const moveSelection = (base: ExperienceConfig, selected: Selection[], delta: number) => {
     if (!selected.length) return;
     const tokens = selectionTokens(selected);
@@ -240,6 +297,11 @@ export function SequencerEditor({
           {experience.scenes.map((item, index) => <button role="listitem" type="button" key={item.id} className={active === index ? "is-active" : ""} onClick={() => chooseScene(index)}>{String(index + 1).padStart(2, "0")} {item.label}</button>)}
         </div>
         <div className="sequencer-toolbar">
+          <button type="button" className={playing ? "is-playing" : ""} aria-pressed={playing} onClick={() => setPlaying((value) => !value)}>{playing ? "Pause" : "Play"}</button>
+          <button type="button" onClick={() => { setPlaying(false); setPlayhead(playbackRange[0]); }}>Stop</button>
+          <label className="studio-check"><input type="checkbox" checked={loop} onChange={(event) => setLoop(event.target.checked)} />Loop</label>
+          <label>Rate<select aria-label="Playback rate" value={playbackRate} onChange={(event) => setPlaybackRate(Number(event.target.value))}><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1">1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
+          <label>Seconds<input aria-label="Scene playback duration" className="sequencer-number" type="number" min="1" max="30" step="0.5" value={duration} onChange={(event) => setDuration(Math.max(1, Math.min(30, Number(event.target.value))))} /></label>
           <button type="button" onClick={undo} disabled={!canUndo} aria-label="Undo motion edit">Undo</button>
           <button type="button" onClick={redo} disabled={!canRedo} aria-label="Redo motion edit">Redo</button>
           <button type="button" onClick={copyKeys} disabled={!selection.length}>Copy</button>
@@ -247,8 +309,17 @@ export function SequencerEditor({
           <button type="button" onClick={deleteKeys} disabled={!selection.length}>Delete keys</button>
           <button type="button" onClick={() => nudge(-1)} disabled={!selection.length} aria-label="Nudge keys backward">− snap</button>
           <button type="button" onClick={() => nudge(1)} disabled={!selection.length} aria-label="Nudge keys forward">+ snap</button>
+          <button type="button" onClick={() => retime("distribute")} disabled={selection.length < 3}>Distribute</button>
+          <button type="button" onClick={() => retime("reverse")} disabled={selection.length < 2}>Reverse timing</button>
           <label>Snap<select aria-label="Timeline snap" value={snap} onChange={(event) => setSnap(Number(event.target.value))}><option value="0">Off</option><option value="0.01">1%</option><option value="0.025">2.5%</option><option value="0.05">5%</option><option value="0.1">10%</option></select></label>
           <label>Zoom<input aria-label="Timeline zoom" type="range" min="0.75" max="3" step="0.25" value={zoom} onChange={(event) => setZoom(Number(event.target.value))} /></label>
+          <label>Filter<input aria-label="Filter motion tracks" className="sequencer-filter" type="search" value={trackFilter} onChange={(event) => setTrackFilter(event.target.value)} placeholder="camera, mobile…" /></label>
+        </div>
+        <div className="sequencer-range" aria-label="Playback range">
+          <span>Preview range</span>
+          <label>In<input aria-label="Playback range start" type="number" min="0" max={playbackRange[1] - 0.01} step="0.01" value={playbackRange[0]} onChange={(event) => setPlaybackRange([Math.max(0, Math.min(playbackRange[1] - 0.01, Number(event.target.value))), playbackRange[1]])} /></label>
+          <label>Out<input aria-label="Playback range end" type="number" min={playbackRange[0] + 0.01} max="1" step="0.01" value={playbackRange[1]} onChange={(event) => setPlaybackRange([playbackRange[0], Math.min(1, Math.max(playbackRange[0] + 0.01, Number(event.target.value)))])} /></label>
+          <button type="button" onClick={() => setPlaybackRange([0, 1])}>Full scene</button>
         </div>
         <div className="sequencer-add">
           <select aria-label="Motion target" value={target} onChange={(event) => setTarget(event.target.value)}>{groupedOptions(options)}</select>
@@ -264,14 +335,14 @@ export function SequencerEditor({
             <strong>TRACK / TARGET</strong>
             <div onPointerDown={(event) => setPlayhead(timeFromPointer(event.clientX, event.currentTarget))}>{[0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1].map((tick) => <span key={tick} style={{ left: `${tick * 100}%` }}>{Math.round(tick * 100)}</span>)}<i style={{ left: `${playhead * 100}%` }} /></div>
           </div>
-          {scene.motionTracks.map((track) => <div className="sequencer-row" key={track.id} data-selected={selectedTrack?.id === track.id} data-muted={track.muted}>
+          {visibleTracks.map((track) => <div className="sequencer-row" key={track.id} data-selected={selectedTrack?.id === track.id} data-muted={track.muted}>
             <button type="button" className="sequencer-row__label" onClick={() => { setSelectedTrackId(track.id); setSelection([]); }}><span>{track.label}</span><small>{track.viewport} / {track.type}</small></button>
             <div className="sequencer-rail" onPointerDown={(event) => { if (event.target === event.currentTarget) setPlayhead(timeFromPointer(event.clientX, event.currentTarget)); }}>
               <i className="sequencer-playhead" style={{ left: `${playhead * 100}%` }} />
               {keysOf(track).map((key) => <button key={key.id} type="button" className="sequencer-key" aria-label={`${track.label} key at ${Math.round(key.at * 100)} percent`} aria-pressed={selection.some((item) => item.trackId === track.id && item.keyId === key.id)} style={{ left: `${key.at * 100}%` }} onDoubleClick={() => setPlayhead(key.at)} onPointerDown={(event) => pointerDown(event, track, key)} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp}><span /></button>)}
             </div>
           </div>)}
-          {!scene.motionTracks.length && <div className="sequencer-empty"><strong>No tracks in {scene.label}</strong><span>Add a typed target or apply a motion preset.</span></div>}
+          {!visibleTracks.length && <div className="sequencer-empty"><strong>{scene.motionTracks.length ? "No matching tracks" : `No tracks in ${scene.label}`}</strong><span>{scene.motionTracks.length ? "Clear or change the track filter." : "Add a typed target or apply a motion preset."}</span></div>}
         </div>
       </section>
 
@@ -323,6 +394,7 @@ function CurveEditor({ value, onChange }: { value: [number, number, number, numb
   };
   return <div className="curve-editor">
     <span>Cubic Bezier handles</span>
+    <div className="curve-presets">{curvePresets.map((preset) => <button type="button" key={preset.id} onClick={() => onChange([...preset.value])}>{preset.label}</button>)}</div>
     <svg ref={svg} viewBox="0 0 240 140" role="img" aria-label="Cubic Bezier curve editor" onPointerMove={move} onPointerUp={() => { handle.current = null; }} onPointerLeave={() => { handle.current = null; }}>
       <path className="curve-grid" d="M0 35H240M0 70H240M0 105H240M60 0V140M120 0V140M180 0V140" />
       <path className="curve-handles" d={`M0 140L${value[0] * 240} ${(1 - value[1]) * 140}M240 0L${value[2] * 240} ${(1 - value[3]) * 140}`} />
