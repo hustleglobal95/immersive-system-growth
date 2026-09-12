@@ -3,7 +3,7 @@ import { applyEasing } from "@/src/lib/easing";
 import { lerp, lerpVec3, remap01 } from "@/src/lib/math";
 import { lerpHex } from "@/src/lib/color";
 import { sampleCameraPath, sampleFov } from "@/src/lib/cameraPaths";
-import { sampleSpline } from "@/src/lib/spline";
+import { sampleSplineArcLength } from "@/src/lib/spline";
 import { sampleObjectMotion } from "@/src/lib/objectMotion";
 import { applySceneMotion } from "@/src/lib/motionSequencer";
 import type {
@@ -32,7 +32,7 @@ export function sampleExperience(
   const worldT = reducedMotion ? 0 : easedProgress;
   const world = reducedMotion ? config.scenes[0].world : scene.world;
   const position = camera.waypoints?.length
-    ? sampleSpline(
+    ? sampleSplineArcLength(
         [camera.from.position, ...camera.waypoints, camera.to.position],
         easedProgress,
       )
@@ -45,7 +45,7 @@ export function sampleExperience(
         camera.to.target,
       );
   const target = camera.targetWaypoints?.length
-    ? sampleSpline(
+    ? sampleSplineArcLength(
         [camera.from.target, ...camera.targetWaypoints, camera.to.target],
         easedProgress,
       )
