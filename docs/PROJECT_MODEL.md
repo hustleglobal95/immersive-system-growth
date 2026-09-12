@@ -41,3 +41,6 @@ The manifest is the first layer of the larger authoring-to-deployment system. Ti
 ## Reproducible client bundles
 
 A generated client project contains its experience and visual-systems documents beside its Studio project. Run `npm run project:new -- client-slug recipe` to create the bundle, then `npm run project:validate` to validate every referenced document. The canonical project uses `config/visual-systems.json`; client bundles use an isolated `clients/<slug>/visual-systems.json` so art direction can evolve per engagement.
+
+
+`npm run release:report` is the handoff checksum. It fingerprints every referenced runtime document plus the project policies, giving deployment and QA a compact proof that the shipped configuration matches the reviewed commit.
