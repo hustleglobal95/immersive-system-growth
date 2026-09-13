@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type { ProductTrack } from "../src/types/experience";
-import raw from "../config/experience.json";
+import raw from "../recipes/burger-showcase.json";
 import { parseExperience } from "../src/lib/configSchema";
 import {
   sampleOpacityTrack,
