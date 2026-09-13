@@ -19,6 +19,7 @@ import { RendererLifecycle } from "./RendererLifecycle";
 import { SceneAssets } from "./SceneAssets";
 import { AssetBoundary } from "./AssetBoundary";
 import { MaskedMediaLayer } from "./MaskedMediaLayer";
+import { NocterraEnvironment } from "./NocterraEnvironment";
 import { useStudioEditor } from "@/src/components/runtime/StudioEditorContext";
 function CanvasFallback() {
   useEffect(() => useExperienceStore.getState().setWebglStatus("failed"), []);
@@ -36,6 +37,7 @@ export function SceneCanvas() {
   const guides = useExperienceStore((s) => s.guides);
   const quality = useExperienceStore((s) => s.quality);
   const camera = experience.scenes[0].camera.from;
+  const nocterra = experience.meta.name.startsWith("NOCTERRA");
   return (
     <div className="scene-canvas" aria-hidden="true">
       <Canvas
@@ -43,10 +45,10 @@ export function SceneCanvas() {
           position: camera.position,
           fov: camera.fov,
           near: 0.05,
-          far: 100,
+          far: 120,
         }}
         dpr={1}
-        gl={{ antialias: false, alpha: false, powerPreference: "high-performance" }}
+        gl={{ antialias: nocterra, alpha: false, powerPreference: "high-performance" }}
         shadows={quality === "high"}
         fallback={<CanvasFallback />}
       >
@@ -63,7 +65,9 @@ export function SceneCanvas() {
               <LabGuides />
             </Suspense>
           )}
-          {experience.stage === "demo" ? (
+          {nocterra ? (
+            <NocterraEnvironment />
+          ) : experience.stage === "demo" ? (
             <DemoStage />
           ) : (
             <mesh
