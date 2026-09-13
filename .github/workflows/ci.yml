@@ -23,6 +23,8 @@ jobs:
       - run: npm run build
       - run: npm audit --audit-level=high
       - run: npx playwright install --with-deps chromium webkit
+      - name: Capture NOCTERRA delivery evidence
+        run: npx playwright test tests/browser/nocterra-visual.spec.ts --project=chromium
       - run: npm run test:browser -- --max-failures=1
       - uses: actions/upload-artifact@v4
         if: always()
