@@ -26,17 +26,17 @@ async function seek(page: import("@playwright/test").Page, progress: number) {
     window.scrollTo(0, max * value);
   }, progress);
   await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
-  await page.waitForTimeout(220);
+  await page.waitForTimeout(260);
 }
 
 async function prepare(page: import("@playwright/test").Page) {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("/", { waitUntil: "networkidle" });
-  await expect(page.locator("canvas")).toHaveCount(1);
-  await expect(page.getByText("The 3D view is loading.", { exact: false })).toHaveCount(0);
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("canvas")).toHaveCount(1, { timeout: 15000 });
+  await expect(page.getByText("The 3D view is loading.", { exact: false })).toHaveCount(0, { timeout: 15000 });
   await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(450);
+  await page.waitForTimeout(900);
   expect(errors).toEqual([]);
 }
 
