@@ -76,7 +76,7 @@ test("Studio publishing opens a review PR without exposing its token", async () 
     fetcher,
   );
   assert.equal(result.number, 42);
-  assert.match(result.branch, /^forge\/studio-ember-bun-reference-/);
+  assert.match(result.branch, new RegExp(`^forge/studio-${rawProject.id}-`));
   assert.equal(calls.length, 9);
   assert.ok(calls.every((call) => new Headers(call.init.headers).get("authorization") === "Bearer server-only-token"));
   assert.ok(calls.every((call) => !String(call.init.body ?? "").includes("server-only-token")));
