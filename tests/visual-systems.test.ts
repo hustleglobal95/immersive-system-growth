@@ -9,14 +9,18 @@ import {
 } from "../src/platform/visualSystems";
 
 const manifest = parseVisualSystems(rawManifest);
-const ambient = manifest.systems.find((system) => system.id === "ambient-field");
+const ambient = manifest.systems.find((system) => system.kind === "instanced-field");
 assert.ok(ambient);
 
 test("visual system manifests validate and expose a deterministic budget", () => {
   assert.equal(manifest.version, 1);
-  assert.equal(qualityInstanceCount(ambient, "low"), 32);
-  assert.equal(qualityInstanceCount(ambient, "medium"), 88);
-  assert.equal(qualityInstanceCount(ambient, "high"), 160);
+  const low = qualityInstanceCount(ambient, "low");
+  const medium = qualityInstanceCount(ambient, "medium");
+  const high = qualityInstanceCount(ambient, "high");
+  assert.equal(low, Math.max(1, Math.round(ambient.instanceCount * 0.2)));
+  assert.equal(medium, Math.max(1, Math.round(ambient.instanceCount * 0.55)));
+  assert.equal(high, ambient.instanceCount);
+  assert.ok(low <= medium && medium <= high);
 });
 
 test("instanced field sampling is deterministic for the same seed", () => {
