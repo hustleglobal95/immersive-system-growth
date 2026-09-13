@@ -20,8 +20,26 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npx playwright install --with-deps chromium
+      - name: Start NOCTERRA production server
+        run: |
+          npm run start -- --hostname 127.0.0.1 --port 3000 > /tmp/nocterra-next.log 2>&1 &
+          echo $! > /tmp/nocterra-next.pid
+          for i in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:3000/api/health > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/nocterra-next.log
+          exit 1
       - name: Capture NOCTERRA delivery evidence
-        run: npx playwright test tests/browser/nocterra-visual.spec.ts --project=chromium
+        run: timeout 120s node scripts/capture-nocterra.mjs
+      - name: Stop NOCTERRA production server
+        if: always()
+        run: |
+          if [ -f /tmp/nocterra-next.pid ]; then
+            kill "$(cat /tmp/nocterra-next.pid)" || true
+          fi
       - name: Upload NOCTERRA screenshots
         uses: actions/upload-artifact@v4
         if: always()
