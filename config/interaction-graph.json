@@ -1,151 +1,130 @@
 {
   "version": 1,
-  "id": "ember-interactions",
+  "id": "nocterra-interactions",
   "initialState": "idle",
-  "states": ["idle", "exploring", "detail"],
+  "states": ["idle", "inspecting", "inquiry"],
   "variables": {
     "engaged": false
   },
   "nodes": [
     {
-      "id": "enter-ingredients",
+      "id": "enter-detail",
       "kind": "trigger",
-      "label": "Enter ingredients",
+      "label": "Enter automotive detail",
       "position": { "x": 40, "y": 80 },
       "event": "scene-enter",
-      "sceneId": "ingredients",
+      "sceneId": "detail",
       "states": ["idle"]
     },
     {
       "id": "mark-engaged",
       "kind": "action",
-      "label": "Mark engaged",
+      "label": "Mark visitor engaged",
       "position": { "x": 300, "y": 80 },
       "action": { "type": "set-variable", "key": "engaged", "value": true }
     },
     {
-      "id": "state-exploring",
+      "id": "state-inspecting",
       "kind": "state",
-      "label": "Exploring state",
+      "label": "Inspecting state",
       "position": { "x": 560, "y": 80 },
-      "state": "exploring"
+      "state": "inspecting"
     },
     {
-      "id": "inspect-product",
+      "id": "open-hotspot",
       "kind": "trigger",
-      "label": "Inspect product",
+      "label": "Open a detail hotspot",
       "position": { "x": 40, "y": 260 },
-      "event": "custom",
-      "name": "inspect-product",
-      "states": ["exploring"]
+      "event": "hotspot-open",
+      "states": ["inspecting"]
     },
     {
-      "id": "can-inspect",
-      "kind": "condition",
-      "label": "Engaged?",
-      "position": { "x": 300, "y": 260 },
-      "source": "variable",
-      "key": "engaged",
-      "operator": "eq",
-      "value": true
-    },
-    {
-      "id": "state-detail",
-      "kind": "state",
-      "label": "Detail state",
-      "position": { "x": 560, "y": 220 },
-      "state": "detail"
-    },
-    {
-      "id": "detail-event",
+      "id": "emit-inspection",
       "kind": "action",
-      "label": "Emit detail event",
-      "position": { "x": 810, "y": 220 },
+      "label": "Emit inspection event",
+      "position": { "x": 300, "y": 260 },
       "action": {
         "type": "emit",
-        "name": "detail-entered",
-        "payload": { "source": "interaction-graph" }
+        "name": "detail-inspected",
+        "payload": { "experience": "nocterra" }
       }
     },
     {
-      "id": "play-ingredients",
+      "id": "enter-threshold",
       "kind": "trigger",
-      "label": "Play ingredients sequence",
+      "label": "Cross the threshold",
       "position": { "x": 40, "y": 420 },
-      "event": "custom",
-      "name": "play-ingredients",
-      "states": ["exploring", "detail"]
+      "event": "scene-enter",
+      "sceneId": "threshold",
+      "states": ["idle", "inspecting"]
     },
     {
-      "id": "ingredients-sequence",
+      "id": "emit-threshold",
       "kind": "action",
-      "label": "Ingredients sequence",
+      "label": "Emit threshold event",
       "position": { "x": 300, "y": 420 },
       "action": {
-        "type": "sequence",
-        "name": "ingredients",
-        "command": "play",
-        "durationMs": 350,
-        "loop": false,
-        "release": true
+        "type": "emit",
+        "name": "residence-entered",
+        "payload": { "experience": "nocterra" }
       }
     },
     {
-      "id": "ingredients-finished",
+      "id": "enter-horizon",
       "kind": "trigger",
-      "label": "Ingredients sequence finished",
-      "position": { "x": 560, "y": 420 },
-      "event": "sequence-complete",
-      "name": "ingredients",
-      "states": ["exploring", "detail"]
+      "label": "Reach horizon climax",
+      "position": { "x": 40, "y": 580 },
+      "event": "scene-enter",
+      "sceneId": "horizon",
+      "states": ["idle", "inspecting"]
     },
     {
-      "id": "sequence-done-event",
+      "id": "emit-horizon",
       "kind": "action",
-      "label": "Emit sequence complete",
-      "position": { "x": 810, "y": 420 },
+      "label": "Emit horizon event",
+      "position": { "x": 300, "y": 580 },
       "action": {
         "type": "emit",
-        "name": "sequence-demo-complete",
-        "payload": { "source": "runtime-consumer" }
+        "name": "horizon-revealed",
+        "payload": { "experience": "nocterra" }
       }
     },
     {
-      "id": "leave-ingredients",
+      "id": "request-private",
       "kind": "trigger",
-      "label": "Leave ingredients",
-      "position": { "x": 40, "y": 600 },
-      "event": "scene-exit",
-      "sceneId": "ingredients",
-      "states": ["exploring", "detail"]
+      "label": "Request private presentation",
+      "position": { "x": 40, "y": 740 },
+      "event": "click",
+      "target": "cta-private-presentation",
+      "states": ["idle", "inspecting"]
     },
     {
-      "id": "clear-engaged",
-      "kind": "action",
-      "label": "Clear engaged",
-      "position": { "x": 300, "y": 600 },
-      "action": { "type": "set-variable", "key": "engaged", "value": false }
-    },
-    {
-      "id": "state-idle",
+      "id": "state-inquiry",
       "kind": "state",
-      "label": "Idle state",
-      "position": { "x": 560, "y": 600 },
-      "state": "idle"
+      "label": "Inquiry state",
+      "position": { "x": 300, "y": 740 },
+      "state": "inquiry"
+    },
+    {
+      "id": "emit-inquiry",
+      "kind": "action",
+      "label": "Emit presentation intent",
+      "position": { "x": 560, "y": 740 },
+      "action": {
+        "type": "emit",
+        "name": "private-presentation-intent",
+        "payload": { "experience": "nocterra" }
+      }
     }
   ],
   "edges": [
-    { "id": "enter-engaged", "from": "enter-ingredients", "to": "mark-engaged", "branch": "always", "priority": 0 },
-    { "id": "engaged-exploring", "from": "mark-engaged", "to": "state-exploring", "branch": "always", "priority": 0 },
-    { "id": "inspect-check", "from": "inspect-product", "to": "can-inspect", "branch": "always", "priority": 0 },
-    { "id": "inspect-detail", "from": "can-inspect", "to": "state-detail", "branch": "true", "priority": 0 },
-    { "id": "detail-emit", "from": "state-detail", "to": "detail-event", "branch": "always", "priority": 0 },
-    { "id": "play-sequence", "from": "play-ingredients", "to": "ingredients-sequence", "branch": "always", "priority": 0 },
-    { "id": "finished-emit", "from": "ingredients-finished", "to": "sequence-done-event", "branch": "always", "priority": 0 },
-    { "id": "leave-clear", "from": "leave-ingredients", "to": "clear-engaged", "branch": "always", "priority": 0 },
-    { "id": "clear-idle", "from": "clear-engaged", "to": "state-idle", "branch": "always", "priority": 0 }
+    { "id": "detail-engaged", "from": "enter-detail", "to": "mark-engaged", "branch": "always", "priority": 0 },
+    { "id": "engaged-inspecting", "from": "mark-engaged", "to": "state-inspecting", "branch": "always", "priority": 0 },
+    { "id": "hotspot-inspection", "from": "open-hotspot", "to": "emit-inspection", "branch": "always", "priority": 0 },
+    { "id": "threshold-event", "from": "enter-threshold", "to": "emit-threshold", "branch": "always", "priority": 0 },
+    { "id": "horizon-event", "from": "enter-horizon", "to": "emit-horizon", "branch": "always", "priority": 0 },
+    { "id": "request-inquiry", "from": "request-private", "to": "state-inquiry", "branch": "always", "priority": 0 },
+    { "id": "inquiry-event", "from": "state-inquiry", "to": "emit-inquiry", "branch": "always", "priority": 0 }
   ],
-  "mobileSubstitutions": [
-    { "from": "hover-enter", "to": "click", "target": "product-inspect" }
-  ]
+  "mobileSubstitutions": []
 }
