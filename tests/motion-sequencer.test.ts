@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import rawExperience from "../config/experience.json";
+import rigRaw from "../recipes/burger-showcase.json";
 import { parseExperience } from "../src/lib/configSchema";
 import { cubicBezierAtX, sampleMotionTrack } from "../src/lib/motionSequencer";
 import { sampleExperience } from "../src/lib/sampleExperience";
@@ -8,6 +9,7 @@ import { createMotionPreset, createTrackForTarget, motionTargetOptions } from ".
 import type { MotionTrack } from "../src/types/experience";
 
 const base = parseExperience(rawExperience);
+const rigBase = parseExperience(rigRaw);
 
 test("motion tracks sample exact endpoints, cubic curves and reverse seeks deterministically", () => {
   const track: MotionTrack = {
@@ -35,7 +37,7 @@ test("motion tracks sample exact endpoints, cubic curves and reverse seeks deter
 });
 
 test("scene tracks override runtime and auxiliary targets from one normalized time", () => {
-  const input = structuredClone(base);
+  const input = structuredClone(rigBase);
   input.scenes[0].media = {
     kind: "image",
     src: "/textures/reference/reveal-field.svg",
@@ -83,25 +85,26 @@ test("mobile tracks override all-viewport tracks without changing desktop output
 });
 
 test("sequencer presets and dynamic GLB targets are valid and do not mutate the source", () => {
-  const snapshot = structuredClone(base);
-  const options = motionTargetOptions(base, base.scenes[0]);
+  const snapshot = structuredClone(rigBase);
+  const options = motionTargetOptions(rigBase, rigBase.scenes[0]);
   const node = options.find((option) => option.target === "rig:top-bun:rotation");
   assert.ok(node);
-  const track = createTrackForTarget(base, 0, node, "desktop");
-  const preset = createMotionPreset("copy-rise", base, 0);
-  const config = structuredClone(base);
+  const track = createTrackForTarget(rigBase, 0, node, "desktop");
+  const preset = createMotionPreset("copy-rise", rigBase, 0);
+  const config = structuredClone(rigBase);
   config.scenes[0].motionTracks = [track, ...preset];
   assert.doesNotThrow(() => parseExperience(config));
-  assert.deepEqual(base, snapshot);
+  assert.deepEqual(rigBase, snapshot);
 });
 
 test("cinematic focus and mapped-node cascade presets produce valid coordinated tracks", () => {
-  const focus = createMotionPreset("cinematic-focus", base, 0);
-  const cascade = createMotionPreset("rig-cascade", base, 0);
+  const focus = createMotionPreset("cinematic-focus", rigBase, 0);
+  const cascade = createMotionPreset("rig-cascade", rigBase, 0);
   assert.deepEqual(focus.map((track) => track.target), ["camera.fov", "post.bloom", "copy.opacity"]);
-  assert.equal(cascade.length, Math.min(24, base.productRig?.nodes.length ?? 0));
+  assert.equal(cascade.length, Math.min(24, rigBase.productRig?.nodes.length ?? 0));
+  assert.ok(cascade.length > 0);
   assert.ok(cascade.every((track) => track.target.startsWith("rig:") && "blend" in track && track.blend === "offset"));
-  const config = structuredClone(base);
+  const config = structuredClone(rigBase);
   config.scenes[0].motionTracks = [...focus, ...cascade];
   assert.doesNotThrow(() => parseExperience(config));
 });
