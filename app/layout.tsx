@@ -3,6 +3,7 @@ import { experience } from "@/src/lib/experience";
 import { ExperienceRuntime } from "@/src/components/runtime/ExperienceRuntime";
 import "./globals.css";
 import "./design-system.css";
+import "./nocterra.css";
 import { bodyFont, editorialFont, architecturalFont } from "@/src/design/fonts";
 import { defaultDirection, directionStyles } from "@/src/design/directions";
 export const metadata: Metadata = {
@@ -17,9 +18,11 @@ export const viewport: Viewport = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const project = experience.meta.name.startsWith("NOCTERRA") ? "nocterra" : "forge";
   return (
     <html lang="en">
       <body
+        data-project={project}
         className={`${bodyFont.variable} ${editorialFont.variable} ${architecturalFont.variable}`}
         style={
           {
