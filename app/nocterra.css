@@ -1,0 +1,308 @@
+body[data-project="nocterra"] {
+  --ink: #f5efe7;
+  --muted: rgba(245, 239, 231, 0.62);
+  --line: rgba(229, 206, 173, 0.16);
+  --panel: rgba(10, 8, 6, 0.38);
+  --accent: #caa878;
+  --bg: #070605;
+  background: #070605;
+  color: var(--ink);
+  font-family: var(--font-manrope), Arial, sans-serif;
+}
+
+body[data-project="nocterra"] .scene-canvas::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 42%, transparent 35%, rgba(0, 0, 0, .18) 78%, rgba(0, 0, 0, .48) 100%),
+    linear-gradient(180deg, rgba(5, 4, 3, .03), rgba(5, 4, 3, .18));
+  z-index: 2;
+}
+
+body[data-project="nocterra"] .site-chrome {
+  height: 88px;
+  padding: 0 clamp(22px, 4vw, 72px);
+  border: 0;
+  background: linear-gradient(180deg, rgba(7, 6, 5, .72), rgba(7, 6, 5, .12) 70%, transparent);
+  backdrop-filter: none;
+}
+
+.nocterra-brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 14px;
+  color: #fffaf2;
+  text-decoration: none;
+}
+.nocterra-brand strong {
+  font-family: var(--font-manrope), Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: .28em;
+}
+.nocterra-brand span {
+  color: rgba(255, 246, 233, .48);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+.nocterra-nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 2.2vw, 38px);
+}
+.nocterra-nav a {
+  color: rgba(255, 247, 236, .68);
+  text-decoration: none;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  transition: color 180ms ease;
+}
+.nocterra-nav a:hover,
+.nocterra-nav a:focus-visible {
+  color: #fffaf2;
+}
+.nocterra-nav .nocterra-nav__cta {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 16px;
+  border: 1px solid rgba(229, 206, 173, .34);
+  border-radius: 999px;
+  color: #f7ead8;
+}
+
+body[data-project="nocterra"] .narrative-document {
+  z-index: 6;
+}
+body[data-project="nocterra"] .story-panel {
+  width: min(620px, 50vw);
+  padding: 126px clamp(28px, 5vw, 88px) 84px;
+  background: linear-gradient(90deg, rgba(7, 6, 5, .64), rgba(7, 6, 5, .19) 64%, transparent);
+}
+body[data-project="nocterra"] .story-section--right .story-panel {
+  background: linear-gradient(270deg, rgba(7, 6, 5, .62), rgba(7, 6, 5, .17) 64%, transparent);
+}
+body[data-project="nocterra"] .story-section--center .story-panel {
+  width: min(860px, 78vw);
+  background: radial-gradient(circle at center, rgba(7, 6, 5, .48), rgba(7, 6, 5, .13) 64%, transparent 82%);
+}
+body[data-project="nocterra"] .narrative-panel__index {
+  display: none;
+}
+body[data-project="nocterra"] .eyebrow {
+  margin-bottom: 18px;
+  color: #d8b98b;
+  font-family: var(--font-manrope), Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .28em;
+}
+body[data-project="nocterra"] .story-panel h1,
+body[data-project="nocterra"] .story-panel h2 {
+  max-width: 9.5ch;
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(4.1rem, 7.6vw, 8.9rem);
+  line-height: .83;
+  letter-spacing: -.052em;
+  text-wrap: balance;
+  text-shadow: 0 8px 40px rgba(0, 0, 0, .24);
+}
+body[data-project="nocterra"] .story-section--center .story-panel h1,
+body[data-project="nocterra"] .story-section--center .story-panel h2 {
+  max-width: 11ch;
+  margin-inline: auto;
+}
+body[data-project="nocterra"] .narrative-body {
+  max-width: 42ch;
+  margin-top: 26px;
+  color: rgba(247, 239, 228, .67);
+  font-family: var(--font-manrope), Arial, sans-serif;
+  font-size: clamp(.93rem, 1.05vw, 1.08rem);
+  line-height: 1.72;
+  letter-spacing: -.01em;
+}
+body[data-project="nocterra"] .story-section--right .narrative-body {
+  margin-left: auto;
+}
+body[data-project="nocterra"] .story-section--center .narrative-body {
+  margin-inline: auto;
+}
+
+body[data-project="nocterra"] .story-detail {
+  max-width: 390px;
+  margin-top: 30px;
+  border-top-color: rgba(229, 206, 173, .2);
+}
+body[data-project="nocterra"] .story-detail summary {
+  color: rgba(255, 247, 235, .76);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+body[data-project="nocterra"] .story-detail p {
+  color: rgba(247, 239, 228, .56);
+  font-size: 12px;
+}
+
+body[data-project="nocterra"] .forge-button {
+  min-height: 48px;
+  margin-top: 34px;
+  padding: 0 22px;
+  border: 1px solid rgba(229, 206, 173, .42);
+  background: rgba(112, 88, 59, .11);
+  color: #fff8ee;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .17em;
+  text-transform: uppercase;
+  backdrop-filter: none;
+  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+body[data-project="nocterra"] .forge-button:hover {
+  background: rgba(202, 168, 120, .17);
+  border-color: rgba(229, 206, 173, .72);
+  transform: translateY(-1px);
+}
+
+body[data-project="nocterra"] .progress-rail {
+  right: clamp(16px, 2vw, 34px);
+  z-index: 18;
+}
+body[data-project="nocterra"] .progress-rail__track {
+  background: rgba(229, 206, 173, .12);
+}
+body[data-project="nocterra"] .progress-rail__track span {
+  background: #caa878;
+}
+body[data-project="nocterra"] .progress-rail a {
+  color: rgba(255, 247, 236, .34);
+  font-family: var(--font-manrope), Arial, sans-serif;
+}
+body[data-project="nocterra"] .progress-rail a[aria-current] {
+  color: #e1c39a;
+}
+
+body[data-project="nocterra"] .hotspot-label {
+  padding: 7px 10px;
+  border-color: rgba(229, 206, 173, .28);
+  background: rgba(12, 9, 7, .68);
+  color: #f7ebdc;
+  font-size: 9px;
+  letter-spacing: .12em;
+}
+body[data-project="nocterra"] .hotspot-dialog {
+  border-color: rgba(229, 206, 173, .22);
+  border-radius: 0;
+  background: rgba(10, 8, 6, .87);
+  box-shadow: 0 34px 90px rgba(0, 0, 0, .5);
+  backdrop-filter: blur(22px);
+}
+body[data-project="nocterra"] .hotspot-dialog h2 {
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-size: 36px;
+}
+
+body[data-project="nocterra"] .loading-overlay {
+  background: radial-gradient(circle at 50% 48%, #21160f, #070605 64%);
+}
+body[data-project="nocterra"] .loading-overlay__inner strong {
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -.04em;
+}
+body[data-project="nocterra"] .loading-overlay__inner > span,
+body[data-project="nocterra"] .loading-overlay__inner small {
+  font-family: var(--font-manrope), Arial, sans-serif;
+}
+
+body[data-project="nocterra"] .runtime-notice {
+  border-color: rgba(229, 206, 173, .2);
+  background: rgba(11, 9, 7, .9);
+  color: rgba(255, 245, 232, .72);
+}
+
+body[data-project="nocterra"] .story-section[data-scene-id="arrival"] .story-panel h1 {
+  max-width: 8ch;
+  font-size: clamp(5rem, 9vw, 10.5rem);
+}
+body[data-project="nocterra"] .story-section[data-scene-id="horizon"] .story-panel h2 {
+  max-width: 7ch;
+}
+body[data-project="nocterra"] .story-section[data-scene-id="private-presentation"] .story-panel {
+  width: min(980px, 88vw);
+  padding-bottom: 11svh;
+  justify-content: flex-end;
+}
+body[data-project="nocterra"] .story-section[data-scene-id="private-presentation"] .story-panel h2 {
+  max-width: 9ch;
+  font-size: clamp(5.2rem, 9.4vw, 11rem);
+}
+
+@media (max-width: 900px) {
+  body[data-project="nocterra"] .site-chrome {
+    height: 70px;
+    padding: 0 18px;
+  }
+  .nocterra-brand {
+    gap: 9px;
+  }
+  .nocterra-brand strong {
+    font-size: 11px;
+    letter-spacing: .22em;
+  }
+  .nocterra-brand span {
+    display: none;
+  }
+  .nocterra-nav a:not(.nocterra-nav__cta) {
+    display: none;
+  }
+  .nocterra-nav .nocterra-nav__cta {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 8px;
+  }
+  body[data-project="nocterra"] .story-panel,
+  body[data-project="nocterra"] .story-section--right .story-panel,
+  body[data-project="nocterra"] .story-section--center .story-panel {
+    inset: auto 0 0;
+    width: 100%;
+    min-height: 52svh;
+    margin: 0;
+    padding: 90px 22px 52px;
+    align-items: flex-start;
+    justify-content: flex-end;
+    text-align: left;
+    background: linear-gradient(0deg, rgba(7, 6, 5, .94) 0%, rgba(7, 6, 5, .6) 48%, transparent 100%);
+  }
+  body[data-project="nocterra"] .story-panel h1,
+  body[data-project="nocterra"] .story-panel h2,
+  body[data-project="nocterra"] .story-section--center .story-panel h1,
+  body[data-project="nocterra"] .story-section--center .story-panel h2,
+  body[data-project="nocterra"] .story-section[data-scene-id="arrival"] .story-panel h1,
+  body[data-project="nocterra"] .story-section[data-scene-id="private-presentation"] .story-panel h2 {
+    max-width: 10ch;
+    margin-inline: 0;
+    font-size: clamp(3.3rem, 15vw, 6.2rem);
+    line-height: .88;
+  }
+  body[data-project="nocterra"] .narrative-body,
+  body[data-project="nocterra"] .story-section--right .narrative-body,
+  body[data-project="nocterra"] .story-section--center .narrative-body {
+    max-width: 36ch;
+    margin-left: 0;
+    margin-right: 0;
+    font-size: .92rem;
+    line-height: 1.58;
+  }
+  body[data-project="nocterra"] .progress-rail {
+    display: none;
+  }
+}
