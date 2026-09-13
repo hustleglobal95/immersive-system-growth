@@ -35,6 +35,7 @@ export function NarrativeOverlay() {
         <section
           id={scene.id}
           key={scene.id}
+          data-scene-id={scene.id}
           data-motion-scene={index}
           className={"story-section story-section--" + (scene.copy.align ?? "left") + (scene.blocks.length ? " story-section--blocks" : "")}
           style={{
