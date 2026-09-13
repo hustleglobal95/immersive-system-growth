@@ -7,93 +7,59 @@ const sizes = [
   [1366, 768],
   [1024, 768],
   [768, 1024],
-  [1024, 768],
   [390, 844],
   [844, 390],
   [360, 740],
-];
-test("semantic menu, order modules and CTA survive without JavaScript", async ({
-  browser,
-}) => {
+] as const;
+
+test("semantic story and final CTA survive without JavaScript", async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await page.locator("#menu").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("heading", { name: "House stacks" })).toBeVisible();
-  await page.locator("#order").scrollIntoViewIfNeeded();
-  await expect(
-    page.getByRole("link", { name: "Choose a location" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Beyond the view." })).toBeVisible();
+  await page.locator("#private-presentation").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("link", { name: "Request a private presentation" })).toBeVisible();
   await context.close();
 });
-test("production canvas stays persistent across scroll, reverse, quality and routes", async ({
-  page,
-}) => {
+
+test("production canvas stays persistent across scroll, reverse and quality controls", async ({ page }) => {
   const errors: string[] = [];
-  page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("/");
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/lab");
   await expect(page.locator("canvas")).toHaveCount(1);
-  await expect(
-    page.getByText("The 3D view is loading.", { exact: false }),
-  ).toHaveCount(0);
+  await expect(page.getByText("The 3D view is loading.", { exact: false })).toHaveCount(0);
   const canvas = await page.locator("canvas").elementHandle();
-  const sceneNavigation = page.getByRole("navigation", {
-    name: "Experience scenes",
-  });
-  for (const id of ["ingredients", "order", "signature", "menu", "arrival"]) {
+  const sceneNavigation = page.getByRole("navigation", { name: "Experience scenes" });
+  for (const id of ["detail", "threshold", "horizon", "arrival"]) {
     const sceneLink = sceneNavigation.locator(`a[href="#${id}"]`);
     await sceneLink.click();
-    await expect(sceneLink).toHaveAttribute(
-      "aria-current",
-      "step",
-    );
+    await expect(sceneLink).toHaveAttribute("aria-current", "step");
   }
-  await page.getByRole("link", { name: "Scene lab", exact: true }).click();
   await expect(page.getByLabel("Scene lab controls")).toBeVisible();
-  expect(await canvas?.evaluate((el) => el.isConnected)).toBe(true);
+  expect(await canvas?.evaluate((element) => element.isConnected)).toBe(true);
   await page.getByLabel("Quality", { exact: true }).selectOption("low");
   await expect(page.getByLabel("Quality", { exact: true })).toHaveValue("low");
   await page.getByLabel("Free camera", { exact: true }).check();
   await page.getByLabel("Show authoring guides", { exact: true }).check();
-  await expect(
-    page.getByLabel("Show authoring guides", { exact: true }),
-  ).toBeChecked();
-  await page
-    .getByRole("link", {
-      name: "Ember Bun — Fire-built burger story",
-      exact: true,
-    })
-    .click();
-  await expect(page.getByLabel("Scene lab controls")).toHaveCount(0);
-  expect(await canvas?.evaluate((el) => el.isConnected)).toBe(true);
+  await expect(page.getByLabel("Show authoring guides", { exact: true })).toBeChecked();
+  await page.locator("#arrival").scrollIntoViewIfNeeded();
+  expect(await canvas?.evaluate((element) => element.isConnected)).toBe(true);
   expect(errors).toEqual([]);
 });
-test("reduced motion, final conversion and no horizontal overflow across viewport matrix", async ({
-  page,
-}) => {
+
+test("reduced motion, final conversion and no horizontal overflow across viewport matrix", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   for (const [width, height] of sizes) {
     await page.setViewportSize({ width, height });
-    await page.locator("#order").scrollIntoViewIfNeeded();
-    await expect(
-      page.getByRole("link", { name: "Choose a location" }),
-    ).toBeVisible();
-    expect(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= innerWidth + 1,
-      ),
-    ).toBe(true);
+    await page.locator("#private-presentation").scrollIntoViewIfNeeded();
+    await expect(page.getByRole("link", { name: "Request a private presentation" })).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   }
-  await expect(page.locator(".experience-root")).toHaveAttribute(
-    "data-reduced-motion",
-    "true",
-  );
+  await expect(page.locator(".experience-root")).toHaveAttribute("data-reduced-motion", "true");
 });
-test("missing GLB preserves semantic content and exposes retry", async ({
-  page,
-}) => {
+
+test("missing GLB preserves semantic content and exposes retry", async ({ page }) => {
   await page.addInitScript(() => {
     document.addEventListener("click", (event) => {
       if ((event.target as HTMLElement)?.closest("button")?.textContent === "Retry 3D") {
@@ -106,17 +72,16 @@ test("missing GLB preserves semantic content and exposes retry", async ({
     await (retryRequested ? route.continue() : route.abort());
   });
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Beyond the view." })).toBeVisible();
   await expect(page.getByRole("button", { name: "Retry 3D" })).toBeVisible();
   await page.getByRole("button", { name: "Retry 3D" }).click();
   await expect(page.getByRole("button", { name: "Retry 3D" })).toHaveCount(0);
   await expect(page.locator("canvas")).toHaveCount(1);
-  await page.locator("#order").scrollIntoViewIfNeeded();
-  await expect(
-    page.getByRole("link", { name: "Choose a location" }),
-  ).toBeVisible();
+  await page.locator("#private-presentation").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("link", { name: "Request a private presentation" })).toBeVisible();
 });
-test("WebGL failure leaves content and details usable", async ({ page }) => {
+
+test("WebGL failure leaves NOCTERRA content and details usable", async ({ page }) => {
   await page.addInitScript(() => {
     const original = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.getContext = function (
@@ -129,30 +94,23 @@ test("WebGL failure leaves content and details usable", async ({ page }) => {
     } as typeof original;
   });
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await page.getByText("About this reference", { exact: true }).click();
-  await expect(
-    page.getByText("This original GLB is a working reference asset.", { exact: false }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Beyond the view." })).toBeVisible();
+  await page.locator("#detail").scrollIntoViewIfNeeded();
+  await page.getByText("Sculpted coachwork", { exact: true }).click();
+  await expect(page.getByText("arrival ritual", { exact: false })).toBeVisible();
 });
-test("range keyboard does not invoke global scene shortcut", async ({
-  page,
-}) => {
+
+test("range keyboard does not invoke global scene shortcut", async ({ page }) => {
   await page.goto("/lab");
-  const slider = page.getByRole("slider");
+  const slider = page.getByRole("slider").first();
   await slider.focus();
   await slider.press("ArrowRight");
   await expect(slider).toBeFocused();
   expect(Number(await slider.inputValue())).toBeLessThan(0.1);
 });
-test("context restoration does not remove the document", async ({
-  page,
-  browserName,
-}) => {
-  test.skip(
-    browserName !== "chromium",
-    "WebGL loss extension is renderer-dependent",
-  );
+
+test("context restoration does not remove the document", async ({ page, browserName }) => {
+  test.skip(browserName !== "chromium", "WebGL loss extension is renderer-dependent");
   await page.goto("/");
   await expect(page.locator("canvas")).toHaveCount(1);
   const supported = await page.locator("canvas").evaluate((canvas) => {
@@ -164,8 +122,6 @@ test("context restoration does not remove the document", async ({
     return true;
   });
   test.skip(!supported, "Context loss extension unavailable");
-  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(
-    page.getByText("The 3D view was interrupted.", { exact: false }),
-  ).toHaveCount(0);
+  await expect(page.getByRole("heading", { level: 1, name: "Beyond the view." })).toBeVisible();
+  await expect(page.getByText("The 3D view was interrupted.", { exact: false })).toHaveCount(0);
 });
