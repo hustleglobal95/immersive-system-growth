@@ -1,3 +1,5 @@
+import { expect, test } from "@playwright/test";
+
 test("Studio edits a recipe in the browser and applies portable presets", async ({ page }) => {
   await page.goto("/studio");
   await page.getByRole("button", { name: "recipe", exact: true }).click();
@@ -13,9 +15,8 @@ test("Studio edits a recipe in the browser and applies portable presets", async 
   await expect(page.getByText("Applied cinematic-focus")).toBeVisible();
   await expect(page.getByText("Production schema valid")).toBeVisible();
 });
-import { expect, test } from "@playwright/test";
 
-test("Studio edits timelines and inspects GLB nodes without mounting the cinematic runtime", async ({ page }) => {
+test("Studio edits NOCTERRA timelines and inspects GLB nodes without mounting the cinematic runtime", async ({ page }) => {
   await page.goto("/studio");
   await expect(page.getByRole("heading", { name: "Project control" })).toBeVisible();
   await expect(page.getByText("Production schema valid")).toBeVisible();
@@ -23,9 +24,9 @@ test("Studio edits timelines and inspects GLB nodes without mounting the cinemat
 
   await page.getByRole("button", { name: "timeline", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Visual timeline" })).toBeVisible();
-  await page.getByRole("listitem", { name: /Ingredients/ }).click();
-  await expect(page.getByRole("heading", { name: "Ingredients" })).toBeVisible();
-  await page.getByLabel("Navigation label").fill("Ingredient proof");
+  await page.getByRole("listitem", { name: /Automotive Detail/ }).click();
+  await expect(page.getByRole("heading", { name: "Automotive Detail" })).toBeVisible();
+  await page.getByLabel("Navigation label").fill("Coachwork detail");
   await expect(page.getByText("Production schema valid")).toBeVisible();
 
   await page.getByRole("button", { name: "model", exact: true }).click();
@@ -158,28 +159,27 @@ test("Interaction graph authors and simulates deterministic branching", async ({
   await page.getByRole("button", { name: "interactions", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Interaction graph", level: 2 })).toBeVisible();
   await expect(page.getByRole("application", { name: "Interaction node graph" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Enter ingredients trigger" })).toBeVisible();
-  await page.getByRole("button", { name: "Enter ingredients trigger" }).click();
+  await expect(page.getByRole("button", { name: "Enter automotive detail trigger" })).toBeVisible();
+  await page.getByRole("button", { name: "Enter automotive detail trigger" }).click();
   await page.getByRole("button", { name: "Run selected trigger" }).click();
-  await expect(page.getByTestId("interaction-sim-state")).toHaveText("exploring");
+  await expect(page.getByTestId("interaction-sim-state")).toHaveText("inspecting");
   await expect(page.getByText("mark-engaged", { exact: true })).toBeVisible();
   await expect(page.getByText("Production schema valid")).toBeVisible();
 
-  await page.getByRole("button", { name: "Inspect product trigger" }).click();
+  await page.getByRole("button", { name: "Request private presentation trigger" }).click();
   await page.getByRole("button", { name: "Run selected trigger" }).click();
-  await expect(page.getByTestId("interaction-sim-state")).toHaveText("detail");
-  await expect(page.getByText(/detail-event: emit/)).toBeVisible();
+  await expect(page.getByTestId("interaction-sim-state")).toHaveText("inquiry");
+  await expect(page.getByText(/emit-inquiry: emit/)).toBeVisible();
 });
-
 
 test("Studio authors deterministic visual systems for live preview", async ({ page }) => {
   await page.goto("/studio");
   await page.getByRole("button", { name: "visuals", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Visual systems", level: 2 })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Ambient instanced field/ })).toBeVisible();
-  await page.getByRole("button", { name: /Product particle field/ }).click();
+  await expect(page.getByRole("button", { name: /NOCTERRA ambient field/ })).toBeVisible();
+  await page.getByRole("button", { name: /NOCTERRA material glints/ }).click();
   await expect(page.getByRole("slider", { name: "Instance count" })).toBeVisible();
-  await page.getByRole("slider", { name: "Instance count" }).fill("120");
+  await page.getByRole("slider", { name: "Instance count" }).fill("72");
   await expect(page.getByText("Runtime preview updated.")).toBeVisible();
   await expect(page.getByText("Deterministic sample")).toBeVisible();
   await expect(page.getByText("Quality budget")).toBeVisible();
