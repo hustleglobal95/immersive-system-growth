@@ -8,6 +8,28 @@ concurrency:
   group: forge-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  visual-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Capture NOCTERRA delivery evidence
+        run: npx playwright test tests/browser/nocterra-visual.spec.ts --project=chromium
+      - name: Upload NOCTERRA screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nocterra-screenshots
+          path: test-results/nocterra/
+          retention-days: 14
+
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -23,15 +45,6 @@ jobs:
       - run: npm run build
       - run: npm audit --audit-level=high
       - run: npx playwright install --with-deps chromium webkit
-      - name: Capture NOCTERRA delivery evidence
-        run: npx playwright test tests/browser/nocterra-visual.spec.ts --project=chromium
-      - name: Upload NOCTERRA screenshots
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: nocterra-screenshots
-          path: test-results/nocterra/
-          retention-days: 14
       - run: npm run test:browser -- --max-failures=1
       - uses: actions/upload-artifact@v4
         if: always()
