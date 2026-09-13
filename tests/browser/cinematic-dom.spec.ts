@@ -4,11 +4,11 @@ test("DOM choreography reverses and reduced motion restores readable baseline", 
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
   const heading = page.locator('[data-motion-scene="0"] h1');
-  const y = () => heading.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m42);
+  const y = () => heading.evaluate((element) => new DOMMatrix(getComputedStyle(element).transform).m42);
   await expect.poll(y).toBeGreaterThan(5);
-  await page.locator('a[href="#signature"]').click();
+  await page.locator('a[href="#horizon"]').first().click();
   await expect.poll(y).toBeLessThan(.1);
-  await page.locator('a[href="#arrival"]').click();
+  await page.locator('a[href="#arrival"]').first().click();
   await expect.poll(y).toBeGreaterThan(5);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect.poll(y).toBe(0);
