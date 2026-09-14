@@ -4,6 +4,7 @@ import fs from 'node:fs';
 const output = 'out';
 const source = '.next/server/app/heliot.html';
 if (!fs.existsSync(source)) throw new Error('Run npm run build before exporting HELIOT.');
+fs.rmSync(output, { recursive: true, force: true });
 fs.mkdirSync(`${output}/heliot`, { recursive: true });
 fs.copyFileSync(source, `${output}/heliot/index.html`);
 fs.cpSync('.next/static', `${output}/_next/static`, { recursive: true });

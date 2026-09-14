@@ -1,11 +1,21 @@
 {
   "version": 2,
   "id": "heliot-optical-study",
-  "name": "HELIOT / The Anatomy of Light",
+  "name": "HELIOT / Observatory for the unseen",
   "experiencePath": "src/experiences/heliot/experience.json",
   "creativeDirectionPath": "clients/heliot/creative-direction.json",
   "visualSystemsPath": "clients/heliot/visual-systems.json",
   "contentSources": [],
-  "deployment": {"provider": "custom", "projectName": "heliot-optical-study", "productionBranch": "main"},
-  "telemetry": {"enabled": false, "endpoint": "/api/telemetry", "sampleRate": 0, "consent": "analytics", "respectDnt": true}
+  "deployment": {
+    "provider": "custom",
+    "projectName": "heliot-optical-study",
+    "productionBranch": "main"
+  },
+  "telemetry": {
+    "enabled": false,
+    "endpoint": "/api/telemetry",
+    "sampleRate": 0,
+    "consent": "analytics",
+    "respectDnt": true
+  }
 }

@@ -1,24 +1,152 @@
 {
-  "version":1,
-  "conceptId":"heliot-optical-study",
-  "concept":"An original optical instrument remains the continuous subject of a ten-act scroll-directed film.",
-  "audience":"Design-conscious visitors exploring precision objects and premium interactive experiences.",
-  "promise":"See the relationship between material, optical groups and the light path.",
-  "emotionalArc":["Curiosity","Tactility","Discovery","Understanding","Agency","Resolution"],
-  "cta":"Save your edition",
-  "visual":{"palette":["#151719","#e8e4dc","#ea6748","#173d43"],"typography":["Manrope","Cormorant Garamond"],"materials":["Anodized aluminum","Titanium","Coated optical glass"],"motion":["Dolly","Subject orbit","Lateral study","Exploded assembly","Reassembly"],"sound":[]},
-  "constraints":{"approved":["One persistent canvas","Deterministic named-node ProductRig","Local assets","Semantic controls","Separate mobile cameras"],"prohibited":["Remote imagery","Fake sales claims","Random particles","Automatic audio","Forced scroll"]},
-  "scenes":[
-    {"id":"first-light","purpose":"Introduce the instrument","subject":"Complete lens","copy":"Light. Held still.","interaction":"Begin the study","transitionIn":"Opening portrait","transitionOut":"Motivated orbit"},
-    {"id":"form","purpose":"Reveal the silhouette","subject":"Lens body","copy":"Less object. More intention.","interaction":"Scroll to orbit","transitionIn":"Subject continuity","transitionOut":"Material approach"},
-    {"id":"surface","purpose":"Study precision materials","subject":"Machined metal","copy":"Precision you can feel.","interaction":"Read materials","transitionIn":"Close approach","transitionOut":"Component separation"},
-    {"id":"separation","purpose":"Expose the optical assembly","subject":"Eight named groups","copy":"Nothing hidden. Nothing extra.","interaction":"Reverse to reassemble","transitionIn":"Axial separation","transitionOut":"Light path tracing"},
-    {"id":"optical-path","purpose":"Explain optical principle","subject":"Coated glass groups","copy":"A path through the invisible.","interaction":"Inspect the schematic","transitionIn":"Progressive rays","transitionOut":"Frontal aperture view"},
-    {"id":"aperture","purpose":"Explore light gathering","subject":"Aperture schematic","copy":"Shape the light.","interaction":"Change aperture","transitionIn":"Frontal orbit","transitionOut":"Instrument reassembly"},
-    {"id":"perspective","purpose":"Give the visitor control","subject":"Complete lens","copy":"Make it your own.","interaction":"Choose finish and rotate","transitionIn":"Stable portrait","transitionOut":"Reset manual orbit"},
-    {"id":"convergence","purpose":"Resolve the assembly","subject":"All components","copy":"Many parts. One vision.","interaction":"Scroll in either direction","transitionIn":"Authored camera resumes","transitionOut":"Signature portrait"},
-    {"id":"signature","purpose":"Establish the edition","subject":"HELIOT 01","copy":"A different point of view.","interaction":"Continue to save","transitionIn":"Crane","transitionOut":"Camera settles"},
-    {"id":"keep-light","purpose":"Keep the selected configuration","subject":"Your edition","copy":"Keep the light.","interaction":"Download JSON or replay","transitionIn":"Stable hold","transitionOut":"Replay to first light"}
+  "version": 1,
+  "conceptId": "heliot-optical-study",
+  "concept": "An imagined bronze light observatory connects landscape, material, architecture and an interactive light study.",
+  "audience": "Architecture, culture and design audiences exploring an original cinematic flagship.",
+  "promise": "Move from environmental scale to the intimate shape of light.",
+  "emotionalArc": [
+    "Curiosity",
+    "Tactility",
+    "Discovery",
+    "Understanding",
+    "Agency",
+    "Resolution"
   ],
-  "successEvent":"edition-download"
+  "cta": "Download field sheet",
+  "visual": {
+    "palette": [
+      "#151719",
+      "#f2eee3",
+      "#d4b27b",
+      "#987347"
+    ],
+    "typography": [
+      "Manrope",
+      "Cormorant Garamond"
+    ],
+    "materials": [
+      "Patinated bronze",
+      "Machined radial fins",
+      "Volcanic stone"
+    ],
+    "motion": [
+      "Dolly",
+      "Subject orbit",
+      "Lateral study",
+      "Exploded assembly",
+      "Reassembly"
+    ],
+    "sound": [
+      "Optional local synthesized atmosphere"
+    ]
+  },
+  "constraints": {
+    "approved": [
+      "One persistent canvas",
+      "Deterministic named-node ProductRig",
+      "Local assets",
+      "Semantic controls",
+      "Separate mobile cameras"
+    ],
+    "prohibited": [
+      "Remote imagery",
+      "Fake sales claims",
+      "Random particles",
+      "Automatic audio",
+      "Forced scroll"
+    ]
+  },
+  "scenes": [
+    {
+      "id": "first-light",
+      "purpose": "The observatory",
+      "subject": "Light observatory",
+      "copy": "Observatory for the unseen.",
+      "interaction": "Begin the study",
+      "transitionIn": "Opening portrait",
+      "transitionOut": "Motivated orbit"
+    },
+    {
+      "id": "form",
+      "purpose": "Cross the threshold",
+      "subject": "Light observatory",
+      "copy": "Space begins with an opening.",
+      "interaction": "Scroll to orbit",
+      "transitionIn": "Subject continuity",
+      "transitionOut": "Material approach"
+    },
+    {
+      "id": "surface",
+      "purpose": "The matter of light",
+      "subject": "Light observatory",
+      "copy": "Matter. Made luminous.",
+      "interaction": "Read materials",
+      "transitionIn": "Close approach",
+      "transitionOut": "Component separation"
+    },
+    {
+      "id": "separation",
+      "purpose": "Under the surface",
+      "subject": "Light observatory",
+      "copy": "An architecture of relationships.",
+      "interaction": "Reverse to reassemble",
+      "transitionIn": "Axial separation",
+      "transitionOut": "Light path tracing"
+    },
+    {
+      "id": "optical-path",
+      "purpose": "Trace the invisible",
+      "subject": "Light observatory",
+      "copy": "Follow the invisible.",
+      "interaction": "Inspect the schematic",
+      "transitionIn": "Progressive rays",
+      "transitionOut": "Frontal aperture view"
+    },
+    {
+      "id": "aperture",
+      "purpose": "The light laboratory",
+      "subject": "Light observatory",
+      "copy": "Less opening. More intention.",
+      "interaction": "Change aperture",
+      "transitionIn": "Frontal orbit",
+      "transitionOut": "Instrument reassembly"
+    },
+    {
+      "id": "perspective",
+      "purpose": "Material / perspective",
+      "subject": "Light observatory",
+      "copy": "A different point of view.",
+      "interaction": "Choose finish and rotate",
+      "transitionIn": "Stable portrait",
+      "transitionOut": "Reset manual orbit"
+    },
+    {
+      "id": "convergence",
+      "purpose": "Return to the field",
+      "subject": "Light observatory",
+      "copy": "Nothing exists in isolation.",
+      "interaction": "Scroll in either direction",
+      "transitionIn": "Authored camera resumes",
+      "transitionOut": "Signature portrait"
+    },
+    {
+      "id": "signature",
+      "purpose": "The eclipse",
+      "subject": "Light observatory",
+      "copy": "Between light & shadow.",
+      "interaction": "Continue to save",
+      "transitionIn": "Crane",
+      "transitionOut": "Camera settles"
+    },
+    {
+      "id": "keep-light",
+      "purpose": "Your field study",
+      "subject": "Light observatory",
+      "copy": "Take a little light with you.",
+      "interaction": "Download JSON or replay",
+      "transitionIn": "Stable hold",
+      "transitionOut": "Replay to first light"
+    }
+  ],
+  "successEvent": "edition-download"
 }

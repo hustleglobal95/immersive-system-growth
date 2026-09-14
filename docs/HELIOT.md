@@ -1,6 +1,6 @@
-# HELIOT / The Anatomy of Light
+# HELIOT / Observatory for the unseen
 
-An original ten-act optical-instrument flagship at `/heliot`. The existing `/`, `/lab`, `/design` and `/studio` are preserved.
+An original ten-act architectural light study at `/heliot`. Landscape-scale art moves into bronze macro detail, a structural maquette, an interactive aperture laboratory, a topographic field and an atmospheric return. The existing `/`, `/lab`, `/design` and `/studio` are preserved.
 
 ## Run
 
@@ -12,16 +12,20 @@ Use Node 22.13 or later, run `npm ci`, then `npm run dev` and open `/heliot`.
 - `scripts/generate-heliot.mjs`: original GLB geometry generator and canonical config generator. Edit this source before regenerating assets/config. Both quality tiers use identical node names.
 - `src/experiences/heliot/HeliotStage.tsx`: environment lighting, crown markings and progressive optical rays, using Forge's persistent CinematicFrame.
 - `src/experiences/heliot/HeliotExperience.tsx`: accessible chapter document, aperture diagram, inspection and configuration export.
-- `app/heliot/heliot.css`: desktop and mobile art direction.
-- `docs/HELIOT_SCENE_PLAN.md`: creative rationale and shot list.
+- `app/heliot/observatory.css`: the rebuilt desktop and mobile art direction, layered over the semantic base styles.
+- `ObservatoryPlate.tsx`: photographic reframing and aperture transitions within the persistent Canvas.
+- `TerrainField.tsx`: deterministic spatial terrain with quality-dependent line density.
+- `lightLab.ts`: the shared aperture state for geometry, ray width, readout and exports.
+- `docs/HELIOT_REBUILD_PLAN.md`: current creative rationale and shot list. `HELIOT_SCENE_PLAN.md` records the superseded first concept.
+- `docs/HELIOT_ART_DIRECTION.md`: original image provenance, prompts and implementation rationale.
 
-No remote GLB, font, HDR, photography, AI API, form service, analytics, or payment credentials are needed. All graphics and model geometry are original. The existing font licenses apply to the local Manrope and Cormorant Garamond families. This is a fictional concept: optical diagrams demonstrate principles and do not claim a manufactured lens prescription.
+No runtime remote GLB, font, HDR, photography, AI API, form service, analytics, or payment credentials are needed. The two generated architectural plates are optimized local WebP assets. All graphics and model geometry are original. The existing font licenses apply to the local Manrope and Cormorant Garamond families. This is imagined architecture: diagrams demonstrate principles and do not claim construction-ready engineering.
 
 ## Interaction and motion
 
-Native scroll remains authoritative through the provider-aware Forge ScrollController. Camera, lighting and eight-component ProductRig share CinematicFrame. Component separation uses immutable named-node offset tracks, with exact return to zero. Pointer parallax remains restrained; manual drag and keyboard inspection are limited to the inspection act and reset on chapter changes. The aperture control changes the schematic and exported configuration, not the GLB's fixed iris geometry.
+Native scroll remains authoritative through the provider-aware Forge ScrollController. Camera, lighting and eight-component ProductRig share CinematicFrame. Component separation uses immutable named-node offset tracks, with exact return to zero before the light lab. Pointer parallax remains restrained; manual drag and keyboard inspection are limited to the inspection act and reset on chapter changes. The aperture control changes the actual circular diaphragm geometry and GPU ray width, in addition to the schematic, relative-light readout, SVG field sheet and JSON configuration.
 
-The custom optical diagram is necessary because it shows a changing aperture cone rather than only node-to-node relationships. GPU rays use the same scroll progress and stop in reduced motion. The static front elevation and complete semantic document remain available if WebGL fails. No giant particle field or external compositor is needed for this concept.
+The custom optical diagram is necessary because it shows a changing aperture cone rather than only node-to-node relationships. GPU rays use the same scroll progress and stop in reduced motion. A landscape-backed semantic document remains available if WebGL fails. Optional synthesized atmosphere starts only on an explicit button press and stops when muted or unmounted. Short landscape screens use a naturally flowing document instead of trapping controls in a fixed panel.
 
 ## Validation and static distribution
 
@@ -32,8 +36,9 @@ The custom optical diagram is necessary because it shows a changing aperture con
 ## Delivery verification — 2026-09-14
 
 - `npm run check`: all audits completed, 125 unit tests passed, TypeScript passed; lint reports zero errors and eight existing warnings. Project validation also passes with the HELIOT client registered.
-- Production Next build passes. Four HELIOT Chromium end-to-end tests pass against the exported static distribution, covering persistent canvas and reverse navigation, keyboard inspection and configuration download, mobile/reduced motion, and no-JavaScript/no-WebGL fallbacks.
-- Production desktop (1440×1000) and mobile (390×844) screenshots were reviewed. Capture reports show no browser errors or horizontal overflow.
+- Rebuilt production Next build passes. Four HELIOT Chromium end-to-end tests pass against the exported static distribution, covering persistent canvas, reverse navigation, sound on/off, keyboard inspection, both SVG/JSON downloads, mobile/reduced motion, short landscape layout, and no-JavaScript/no-WebGL fallbacks.
+- All ten chapter holds were captured at desktop (1440×1000) and mobile (390×844). Capture reports show no browser errors or horizontal overflow. The terrain hold was adjusted after visual review and captured again.
+- The render ledger observed at most 20 draw calls, 18,796 triangles, and 4,480 line segments in this review. These are rendering-cost observations, not claims of physical-device FPS. The high model is 632,624 bytes; low is 355,472 bytes; both original WebP plates together are under 500 KB.
 - The repository-wide Chromium run was attempted with a two-failure limit: three tests passed, two failed, and 27 were not run. Failures are the Studio asset-bank kit replacement expectation (`Reference kit applied`) and the original cinematic DOM test waiting for the absent `#arrival` link. These are outside `/heliot`; the entire repository browser suite is **not** claimed green.
 - Safari/WebKit was not verified because the browser download was unavailable in this environment. Chromium used software WebGL; physical-device GPU performance remains unmeasured.
 

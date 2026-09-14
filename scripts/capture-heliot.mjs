@@ -20,12 +20,13 @@ for (const [name, width, height] of [['desktop',1440,1000],['mobile',390,844]]) 
   await page.goto('http://127.0.0.1:3000/heliot');
   await page.waitForFunction(()=>document.documentElement.dataset.heliotReady==='true',{},{timeout:15000}).catch(async () => console.log('Readiness diagnostics', errors, await page.locator('.heliot-readiness').textContent()));
   await page.evaluate(()=>document.fonts.ready);
-  for (const [act, fraction] of [['first-light',0],['separation',.9],['optical-path',.4],['perspective',.3],['keep-light',.1]]) {
+  for (const [act, fraction] of [['first-light',0],['form',.2],['surface',.15],['separation',.5],['optical-path',.2],['aperture',.2],['perspective',.2],['convergence',.2],['signature',.2],['keep-light',.05]]) {
+    if (process.env.CAPTURE_ACT && process.env.CAPTURE_ACT !== act) continue;
     await page.evaluate(({act,fraction})=>{const el=document.getElementById(act);window.scrollTo({top:el.offsetTop+el.offsetHeight*fraction,behavior:'instant'});},{act,fraction});
     await page.waitForTimeout(1500);
     await page.screenshot({path:`generated/heliot/${name}-${act}.png`});
   }
-  report.push({name,errors,overflow:await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1)});
+  report.push({name,errors,overflow:await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),renderBudget:await page.evaluate(()=>document.documentElement.dataset.heliotRenderBudget)});
   await page.close();
 }
 await browser.close();server.kill();console.log(JSON.stringify(report,null,2));

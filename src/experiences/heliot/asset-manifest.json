@@ -2,16 +2,29 @@
   "models": [
     {
       "path": "/models/heliot/heliot-01.glb",
-      "bytes": 2159124,
-      "sha256": "381f61b1c75e302a70e48541b3a0fabaab35a54c9c7736de91ea9b4fa5731c0b"
+      "bytes": 632624,
+      "sha256": "41883d55f38f12563b7212aa5cc5cb789c36e57209f829edd0664b19f1bc026e"
     },
     {
       "path": "/models/heliot/heliot-01-low.glb",
-      "bytes": 632964,
-      "sha256": "e0489989976e07640dec95d0b4e80d4c9eb1143b4c1aa5b79bf616d4688fc4bd"
+      "bytes": 355472,
+      "sha256": "6c0a7310d7f26264611aeb47405f9efdf14dee264ae477f2a21375cf3af737af"
     }
   ],
-  "textures": [],
+  "textures": [
+    {
+      "path": "/models/heliot/observatory-landscape.webp",
+      "bytes": 287774,
+      "sha256": "b883488fd36a5e113243a34b53c28c3b384774d8bcfa45b633a4f5ed588d847d",
+      "source": "Original generated architectural art; see docs/HELIOT_ART_DIRECTION.md"
+    },
+    {
+      "path": "/models/heliot/observatory-macro.webp",
+      "bytes": 200794,
+      "sha256": "b0e8530983b4683aab0f0e825bbb0ae889ac928ea4cf9591c5f32333947fa636",
+      "source": "Original generated architectural art; see docs/HELIOT_ART_DIRECTION.md"
+    }
+  ],
   "hdr": [],
   "video": [],
   "budgets": {

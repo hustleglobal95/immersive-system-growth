@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test('HELIOT preserves its canvas, chapter navigation and reverse scrolling', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
   await page.goto('/heliot');
-  await expect(page.getByRole('heading', {level: 1})).toHaveText('Light.Held still.');
+  await expect(page.getByRole('heading', {level: 1})).toHaveText('Observatoryfor the unseen.');
   await expect(page.locator('.heliot-act')).toHaveCount(10);
   await expect(page.locator('canvas')).toHaveCount(1);
   await page.waitForFunction(() => document.documentElement.dataset.heliotReady === 'true');
@@ -17,6 +17,9 @@ test('HELIOT preserves its canvas, chapter navigation and reverse scrolling', as
   await expect(page.getByRole('navigation', {name:'All ten chapters'}).getByRole('link')).toHaveCount(10);
   await page.keyboard.press('Escape');
   await expect(page.getByRole('button', {name:'Index +'})).toBeFocused();
+  await page.getByRole('button',{name:'Enable atmosphere'}).click();
+  await expect(page.getByRole('button',{name:'Mute atmosphere'})).toHaveAttribute('aria-pressed','true');
+  await page.getByRole('button',{name:'Mute atmosphere'}).click();
   expect(errors).toEqual([]);
 });
 
@@ -39,6 +42,12 @@ test('HELIOT keyboard inspection, finish, aperture and export work end to end', 
   const stream = await download.createReadStream(); const chunks: Buffer[] = [];
   for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
   expect(JSON.parse(Buffer.concat(chunks).toString())).toMatchObject({finish:'Titanium',aperture:8,relativeLightPercent:3});
+  const [sheet] = await Promise.all([page.waitForEvent('download'), page.getByRole('button',{name:'Download field sheet'}).click()]);
+  expect(sheet.suggestedFilename()).toBe('heliot-field-study.svg');
+  const sheetStream=await sheet.createReadStream();const sheetChunks:Buffer[]=[];
+  for await(const chunk of sheetStream!)sheetChunks.push(Buffer.from(chunk));
+  const svg=Buffer.concat(sheetChunks).toString();
+  expect(svg).toContain('Titanium');expect(svg).toContain('f/8.0');expect(svg).toContain('3%');
 });
 
 test('HELIOT mobile and reduced motion keep all content and controls accessible', async ({ page }) => {
@@ -52,6 +61,9 @@ test('HELIOT mobile and reduced motion keep all content and controls accessible'
     expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   }
   await expect(page.getByRole('button',{name:'Save your edition'})).toBeInViewport();
+  await page.setViewportSize({width:844,height:390});
+  await page.getByRole('button',{name:'Download field sheet'}).scrollIntoViewIfNeeded();
+  await expect(page.getByRole('button',{name:'Download field sheet'})).toBeInViewport();
 });
 
 test('HELIOT remains readable without JavaScript and recovers visually without WebGL', async ({ browser, page }) => {

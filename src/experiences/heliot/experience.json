@@ -1,7 +1,7 @@
 {
   "meta": {
-    "name": "HELIOT / The Anatomy of Light",
-    "description": "A ten-act interactive study of an original precision optical instrument. Scroll to direct the film. Inspect, separate and reassemble the anatomy of light.",
+    "name": "HELIOT / Observatory for the unseen",
+    "description": "An imagined light observatory. Move from landscape and bronze to an architectural maquette, a live aperture laboratory, and a personal field study.",
     "themeColor": "#151719",
     "backgroundColor": "#151719"
   },
@@ -66,7 +66,7 @@
             "easing": "cinematic"
           },
           {
-            "at": 0.53,
+            "at": 0.46,
             "value": [
               0,
               0,
@@ -75,7 +75,7 @@
             "easing": "cinematic"
           },
           {
-            "at": 0.65,
+            "at": 0.5,
             "value": [
               0,
               0,
@@ -127,7 +127,7 @@
             "easing": "cinematic"
           },
           {
-            "at": 0.53,
+            "at": 0.46,
             "value": [
               0,
               0,
@@ -136,7 +136,7 @@
             "easing": "cinematic"
           },
           {
-            "at": 0.65,
+            "at": 0.5,
             "value": [
               0,
               0,
@@ -188,7 +188,7 @@
             "easing": "cinematic"
           },
           {
-            "at": 0.53,
+            "at": 0.46,
             "value": [
               0,
               0,
@@ -197,7 +197,7 @@
             "easing": "cinematic"
           },
           {
-            "at": 0.65,
+            "at": 0.5,
             "value": [
               0,
               0,
@@ -249,7 +249,7 @@
             "easing": "cinematic"
           },
           {
-            "at": 0.53,
+            "at": 0.46,
             "value": [
               0,
               0,
@@ -258,7 +258,7 @@
             "easing": "cinematic"
           },
           {
-            "at": 0.65,
+            "at": 0.5,
             "value": [
               0,
               0,
@@ -310,7 +310,7 @@
             "easing": "cinematic"
           },
           {
-            "at": 0.53,
+            "at": 0.46,
             "value": [
               0,
               0,
@@ -319,7 +319,7 @@
             "easing": "cinematic"
           },
           {
-            "at": 0.65,
+            "at": 0.5,
             "value": [
               0,
               0,
@@ -371,7 +371,7 @@
             "easing": "cinematic"
           },
           {
-            "at": 0.53,
+            "at": 0.46,
             "value": [
               0,
               0,
@@ -380,7 +380,7 @@
             "easing": "cinematic"
           },
           {
-            "at": 0.65,
+            "at": 0.5,
             "value": [
               0,
               0,
@@ -432,7 +432,7 @@
             "easing": "cinematic"
           },
           {
-            "at": 0.53,
+            "at": 0.46,
             "value": [
               0,
               0,
@@ -441,7 +441,7 @@
             "easing": "cinematic"
           },
           {
-            "at": 0.65,
+            "at": 0.5,
             "value": [
               0,
               0,
@@ -493,7 +493,7 @@
             "easing": "cinematic"
           },
           {
-            "at": 0.53,
+            "at": 0.46,
             "value": [
               0,
               0,
@@ -502,7 +502,7 @@
             "easing": "cinematic"
           },
           {
-            "at": 0.65,
+            "at": 0.5,
             "value": [
               0,
               0,
@@ -526,7 +526,7 @@
   "scenes": [
     {
       "id": "first-light",
-      "label": "First light",
+      "label": "The observatory",
       "range": [
         0,
         0.1
@@ -571,7 +571,7 @@
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -584,7 +584,7 @@
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -644,15 +644,15 @@
       "motionTracks": [],
       "blocks": [],
       "copy": {
-        "eyebrow": "THE ANATOMY OF LIGHT",
-        "headline": "Light.\nHeld still.",
-        "body": "An instrument for looking closer. A study in glass, metal, and the space between.",
+        "eyebrow": "A FIELD STUDY IN LIGHT / NO. 001",
+        "headline": "Observatory\nfor the unseen.",
+        "body": "At the edge of the familiar, a place to see differently. An imagined architecture shaped by a single element: light.",
         "align": "left"
       }
     },
     {
       "id": "form",
-      "label": "The instrument",
+      "label": "Cross the threshold",
       "range": [
         0.1,
         0.2
@@ -697,7 +697,7 @@
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -710,7 +710,7 @@
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -770,15 +770,15 @@
       "motionTracks": [],
       "blocks": [],
       "copy": {
-        "eyebrow": "01 / FORM",
-        "headline": "Less object.\nMore intention.",
-        "body": "Every radius has a reason. Every surface is shaped around the path of light.",
+        "eyebrow": "01 / THE THRESHOLD",
+        "headline": "Space begins\nwith an opening.",
+        "body": "An annulus in a volcanic landscape. A frame for the horizon. Step through, and the immense becomes intimate.",
         "align": "left"
       }
     },
     {
       "id": "surface",
-      "label": "Material study",
+      "label": "The matter of light",
       "range": [
         0.2,
         0.3
@@ -823,7 +823,7 @@
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -836,7 +836,7 @@
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -896,15 +896,15 @@
       "motionTracks": [],
       "blocks": [],
       "copy": {
-        "eyebrow": "02 / SURFACE",
-        "headline": "Precision you\ncan feel.",
-        "body": "Fine-cut aluminum. A titanium index. A focus ring made for the slow, deliberate turn.",
+        "eyebrow": "02 / MATERIAL MEMORY",
+        "headline": "Matter.\nMade luminous.",
+        "body": "Bronze holds the warmth of a passing sun. Radial fins turn a continuous surface into a rhythm of shadow and reflection.",
         "align": "left"
       }
     },
     {
       "id": "separation",
-      "label": "Anatomy",
+      "label": "Under the surface",
       "range": [
         0.3,
         0.4
@@ -949,7 +949,7 @@
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -962,7 +962,7 @@
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -1022,15 +1022,15 @@
       "motionTracks": [],
       "blocks": [],
       "copy": {
-        "eyebrow": "03 / ANATOMY",
-        "headline": "Nothing hidden.\nNothing extra.",
-        "body": "Move beyond the surface. The optical groups separate along one continuous axis.",
+        "eyebrow": "03 / STRUCTURAL ANATOMY",
+        "headline": "An architecture\nof relationships.",
+        "body": "Eight systems. One shared axis. Follow the shell, the radial field and the diaphragm as the observatory opens itself to inspection.",
         "align": "left"
       }
     },
     {
       "id": "optical-path",
-      "label": "Optical path",
+      "label": "Trace the invisible",
       "range": [
         0.4,
         0.5
@@ -1053,16 +1053,16 @@
         },
         "to": {
           "position": [
-            7,
-            2,
-            5
+            0,
+            0.8,
+            7
           ],
           "target": [
-            -2.3,
+            -0.6,
             0,
             0
           ],
-          "fov": 45
+          "fov": 38
         }
       },
       "mobileCamera": {
@@ -1075,20 +1075,20 @@
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
         },
         "to": {
           "position": [
-            8.26,
-            2.8,
-            5.8999999999999995
+            0,
+            1.6,
+            8.26
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -1148,15 +1148,15 @@
       "motionTracks": [],
       "blocks": [],
       "copy": {
-        "eyebrow": "04 / TRANSMISSION",
-        "headline": "A path through\nthe invisible.",
-        "body": "Glass bends the incoming field toward a shared plane. Explore the principle behind the picture.",
+        "eyebrow": "04 / THE OPTICAL SECTION",
+        "headline": "Follow\nthe invisible.",
+        "body": "Incident light crosses the radial field and meets a controlled opening. The section turns a spatial idea into a readable path.",
         "align": "left"
       }
     },
     {
       "id": "aperture",
-      "label": "Aperture study",
+      "label": "The light laboratory",
       "range": [
         0.5,
         0.6
@@ -1166,16 +1166,16 @@
         "path": "subject-orbit",
         "from": {
           "position": [
-            7,
-            2,
-            5
+            0,
+            0.8,
+            7
           ],
           "target": [
-            -2.3,
+            -0.6,
             0,
             0
           ],
-          "fov": 45
+          "fov": 38
         },
         "to": {
           "position": [
@@ -1195,13 +1195,13 @@
         "path": "subject-orbit",
         "from": {
           "position": [
-            8.26,
-            2.8,
-            5.8999999999999995
+            0,
+            1.6,
+            8.26
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -1214,7 +1214,7 @@
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -1274,15 +1274,15 @@
       "motionTracks": [],
       "blocks": [],
       "copy": {
-        "eyebrow": "05 / APERTURE",
-        "headline": "Shape the\nlight.",
-        "body": "A smaller opening narrows the light cone. Change the aperture to explore relative light gathering.",
+        "eyebrow": "05 / INTERACTIVE LIGHT LAB",
+        "headline": "Less opening.\nMore intention.",
+        "body": "Move the aperture. Watch the diaphragm and beam respond. The area of the opening determines the relative light admitted.",
         "align": "left"
       }
     },
     {
       "id": "perspective",
-      "label": "Your perspective",
+      "label": "Material / perspective",
       "range": [
         0.6,
         0.7
@@ -1327,7 +1327,7 @@
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -1340,7 +1340,7 @@
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -1400,15 +1400,15 @@
       "motionTracks": [],
       "blocks": [],
       "copy": {
-        "eyebrow": "06 / INSPECTION",
-        "headline": "Make it\nyour own.",
-        "body": "Turn the instrument. Choose its finish. Find the angle that feels like you.",
+        "eyebrow": "06 / YOUR OBSERVATORY",
+        "headline": "A different\npoint of view.",
+        "body": "Turn the architectural maquette. Compare its two material studies. The structure stays constant; its response to light changes.",
         "align": "left"
       }
     },
     {
       "id": "convergence",
-      "label": "Convergence",
+      "label": "Return to the field",
       "range": [
         0.7,
         0.8
@@ -1453,7 +1453,7 @@
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -1466,7 +1466,7 @@
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -1526,15 +1526,15 @@
       "motionTracks": [],
       "blocks": [],
       "copy": {
-        "eyebrow": "07 / CONVERGENCE",
-        "headline": "Many parts.\nOne vision.",
-        "body": "The assembly returns to its starting geometry. Precision is the relationship between every part.",
+        "eyebrow": "07 / FROM OBJECT TO LANDSCAPE",
+        "headline": "Nothing exists\nin isolation.",
+        "body": "The parts return to their original positions. The observatory belongs to a larger field: terrain, horizon, and the movement of a distant sun.",
         "align": "left"
       }
     },
     {
       "id": "signature",
-      "label": "Edition 01",
+      "label": "The eclipse",
       "range": [
         0.8,
         0.9
@@ -1579,7 +1579,7 @@
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -1592,7 +1592,7 @@
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -1652,15 +1652,15 @@
       "motionTracks": [],
       "blocks": [],
       "copy": {
-        "eyebrow": "08 / SIGNATURE",
-        "headline": "A different\npoint of view.",
-        "body": "HELIOT 01. An original optical concept, made to celebrate the act of seeing.",
+        "eyebrow": "08 / AN INTERVAL OF STILLNESS",
+        "headline": "Between\nlight & shadow.",
+        "body": "For a moment, the frame becomes the subject. Then the world beyond it returns.",
         "align": "left"
       }
     },
     {
       "id": "keep-light",
-      "label": "Keep the light",
+      "label": "Your field study",
       "range": [
         0.9,
         1
@@ -1705,7 +1705,7 @@
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -1718,7 +1718,7 @@
           ],
           "target": [
             0,
-            -1.75,
+            -2.2,
             0
           ],
           "fov": 48
@@ -1778,9 +1778,9 @@
       "motionTracks": [],
       "blocks": [],
       "copy": {
-        "eyebrow": "09 / YOUR EDITION",
-        "headline": "Keep the\nlight.",
-        "body": "Save your chosen finish and aperture as a configuration file. Or return to the first frame.",
+        "eyebrow": "09 / THE FIELD ARCHIVE",
+        "headline": "Take a little\nlight with you.",
+        "body": "Keep your material and aperture study as a designed field sheet. A record of the way you chose to see.",
         "align": "left"
       }
     }

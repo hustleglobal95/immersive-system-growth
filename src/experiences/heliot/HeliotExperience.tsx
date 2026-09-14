@@ -11,6 +11,9 @@ import { PointerController } from '@/src/runtime/PointerController';
 import { useExperienceStore } from '@/src/store/experienceStore';
 import { cinematicProgress } from '@/src/lib/cinematicProgress';
 import { heliotExperience, finishes, apertures, relativeLight } from './config';
+import { useLightLab } from './lightLab';
+import { generateContourPaths } from '@/src/lib/cinematic/procedural';
+import { AmbientSound } from './AmbientSound';
 
 const Stage = dynamic(() => import('./HeliotStage').then(m => m.HeliotStage), { ssr: false });
 const Readiness = dynamic(() => import('./HeliotStage').then(m => m.HeliotLoadingStatus), { ssr: false });
@@ -47,7 +50,8 @@ export function HeliotExperience() {
   const root = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; y: number } | null>(null);
   const [finish, setFinish] = useState(0);
-  const [aperture, setAperture] = useState<number>(1.4);
+  const aperture = useLightLab(s => s.aperture);
+  const setAperture = useLightLab(s => s.setAperture);
   const [menuOpen, setMenuOpen] = useState(false);
   const [saved, setSaved] = useState(false);
   const profileReady = useExperienceStore(s => s.profileReady);
@@ -71,6 +75,8 @@ export function HeliotExperience() {
       const element = root.current;
       if (!element) return;
       element.style.setProperty('--film-progress', String(p));
+      element.dataset.chapter = String(Math.min(9, Math.floor(p * 10)));
+      element.style.setProperty('--chapter-progress', String((p * 10) % 1));
       element.querySelectorAll<HTMLElement>('.heliot-panel').forEach((panel, i) => {
         panel.closest<HTMLElement>('.heliot-act')!.dataset.active = String(i === Math.min(9, Math.floor(p * 10)));
         const local = p * 10 - i;
@@ -94,10 +100,16 @@ export function HeliotExperience() {
     const state = useExperienceStore.getState(); state.setOrbitControl('hero'); state.adjustOrbit('hero', dx, dy);
   }
   function saveEdition() {
-    const file = { project: 'HELIOT 01', type: 'fictional optical concept', finish: finishes[finish].name, aperture, relativeLightPercent: relativeLight(aperture) };
+    const file = { project: 'HELIOT Observatory / Field study 001', type: 'fictional architectural light study', finish: finishes[finish].name, aperture, relativeLightPercent: relativeLight(aperture) };
     const url = URL.createObjectURL(new Blob([JSON.stringify(file, null, 2)], { type: 'application/json' }));
     const link = document.createElement('a'); link.href = url; link.download = 'heliot-01-your-edition.json'; link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000); setSaved(true);
+  }
+  function saveFieldSheet() {
+    const radius = 150 * 1.4 / aperture;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1600" viewBox="0 0 1200 1600"><rect width="1200" height="1600" fill="#e9e4d9"/><g fill="#292b25" font-family="Arial,sans-serif"><text x="90" y="130" font-size="34" letter-spacing="12">HELIOT</text><text x="90" y="205" font-size="13" letter-spacing="3">OBSERVATORY FOR THE UNSEEN / FIELD STUDY 001</text><path d="M90 245H1110" stroke="#777b6e"/><text x="90" y="350" font-size="75">The shape of</text><text x="90" y="440" font-size="90" font-family="Georgia,serif" font-style="italic">your light.</text><circle cx="600" cy="825" r="290" fill="#292b25"/><circle cx="600" cy="825" r="270" fill="none" stroke="#b39363" stroke-width="2"/>${Array.from({length:72},(_,i)=>{const a=i*Math.PI/36;return `<path d="M${600+Math.cos(a)*225} ${825+Math.sin(a)*225}L${600+Math.cos(a)*260} ${825+Math.sin(a)*260}" stroke="#b39363" stroke-width="2"/>`;}).join('')}<circle cx="600" cy="825" r="${radius}" fill="#e9e4d9"/><path d="M90 1210H1110" stroke="#777b6e"/><text x="90" y="1270" font-size="15" letter-spacing="3">MATERIAL</text><text x="90" y="1320" font-size="32">${finishes[finish].name}</text><text x="510" y="1270" font-size="15" letter-spacing="3">APERTURE</text><text x="510" y="1320" font-size="32">f/${aperture.toFixed(1)}</text><text x="870" y="1270" font-size="15" letter-spacing="3">RELATIVE LIGHT</text><text x="870" y="1320" font-size="32">${relativeLight(aperture)}%</text><text x="90" y="1470" font-size="14">An imagined architecture. A record of the way you chose to see.</text><text x="90" y="1510" font-size="11" letter-spacing="2">HELIOT / ORIGINAL INTERACTIVE STUDY / 2026</text></g></svg>`;
+    const url = URL.createObjectURL(new Blob([svg], {type:'image/svg+xml'}));
+    const link=document.createElement('a');link.href=url;link.download='heliot-field-study.svg';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setSaved(true);
   }
   return <ExperienceConfigProvider value={config}>
     <div ref={root} className="heliot" data-enhanced={profileReady && !reducedMotion && !fallback} data-motion={reducedMotion ? 'reduced' : 'full'} data-fallback={fallback}>
@@ -105,10 +117,13 @@ export function HeliotExperience() {
       <a className="heliot-skip" href="#heliot-story">Skip to the story</a>
       <div className="heliot-viewport"><StaticLens />{profileReady && !fallback && <WebGLBoundary><Stage /></WebGLBoundary>}</div>
       <div className="heliot-vignette" aria-hidden="true" />
+      <div className="heliot-grain" aria-hidden="true" />
+      <div className="heliot-terrain" aria-hidden="true"><svg viewBox="0 0 1000 600" preserveAspectRatio="none">{generateContourPaths({id:'observatory-field',blendMode:'normal',interactive:false,kind:'contours',count:60,amplitude:1.8,frequency:1.6,seed:47,opacity:1,range:[0,1],color:'#a08f6a'},1000,600).map((d,i)=><path key={i} d={d} fill="none" stroke="currentColor" strokeWidth=".5" pathLength="1" />)}</svg><span>TOPOGRAPHIC FIELD / CONCEPTUAL TERRAIN</span></div>
+      <div className="heliot-crosshair" aria-hidden="true"><i/><i/><i/><i/><span>AXIS Z / FIELD ASSEMBLY</span></div>
       <header className="heliot-header">
         <a href="#first-light" className="heliot-wordmark" aria-label="HELIOT, return to first light">HELIOT<span>®</span></a>
-        <span className="heliot-header-caption">INSTRUMENTS FOR SEEING</span>
-        <div className="heliot-header-actions"><a href="#perspective" className="heliot-inspect-link">Explore 01 <span aria-hidden="true">↗</span></a><button id="heliot-menu-toggle" className="heliot-menu-toggle" aria-expanded={menuOpen} aria-controls="heliot-chapters" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? 'Close −' : 'Index +'}</button></div>
+        <span className="heliot-header-caption">AN OBSERVATORY<br/>FOR THE UNSEEN</span>
+        <div className="heliot-header-actions"><AmbientSound /><a href="#aperture" className="heliot-inspect-link">Enter the light lab <span aria-hidden="true">↗</span></a><button id="heliot-menu-toggle" className="heliot-menu-toggle" aria-expanded={menuOpen} aria-controls="heliot-chapters" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? 'Close −' : 'Index +'}</button></div>
       </header>
       {menuOpen && <nav id="heliot-chapters" className="heliot-menu" aria-label="All ten chapters">{config.scenes.map((scene, i) => <a key={scene.id} href={`#${scene.id}`} onClick={() => setMenuOpen(false)}><span>{String(i + 1).padStart(2, '0')}</span>{scene.label}<span aria-hidden="true">↗</span></a>)}</nav>}
       <aside className="heliot-side-note" aria-hidden="true">SCROLL TO DIRECT THE LIGHT — EST. 2026</aside>
@@ -116,18 +131,19 @@ export function HeliotExperience() {
         {config.scenes.map((scene, i) => <section className={`story-section heliot-act heliot-act-${i}`} id={scene.id} key={scene.id} aria-labelledby={`heliot-title-${i}`}>
           <div className="heliot-panel">
             <p className="heliot-eyebrow"><span className="heliot-index-mark" />{scene.copy.eyebrow}</p>
-            {i === 0 ? <h1 id={`heliot-title-${i}`}>Light.<br /><em>Held still.</em></h1> : <h2 id={`heliot-title-${i}`}>{scene.copy.headline.split('\n').map((line, index) => <span key={line} className={index ? 'heliot-title-secondary' : ''}>{line}</span>)}</h2>}
+            {i === 0 ? <h1 id={`heliot-title-${i}`}><span>Observatory</span><em>for the unseen.</em></h1> : <h2 id={`heliot-title-${i}`}>{scene.copy.headline.split('\n').map((line, index) => <span key={line} className={index ? 'heliot-title-secondary' : ''}>{line}</span>)}</h2>}
             <p className="heliot-body">{scene.copy.body}</p>
-            {i === 0 && <a className="heliot-start" href="#form"><span aria-hidden="true">↓</span>BEGIN THE STUDY <span className="heliot-start-duration">10 ACTS / YOUR PACE</span></a>}
-            {i === 2 && <dl className="heliot-materials"><div><dt>01</dt><dd>Fine-cut aluminum</dd></div><div><dt>02</dt><dd>Titanium index ring</dd></div><div><dt>03</dt><dd>Petrol optical coating</dd></div></dl>}
-            {i === 3 && <div className="heliot-anatomy-label">08 COMPONENT GROUPS <span>ONE OPTICAL AXIS</span></div>}
+            {i === 0 && <a className="heliot-start" href="#form"><span aria-hidden="true">↓</span>SCROLL TO ENTER <span className="heliot-start-duration">10 CHAPTERS / AN OPEN EXPLORATION</span></a>}
+            {i === 1 && <div className="heliot-threshold-note">LANDSCAPE → ARCHITECTURE → LIGHT</div>}
+            {i === 2 && <dl className="heliot-materials"><div><dt>01</dt><dd>Patinated bronze shell</dd></div><div><dt>02</dt><dd>Radial reflection fins</dd></div><div><dt>03</dt><dd>Machined aperture assembly</dd></div></dl>}
+            {i === 3 && <div className="heliot-anatomy-label">08 COMPONENT GROUPS <span>01 / ENVELOPE &nbsp; 02 / RADIAL FIELD<br/>03 / DIAPHRAGM &nbsp; 04 / STRUCTURAL RINGS</span></div>}
             {i === 4 && <OpticalDiagram aperture={aperture} />}
             {i === 5 && <div className="heliot-controls"><label htmlFor="heliot-aperture">Aperture <output>f/{aperture.toFixed(1)}</output></label><input id="heliot-aperture" aria-label="Aperture" type="range" min="0" max="5" step="1" value={apertures.indexOf(aperture as typeof apertures[number])} onChange={e => setAperture(apertures[Number(e.target.value)])} aria-valuetext={`f/${aperture}`} /><div className="heliot-aperture-value"><span>{relativeLight(aperture)}<small>%</small></span><p>Relative light<br />compared with f/1.4</p></div><OpticalDiagram aperture={aperture} /></div>}
             {i === 6 && <div className="heliot-controls"><fieldset className="heliot-finishes"><legend>Choose a finish</legend>{finishes.map((item, index) => <button key={item.id} type="button" aria-pressed={finish === index} onClick={() => setFinish(index)}><span style={{ background: item.color }} />{item.name}</button>)}</fieldset><div className="heliot-orbit" role="group" aria-label="Rotate the instrument"><button aria-label="Rotate left" onClick={() => rotate(-80)}>←</button><button aria-label="Rotate right" onClick={() => rotate(80)}>→</button><button onClick={() => useExperienceStore.getState().resetOrbit()}>Reset view</button></div><div className="heliot-drag" role="slider" tabIndex={0} aria-label="Instrument rotation" aria-valuemin={-180} aria-valuemax={180} aria-valuenow={Math.round(((yaw * 180 / Math.PI + 180) % 360 + 360) % 360 - 180)} aria-valuetext="Use arrow keys or drag to rotate" onKeyDown={e => { if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) { e.preventDefault(); e.stopPropagation(); rotate(e.key === 'ArrowLeft' ? -45 : e.key === 'ArrowRight' ? 45 : 0, e.key === 'ArrowUp' ? -30 : e.key === 'ArrowDown' ? 30 : 0); } }} onPointerDown={e => { drag.current = { x: e.clientX, y: e.clientY }; e.currentTarget.setPointerCapture(e.pointerId); }} onPointerMove={e => { if (!drag.current) return; rotate(e.clientX - drag.current.x, e.clientY - drag.current.y); drag.current = { x: e.clientX, y: e.clientY }; }} onPointerUp={() => { drag.current = null; }} onPointerCancel={() => { drag.current = null; }}>↔ Drag here to inspect <span>or use arrow keys</span></div></div>}
-            {i === 8 && <p className="heliot-signature">H<span>01</span></p>}
-            {i === 9 && <div className="heliot-final"><p className="heliot-edition">YOUR EDITION <span>{finishes[finish].name} / f/{aperture.toFixed(1)}</span></p><button className="heliot-save" onClick={saveEdition}>Save your edition <span aria-hidden="true">↗</span></button><p role="status" className="heliot-save-status">{saved ? 'Configuration downloaded. Yours to keep.' : 'A small configuration file. No account required.'}</p><a className="heliot-replay" href="#first-light" onClick={() => useExperienceStore.getState().resetOrbit()}>↺ Replay the study</a><p className="heliot-disclaimer">An original fictional instrument. An interactive study, not a product for sale.</p></div>}
+            {i === 8 && <p className="heliot-signature">○<span>THE WORLD IS STILL THERE.</span></p>}
+            {i === 9 && <div className="heliot-final"><p className="heliot-edition">YOUR FIELD STUDY <span>{finishes[finish].name} / f/{aperture.toFixed(1)}</span></p><button className="heliot-save" onClick={saveFieldSheet}>Download field sheet <span aria-hidden="true">↗</span></button><button className="heliot-export-data" onClick={saveEdition}>Save your edition <span>JSON ↗</span></button><p role="status" className="heliot-save-status">{saved ? 'Your field study is downloaded.' : 'A designed SVG print. Yours to keep.'}</p><a className="heliot-replay" href="#first-light" onClick={() => useExperienceStore.getState().resetOrbit()}>↺ Return to the observatory</a><p className="heliot-disclaimer">An original imagined architecture. A conceptual light study, not a construction specification.</p></div>}
           </div>
-          {i === 0 && <div className="heliot-hero-spec" aria-hidden="true"><span>01</span><p>FORM / OPTICS / PERSPECTIVE<br />AN ORIGINAL OPTICAL STUDY</p></div>}
+          {i === 0 && <div className="heliot-hero-spec" aria-hidden="true"><span>001</span><p>A PLACE BETWEEN<br/>THE EARTH AND THE SUN.</p></div>}
         </section>)}
       </main>
       <footer className="heliot-footer"><Readiness /><div className="heliot-progress" aria-label={`Chapter ${Math.min(activeScene + 1, 10)} of 10`}><span>{String(Math.min(activeScene + 1, 10)).padStart(2, '0')}</span><i><b /></i><span>10</span></div><button className="heliot-motion" aria-pressed={reducedMotion} onClick={() => useExperienceStore.getState().setReducedMotion(!reducedMotion)}>{reducedMotion ? 'Motion off' : 'Motion on'} <span aria-hidden="true">{reducedMotion ? '○' : '●'}</span></button></footer>
