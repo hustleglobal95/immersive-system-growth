@@ -3,10 +3,12 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { experience, getSceneIndex } from "@/src/lib/experience";
+import { getSceneIndex } from "@/src/lib/experience";
+import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { clamp01 } from "@/src/lib/math";
 import { useExperienceStore } from "@/src/store/experienceStore";
 export function ScrollController() {
+  const experience = useExperienceConfig();
   const reducedMotion = useExperienceStore((s) => s.reducedMotion);
   const freeCamera = useExperienceStore((s) => s.freeCamera);
   useEffect(() => {
@@ -36,7 +38,7 @@ export function ScrollController() {
           p,
           Math.max(-100, Math.min(100, delta)),
           Math.sign(delta),
-          getSceneIndex(p),
+          getSceneIndex(p, experience),
         );
     };
     // Native position is authoritative for restoration, resize, keyboard, anchors and Lenis alike.
@@ -76,6 +78,6 @@ export function ScrollController() {
       lenis?.off("scroll", update);
       lenis?.destroy();
     };
-  }, [reducedMotion, freeCamera]);
+  }, [reducedMotion, freeCamera, experience]);
   return null;
 }

@@ -1,0 +1,24 @@
+{
+  "models": [
+    {
+      "path": "/models/heliot/heliot-01.glb",
+      "bytes": 2159124,
+      "sha256": "381f61b1c75e302a70e48541b3a0fabaab35a54c9c7736de91ea9b4fa5731c0b"
+    },
+    {
+      "path": "/models/heliot/heliot-01-low.glb",
+      "bytes": 632964,
+      "sha256": "e0489989976e07640dec95d0b4e80d4c9eb1143b4c1aa5b79bf616d4688fc4bd"
+    }
+  ],
+  "textures": [],
+  "hdr": [],
+  "video": [],
+  "budgets": {
+    "modelMb": 12,
+    "textureMb": 5,
+    "hdrMb": 12,
+    "videoMb": 20,
+    "totalMb": 20
+  }
+}

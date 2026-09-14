@@ -1,5 +1,5 @@
 "use client";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { useExperienceStore } from "@/src/store/experienceStore";
@@ -23,8 +23,7 @@ import { NocterraEnvironment } from "./NocterraEnvironment";
 import { AtelierMarisEnvironment } from "./AtelierMarisEnvironment";
 import { useStudioEditor } from "@/src/components/runtime/StudioEditorContext";
 function CanvasFallback() {
-  useEffect(() => useExperienceStore.getState().setWebglStatus("failed"), []);
-  return null;
+  return <span>The story remains available without a 3D view.</span>;
 }
 const LabGuides = lazy(() => import("./LabGuides").then((m) => ({ default: m.LabGuides })));
 const StudioTransformGizmo = lazy(() => import("./StudioTransformGizmo").then((m) => ({ default: m.StudioTransformGizmo })));

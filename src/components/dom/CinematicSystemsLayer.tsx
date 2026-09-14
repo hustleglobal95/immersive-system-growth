@@ -13,6 +13,11 @@ import { CinematicShaderCanvas } from "@/src/components/dom/CinematicShaderCanva
 const clamp01=(value:number)=>Math.max(0,Math.min(1,value));
 
 export function CinematicSystemsLayer(){
+  const activeScene=useExperienceStore(s=>s.activeScene);
+  return <CinematicSceneLayer key={activeScene} />;
+}
+
+function CinematicSceneLayer(){
   const activeScene=useExperienceStore(s=>s.activeScene),quality=useExperienceStore(s=>s.quality),reduced=useExperienceStore(s=>s.reducedMotion);
   const progress=useCinematicStore(s=>s.springProgress),pointer=useCinematicStore(s=>s.pointer),trail=useCinematicStore(s=>s.trail),canvas=useRef<HTMLCanvasElement>(null);
   const [shaderReady,setShaderReady]=useState(false),[shaderFailed,setShaderFailed]=useState(false);
@@ -20,8 +25,6 @@ export function CinematicSystemsLayer(){
   const local=base?clamp01((progress-base.range[0])/Math.max(1e-6,base.range[1]-base.range[0])):0;
   const composed=useMemo(()=>config?composeCinematicScene(config,{progress:local,pointer:{x:pointer.x,y:pointer.y,velocity:pointer.speed,trailEnergy:pointer.trailEnergy}}):null,[config,local,pointer.x,pointer.y,pointer.speed,pointer.trailEnergy]);
   const gpuEligible=!!(base?.media?.kind==="image"&&config&&(config.spatial||config.reveal)&&quality!=="low"&&!reduced&&!shaderFailed);
-
-  useEffect(()=>{setShaderReady(false);setShaderFailed(false);},[activeScene]);
 
   useEffect(()=>{
     if(!config||!composed)return;

@@ -1,8 +1,9 @@
 "use client";
 import { useEffect } from "react";
-import { experience } from "@/src/lib/experience";
+import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { useExperienceStore } from "@/src/store/experienceStore";
 export function KeyboardController() {
+  const experience = useExperienceConfig();
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (
@@ -40,6 +41,6 @@ export function KeyboardController() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [experience]);
   return null;
 }

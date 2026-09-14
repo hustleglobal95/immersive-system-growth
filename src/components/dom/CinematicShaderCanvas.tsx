@@ -149,7 +149,7 @@ function hex(value:string|undefined){const v=(value??"#ffffff").replace("#","");
 
 export function CinematicShaderCanvas(props:Props){
   const canvas=useRef<HTMLCanvasElement>(null),runtime=useRef<Runtime|null>(null),values=useRef(props);
-  values.current=props;
+  useEffect(()=>{values.current=props;},[props]);
   useEffect(()=>{
     let disposed=false, unsubscribe: null | (()=>void)=null;
     const element=canvas.current;

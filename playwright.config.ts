@@ -14,7 +14,7 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   webServer: {
-    command: "npm run start -- --hostname 127.0.0.1 --port 3000",
+    command: process.env.HELIOT_STATIC ? "node scripts/serve-heliot.mjs" : "npm run start -- --hostname 127.0.0.1 --port 3000",
     url: "http://127.0.0.1:3000/api/health",
     reuseExistingServer: !process.env.CI,
     timeout: 30000,
@@ -25,9 +25,12 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         launchOptions: {
+          executablePath: process.env.CHROMIUM_EXECUTABLE || undefined,
           args: [
             "--use-gl=angle",
             "--use-angle=swiftshader",
+            "--enable-unsafe-swiftshader",
+            "--in-process-gpu",
             "--enable-webgl",
             "--ignore-gpu-blocklist",
           ],

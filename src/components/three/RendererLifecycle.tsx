@@ -45,7 +45,8 @@ export function RendererLifecycle() {
     const previousError = gl.debug.onShaderError;
     gl.debug.onShaderError = (...args) => {
       set("failed");
-      previousError?.(...args);
+      if (previousError) previousError(...args);
+      else console.error("WebGL shader compilation failed", args[0].getProgramInfoLog(args[1]), args[0].getShaderInfoLog(args[2]), args[0].getShaderInfoLog(args[3]));
     };
     canvas.addEventListener("webglcontextlost", lost);
     canvas.addEventListener("webglcontextrestored", restored);
