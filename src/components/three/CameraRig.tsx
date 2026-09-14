@@ -18,6 +18,9 @@ export function CameraRig({ banking = false }: { banking?: boolean } = {}) {
   const safetyOffset = useRef(new THREE.Vector3());
   const liveBounds = useRef<LiveSpatialBoundInput[]>([]);
   const tick = useRef(0);
+  const previousPosition = useRef(new THREE.Vector3());
+  const smoothedVelocity = useRef(new THREE.Vector3());
+  const inertialOffset = useRef(new THREE.Vector3());
 
   useFrame(({ camera, size }, delta) => {
     const state = useExperienceStore.getState();
@@ -42,11 +45,34 @@ export function CameraRig({ banking = false }: { banking?: boolean } = {}) {
     const desiredCorrection = new THREE.Vector3(...safety.correction);
     const safetyBlend = 1 - Math.exp(-Math.max(7, experience.runtime.cameraDamping) * Math.min(0.05, delta));
     safetyOffset.current.lerp(desiredCorrection, safetyBlend);
-    camera.position.set(
+
+    const basePosition = new THREE.Vector3(
       authored[0] + safetyOffset.current.x,
       authored[1] + safetyOffset.current.y,
       authored[2] + safetyOffset.current.z,
     );
+
+    if (!state.reducedMotion && !state.runtimeCamera && !state.cameraPreview) {
+      if (previousPosition.current.lengthSq() === 0) previousPosition.current.copy(basePosition);
+      const velocity = basePosition.clone().sub(previousPosition.current).divideScalar(Math.max(delta, 1 / 120));
+      const velocityBlend = 1 - Math.exp(-5.5 * Math.min(delta, 0.05));
+      smoothedVelocity.current.lerp(velocity, velocityBlend);
+
+      // Small body-like inertia: the camera trails its authored path under acceleration,
+      // then settles cleanly when scroll input stops. Magnitudes stay intentionally low.
+      const desiredInertia = new THREE.Vector3(
+        THREE.MathUtils.clamp(-smoothedVelocity.current.x * 0.007, -0.09, 0.09),
+        THREE.MathUtils.clamp(-smoothedVelocity.current.y * 0.005, -0.06, 0.06),
+        THREE.MathUtils.clamp(-smoothedVelocity.current.z * 0.003, -0.05, 0.05),
+      );
+      const inertiaBlend = 1 - Math.exp(-8 * Math.min(delta, 0.05));
+      inertialOffset.current.lerp(desiredInertia, inertiaBlend);
+    } else {
+      inertialOffset.current.multiplyScalar(Math.exp(-12 * Math.min(delta, 0.05)));
+    }
+
+    camera.position.copy(basePosition).add(inertialOffset.current);
+    previousPosition.current.copy(basePosition);
 
     target.current.set(...current.target);
     camera.lookAt(target.current);
@@ -61,7 +87,11 @@ export function CameraRig({ banking = false }: { banking?: boolean } = {}) {
       const previous = sampleExperience(Math.max(min, progress - sampleDelta), false, experience, aspect).camera.position;
       const next = sampleExperience(Math.min(max, progress + sampleDelta), false, experience, aspect).camera.position;
       const bank = deriveCameraBank(previous, current.position, next, 5);
-      if (bank) camera.rotateZ(THREE.MathUtils.degToRad(bank));
+      if (bank) {
+        const speed = smoothedVelocity.current.length();
+        const speedFactor = THREE.MathUtils.clamp(speed / 8, 0.35, 1);
+        camera.rotateZ(THREE.MathUtils.degToRad(bank * speedFactor));
+      }
     }
 
     if (
