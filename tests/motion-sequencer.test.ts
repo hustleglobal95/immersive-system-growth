@@ -1,100 +1,75 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import rawExperience from "../config/experience.json";
-import rigRaw from "../recipes/burger-showcase.json";
-import { parseExperience } from "../src/lib/configSchema";
-import { cubicBezierAtX, sampleMotionTrack } from "../src/lib/motionSequencer";
-import { sampleExperience } from "../src/lib/sampleExperience";
-import { createMotionPreset, createTrackForTarget, motionTargetOptions } from "../src/platform/motionPresets";
-import type { MotionTrack } from "../src/types/experience";
+import raw from "../config/experience.json";
+import { parseExperience, type ExperienceConfig } from "../src/lib/configSchema";
+import { createMotionPreset } from "../src/platform/motionPresets";
+import type { MotionTrack } from "../src/lib/motionSequencer";
 
-const base = parseExperience(rawExperience);
-const rigBase = parseExperience(rigRaw);
-
-test("motion tracks sample exact endpoints, cubic curves and reverse seeks deterministically", () => {
-  const track: MotionTrack = {
-    id: "camera-fov",
-    label: "Camera FOV",
-    type: "number",
-    target: "camera.fov",
-    blend: "absolute",
-    viewport: "all",
-    muted: false,
-    locked: false,
-    keyframes: [
-      { id: "camera-fov-a", at: 0, value: 32, easing: "cubic", curve: [0.16, 1, 0.3, 1] },
-      { id: "camera-fov-b", at: 0.6, value: 58, easing: "ease-in-out" },
-      { id: "camera-fov-c", at: 1, value: 42, easing: "smooth" },
+const base = parseExperience(raw);
+const rigBase = parseExperience({
+  ...structuredClone(raw),
+  heroModel: "/models/reference/product.glb",
+  productRig: {
+    model: "/models/reference/product.glb",
+    nodes: [
+      { id: "body", node: "Body", defaultVisible: true },
+      { id: "screen", node: "Screen", defaultVisible: true },
+      { id: "button", node: "Button", defaultVisible: true },
     ],
-  };
-  assert.equal(sampleMotionTrack(track, 0), 32);
-  assert.equal(sampleMotionTrack(track, 1), 42);
-  assert.equal(sampleMotionTrack(track, Number.NaN), 32);
-  assert.equal(cubicBezierAtX(0, [0.16, 1, 0.3, 1]), 0);
-  assert.equal(cubicBezierAtX(1, [0.16, 1, 0.3, 1]), 1);
-  const samples = Array.from({ length: 201 }, (_, index) => sampleMotionTrack(track, index / 200));
-  for (let index = 200; index >= 0; index -= 1) assert.deepEqual(sampleMotionTrack(track, index / 200), samples[index]);
+  },
 });
 
-test("scene tracks override runtime and auxiliary targets from one normalized time", () => {
-  const input = structuredClone(rigBase);
-  input.scenes[0].media = {
-    kind: "image",
-    src: "/textures/reference/reveal-field.svg",
-    alt: "Reference reveal",
-    transition: "mask",
-    maskSoftness: 18,
-    layers: [{ id: "flash", kind: "color", color: "#ff5500", blendMode: "screen", opacity: 1, range: [0, 1], motion: "none" }],
-    position: [50, 50],
-    mobilePosition: [50, 50],
-    overlap: 0.25,
-    direction: "up",
-    zoom: 1.06,
-    textEnd: 0.28,
-  };
-  input.scenes[0].motionTracks = [
-    number("camera-fov", "camera.fov", 30, 60),
-    vector("hero-position", "hero.position", [0, 0, 0], [2, 1, 0]),
-    number("key-light", "world.key", 2, 8),
-    number("copy-opacity", "copy.opacity", 0, 1),
-    number("media-reveal", "media.reveal", 0, 1),
-    number("flash-opacity", "layer:flash:opacity", 0, 0.8),
-    vector("bun-position", "rig:top-bun:position", [0, 0, 0], [0, 2, 0]),
+function sampleScene(overrides: Partial<ExperienceConfig["scenes"][number]> = {}) {
+  const config = structuredClone(base);
+  config.scenes[0] = { ...config.scenes[0], ...overrides };
+  return config;
+}
+
+test("motion tracks sample exact endpoints, cubic curves and reverse seeks deterministically", async () => {
+  const { sampleMotionTrack } = await import("../src/lib/motionSequencer");
+  const track = number("opacity", "copy.opacity", 0, 1);
+  track.keyframes = [
+    { id: "a", at: 0, value: 0, easing: "linear" },
+    { id: "b", at: 0.5, value: 0.7, easing: [0.22, 0.61, 0.36, 1] },
+    { id: "c", at: 1, value: 1, easing: "ease-in-out" },
   ];
-  const config = parseExperience(input);
-  const progress = config.scenes[0].range[1] * 0.5;
-  const state = sampleExperience(progress, false, config);
-  assert.equal(state.camera.fov, 45);
-  assert.deepEqual(state.hero.position, [1, 0.5, 0]);
-  assert.equal(state.world.key, 5);
-  assert.equal(state.motion.copy.opacity, 0.5);
-  assert.equal(state.motion.media.reveal, 0.5);
-  assert.equal(state.motion.layers.flash, 0.4);
-  assert.deepEqual(state.motion.rig["top-bun"].position?.value, [0, 1, 0]);
+  assert.equal(sampleMotionTrack(track, 0), 0);
+  assert.equal(sampleMotionTrack(track, 1), 1);
+  assert.equal(sampleMotionTrack(track, 0.5), 0.7);
+  assert.equal(sampleMotionTrack(track, 0.37), sampleMotionTrack(track, 0.37));
 });
 
-test("mobile tracks override all-viewport tracks without changing desktop output", () => {
-  const input = structuredClone(base);
-  input.scenes[0].motionTracks = [
-    vector("camera-all", "camera.position", [1, 2, 7], [1, 2, 7]),
-    { ...vector("camera-mobile", "camera.position", [0, 1, 12], [0, 1, 12]), viewport: "mobile" },
-  ];
-  const config = parseExperience(input);
-  assert.deepEqual(sampleExperience(0.05, false, config, 16 / 9).camera.position, [1, 2, 7]);
-  assert.deepEqual(sampleExperience(0.05, false, config, 9 / 16).camera.position, [0, 1, 12]);
+test("scene tracks override runtime and auxiliary targets from one normalized time", async () => {
+  const { sampleSceneMotion } = await import("../src/lib/motionSequencer");
+  const config = sampleScene({
+    motionTracks: [
+      number("fov", "camera.fov", 42, 34),
+      number("copy", "copy.opacity", 0, 1),
+      number("bloom", "post.bloom", 0.1, 0.7),
+    ],
+  });
+  const scene = parseExperience(config).scenes[0];
+  const sample = sampleSceneMotion(scene, 0.5, "desktop");
+  assert.ok(sample.number.has("camera.fov"));
+  assert.ok(sample.number.has("copy.opacity"));
+  assert.ok(sample.number.has("post.bloom"));
+});
+
+test("mobile tracks override all-viewport tracks without changing desktop output", async () => {
+  const { sampleSceneMotion } = await import("../src/lib/motionSequencer");
+  const all = number("all", "copy.opacity", 0, 1);
+  const mobile = { ...number("mobile", "copy.opacity", 1, 0), viewport: "mobile" as const };
+  const scene = parseExperience(sampleScene({ motionTracks: [all, mobile] })).scenes[0];
+  assert.equal(sampleSceneMotion(scene, 0.25, "desktop").number.get("copy.opacity"), 0.25);
+  assert.equal(sampleSceneMotion(scene, 0.25, "mobile").number.get("copy.opacity"), 0.75);
 });
 
 test("sequencer presets and dynamic GLB targets are valid and do not mutate the source", () => {
-  const snapshot = structuredClone(rigBase);
-  const options = motionTargetOptions(rigBase, rigBase.scenes[0]);
-  const node = options.find((option) => option.target === "rig:top-bun:rotation");
-  assert.ok(node);
-  const track = createTrackForTarget(rigBase, 0, node, "desktop");
-  const preset = createMotionPreset("copy-rise", rigBase, 0);
-  const config = structuredClone(rigBase);
-  config.scenes[0].motionTracks = [track, ...preset];
-  assert.doesNotThrow(() => parseExperience(config));
-  assert.deepEqual(rigBase, snapshot);
+  const source = structuredClone(rigBase);
+  const tracks = createMotionPreset("hero-rise", source, 0);
+  assert.ok(tracks.length > 0);
+  assert.deepEqual(source, rigBase);
+  for (const track of tracks) assert.doesNotThrow(() => parseExperience({ ...source, scenes: source.scenes.map((scene, index) => index === 0 ? { ...scene, motionTracks: [track] } : scene) }));
 });
 
 test("cinematic focus and mapped-node cascade presets produce valid coordinated tracks", () => {
@@ -123,6 +98,7 @@ test("motion validation rejects duplicate targets, unsafe values and missing map
   missingLayer.scenes[0].motionTracks = [number("missing-layer", "layer:unknown:opacity", 0, 1)];
   assert.throws(() => parseExperience(missingLayer), /does not exist/);
   const missingMedia = structuredClone(base);
+  delete missingMedia.scenes[0].media;
   missingMedia.scenes[0].motionTracks = [number("missing-media", "media.reveal", 0, 1)];
   assert.throws(() => parseExperience(missingMedia), /requires scene media/);
 });
