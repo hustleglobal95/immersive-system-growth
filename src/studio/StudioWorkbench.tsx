@@ -22,6 +22,7 @@ import { TemplateGallery } from "@/src/studio/TemplateGallery";
 import { RecipeEditor } from "@/src/studio/RecipeEditor";
 import { SequencerEditor } from "@/src/studio/SequencerEditor";
 import { InteractionGraphEditor } from "@/src/studio/InteractionGraphEditor";
+import { StudioWorkspace } from "@/src/studio/StudioWorkspace";
 import type { AssetManifest } from "@/src/types/assets";
 import { IntegrationsPanel, ProjectPanel, PublishPanel, TelemetryPanel } from "@/src/studio/ProjectPanels";
 import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
@@ -34,12 +35,12 @@ const initialProject = parseStudioProject(rawProject);
 const initialAssetManifest = rawAssetManifest as AssetManifest;
 const initialInteractionGraph = parseInteractionGraph(rawInteractionGraph);
 const initialCreativeDirection = parseCreativeDirection(rawCreativeDirection);
-const tabs = ["project", "creative", "visuals", "recipe", "templates", "preview", "director", "timeline", "sequence", "interactions", "masks", "layers", "assets", "bank", "model", "integrations", "publish", "telemetry"] as const;
+const tabs = ["workspace", "project", "creative", "visuals", "recipe", "templates", "preview", "director", "timeline", "sequence", "interactions", "masks", "layers", "assets", "bank", "model", "integrations", "publish", "telemetry"] as const;
 type Tab = (typeof tabs)[number];
 
 export function StudioWorkbench() {
   const draft = useStudioDraft(initialExperience, initialProject, initialAssetManifest, initialInteractionGraph);
-  const [tab, setTab] = useState<Tab>("project");
+  const [tab, setTab] = useState<Tab>("workspace");
   const [creative, setCreative] = useState(initialCreativeDirection);
   const [activeScene, setActiveScene] = useState(0);
   const [notice, setNotice] = useState("");
@@ -58,12 +59,14 @@ export function StudioWorkbench() {
     }
   };
 
+  const active = Math.min(activeScene, draft.experience.scenes.length - 1);
+
   return (
     <main className="studio-shell">
       <header className="studio-header">
         <div>
           <Link href="/" className="studio-brand">FORGE</Link>
-          <span>IMMERSIVE PRODUCTION STUDIO</span>
+          <span>CINEMATIC PRODUCTION STUDIO</span>
         </div>
         <div className="studio-header__status" data-valid={!draft.validation.length}>
           <i />
@@ -72,11 +75,7 @@ export function StudioWorkbench() {
         <div className="studio-actions">
           <input ref={importRef} hidden type="file" accept="application/json,.json" onChange={(event) => void importExperience(event.target.files?.[0])} />
           <button type="button" onClick={() => importRef.current?.click()}>Import</button>
-          <button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Export experience</button>
-          <button type="button" onClick={() => downloadJson("interaction-graph.json", draft.interactionGraph)}>Export interactions</button>
-          <button type="button" onClick={() => downloadJson("studio-project.json", draft.project)}>Export project</button>
-          <button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Export assets</button>
-          <button type="button" onClick={() => downloadJson("creative-direction.json", creative)}>Export direction</button>
+          <button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Export</button>
         </div>
       </header>
 
@@ -88,13 +87,13 @@ export function StudioWorkbench() {
         ))}
       </nav>
 
-      <div className="studio-title">
+      {tab !== "workspace" && <div className="studio-title">
         <div><span>{draft.project.id}</span><h1>{titleFor(tab)}</h1></div>
         <div>
           <button type="button" onClick={draft.reset}>Reset draft</button>
           <small>Changes save locally until exported.</small>
         </div>
-      </div>
+      </div>}
 
       {draft.validation.length > 0 && (
         <div className="studio-validation" role="alert">
@@ -104,19 +103,20 @@ export function StudioWorkbench() {
       )}
       {notice && <p className="studio-message" role="status">{notice}</p>}
 
+      {tab === "workspace" && <StudioWorkspace experience={draft.experience} setExperience={draft.setExperience} active={active} setActive={setActiveScene} undo={draft.undoExperience} redo={draft.redoExperience} canUndo={draft.canUndoExperience} canRedo={draft.canRedoExperience} />}
       {tab === "project" && <ProjectPanel {...draft} />}
       {tab === "creative" && <CreativeDirectionPanel direction={creative} setDirection={setCreative} />}
       {tab === "visuals" && <VisualSystemsPanel />}
-      {tab === "recipe" && <RecipeEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
+      {tab === "recipe" && <RecipeEditor experience={draft.experience} setExperience={draft.setExperience} active={active} setActive={setActiveScene} />}
       {tab === "templates" && <TemplateGallery experience={draft.experience} setExperience={draft.setExperience} />}
-      {tab === "preview" && <StudioLivePreview experience={draft.experience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
-      {tab === "director" && <SceneDirector experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
-      {tab === "timeline" && <TimelineEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
-      {tab === "sequence" && <SequencerEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} beginGroup={draft.beginExperienceGroup} endGroup={draft.endExperienceGroup} undo={draft.undoExperience} redo={draft.redoExperience} canUndo={draft.canUndoExperience} canRedo={draft.canRedoExperience} />}
+      {tab === "preview" && <StudioLivePreview experience={draft.experience} active={active} setActive={setActiveScene} />}
+      {tab === "director" && <SceneDirector experience={draft.experience} setExperience={draft.setExperience} active={active} setActive={setActiveScene} />}
+      {tab === "timeline" && <TimelineEditor experience={draft.experience} setExperience={draft.setExperience} active={active} setActive={setActiveScene} />}
+      {tab === "sequence" && <SequencerEditor experience={draft.experience} setExperience={draft.setExperience} active={active} setActive={setActiveScene} beginGroup={draft.beginExperienceGroup} endGroup={draft.endExperienceGroup} undo={draft.undoExperience} redo={draft.redoExperience} canUndo={draft.canUndoExperience} canRedo={draft.canRedoExperience} />}
       {tab === "interactions" && <InteractionGraphEditor graph={draft.interactionGraph} setGraph={draft.setInteractionGraph} />}
-      {tab === "masks" && <MaskLab experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
-      {tab === "layers" && <LayerEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
-      {tab === "assets" && <AssetManager setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} active={Math.min(activeScene, draft.experience.scenes.length - 1)} />}
+      {tab === "masks" && <MaskLab experience={draft.experience} setExperience={draft.setExperience} active={active} setActive={setActiveScene} />}
+      {tab === "layers" && <LayerEditor experience={draft.experience} setExperience={draft.setExperience} active={active} setActive={setActiveScene} />}
+      {tab === "assets" && <AssetManager setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} active={active} />}
       {tab === "bank" && <AssetBankPanel experience={draft.experience} setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} interactionGraph={draft.interactionGraph} undo={draft.undoExperience} canUndo={draft.canUndoExperience} />}
       {tab === "model" && <GlbInspectorPanel experience={draft.experience} setExperience={draft.setExperience} />}
       {tab === "integrations" && <IntegrationsPanel project={draft.project} setProject={draft.setProject} />}
@@ -124,8 +124,8 @@ export function StudioWorkbench() {
       {tab === "telemetry" && <TelemetryPanel project={draft.project} setProject={draft.setProject} />}
 
       <footer className="studio-footer">
-        <span>Forge Studio v7.0</span>
-        <span>Live runtime / motion sequencer / interaction graph / review PR</span>
+        <span>Forge Studio v8.0</span>
+        <span>Workspace / live runtime / camera / environment / sequencer / release</span>
       </footer>
     </main>
   );
@@ -133,6 +133,7 @@ export function StudioWorkbench() {
 
 function titleFor(tab: Tab) {
   return {
+    workspace: "Cinematic workspace",
     project: "Project control",
     creative: "Creative direction",
     visuals: "Visual systems",
