@@ -1,5 +1,6 @@
 import { chromium, expect } from '@playwright/test';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { writeFileSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import { parseExperience } from '../src/lib/configSchema.ts';
 const output = 'test-results/studio-editor';
@@ -8,10 +9,16 @@ const server = spawn(process.execPath, ['node_modules/next/dist/bin/next','start
 let log = ''; server.stdout.on('data', d => log += d); server.stderr.on('data', d => log += d);
 let browser, page;
 const errors = [], checks = [], captures = [], captureWarnings = [];
-const passed = name => { checks.push(name); console.log(`PASS: ${name}`); };
+function report(phase, error) {
+  writeFileSync(`${output}/report.json`, JSON.stringify({ passed: phase === 'passed', phase, error, sourceRevision: process.env.GITHUB_SHA ?? null, renderQuality: 'low', renderer: 'SwiftShader', checks, browserErrors: errors, captures, captureWarnings }, null, 2));
+}
+const passed = name => { checks.push(name); console.log(`PASS: ${name}`); report('running'); };
+async function bounded(promise, ms, label) {
+  let timer;
+  try { return await Promise.race([promise, new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms); })]); }
+  finally { clearTimeout(timer); }
+}
 async function assertViewport() {
-  // Wait for both the CSS width transition and R3F's ResizeObserver to settle.
-  // A changed data attribute alone does not prove the actual 3D camera aspect changed.
   await page.waitForFunction(() => {
     const viewport = document.querySelector('.studio-preview__viewport');
     const frame = viewport?.querySelector('.studio-preview__canvas');
@@ -33,24 +40,25 @@ async function capture(name) {
   await assertViewport();
   let session;
   try {
-    await page.evaluate(() => window.scrollTo(0,0));
+    await bounded(page.evaluate(() => window.scrollTo(0,0)), 10000, 'Position screenshot');
     session = await page.context().newCDPSession(page);
-    const shot = await session.send('Page.captureScreenshot', { format: 'png', fromSurface: true, captureBeyondViewport: false });
+    const shot = await bounded(session.send('Page.captureScreenshot', { format: 'png', fromSurface: true, captureBeyondViewport: false }), 20000, name);
     await writeFile(`${output}/${name}.png`, Buffer.from(shot.data,'base64'));
     captures.push(`${name}.png`);
   } catch (error) { captureWarnings.push(`${name}: ${String(error)}`); }
-  finally { await session?.detach().catch(()=>{}); }
+  finally { if (session) await bounded(session.detach(), 3000, 'Detach screenshot session').catch(()=>{}); report('running'); }
 }
+report('running');
 try {
   let ready = false;
-  for (let i=0;i<60;i++) { try { const response = await fetch('http://127.0.0.1:3000/api/health'); if (response.ok) { ready = true; break; } } catch {} await new Promise(r => setTimeout(r,500)); }
+  for (let i=0;i<60;i++) { try { const response = await fetch('http://127.0.0.1:3000/api/health', { signal: AbortSignal.timeout(2000) }); if (response.ok) { ready = true; break; } } catch {} await new Promise(r => setTimeout(r,500)); }
   if (!ready) throw new Error('Production server failed to start.');
   browser = await chromium.launch({ headless: true, args: ['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-background-timer-throttling','--disable-renderer-backgrounding'] });
   page = await browser.newPage({ viewport: { width: 1440, height: 1100 }, deviceScaleFactor: 1 });
   page.setDefaultTimeout(60000);
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('http://127.0.0.1:3000/studio', { waitUntil: 'domcontentloaded' });
-  // Test the real low-quality renderer on a software GPU, not a mocked canvas.
+  // Exercise the actual low-quality renderer on a software GPU. This is not hardware FPS certification.
   await page.getByLabel('Preview quality', { exact: true }).selectOption('low');
   await page.getByLabel('Studio project', { exact: true }).selectOption('HELIOT');
   await expect(page.locator('.studio-preview')).toHaveAttribute('data-runtime','heliot');
@@ -106,7 +114,7 @@ try {
   await page.getByRole('button', { name: 'Add model URL', exact: true }).click();
   const objectX = page.getByLabel('Position X', { exact: true });
   await expect(objectX).toBeVisible(); await objectX.fill('3'); await objectX.press('Tab'); await expect(objectX).toHaveValue('3');
-  passed('model placement and object transform');
+  passed('model placement and numeric object transform');
   await page.getByRole('button', { name: 'Keyframe sequencer', exact: true }).click();
   await page.getByLabel('Preview quality', { exact: true }).selectOption('low');
   await page.getByLabel('Motion target', { exact: true }).selectOption('camera.position');
@@ -136,9 +144,17 @@ try {
   await page.getByRole('combobox', { name: /^Edit camera/ }).selectOption('mobile');
   await capture('studio-mobile-framing');
   if (errors.length) throw new Error(`Browser errors: ${errors.join('; ')}`);
-  await writeFile(`${output}/report.json`, JSON.stringify({ passed: true, renderQuality: 'low', renderer: 'SwiftShader', checks, browserErrors: errors, captures, captureWarnings },null,2));
+  if (captures.length !== 3) throw new Error(`Only ${captures.length}/3 required screenshots captured: ${captureWarnings.join('; ')}`);
+  report('passed');
 } catch (error) {
-  await writeFile(`${output}/report.json`, JSON.stringify({ passed: false, error: String(error), checks, browserErrors: errors, captures, captureWarnings },null,2));
-  if (page) { await page.screenshot({ path: `${output}/failure.png`, timeout: 10000 }).catch(()=>{}); await writeFile(`${output}/page.html`,await page.content()).catch(()=>{}); }
+  report('failed', String(error));
+  if (page) {
+    await page.screenshot({ path: `${output}/failure.png`, timeout: 10000 }).catch(()=>{});
+    await bounded(page.content(), 10000, 'Failure DOM capture').then(html => writeFile(`${output}/page.html`, html)).catch(()=>{});
+  }
   throw error;
-} finally { await writeFile(`${output}/server.log`,log); await browser?.close(); server.kill('SIGTERM'); }
+} finally {
+  await writeFile(`${output}/server.log`,log);
+  if (browser) await bounded(browser.close(), 10000, 'Browser shutdown').catch(()=>{});
+  server.kill('SIGTERM');
+}

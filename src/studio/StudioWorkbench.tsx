@@ -87,11 +87,17 @@ export function StudioWorkbench() {
         ))}
       </nav>
 
+      {draft.storageNotice && <div className="studio-warning" role="alert" data-testid="studio-storage-warning">
+        <strong>Draft storage</strong>
+        <p>{draft.storageNotice}</p>
+        {draft.recoveryLocked && <button type="button" onClick={draft.exportRecovery}>Export recovery copy</button>}
+      </div>}
+
       {tab !== "workspace" && <div className="studio-title">
         <div><span>{draft.project.id}</span><h1>{titleFor(tab)}</h1></div>
         <div>
           <button type="button" onClick={draft.reset}>Reset draft</button>
-          <small>Changes save locally until exported.</small>
+          <small>{draft.storageNotice ? "Export a backup before leaving." : "Changes save locally until exported."}</small>
         </div>
       </div>}
 
@@ -133,24 +139,10 @@ export function StudioWorkbench() {
 
 function titleFor(tab: Tab) {
   return {
-    workspace: "Cinematic workspace",
-    project: "Project control",
-    creative: "Creative direction",
-    visuals: "Visual systems",
-    recipe: "Recipe editor",
-    templates: "Industry template gallery",
-    preview: "Live production preview",
-    director: "Camera and art direction",
-    timeline: "Visual timeline",
-    sequence: "Motion sequencer",
-    interactions: "Interaction graph",
-    masks: "Mask reveal laboratory",
-    layers: "Transition layer composer",
-    assets: "Asset intake and budgets",
-    bank: "Asset bank",
-    model: "Model inspection",
-    integrations: "Content connections",
-    publish: "Release pipeline",
-    telemetry: "Device performance",
+    workspace: "Cinematic workspace", project: "Project control", creative: "Creative direction", visuals: "Visual systems",
+    recipe: "Recipe editor", templates: "Industry template gallery", preview: "Live production preview",
+    director: "Camera and art direction", timeline: "Visual timeline", sequence: "Motion sequencer", interactions: "Interaction graph",
+    masks: "Mask reveal laboratory", layers: "Transition layer composer", assets: "Asset intake and budgets", bank: "Asset bank",
+    model: "Model inspection", integrations: "Content connections", publish: "Release pipeline", telemetry: "Device performance",
   }[tab];
 }
