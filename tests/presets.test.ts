@@ -16,11 +16,13 @@ test("the preset pack is versioned and has unique reusable definitions", () => {
 
 test("motion presets are applied with namespaced track IDs without mutating the source", () => {
   const base = parseExperience(rawExperience);
+  const snapshot = structuredClone(base);
+  const initialCount = base.scenes[0].motionTracks.length;
   const next = applyForgePreset(base, 0, "cinematic-focus");
   assert.notDeepEqual(next, base);
-  assert.equal(base.scenes[0].motionTracks.length, 0);
-  assert.ok(next.scenes[0].motionTracks.length >= 3);
-  assert.ok(next.scenes[0].motionTracks.every((track) => track.id.startsWith("cinematic-focus-")));
+  assert.deepEqual(base, snapshot);
+  assert.ok(next.scenes[0].motionTracks.length >= initialCount + 3);
+  assert.ok(next.scenes[0].motionTracks.slice(initialCount).every((track) => track.id.startsWith("cinematic-focus-")));
 });
 
 test("transition presets update media settings and preserve reversibility data", () => {
@@ -42,5 +44,7 @@ test("transition presets update media settings and preserve reversibility data",
 
 test("media-only presets fail clearly when no scene media exists", () => {
   const base = parseExperience(rawExperience);
-  assert.throws(() => applyForgePreset(base, 0, "transition-film-burn"), /requires scene media/);
+  const withoutMedia = structuredClone(base);
+  delete withoutMedia.scenes[0].media;
+  assert.throws(() => applyForgePreset(withoutMedia, 0, "transition-film-burn"), /requires scene media/);
 });
