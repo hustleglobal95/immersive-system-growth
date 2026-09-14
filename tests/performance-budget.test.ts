@@ -26,13 +26,13 @@ test("a device sample passes when all budgets and target FPS are met", () => {
 
 test("a sample fails with the exact metrics that exceed the release budget", () => {
   const evaluation = evaluatePerformanceSample(project, {
-    initialCriticalMb: 9,
-    scenePreloadMb: 12,
-    activeMb: 42,
-    totalMb: 180,
-    drawCalls: 260,
-    triangles: 400_000,
-    fps: 54,
+    initialCriticalMb: project.performance.initialCriticalMb + 1,
+    scenePreloadMb: Math.min(12, project.performance.scenePreloadMb),
+    activeMb: Math.min(42, project.performance.maxActiveMb),
+    totalMb: Math.min(180, project.performance.maxTotalMb),
+    drawCalls: project.performance.maxDrawCalls + 1,
+    triangles: Math.min(400_000, project.performance.maxTriangles),
+    fps: project.performance.targetFps - 6,
   });
   assert.equal(evaluation.status, "fail");
   assert.deepEqual(
