@@ -130,11 +130,14 @@ export const cinematicSceneSchema = z.object({
   diagram: diagramSchema.optional(),
 }).strict();
 
+const defaultSpring = { mass: 1, stiffness: 180, damping: 24, precision: 0.001, maxStep: 1 / 30 };
+const defaultPointer = { trailLength: 24, smoothing: 0.18, velocityClamp: 4, dwellMs: 350 };
+
 export const cinematicSystemsSchema = z.object({
   version: z.literal(1),
   defaults: z.object({
-    spring: springSchema.default({}),
-    pointer: pointerSchema.default({}),
+    spring: springSchema.default(defaultSpring),
+    pointer: pointerSchema.default(defaultPointer),
     reducedMotion: z.enum(["static", "minimal"]).default("minimal"),
   }).strict(),
   scenes: z.array(cinematicSceneSchema).max(30).default([]),
