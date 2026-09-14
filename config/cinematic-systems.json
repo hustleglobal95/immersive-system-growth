@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "defaults": {
+    "spring": {"mass": 1, "stiffness": 180, "damping": 24, "precision": 0.001, "maxStep": 0.0333333333},
+    "pointer": {"trailLength": 24, "smoothing": 0.18, "velocityClamp": 4, "dwellMs": 350},
+    "reducedMotion": "minimal"
+  },
+  "scenes": [
+    {
+      "id": "approach",
+      "stack": {"enabled": true, "scaleTo": 0.92, "darkenTo": 0.34, "depth": 72, "overlap": 0.22, "pin": true},
+      "reveal": {"effect": "liquid", "direction": "right", "softness": 0.18, "intensity": 1, "pointerInfluence": 0.7, "trailInfluence": 0.8, "edgeColor": "#d7c2a3", "edgeWidth": 0.01, "seed": 71, "range": [0, 1]},
+      "procedural": [{"id": "coastal-contours", "kind": "contours", "opacity": 0.22, "color": "#d7c2a3", "range": [0, 1], "blendMode": "screen", "interactive": true, "seed": 31, "count": 20, "amplitude": 0.4, "frequency": 2.3}],
+      "occlusion": []
+    },
+    {
+      "id": "parti",
+      "reveal": {"effect": "wireframe", "direction": "right", "softness": 0.08, "intensity": 1, "pointerInfluence": 0.2, "trailInfluence": 0.2, "edgeColor": "#d7c2a3", "edgeWidth": 0.012, "seed": 88, "range": [0.05, 0.9]},
+      "procedural": [{"id": "parti-halftone", "kind": "halftone", "opacity": 0.16, "color": "#ffffff", "range": [0.08, 0.92], "blendMode": "screen", "interactive": true, "seed": 102, "count": 8004, "radius": 1.1, "response": 1.15}],
+      "occlusion": []
+    },
+    {
+      "id": "threshold",
+      "stack": {"enabled": true, "scaleTo": 0.9, "darkenTo": 0.48, "depth": 96, "overlap": 0.3, "pin": true},
+      "reveal": {"effect": "directional", "direction": "right", "softness": 0.12, "intensity": 1, "pointerInfluence": 0, "trailInfluence": 0, "edgeColor": "#f5e8d4", "edgeWidth": 0.008, "seed": 47, "range": [0, 1]},
+      "procedural": [],
+      "occlusion": [{"id": "threshold-shadow", "kind": "shadow", "range": [0.62, 0.96], "axis": "x", "from": 110, "to": -110, "blur": 20, "opacity": 0.55, "depth": 1}]
+    },
+    {
+      "id": "living",
+      "spring": {"mass": 1.1, "stiffness": 150, "damping": 25, "precision": 0.001, "maxStep": 0.0333333333},
+      "procedural": [],
+      "occlusion": [{"id": "living-glass", "kind": "gradient", "range": [0.62, 0.92], "axis": "x", "from": 90, "to": -120, "blur": 12, "opacity": 0.28, "depth": 1.4}]
+    },
+    {
+      "id": "material",
+      "reveal": {"effect": "radial", "direction": "right", "softness": 0.2, "intensity": 0.9, "pointerInfluence": 1.1, "trailInfluence": 0.3, "edgeColor": "#eadbc5", "edgeWidth": 0.007, "seed": 204, "range": [0.05, 0.96]},
+      "procedural": [{"id": "material-grid", "kind": "grid", "opacity": 0.16, "color": "#eadbc5", "range": [0.05, 0.95], "blendMode": "screen", "interactive": true, "seed": 9, "columns": 16, "rows": 10, "distortion": 0.18}],
+      "occlusion": []
+    },
+    {
+      "id": "wellness",
+      "reveal": {"effect": "burn", "direction": "up", "softness": 0.1, "intensity": 1.05, "pointerInfluence": 0.1, "trailInfluence": 0.15, "edgeColor": "#d7c2a3", "edgeWidth": 0.015, "seed": 412, "range": [0.04, 0.94]},
+      "procedural": [],
+      "occlusion": [{"id": "wellness-blur", "kind": "blur", "range": [0.58, 0.9], "axis": "y", "from": 100, "to": -100, "blur": 32, "opacity": 0.45, "depth": 2}]
+    },
+    {
+      "id": "studio",
+      "procedural": [{"id": "studio-contours", "kind": "contours", "opacity": 0.26, "color": "#ffffff", "range": [0.05, 0.95], "blendMode": "screen", "interactive": false, "seed": 44, "count": 26, "amplitude": 0.32, "frequency": 2.8}],
+      "occlusion": [],
+      "diagram": {
+        "kind": "floor-plan",
+        "points": [{"id": "court", "x": 0.2, "y": 0.55, "label": "COURT"}, {"id": "living-axis", "x": 0.43, "y": 0.46, "label": "LIVING"}, {"id": "terrace-axis", "x": 0.67, "y": 0.42, "label": "TERRACE"}, {"id": "horizon-axis", "x": 0.87, "y": 0.37, "label": "SEA"}],
+        "edges": [{"from": "court", "to": "living-axis"}, {"from": "living-axis", "to": "terrace-axis"}, {"from": "terrace-axis", "to": "horizon-axis"}],
+        "stroke": "#ffffff", "accent": "#d7c2a3", "lineWidth": 1.2, "drawRange": [0.1, 0.88], "labels": true, "interactive": false
+      }
+    },
+    {
+      "id": "horizon",
+      "stack": {"enabled": true, "scaleTo": 0.94, "darkenTo": 0.2, "depth": 44, "overlap": 0.18, "pin": true},
+      "procedural": [{"id": "horizon-trace", "kind": "line-trace", "opacity": 0.46, "color": "#d7c2a3", "range": [0.08, 0.9], "blendMode": "screen", "interactive": false, "seed": 58, "points": [[0.04,0.58],[0.18,0.52],[0.32,0.54],[0.47,0.47],[0.61,0.49],[0.76,0.42],[0.95,0.4]], "duration": 6}],
+      "occlusion": []
+    },
+    {
+      "id": "inquiry",
+      "stack": {"enabled": true, "scaleTo": 0.9, "darkenTo": 0.55, "depth": 100, "overlap": 0.28, "pin": true},
+      "reveal": {"effect": "contour", "direction": "up", "softness": 0.1, "intensity": 0.8, "pointerInfluence": 0.15, "trailInfluence": 0.15, "edgeColor": "#d7c2a3", "edgeWidth": 0.01, "seed": 775, "range": [0.05, 0.9]},
+      "procedural": [],
+      "occlusion": []
+    }
+  ]
+}
