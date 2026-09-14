@@ -17,6 +17,7 @@ import { useExperienceConfig } from '@/src/components/runtime/ExperienceConfigCo
 import { useExperienceStore } from '@/src/store/experienceStore';
 import { apertureRadius, useLightLab } from './lightLab';
 import { ObservatoryWorld } from './ObservatoryWorld';
+import { CinematicRealism } from './CinematicRealism';
 
 function StudioEnvironment() {
   const { gl } = useThree();
@@ -154,7 +155,7 @@ export function HeliotStage() {
     <CinematicFrame>
       <WorldAtmosphere /><SceneLighting /><CameraRig banking />
       <FrameDemand />
-      <Suspense fallback={null}><ObservatoryWorld /><Instrument /></Suspense>
+      <Suspense fallback={null}><ObservatoryWorld /><CinematicRealism /><Instrument /></Suspense>
       <OpticalField />
     </CinematicFrame>
   </Canvas>;
