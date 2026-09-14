@@ -1,5 +1,5 @@
 "use client";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, type ReactNode } from "react";
 import { Canvas } from "@react-three/fiber";
 import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { useExperienceStore } from "@/src/store/experienceStore";
@@ -22,12 +22,10 @@ import { MaskedMediaLayer } from "./MaskedMediaLayer";
 import { NocterraEnvironment } from "./NocterraEnvironment";
 import { AtelierMarisEnvironment } from "./AtelierMarisEnvironment";
 import { useStudioEditor } from "@/src/components/runtime/StudioEditorContext";
-function CanvasFallback() {
-  return <span>The story remains available without a 3D view.</span>;
-}
+function CanvasFallback() { return <span>The story remains available without a 3D view.</span>; }
 const LabGuides = lazy(() => import("./LabGuides").then((m) => ({ default: m.LabGuides })));
 const StudioTransformGizmo = lazy(() => import("./StudioTransformGizmo").then((m) => ({ default: m.StudioTransformGizmo })));
-export function SceneCanvas() {
+export function SceneCanvas({ children }: { children?: ReactNode } = {}) {
   const experience = useExperienceConfig();
   const studioEditor = useStudioEditor();
   const guides = useExperienceStore((s) => s.guides);
@@ -36,45 +34,18 @@ export function SceneCanvas() {
   const nocterra = experience.meta.name.startsWith("NOCTERRA");
   const atelierMaris = experience.meta.name.startsWith("ATELIER MARIS");
   const cinematicProject = nocterra || atelierMaris;
-  return (
-    <div className="scene-canvas" aria-hidden="true">
-      <Canvas
-        camera={{ position: camera.position, fov: camera.fov, near: 0.05, far: 120 }}
-        dpr={1}
-        gl={{ antialias: cinematicProject, alpha: false, powerPreference: "high-performance" }}
-        shadows={quality === "high"}
-        fallback={<CanvasFallback />}
-      >
-        <RendererLifecycle />
-        <RenderStatsProbe />
-        <AdaptiveQuality />
-        <CinematicFrame>
-          <WorldAtmosphere />
-          <SceneLighting />
-          <CameraRig />
-          <LabOrbitControls />
-          {guides && <Suspense fallback={null}><LabGuides /></Suspense>}
-          {atelierMaris ? (
-            <AtelierMarisEnvironment />
-          ) : nocterra ? (
-            <NocterraEnvironment />
-          ) : experience.stage === "demo" ? (
-            <DemoStage />
-          ) : (
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.25, 0]} receiveShadow>
-              <planeGeometry args={[80, 80]} />
-              <meshStandardMaterial color="#171717" roughness={0.9} />
-            </mesh>
-          )}
-          <AssetBoundary id="hero" fallback={experience.heroVisible ? <HeroFallback /> : null}><PersistentHero /></AssetBoundary>
-          <SceneAssets />
-          {studioEditor && <Suspense fallback={null}><StudioTransformGizmo /></Suspense>}
-          <Hotspots />
-          <ParticleField />
-          <MaskedMediaLayer />
-          <PostFX />
-        </CinematicFrame>
-      </Canvas>
-    </div>
-  );
+  return <div className="scene-canvas" aria-hidden="true">
+    <Canvas camera={{ position: camera.position, fov: camera.fov, near: 0.05, far: 120 }} dpr={1} gl={{ antialias: cinematicProject, alpha: false, powerPreference: "high-performance" }} shadows={quality === "high"} fallback={<CanvasFallback />}>
+      <RendererLifecycle /><RenderStatsProbe /><AdaptiveQuality />
+      <CinematicFrame>
+        <WorldAtmosphere /><SceneLighting /><CameraRig /><LabOrbitControls />
+        {guides && <Suspense fallback={null}><LabGuides /></Suspense>}
+        {atelierMaris ? <AtelierMarisEnvironment /> : nocterra ? <NocterraEnvironment /> : experience.stage === "demo" ? <DemoStage /> : <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.25, 0]} receiveShadow><planeGeometry args={[80, 80]} /><meshStandardMaterial color="#171717" roughness={0.9} /></mesh>}
+        <group userData={{ studioTarget: 'hero' }}><AssetBoundary id="hero" fallback={experience.heroVisible ? <HeroFallback /> : null}><PersistentHero /></AssetBoundary></group>
+        <SceneAssets />{children}
+        {studioEditor && <Suspense fallback={null}><StudioTransformGizmo /></Suspense>}
+        <Hotspots /><ParticleField /><MaskedMediaLayer /><PostFX />
+      </CinematicFrame>
+    </Canvas>
+  </div>;
 }

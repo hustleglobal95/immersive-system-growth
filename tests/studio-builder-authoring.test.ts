@@ -1,0 +1,26 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { addModel, cameraPoints, changeCameraPoint, clamp, insertWaypoint, lightPresets, moveBoundary, removeWaypoint, sceneAt } from '../src/studio/workspaceOperations';
+import type { CameraDefinition, ExperienceConfig } from '../src/types/experience';
+const camera = (): CameraDefinition => ({ path: 'dolly', from: { position: [0,2,8], target: [0,0,0], fov: 45 }, to: { position: [0,0,-8], target: [0,0,-12], fov: 55 } });
+// Minimal operation fixture; integration/schema validation is exercised in the browser export test.
+const fixture = () => ({ scenes: [{ id: 'first', range: [0,.5], camera: camera() }, { id: 'second', range: [.5,1], camera: camera() }], assets: [] }) as unknown as ExperienceConfig;
+test('seeking preserves exact chapter boundaries', () => { const e=fixture(); assert.equal(sceneAt(e,.499),0); assert.equal(sceneAt(e,.5),1); assert.equal(sceneAt(e,1),1); });
+test('progress clamps invalid input', () => { assert.equal(clamp(NaN,0,1),0); assert.equal(sceneAt(fixture(),-1),0); assert.equal(sceneAt(fixture(),2),1); });
+test('camera endpoints always remain present', () => assert.equal(cameraPoints(camera()).length,2));
+test('position edit is immutable and preserves target', () => { const c=camera(); const n=changeCameraPoint(c,0,[1,2,3]); assert.deepEqual(c.from.position,[0,2,8]); assert.deepEqual(n.from.position,[1,2,3]); assert.deepEqual(n.from.target,c.from.target); });
+test('target edits do not alter position path', () => { const c=camera(); const n=changeCameraPoint(c,1,[4,5,6],true); assert.deepEqual(n.to.target,[4,5,6]); assert.deepEqual(n.to.position,c.to.position); });
+test('invalid point indices and nonfinite values are ignored', () => { const c=camera(); assert.equal(changeCameraPoint(c,-1,[1,2,3]),c); assert.equal(changeCameraPoint(c,9,[1,2,3]),c); assert.equal(changeCameraPoint(c,0,[NaN,0,0]),c); });
+test('insert waypoint between endpoints', () => { const c=camera(), n=insertWaypoint(c,0); assert.deepEqual(n.waypoints,[[0,1,0]]); assert.equal(c.waypoints,undefined); });
+test('insert after selected middle point', () => { const c=insertWaypoint(camera(),0), n=insertWaypoint(c,1); assert.deepEqual(n.waypoints,[[0,1,0],[0,.5,-4]]); });
+test('position and target waypoint arrays are independent', () => { const c=insertWaypoint(camera(),0,true); assert.equal(c.waypoints,undefined); assert.equal(c.targetWaypoints?.length,1); });
+test('waypoint capacity matches schema 32 maximum', () => { let c=camera(); for(let i=0;i<40;i++) c=insertWaypoint(c,0); assert.equal(c.waypoints?.length,32); assert.equal(insertWaypoint(c,0),c); });
+test('deleting endpoints is disallowed', () => { const c=insertWaypoint(camera(),0); assert.equal(removeWaypoint(c,0),c); assert.equal(removeWaypoint(c,2),c); });
+test('deleting middle point retains from/to', () => { const c=insertWaypoint(camera(),0), n=removeWaypoint(c,1); assert.deepEqual(n.waypoints,[]); assert.deepEqual(n.to,c.to); });
+test('moving a boundary leaves no overlap or gap', () => { const e=fixture(),n=moveBoundary(e,0,.7); assert.deepEqual(n.scenes[0].range,[0,.7]); assert.deepEqual(n.scenes[1].range,[.7,1]); assert.deepEqual(e.scenes[0].range,[0,.5]); });
+test('boundary clamps to minimum scene span', () => { const n=moveBoundary(fixture(),0,99); assert.equal(n.scenes[0].range[1],.995); assert.equal(moveBoundary(fixture(),0,-1).scenes[0].range[1],.005); });
+test('last boundary and nonfinite values do not mutate', () => { const e=fixture(); assert.equal(moveBoundary(e,1,.8),e); assert.equal(moveBoundary(e,0,NaN),e); });
+test('model ids are unique and scene-scoped', () => { const a=addModel(fixture(),0,'/models/car.glb',[0,0,0]),b=addModel(a,1,'/models/car.glb',[1,2,3]); assert.equal(b.assets[1].id,'car-2'); assert.deepEqual(b.assets[1].scenes,['second']); assert.equal(a.assets.length,1); });
+test('GLB URL validation rejects local and unsafe schemes', () => { for(const url of ['file:///tmp/model.glb','blob:https://test/a','javascript:a.glb','http://a.test/car.glb','//a.test/car.glb','/models/a.gltf','/models/a b.glb']) assert.throws(()=>addModel(fixture(),0,url,[0,0,0])); });
+test('HTTPS GLB URLs may have signed query parameters', () => assert.equal(addModel(fixture(),0,'https://assets.example/model.glb?signature=abc',[0,0,0]).assets.length,1));
+test('lighting presets preserve camera and geometry by construction', () => { for(const p of Object.values(lightPresets)) { assert.equal('camera' in p,false); assert.equal('assets' in p,false); assert.ok(p.exposure>0); } });
