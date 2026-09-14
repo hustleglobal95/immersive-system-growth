@@ -33,7 +33,9 @@ export function StudioLivePreview({ experience, active, setActive, progress: con
   useEffect(() => {
     const store = useExperienceStore.getState();
     const saved = { ceiling: store.deviceCeiling, quality: store.qualityMode, systemMotion: store.systemReducedMotion, override: store.motionOverride, debug: store.debug };
-    store.resetRuntimeOverrides(); store.setProfile('high', 'high'); store.setReducedMotion(false); store.setDebug(false); store.setFreeCamera(false); store.setWebglStatus('loading');
+    // Enable the existing camera/renderer probes here, without mounting the public debug HUD.
+    // Restore the previous diagnostics setting when leaving this preview.
+    store.resetRuntimeOverrides(); store.setProfile('high', 'high'); store.setReducedMotion(false); store.setDebug(true); store.setFreeCamera(false); store.setWebglStatus('loading');
     return () => { store.resetRuntimeOverrides(); store.setFreeCamera(false); store.setProfile(saved.ceiling, saved.quality); store.setSystemReducedMotion(saved.systemMotion); store.setReducedMotion(saved.override); store.setDebug(saved.debug); store.setWebglStatus('loading'); };
   }, []);
   useEffect(() => { progressRef.current = progress; }, [progress]);
@@ -63,7 +65,7 @@ export function StudioLivePreview({ experience, active, setActive, progress: con
     <div className="studio-preview__toolbar">
       <div role="group" aria-label="Preview viewport">{(['desktop','tablet','mobile'] as const).map(size => <button key={size} aria-pressed={viewport === size} onClick={() => { setInternalViewport(size); onViewportChange?.(size); }}>{size}</button>)}</div>
       <label>Quality<select aria-label="Preview quality" value={quality} onChange={e => useExperienceStore.getState().setQuality(e.target.value as QualityMode)}><option value="auto">Auto</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label>
-      <span>{stats.calls} calls / {stats.triangles.toLocaleString()} triangles</span>
+      <span data-testid="studio-render-stats" data-calls={stats.calls} data-triangles={stats.triangles}>{stats.calls > 0 ? `${stats.calls} calls / ${stats.triangles.toLocaleString()} triangles` : 'Measuring scene...'}</span>
     </div>
     <div className="studio-preview__viewport" data-viewport={viewport}><div className="studio-preview__canvas">
       <ExperienceConfigProvider value={experience}><StudioEditorProvider value={gizmo}>
