@@ -52,6 +52,35 @@ export function CameraRig({ banking = false }: { banking?: boolean } = {}) {
       authored[2] + safetyOffset.current.z,
     );
 
+    const heliot = experience.meta.name.startsWith("HELIOT");
+    if (heliot && !state.reducedMotion && !state.runtimeCamera && !state.cameraPreview) {
+      const p = frame.progress;
+      if (p < 0.1) {
+        const t = THREE.MathUtils.clamp(p / 0.1, 0, 1);
+        const lift = Math.sin(t * Math.PI);
+        basePosition.x += Math.sin(t * Math.PI) * 0.28;
+        basePosition.y += lift * 0.34;
+      } else if (p < 0.2) {
+        const t = THREE.MathUtils.clamp((p - 0.1) / 0.1, 0, 1);
+        basePosition.x += Math.sin(t * Math.PI) * 0.08;
+        basePosition.y += Math.sin(t * Math.PI) * 0.06;
+      } else if (p < 0.3) {
+        const t = THREE.MathUtils.clamp((p - 0.2) / 0.1, 0, 1);
+        const curveX =
+          t < 0.25
+            ? THREE.MathUtils.lerp(-0.06, -0.16, t / 0.25)
+            : t < 0.55
+              ? THREE.MathUtils.lerp(-0.16, 0.18, (t - 0.25) / 0.3)
+              : THREE.MathUtils.lerp(0.18, 0, (t - 0.55) / 0.45);
+        basePosition.x += curveX;
+        basePosition.y += Math.sin(t * Math.PI) * -0.05;
+      } else if (p < 0.4) {
+        const t = THREE.MathUtils.clamp((p - 0.3) / 0.1, 0, 1);
+        basePosition.x += Math.sin(t * Math.PI) * 0.22;
+        basePosition.y += Math.sin(t * Math.PI) * 0.08;
+      }
+    }
+
     if (!state.reducedMotion && !state.runtimeCamera && !state.cameraPreview) {
       if (previousPosition.current.lengthSq() === 0) previousPosition.current.copy(basePosition);
       const velocity = basePosition.clone().sub(previousPosition.current).divideScalar(Math.max(delta, 1 / 120));
@@ -75,6 +104,17 @@ export function CameraRig({ banking = false }: { banking?: boolean } = {}) {
     previousPosition.current.copy(basePosition);
 
     target.current.set(...current.target);
+    if (heliot && !state.reducedMotion && !state.runtimeCamera && !state.cameraPreview) {
+      const p = frame.progress;
+      if (p >= 0.2 && p < 0.3) {
+        const t = THREE.MathUtils.clamp((p - 0.2) / 0.1, 0, 1);
+        target.current.x += Math.sin(t * Math.PI * 1.5) * 0.18;
+      } else if (p >= 0.3 && p < 0.4) {
+        const t = THREE.MathUtils.clamp((p - 0.3) / 0.1, 0, 1);
+        target.current.x -= Math.sin(t * Math.PI) * 0.28;
+        target.current.y += Math.sin(t * Math.PI) * 0.1;
+      }
+    }
     camera.lookAt(target.current);
 
     if (!state.runtimeCamera && !state.cameraPreview && !state.reducedMotion && (banking || hasDirectorMotion(frame.current.scene.motionTracks))) {
