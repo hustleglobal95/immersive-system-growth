@@ -20,17 +20,14 @@ import { SceneAssets } from "./SceneAssets";
 import { AssetBoundary } from "./AssetBoundary";
 import { MaskedMediaLayer } from "./MaskedMediaLayer";
 import { NocterraEnvironment } from "./NocterraEnvironment";
+import { AtelierMarisEnvironment } from "./AtelierMarisEnvironment";
 import { useStudioEditor } from "@/src/components/runtime/StudioEditorContext";
 function CanvasFallback() {
   useEffect(() => useExperienceStore.getState().setWebglStatus("failed"), []);
   return null;
 }
-const LabGuides = lazy(() =>
-  import("./LabGuides").then((m) => ({ default: m.LabGuides })),
-);
-const StudioTransformGizmo = lazy(() =>
-  import("./StudioTransformGizmo").then((m) => ({ default: m.StudioTransformGizmo })),
-);
+const LabGuides = lazy(() => import("./LabGuides").then((m) => ({ default: m.LabGuides })));
+const StudioTransformGizmo = lazy(() => import("./StudioTransformGizmo").then((m) => ({ default: m.StudioTransformGizmo })));
 export function SceneCanvas() {
   const experience = useExperienceConfig();
   const studioEditor = useStudioEditor();
@@ -38,17 +35,14 @@ export function SceneCanvas() {
   const quality = useExperienceStore((s) => s.quality);
   const camera = experience.scenes[0].camera.from;
   const nocterra = experience.meta.name.startsWith("NOCTERRA");
+  const atelierMaris = experience.meta.name.startsWith("ATELIER MARIS");
+  const cinematicProject = nocterra || atelierMaris;
   return (
     <div className="scene-canvas" aria-hidden="true">
       <Canvas
-        camera={{
-          position: camera.position,
-          fov: camera.fov,
-          near: 0.05,
-          far: 120,
-        }}
+        camera={{ position: camera.position, fov: camera.fov, near: 0.05, far: 120 }}
         dpr={1}
-        gl={{ antialias: nocterra, alpha: false, powerPreference: "high-performance" }}
+        gl={{ antialias: cinematicProject, alpha: false, powerPreference: "high-performance" }}
         shadows={quality === "high"}
         fallback={<CanvasFallback />}
       >
@@ -60,31 +54,20 @@ export function SceneCanvas() {
           <SceneLighting />
           <CameraRig />
           <LabOrbitControls />
-          {guides && (
-            <Suspense fallback={null}>
-              <LabGuides />
-            </Suspense>
-          )}
-          {nocterra ? (
+          {guides && <Suspense fallback={null}><LabGuides /></Suspense>}
+          {atelierMaris ? (
+            <AtelierMarisEnvironment />
+          ) : nocterra ? (
             <NocterraEnvironment />
           ) : experience.stage === "demo" ? (
             <DemoStage />
           ) : (
-            <mesh
-              rotation={[-Math.PI / 2, 0, 0]}
-              position={[0, -1.25, 0]}
-              receiveShadow
-            >
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.25, 0]} receiveShadow>
               <planeGeometry args={[80, 80]} />
               <meshStandardMaterial color="#171717" roughness={0.9} />
             </mesh>
           )}
-          <AssetBoundary
-            id="hero"
-            fallback={experience.heroVisible ? <HeroFallback /> : null}
-          >
-            <PersistentHero />
-          </AssetBoundary>
+          <AssetBoundary id="hero" fallback={experience.heroVisible ? <HeroFallback /> : null}><PersistentHero /></AssetBoundary>
           <SceneAssets />
           {studioEditor && <Suspense fallback={null}><StudioTransformGizmo /></Suspense>}
           <Hotspots />
