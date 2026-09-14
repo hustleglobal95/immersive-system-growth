@@ -10,10 +10,18 @@ import {
 } from "@/src/platform/visualSystems";
 import { useExperienceStore } from "@/src/store/experienceStore";
 import { downloadJson } from "@/src/studio/useStudioDraft";
+import { CinematicSystemsPanel } from "@/src/studio/CinematicSystemsPanel";
 
 const defaults = parseVisualSystems(rawVisualSystems);
 
 export function VisualSystemsPanel() {
+  return <>
+    <VisualSystemsCorePanel />
+    <CinematicSystemsPanel />
+  </>;
+}
+
+function VisualSystemsCorePanel() {
   const manifest = useExperienceStore((state) => state.visualSystems);
   const setVisualSystems = useExperienceStore((state) => state.setVisualSystems);
   const resetVisualSystems = useExperienceStore((state) => state.resetVisualSystems);
