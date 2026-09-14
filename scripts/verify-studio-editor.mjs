@@ -79,6 +79,7 @@ try {
   await page.waitForFunction(() => document.documentElement.dataset.heliotReady === 'true', null, { timeout: 60000 });
   await assertViewport();
   passed('production HELIOT world and desktop canvas aspect');
+  await page.locator('.pro-advanced-camera > summary').click();
   const select = page.getByRole('combobox', { name: /^Selected point/ });
   await expect(select).toBeVisible();
   const before = await select.locator('option').count();
@@ -138,6 +139,7 @@ try {
   passed('keyframe track creation and editing');
   await page.getByRole('button', { name: 'Back to workspace', exact: true }).click();
   await page.getByLabel('Preview quality', { exact: true }).selectOption('low');
+  await page.getByRole('button', { name: 'Review & export', exact: true }).click();
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Export JSON', exact: true }).click();
   const download = await downloadPromise;
@@ -149,6 +151,7 @@ try {
   if (!track || track.keyframes[0].value[0] !== 6.25) throw new Error('Edited camera keyframe missing from export.');
   passed('validated JSON export including assets, lighting and keyframes');
   if (errors.length) throw new Error(`Browser errors: ${errors.join('; ')}`);
+  if (await page.getByRole('button', { name: 'Close dialog', exact: true }).count()) await page.getByRole('button', { name: 'Close dialog', exact: true }).click();
   await page.getByRole('button', { name: 'camera', exact: true }).click();
   await capture('studio-workspace');
   await page.getByRole('button', { name: 'Orbit / edit view', exact: true }).click();

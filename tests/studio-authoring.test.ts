@@ -1,0 +1,25 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import raw from '../src/experiences/heliot/experience.json';
+import { parseExperience, cameraSchema } from '../src/lib/configSchema';
+import { captureCamera, duplicateAsset, makeShot, readSnapshots, shotPresets, snapshotKey, writeSnapshot } from '../src/studio/studioAuthoring';
+import { addModel } from '../src/studio/workspaceOperations';
+import { MAX_STUDIO_GLB_BYTES, validateStudioGlb } from '../src/studio/studioAssetUpload';
+const original = parseExperience(raw);
+const memory = () => { const map = new Map<string,string>(); return { getItem: (key: string) => map.get(key) ?? null, setItem: (key: string,value: string) => { map.set(key,value); } }; };
+for (const preset of shotPresets) test(`shot preset ${preset.id} validates, preserves its start and never mutates the source`, () => {
+ const before=JSON.stringify(original.scenes[0].camera), result=makeShot(original.scenes[0].camera,preset.id);
+ cameraSchema.parse(result); assert.deepEqual(result.from,original.scenes[0].camera.from); assert.equal(JSON.stringify(original.scenes[0].camera),before); assert.notDeepEqual(result.to.position,result.from.position);
+});
+test('camera captures the actual position, target and clamped FOV',()=>{ const result=captureCamera(original.scenes[0].camera,{position:[5,6,8],target:[0,1,0],fov:120},'to'); assert.deepEqual(result.to,{position:[5,6,8],target:[0,1,0],fov:90}); assert.deepEqual(result.from,original.scenes[0].camera.from); });
+test('camera rejects nonfinite and coincident positions',()=>{ assert.throws(()=>captureCamera(original.scenes[0].camera,{position:[NaN,0,0],target:[0,0,0],fov:40},'from')); assert.throws(()=>captureCamera(original.scenes[0].camera,{position:[0,0,0],target:[0,0,0],fov:40},'from')); });
+test('duplicate assets keep independent transforms and unique identifiers',()=>{ const a=addModel(original,0,'/models/reference/product.glb',[0,0,0]); const b=duplicateAsset(a,'product'), c=duplicateAsset(b,'product'); assert.equal(c.assets.at(-1)!.id,'product-copy-3'); assert.deepEqual(c.assets.at(-1)!.position,[1,0,0]); c.assets.at(-1)!.rotation[0]=5; assert.equal(a.assets.at(-1)!.rotation[0],0); parseExperience(c); });
+test('duplicate rejects nonexistent objects',()=>assert.throws(()=>duplicateAsset(original,'missing')));
+test('snapshot history round trips the full validated experience',()=>{const s=memory();writeSnapshot(s,original,new Date('2026-09-14'));assert.deepEqual(readSnapshots(s,original.meta.name)[0].experience,original);});
+test('snapshot history is bounded and version names remain monotonic',()=>{const s=memory();for(let i=0;i<20;i++)writeSnapshot(s,original,new Date(100000+i));const history=readSnapshots(s,original.meta.name);assert.equal(history.length,12);assert.equal(history[0].label,'Version 20');assert.equal(new Set(history.map(v=>v.id)).size,12);});
+test('unreadable snapshot history is never overwritten',()=>{const s=memory(),key=snapshotKey(original.meta.name);s.setItem(key,'{"broken"');assert.throws(()=>writeSnapshot(s,original));assert.equal(s.getItem(key),'{"broken"');});
+test('snapshot storage quota failures propagate for a visible UI notice',()=>{assert.throws(()=>writeSnapshot({getItem:()=>null,setItem:()=>{throw new Error('quota');}},original),/quota/);});
+test('all bundled models pass self-contained GLB validation',()=>{for(const p of ['public/models/reference/product.glb','public/models/heliot/heliot-01.glb'])assert.doesNotThrow(()=>validateStudioGlb(readFileSync(p)));});
+test('GLB validator rejects oversized, corrupt and truncated data',()=>{assert.throws(()=>validateStudioGlb(new Uint8Array(MAX_STUDIO_GLB_BYTES+1)));assert.throws(()=>validateStudioGlb(new Uint8Array(8)));const b=readFileSync('public/models/reference/product.glb');const broken=Buffer.from(b);broken.writeUInt32LE(0,0);assert.throws(()=>validateStudioGlb(broken));assert.throws(()=>validateStudioGlb(b.subarray(0,b.length-4)));});
+test('GLB validator rejects external resource URLs',()=>{const json=JSON.stringify({asset:{version:'2.0'},images:[{uri:'https://example.test/tracker.png'}]});const length=Math.ceil(json.length/4)*4,b=Buffer.alloc(20+length,32);b.writeUInt32LE(0x46546c67,0);b.writeUInt32LE(2,4);b.writeUInt32LE(b.length,8);b.writeUInt32LE(length,12);b.writeUInt32LE(0x4e4f534a,16);b.write(json,20);assert.throws(()=>validateStudioGlb(b),/External/);});

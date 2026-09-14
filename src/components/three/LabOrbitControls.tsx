@@ -33,10 +33,16 @@ export function LabOrbitControls() {
     });
   });
 
+  const report = () => {
+    if (!controls.current) return;
+    const target = controls.current.target;
+    useExperienceStore.getState().setCameraTelemetry({ position: [camera.position.x, camera.position.y, camera.position.z], target: [target.x, target.y, target.z], fov: 'fov' in camera ? (camera as THREE.PerspectiveCamera).fov : 42 });
+  };
   if (!freeCamera) return null;
   return (
     <OrbitControls
       ref={controls}
+      onEnd={report}
       makeDefault
       enableDamping
       dampingFactor={0.08}

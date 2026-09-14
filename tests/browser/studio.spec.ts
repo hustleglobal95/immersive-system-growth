@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("Studio edits a recipe in the browser and applies portable presets", async ({ page }) => {
   await page.goto("/studio");
+  await page.locator(".pro-tool-menu > summary").click();
   await page.getByRole("button", { name: "recipe", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Recipe editor" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Start from a visual system" })).toBeVisible();
@@ -22,6 +23,7 @@ test("Studio edits NOCTERRA timelines and inspects GLB nodes without mounting th
   await expect(page.getByText("Production schema valid")).toBeVisible();
   await expect(page.locator("canvas")).toHaveCount(0);
 
+  await page.locator(".pro-tool-menu > summary").click();
   await page.getByRole("button", { name: "timeline", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Visual timeline" })).toBeVisible();
   await page.getByRole("listitem", { name: /Automotive Detail/ }).click();
@@ -29,6 +31,7 @@ test("Studio edits NOCTERRA timelines and inspects GLB nodes without mounting th
   await page.getByLabel("Navigation label").fill("Coachwork detail");
   await expect(page.getByText("Production schema valid")).toBeVisible();
 
+  await page.locator(".pro-tool-menu > summary").click();
   await page.getByRole("button", { name: "model", exact: true }).click();
   await page.getByLabel("Select a binary glTF model").setInputFiles("public/models/reference/burger.glb");
   await expect(page.locator(".node-list strong").filter({ hasText: "top-bun" })).toBeVisible();
@@ -39,6 +42,7 @@ test("Studio edits NOCTERRA timelines and inspects GLB nodes without mounting th
 
 test("Studio exposes content, deployment and real-device telemetry controls", async ({ page }) => {
   await page.goto("/studio");
+  await page.locator(".pro-tool-menu > summary").click();
   await page.getByRole("button", { name: "integrations", exact: true }).click();
   await expect(page.getByRole("heading", { name: "CMS and commerce" })).toBeVisible();
   await page.getByRole("button", { name: "Add static source" }).click();
@@ -49,6 +53,7 @@ test("Studio exposes content, deployment and real-device telemetry controls", as
   await expect(page.getByText("Actions / Deploy client experience / Run workflow")).toBeVisible();
   await expect(page.getByLabel("Publish secret")).toHaveAttribute("type", "password");
   await expect(page.getByRole("button", { name: "Open review pull request" })).toBeDisabled();
+  await page.locator(".pro-tool-menu > summary").click();
   await page.getByRole("button", { name: "telemetry", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Telemetry policy" })).toBeVisible();
   await expect(page.getByLabel("Sample rate")).toBeVisible();
@@ -56,12 +61,14 @@ test("Studio exposes content, deployment and real-device telemetry controls", as
 
 test("Studio Pro composes a validated template, spatially directed scene and live runtime", async ({ page }) => {
   await page.goto("/studio");
+  await page.locator(".pro-tool-menu > summary").click();
   await page.getByRole("button", { name: "templates", exact: true }).click();
   await expect(page.locator(".template-grid article")).toHaveCount(6);
   const restaurant = page.locator(".template-grid article").filter({ hasText: "Restaurant journey" });
   await restaurant.getByRole("button", { name: "Apply template" }).click();
   await expect(page.getByText("Production schema valid")).toBeVisible();
 
+  await page.locator(".pro-tool-menu > summary").click();
   await page.getByRole("button", { name: "director", exact: true }).click();
   await expect(page.getByRole("img", { name: "Camera top path" })).toBeVisible();
   await expect(page.locator(".studio-preview__canvas canvas")).toHaveCount(1);
@@ -73,12 +80,14 @@ test("Studio Pro composes a validated template, spatially directed scene and liv
   await page.locator(".director-range").filter({ hasText: "Exposure" }).locator("input").fill("1.2");
   await expect(page.getByText("Production schema valid")).toBeVisible();
 
+  await page.locator(".pro-tool-menu > summary").click();
   await page.getByRole("button", { name: "layers", exact: true }).click();
   const addMedia = page.getByRole("button", { name: "Add reference media" });
   if (await addMedia.count()) await addMedia.click();
   await page.getByRole("button", { name: "Add color flash" }).click();
   await expect(page.locator(".layer-stack li")).toHaveCount(1);
 
+  await page.locator(".pro-tool-menu > summary").click();
   await page.getByRole("button", { name: "preview", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Live experience preview" })).toBeVisible();
   await expect(page.locator(".studio-preview__canvas canvas")).toHaveCount(1);
@@ -125,6 +134,7 @@ test("Motion sequencer authors curves, grouped history, responsive overrides and
 
 test("Mask Lab authors all presets and renders deterministic DOM and WebGL previews", async ({ page }) => {
   await page.goto("/studio");
+  await page.locator(".pro-tool-menu > summary").click();
   await page.getByRole("button", { name: "masks", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Mask reveal laboratory" })).toBeVisible();
   await page.getByRole("button", { name: "Add reference image" }).click();
@@ -156,6 +166,7 @@ test("Mask Lab authors all presets and renders deterministic DOM and WebGL previ
 
 test("Interaction graph authors and simulates deterministic branching", async ({ page }) => {
   await page.goto("/studio");
+  await page.locator(".pro-tool-menu > summary").click();
   await page.getByRole("button", { name: "interactions", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Interaction graph", level: 2 })).toBeVisible();
   await expect(page.getByRole("application", { name: "Interaction node graph" })).toBeVisible();
@@ -174,6 +185,7 @@ test("Interaction graph authors and simulates deterministic branching", async ({
 
 test("Studio authors deterministic visual systems for live preview", async ({ page }) => {
   await page.goto("/studio");
+  await page.locator(".pro-tool-menu > summary").click();
   await page.getByRole("button", { name: "visuals", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Visual systems", level: 2 })).toBeVisible();
   await expect(page.getByRole("button", { name: /NOCTERRA ambient field/ })).toBeVisible();

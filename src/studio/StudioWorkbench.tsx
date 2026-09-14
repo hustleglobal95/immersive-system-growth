@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
+import { StudioIcon } from "./ui/StudioControls";
 import rawExperience from "@/config/experience.json";
 import rawProject from "@/config/studio-project.json";
 import rawAssetManifest from "@/config/asset-manifest.json";
@@ -62,11 +63,11 @@ export function StudioWorkbench() {
   const active = Math.min(activeScene, draft.experience.scenes.length - 1);
 
   return (
-    <main className="studio-shell">
+    <main className="studio-shell studio-pro-shell">
       <header className="studio-header">
         <div>
-          <Link href="/" className="studio-brand">FORGE</Link>
-          <span>CINEMATIC PRODUCTION STUDIO</span>
+          <Link href="/" className="studio-brand"><StudioIcon name="layers" size={22}/>FORGE<span>STUDIO</span></Link>
+          <span className="pro-header-caption">Cinematic scene authoring</span>
         </div>
         <div className="studio-header__status" data-valid={!draft.validation.length}>
           <i />
@@ -80,11 +81,13 @@ export function StudioWorkbench() {
       </header>
 
       <nav className="studio-tabs" aria-label="Studio areas">
-        {tabs.map((item) => (
-          <button key={item} type="button" aria-current={tab === item ? "page" : undefined} onClick={() => setTab(item)}>
-            {item}
+        {(["workspace", "bank", "sequence", "publish"] as const).map((item) => (
+          <button key={item} type="button" aria-label={item} aria-current={tab === item ? "page" : undefined} onClick={() => setTab(item)}>
+            <StudioIcon name={item === 'workspace' ? 'cube' : item === 'bank' ? 'layers' : item === 'sequence' ? 'film' : 'export'}/>{item === 'workspace' ? 'Workspace' : item === 'bank' ? 'Asset library' : item === 'sequence' ? 'Sequencer' : 'Delivery'}
           </button>
         ))}
+        <details className="pro-tool-menu"><summary><StudioIcon name="settings"/>All tools<StudioIcon name="chevron" size={12}/></summary><div>{tabs.filter(item => !['workspace','bank','sequence','publish'].includes(item)).map(item => <button key={item} type="button" aria-current={tab === item ? 'page' : undefined} onClick={e => { setTab(item); e.currentTarget.closest('details')?.removeAttribute('open'); }}>{item}</button>)}</div></details>
+        <span className="pro-workflow-note">Compose <i/> Direct <i/> Light <i/> Deliver</span>
       </nav>
 
       {draft.storageNotice && <div className="studio-warning" role="alert" data-testid="studio-storage-warning">
@@ -130,8 +133,8 @@ export function StudioWorkbench() {
       {tab === "telemetry" && <TelemetryPanel project={draft.project} setProject={draft.setProject} />}
 
       <footer className="studio-footer">
-        <span>Forge Studio v8.0</span>
-        <span>Workspace / live runtime / camera / environment / sequencer / release</span>
+        <span>FORGE STUDIO / Scene authoring</span>
+        <span>Local-first drafts. Your production scenes stay yours.</span>
       </footer>
     </main>
   );
