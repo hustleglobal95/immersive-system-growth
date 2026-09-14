@@ -107,6 +107,7 @@ export function StudioWorkspace({ experience, setExperience, active, setActive, 
       localStorage.setItem(storageKey(current.meta.name), JSON.stringify(current));
       const source = presets[key], saved = localStorage.getItem(storageKey(source.meta.name));
       const next = saved ? parseExperience(JSON.parse(saved)) : structuredClone(source);
+      useExperienceStore.getState().setFreeCamera(false);
       setExperience(next); live.current = next; setActive(0); setProgress((next.scenes[0].range[0] + next.scenes[0].range[1]) / 2); setSelected(''); setPointIndex(0);
       setNotice(`${key} loaded. Previous experience draft preserved. Project metadata remains in the Project tab.`);
     } catch (error) { setNotice(`Project not switched: ${error instanceof Error ? error.message : 'storage unavailable'}. Export your current draft first.`); }
@@ -180,7 +181,7 @@ export function StudioWorkspace({ experience, setExperience, active, setActive, 
               <div className="builder-buttons">{(['translate','rotate','scale'] as const).map(m => <button key={m} aria-pressed={mode === m} onClick={() => setMode(m)}>{m}</button>)}</div>
               <Vector label="Position" value={object.position} onChange={v => changeObject('position', v)} /><Vector label="Rotation (radians)" value={object.rotation} onChange={v => changeObject('rotation', v)} />
               <Range label="Uniform scale" min={.01} max={10} step={.01} value={object.scale} onChange={s => changeObject('scale', [s,s,s])} begin={begin} end={end} />
-              <p className="builder-hint">Asset transforms apply to every scene using that asset. Hero edits affect this scene's selected endpoint. Rotation snap uses radians.</p>
+              <p className="builder-hint">Asset transforms apply to every scene using that asset. Hero edits affect the selected endpoint of this scene. Rotation snap uses radians.</p>
             </> : <p>Choose the hero or a model from Objects or the preview.</p>}
           </>}
           {inspector === 'environment' && <>
