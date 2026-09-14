@@ -12,18 +12,27 @@ const required = [
   "config/studio-project.json",
   "config/asset-manifest.json",
   "config/interaction-graph.json",
+  "config/cinematic-systems.json",
   "src/components/runtime/ExperienceRuntime.tsx",
   "src/components/three/SceneCanvas.tsx",
   "src/components/three/useThreeInteraction.ts",
+  "src/components/dom/CinematicSystemsLayer.tsx",
   "src/lib/sampleExperience.ts",
   "src/lib/interactionGraph.ts",
   "src/lib/interactionGraphEngine.ts",
+  "src/lib/cinematic/schema.ts",
+  "src/lib/cinematic/ticker.ts",
+  "src/lib/cinematic/spring.ts",
+  "src/lib/cinematic/composer.ts",
   "src/lib/runtimeCommands.ts",
+  "src/runtime/CinematicSystemsController.tsx",
   "src/runtime/InteractionGraphController.tsx",
   "src/runtime/RuntimeCommandController.tsx",
   "src/runtime/interactionEvents.ts",
   "src/runtime/shaderRegistry.ts",
+  "src/store/cinematicStore.ts",
   "src/store/interactionStore.ts",
+  "src/studio/CinematicSystemsPanel.tsx",
   "src/studio/InteractionGraphEditor.tsx",
   "src/studio/StudioWorkbench.tsx",
   "src/studio/MaskLab.tsx",
@@ -56,19 +65,8 @@ for (const item of required) {
   if (!ok) failed = true;
 }
 
-const pkg = JSON.parse(
-  fs.readFileSync(path.join(root, "package.json"), "utf8"),
-);
-for (const dependency of [
-  "next",
-  "react",
-  "three",
-  "@react-three/fiber",
-  "@react-three/drei",
-  "gsap",
-  "lenis",
-  "zustand",
-]) {
+const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+for (const dependency of ["next", "react", "three", "@react-three/fiber", "@react-three/drei", "gsap", "lenis", "zustand"]) {
   const ok = Boolean(pkg.dependencies?.[dependency]);
   console.log(`${ok ? "✓" : "✗"} dependency ${dependency}`);
   if (!ok) failed = true;
