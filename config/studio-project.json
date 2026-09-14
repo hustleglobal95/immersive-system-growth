@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "id": "nocterra-residences",
-  "name": "NOCTERRA Residences",
+  "id": "atelier-maris-casa-lumen",
+  "name": "ATELIER MARIS / Casa Lumen",
   "experiencePath": "config/experience.json",
   "visualSystemsPath": "config/visual-systems.json",
   "contentSources": [],
   "deployment": {
     "provider": "vercel",
-    "projectName": "nocterra-residences",
+    "projectName": "atelier-maris-casa-lumen",
     "productionBranch": "main"
   },
   "telemetry": {
