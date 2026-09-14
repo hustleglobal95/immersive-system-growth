@@ -1,12 +1,18 @@
 /* Observatory art direction. Each hold has its own composition; the timeline
    remains in Forge and the document keeps a useful non-WebGL reading order. */
 .heliot { --paper:#f2eee3; --muted:#c0b8a5; --accent:#d4b27b; background:#151719; }
+.heliot[data-enhanced=true] .heliot-terrain{display:none}
+.heliot[data-enhanced=true] .heliot-act-1 .heliot-panel,.heliot[data-enhanced=true] .heliot-act-2 .heliot-panel{top:64svh;left:4.5vw!important;width:42%;text-align:left}
+.heliot[data-enhanced=true] .heliot-act-1 .heliot-panel h2,.heliot[data-enhanced=true] .heliot-act-2 .heliot-panel h2{font-size:3.6vw}
+.heliot[data-enhanced=true] .heliot-act-1 .heliot-eyebrow{justify-content:flex-start}
+.heliot[data-enhanced=true] .heliot-act-1 .heliot-body{margin:0}
+.heliot[data-enhanced=true] .heliot-act-2 .heliot-materials,.heliot[data-enhanced=true] .heliot-threshold-note{display:none}
 .heliot-viewport { background:#151719 url('/models/heliot/observatory-landscape.webp') 68% center/cover no-repeat; }
 .heliot-static-lens { display:none; }
 .heliot[data-fallback=true] .heliot-static-lens { display:block; width:110px; right:28px; top:100px; opacity:.4; }
 .heliot-vignette { background:linear-gradient(90deg,#14130f70,transparent 75%),linear-gradient(0deg,#080b0bdc,transparent 60%,#11130f30); }
 .heliot-grain { position:fixed; inset:0; pointer-events:none; z-index:6; opacity:.045; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23fff' filter='url(%23n)' opacity='.8' d='M0 0h180v180H0z'/%3E%3C/svg%3E"); }
-.heliot-header { height:115px; padding:0 4.5vw; gap:38px; }
+.heliot-header { height:115px; padding:0 4.5vw; gap:38px; background:linear-gradient(180deg,#101715b8,transparent); }
 .heliot-wordmark { font-size:30px; letter-spacing:.26em; font-weight:500; }
 .heliot-wordmark>span { display:none; }
 .heliot-header-caption { font-size:8px; line-height:1.8; letter-spacing:.17em; padding-left:28px; border-left:1px solid #e9dfc74a; color:#f1e8d2; }
@@ -94,6 +100,8 @@
 .heliot[data-motion=reduced] .heliot-vignette,.heliot[data-fallback=true] .heliot-vignette { background:#0e1514c9; }
 .heliot[data-motion=reduced] .heliot-terrain,.heliot[data-fallback=true] .heliot-terrain { display:none; }
 @media(max-width:760px){
+  .heliot[data-enhanced=true] .heliot-act-1 .heliot-panel,.heliot[data-enhanced=true] .heliot-act-2 .heliot-panel{top:61svh;left:22px!important;width:calc(100% - 44px)}
+  .heliot[data-enhanced=true] .heliot-act-1 .heliot-panel h2,.heliot[data-enhanced=true] .heliot-act-2 .heliot-panel h2{font-size:38px}
   .heliot-header{height:80px;padding:0 22px}.heliot-wordmark{font-size:23px}.heliot-header-actions{gap:20px}.heliot-sound>span:last-child{display:none}.heliot-menu a{font-size:16px;padding:15px 0}
   .heliot-hero-spec{display:none}
   .heliot .story-section.heliot-act{min-height:155svh;padding:0 22px}.heliot .story-section.heliot-act:last-child{min-height:220svh}

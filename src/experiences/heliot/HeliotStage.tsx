@@ -15,9 +15,8 @@ import { AdaptiveQuality } from '@/src/components/three/AdaptiveQuality';
 import { RenderStatsProbe } from '@/src/components/three/RenderStatsProbe';
 import { useExperienceConfig } from '@/src/components/runtime/ExperienceConfigContext';
 import { useExperienceStore } from '@/src/store/experienceStore';
-import { ObservatoryPlate } from './ObservatoryPlate';
 import { apertureRadius, useLightLab } from './lightLab';
-import { TerrainField } from './TerrainField';
+import { ObservatoryWorld } from './ObservatoryWorld';
 
 function StudioEnvironment() {
   const { gl } = useThree();
@@ -56,7 +55,7 @@ function Engraving() {
     root.current.visible = p < .3 || p > .64;
     root.current.rotation.set(state.orbit.pitch, state.orbit.yaw, 0);
   });
-  return <group ref={root}><mesh position={[0, 0, .527]}><planeGeometry args={[2.42, 2.42]} /><meshBasicMaterial map={texture} transparent depthWrite={false} polygonOffset polygonOffsetFactor={-1} /></mesh></group>;
+  return <group ref={root} position={[0,-5.05,-16]}><mesh position={[0, 0, .527]}><planeGeometry args={[2.42, 2.42]} /><meshBasicMaterial map={texture} transparent depthWrite={false} polygonOffset polygonOffsetFactor={-1} /></mesh></group>;
 }
 
 function OpticalField() {
@@ -84,7 +83,7 @@ function OpticalField() {
     if (material.current) material.current.opacity = strength * .4;
     geometry.setDrawRange(0, Math.floor(Math.min(1, Math.max(0, (p - .35) / .08)) * 36) * 2);
   });
-  return <group ref={group}><lineSegments geometry={geometry}><lineBasicMaterial ref={material} color="#d6a16b" transparent depthWrite={false} /></lineSegments></group>;
+  return <group ref={group} position={[0,-5.05,-16]}><lineSegments geometry={geometry}><lineBasicMaterial ref={material} color="#d6a16b" transparent depthWrite={false} /></lineSegments></group>;
 }
 
 function Instrument() {
@@ -97,9 +96,7 @@ function Instrument() {
   const { gl, scene, camera } = useThree();
   useFrame(() => {
     if (root.current) {
-      root.current.visible = !useExperienceStore.getState().reducedMotion && frame.progress > .285 && frame.progress < .815;
-      root.current.scale.setScalar(1 - Math.max(0,Math.min(1,(frame.progress-.68)/.1))*.8);
-      root.current.position.y = -1.25 * Math.max(0,Math.min(1,(frame.progress-.68)/.1));
+      root.current.visible = true;
     }
     if (diaphragm.current) diaphragm.current.visible = frame.progress >= .49 && frame.progress <= .61;
   });
@@ -114,7 +111,7 @@ function Instrument() {
   return <group ref={root}>
     <ProductRig url={quality === 'low' ? experience.heroLowModel! : experience.heroModel} rig={experience.productRig!} />
     <Engraving />
-    <mesh ref={diaphragm} position={[0, 0, -.18]}><ringGeometry args={[apertureRadius(aperture), .86, 96]} /><meshStandardMaterial color="#49463d" metalness={.8} roughness={.38} side={2} /></mesh>
+    <mesh ref={diaphragm} position={[0, -5.05, -16.18]}><ringGeometry args={[apertureRadius(aperture), .86, 96]} /><meshStandardMaterial color="#49463d" metalness={.8} roughness={.38} side={2} /></mesh>
   </group>;
 }
 
@@ -136,21 +133,29 @@ function PerformanceLedger() {
     value.maxCalls = Math.max(value.maxCalls, gl.info.render.calls);
     value.maxTriangles = Math.max(value.maxTriangles, gl.info.render.triangles);
     value.maxLines = Math.max(value.maxLines, gl.info.render.lines);
-    if (value.frames % 30 === 0) document.documentElement.dataset.heliotRenderBudget = JSON.stringify(value);
+    document.documentElement.dataset.heliotRenderBudget = JSON.stringify(value);
   }, -201);
   return null;
 }
 
+/** Render during input and the shared damped transition; rest when the shot settles. */
+function FrameDemand(){
+  const {invalidate,camera}=useThree();const frame=useCinematicFrame();
+  useEffect(()=>{const off=useExperienceStore.subscribe(()=>invalidate());const offLab=useLightLab.subscribe(()=>invalidate());invalidate();return()=>{off();offLab();};},[invalidate]);
+  useFrame(()=>{const state=useExperienceStore.getState();document.documentElement.dataset.heliotCamera=JSON.stringify(camera.position.toArray());if(Math.abs(frame.progress-(state.runtimeProgress??state.progress))>.000001)invalidate();});
+  return null;
+}
+
 export function HeliotStage() {
-  return <Canvas camera={{ position: [5, 3, 9], fov: 38, near: .05, far: 80 }} dpr={1} gl={{ antialias: true, powerPreference: 'high-performance' }} fallback={<span>The optical study remains available below.</span>}>
+  const quality=useExperienceStore(s=>s.quality);
+  return <Canvas frameloop="demand" shadows={quality!=='low'} camera={{ position: [5, 2.2, 8], fov: 43, near: .025, far: 450 }} dpr={1} gl={{ antialias: true, powerPreference: 'high-performance' }} fallback={<span>The optical study remains available below.</span>}>
     <RendererLifecycle /><AdaptiveQuality /><RenderStatsProbe /><PerformanceLedger />
     <StudioEnvironment />
     <CinematicFrame>
-      <WorldAtmosphere /><SceneLighting /><CameraRig />
-      <Suspense fallback={null}><ObservatoryPlate /></Suspense>
-      <Suspense fallback={null}><Instrument /></Suspense>
+      <WorldAtmosphere /><SceneLighting /><CameraRig banking />
+      <FrameDemand />
+      <Suspense fallback={null}><ObservatoryWorld /><Instrument /></Suspense>
       <OpticalField />
-      <TerrainField />
     </CinematicFrame>
   </Canvas>;
 }

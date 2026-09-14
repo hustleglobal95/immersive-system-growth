@@ -23,6 +23,18 @@
       "bytes": 200794,
       "sha256": "b0e8530983b4683aab0f0e825bbb0ae889ac928ea4cf9591c5f32333947fa636",
       "source": "Original generated architectural art; see docs/HELIOT_ART_DIRECTION.md"
+    },
+    {
+      "path": "/models/heliot/basalt.webp",
+      "bytes": 430610,
+      "sha256": "42a20c50b880baca64bdd7d0f8734d51cc0ae616a9438d1e403f9adc34db18ac",
+      "source": "Original generated architectural art; see docs/HELIOT_ART_DIRECTION.md"
+    },
+    {
+      "path": "/models/heliot/distant-landscape.webp",
+      "bytes": 297200,
+      "sha256": "dfc240b0e98adc6c89a0b1fcda2a6ac4d42a62dd1220543369decb217b2e646f",
+      "source": "Original generated architectural art; see docs/HELIOT_ART_DIRECTION.md"
     }
   ],
   "hdr": [],

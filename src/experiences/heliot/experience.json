@@ -10,9 +10,9 @@
     "cameraDamping": 9,
     "objectDamping": 9,
     "pointerInfluence": 0.06,
-    "minDpr": 1,
-    "maxDpr": 1.75,
-    "maxPixels": 3600000,
+    "minDpr": 0.75,
+    "maxDpr": 1.5,
+    "maxPixels": 2200000,
     "preloadMb": 8
   },
   "heroModel": "/models/heliot/heliot-01.glb",
@@ -536,67 +536,91 @@
         "path": "dolly",
         "from": {
           "position": [
-            4.2,
+            5,
             2.2,
-            7.2
+            8
           ],
           "target": [
-            -1.5,
-            0,
-            0
+            -1.6,
+            0.7,
+            -1
           ],
-          "fov": 38
+          "fov": 43
         },
         "to": {
           "position": [
-            4,
-            1.8,
-            7
+            -2,
+            1.2,
+            3
           ],
           "target": [
-            -0.7,
             0,
-            0
+            0,
+            -0.5
           ],
-          "fov": 38
-        }
+          "fov": 48
+        },
+        "waypoints": [
+          [
+            2.5,
+            2.5,
+            5
+          ],
+          [
+            -0.2,
+            1.5,
+            3.8
+          ]
+        ]
       },
       "mobileCamera": {
         "path": "dolly",
         "from": {
           "position": [
-            4.9559999999999995,
-            3,
-            8.496
+            5,
+            2.2,
+            8
           ],
           "target": [
             0,
-            -2.2,
-            0
+            -2,
+            -1
           ],
-          "fov": 48
+          "fov": 61
         },
         "to": {
           "position": [
-            4.72,
-            2.6,
-            8.26
+            -2,
+            1.2,
+            3
           ],
           "target": [
             0,
-            -2.2,
-            0
+            0,
+            -0.5
           ],
-          "fov": 48
-        }
+          "fov": 66
+        },
+        "waypoints": [
+          [
+            2.5,
+            2.5,
+            5
+          ],
+          [
+            -0.2,
+            1.5,
+            3.8
+          ]
+        ]
       },
       "hero": {
         "motion": "linear",
         "from": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -608,8 +632,8 @@
         "to": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -623,11 +647,11 @@
         "background": "#151719",
         "fog": "#151719",
         "fogDensity": 0,
-        "ambient": 0.5,
-        "key": 3.6,
-        "rim": 9,
-        "keyColor": "#fff1db",
-        "rimColor": "#a3c9cd",
+        "ambient": 0.65,
+        "key": 4,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
         "exposure": 1.05
       },
       "material": {
@@ -659,70 +683,104 @@
       ],
       "easing": "cinematic",
       "camera": {
-        "path": "subject-orbit",
+        "path": "threshold",
         "from": {
           "position": [
-            4,
-            1.8,
-            7
+            -2,
+            1.2,
+            3
           ],
           "target": [
-            -0.7,
             0,
-            0
+            0,
+            -0.5
           ],
-          "fov": 38
+          "fov": 48
         },
         "to": {
           "position": [
-            -4,
-            2.4,
-            7
+            0,
+            0,
+            -1.4
           ],
           "target": [
-            -1.2,
             0,
-            0
+            -3,
+            -7
           ],
-          "fov": 40
-        }
+          "fov": 58
+        },
+        "waypoints": [
+          [
+            -0.65,
+            0.4,
+            1.6
+          ],
+          [
+            0,
+            0.05,
+            0.55
+          ],
+          [
+            0,
+            0,
+            -0.5
+          ]
+        ]
       },
       "mobileCamera": {
-        "path": "subject-orbit",
+        "path": "threshold",
         "from": {
           "position": [
-            4.72,
-            2.6,
-            8.26
+            -2,
+            1.2,
+            3
           ],
           "target": [
             0,
-            -2.2,
-            0
+            0,
+            -0.5
           ],
-          "fov": 48
+          "fov": 66
         },
         "to": {
           "position": [
-            -4.72,
-            3.2,
-            8.26
+            0,
+            0,
+            -1.4
           ],
           "target": [
             0,
-            -2.2,
-            0
+            -3,
+            -7
           ],
-          "fov": 48
-        }
+          "fov": 72
+        },
+        "waypoints": [
+          [
+            -0.65,
+            0.4,
+            1.6
+          ],
+          [
+            0,
+            0.05,
+            0.55
+          ],
+          [
+            0,
+            0,
+            -0.5
+          ]
+        ]
       },
       "hero": {
         "motion": "linear",
         "from": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -734,8 +792,8 @@
         "to": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -749,11 +807,11 @@
         "background": "#151719",
         "fog": "#151719",
         "fogDensity": 0,
-        "ambient": 0.5,
-        "key": 4.4,
-        "rim": 9,
-        "keyColor": "#fff1db",
-        "rimColor": "#a3c9cd",
+        "ambient": 0.65,
+        "key": 4,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
         "exposure": 1.05
       },
       "material": {
@@ -778,7 +836,7 @@
     },
     {
       "id": "surface",
-      "label": "The matter of light",
+      "label": "Inside the observatory",
       "range": [
         0.2,
         0.3
@@ -788,67 +846,101 @@
         "path": "dolly",
         "from": {
           "position": [
-            -4,
-            2.4,
-            7
+            0,
+            0,
+            -1.4
           ],
           "target": [
-            -1.2,
             0,
-            0
+            -3,
+            -7
           ],
-          "fov": 40
+          "fov": 58
         },
         "to": {
           "position": [
-            -2.5,
-            1,
-            4.8
+            0,
+            -5.2,
+            -12
           ],
           "target": [
-            -1,
-            0,
-            0.2
+            -0.65,
+            -5.05,
+            -16
           ],
-          "fov": 38
-        }
+          "fov": 50
+        },
+        "waypoints": [
+          [
+            0,
+            -1.5,
+            -4
+          ],
+          [
+            0,
+            -3.5,
+            -6
+          ],
+          [
+            0,
+            -5.2,
+            -9.5
+          ]
+        ]
       },
       "mobileCamera": {
         "path": "dolly",
         "from": {
           "position": [
-            -4.72,
-            3.2,
-            8.26
+            0,
+            0,
+            -1.4
           ],
           "target": [
             0,
-            -2.2,
-            0
+            -3,
+            -7
           ],
-          "fov": 48
+          "fov": 72
         },
         "to": {
           "position": [
-            -2.9499999999999997,
-            1.8,
-            5.664
+            0,
+            -5.2,
+            -12
           ],
           "target": [
             0,
-            -2.2,
-            0
+            -6.3,
+            -16
           ],
-          "fov": 48
-        }
+          "fov": 68
+        },
+        "waypoints": [
+          [
+            0,
+            -1.5,
+            -4
+          ],
+          [
+            0,
+            -3.5,
+            -6
+          ],
+          [
+            0,
+            -5.2,
+            -9.5
+          ]
+        ]
       },
       "hero": {
         "motion": "linear",
         "from": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -860,8 +952,8 @@
         "to": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -875,11 +967,11 @@
         "background": "#151719",
         "fog": "#151719",
         "fogDensity": 0,
-        "ambient": 0.5,
-        "key": 4.4,
-        "rim": 9,
-        "keyColor": "#fff1db",
-        "rimColor": "#a3c9cd",
+        "ambient": 0.28,
+        "key": 1.5,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
         "exposure": 1.05
       },
       "material": {
@@ -896,9 +988,9 @@
       "motionTracks": [],
       "blocks": [],
       "copy": {
-        "eyebrow": "02 / MATERIAL MEMORY",
-        "headline": "Matter.\nMade luminous.",
-        "body": "Bronze holds the warmth of a passing sun. Radial fins turn a continuous surface into a rhythm of shadow and reflection.",
+        "eyebrow": "02 / THE INNER WORLD",
+        "headline": "You are\ninside the light.",
+        "body": "Beyond the bronze threshold, a vaulted gallery opens beneath the landscape. Follow the floor inlay toward the suspended optical assembly.",
         "align": "left"
       }
     },
@@ -914,58 +1006,58 @@
         "path": "pullback",
         "from": {
           "position": [
-            -2.5,
-            1,
-            4.8
+            0,
+            -5.2,
+            -12
           ],
           "target": [
-            -1,
-            0,
-            0.2
+            -0.65,
+            -5.05,
+            -16
           ],
-          "fov": 38
+          "fov": 50
         },
         "to": {
           "position": [
-            6,
-            3,
-            8
+            5,
+            -3.5,
+            -11
           ],
           "target": [
-            -2.3,
-            0,
-            0
+            -0.65,
+            -5.05,
+            -16
           ],
-          "fov": 44
+          "fov": 45
         }
       },
       "mobileCamera": {
         "path": "pullback",
         "from": {
           "position": [
-            -2.9499999999999997,
-            1.8,
-            5.664
+            0,
+            -5.2,
+            -12
           ],
           "target": [
             0,
-            -2.2,
-            0
+            -6.3,
+            -16
           ],
-          "fov": 48
+          "fov": 68
         },
         "to": {
           "position": [
-            7.08,
-            3.8,
-            9.44
+            5,
+            -3.5,
+            -11
           ],
           "target": [
             0,
-            -2.2,
-            0
+            -6.3,
+            -16
           ],
-          "fov": 48
+          "fov": 63
         }
       },
       "hero": {
@@ -973,8 +1065,8 @@
         "from": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -986,8 +1078,8 @@
         "to": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -1001,11 +1093,11 @@
         "background": "#151719",
         "fog": "#151719",
         "fogDensity": 0,
-        "ambient": 0.5,
-        "key": 4.4,
-        "rim": 9,
-        "keyColor": "#fff1db",
-        "rimColor": "#a3c9cd",
+        "ambient": 0.28,
+        "key": 1.5,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
         "exposure": 1.05
       },
       "material": {
@@ -1040,58 +1132,58 @@
         "path": "arc",
         "from": {
           "position": [
-            6,
-            3,
-            8
+            5,
+            -3.5,
+            -11
           ],
           "target": [
-            -2.3,
-            0,
-            0
+            -0.65,
+            -5.05,
+            -16
           ],
-          "fov": 44
+          "fov": 45
         },
         "to": {
           "position": [
             0,
-            0.8,
-            7
+            -4.9,
+            -11
           ],
           "target": [
-            -0.6,
-            0,
-            0
+            -0.65,
+            -5.05,
+            -16
           ],
-          "fov": 38
+          "fov": 43
         }
       },
       "mobileCamera": {
         "path": "arc",
         "from": {
           "position": [
-            7.08,
-            3.8,
-            9.44
+            5,
+            -3.5,
+            -11
           ],
           "target": [
             0,
-            -2.2,
-            0
+            -6.3,
+            -16
           ],
-          "fov": 48
+          "fov": 63
         },
         "to": {
           "position": [
             0,
-            1.6,
-            8.26
+            -4.9,
+            -11
           ],
           "target": [
             0,
-            -2.2,
-            0
+            -6.3,
+            -16
           ],
-          "fov": 48
+          "fov": 61
         }
       },
       "hero": {
@@ -1099,8 +1191,8 @@
         "from": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -1112,8 +1204,8 @@
         "to": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -1127,11 +1219,11 @@
         "background": "#151719",
         "fog": "#151719",
         "fogDensity": 0,
-        "ambient": 0.5,
-        "key": 4.4,
-        "rim": 9,
-        "keyColor": "#fff1db",
-        "rimColor": "#a3c9cd",
+        "ambient": 0.28,
+        "key": 1.5,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
         "exposure": 1.05
       },
       "material": {
@@ -1167,28 +1259,28 @@
         "from": {
           "position": [
             0,
-            0.8,
-            7
+            -4.9,
+            -11
           ],
           "target": [
-            -0.6,
-            0,
-            0
+            -0.65,
+            -5.05,
+            -16
           ],
-          "fov": 38
+          "fov": 43
         },
         "to": {
           "position": [
             0,
-            0.8,
-            9
+            -4.9,
+            -10
           ],
           "target": [
-            -0.6,
-            0,
-            0
+            -0.65,
+            -5.05,
+            -16
           ],
-          "fov": 38
+          "fov": 43
         }
       },
       "mobileCamera": {
@@ -1196,28 +1288,28 @@
         "from": {
           "position": [
             0,
-            1.6,
-            8.26
+            -4.9,
+            -11
           ],
           "target": [
             0,
-            -2.2,
-            0
+            -6.3,
+            -16
           ],
-          "fov": 48
+          "fov": 61
         },
         "to": {
           "position": [
             0,
-            1.6,
-            10.62
+            -4.9,
+            -10
           ],
           "target": [
             0,
-            -2.2,
-            0
+            -6.3,
+            -16
           ],
-          "fov": 48
+          "fov": 61
         }
       },
       "hero": {
@@ -1225,8 +1317,8 @@
         "from": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -1238,8 +1330,8 @@
         "to": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -1253,11 +1345,11 @@
         "background": "#151719",
         "fog": "#151719",
         "fogDensity": 0,
-        "ambient": 0.5,
-        "key": 4.4,
-        "rim": 9,
-        "keyColor": "#fff1db",
-        "rimColor": "#a3c9cd",
+        "ambient": 0.28,
+        "key": 1.5,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
         "exposure": 1.05
       },
       "material": {
@@ -1293,28 +1385,28 @@
         "from": {
           "position": [
             0,
-            0.8,
-            9
+            -4.9,
+            -10
           ],
           "target": [
-            -0.6,
-            0,
-            0
+            -0.65,
+            -5.05,
+            -16
           ],
-          "fov": 38
+          "fov": 43
         },
         "to": {
           "position": [
             3,
-            1.6,
-            8
+            -4.5,
+            -11
           ],
           "target": [
-            -0.6,
-            0,
-            0
+            -0.65,
+            -5.05,
+            -16
           ],
-          "fov": 38
+          "fov": 46
         }
       },
       "mobileCamera": {
@@ -1322,28 +1414,28 @@
         "from": {
           "position": [
             0,
-            1.6,
-            10.62
+            -4.9,
+            -10
           ],
           "target": [
             0,
-            -2.2,
-            0
+            -6.3,
+            -16
           ],
-          "fov": 48
+          "fov": 61
         },
         "to": {
           "position": [
-            3.54,
-            2.4000000000000004,
-            9.44
+            3,
+            -4.5,
+            -11
           ],
           "target": [
             0,
-            -2.2,
-            0
+            -6.3,
+            -16
           ],
-          "fov": 48
+          "fov": 64
         }
       },
       "hero": {
@@ -1351,8 +1443,8 @@
         "from": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -1364,8 +1456,8 @@
         "to": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -1379,11 +1471,11 @@
         "background": "#151719",
         "fog": "#151719",
         "fogDensity": 0,
-        "ambient": 0.5,
-        "key": 4.4,
-        "rim": 9,
-        "keyColor": "#fff1db",
-        "rimColor": "#a3c9cd",
+        "ambient": 0.28,
+        "key": 1.5,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
         "exposure": 1.05
       },
       "material": {
@@ -1419,66 +1511,120 @@
         "from": {
           "position": [
             3,
-            1.6,
-            8
+            -4.5,
+            -11
           ],
           "target": [
-            -0.6,
-            0,
-            0
+            -0.65,
+            -5.05,
+            -16
           ],
-          "fov": 38
+          "fov": 46
         },
         "to": {
           "position": [
-            -5,
-            3,
-            7
+            0,
+            0.3,
+            3
           ],
           "target": [
             0,
             0,
-            0
+            -2
           ],
-          "fov": 42
-        }
+          "fov": 52
+        },
+        "waypoints": [
+          [
+            0,
+            -5.2,
+            -10
+          ],
+          [
+            0,
+            -3.5,
+            -6
+          ],
+          [
+            0,
+            -1.5,
+            -4
+          ],
+          [
+            0,
+            0,
+            -1.4
+          ],
+          [
+            0,
+            0.05,
+            0.6
+          ]
+        ]
       },
       "mobileCamera": {
         "path": "subject-orbit",
         "from": {
           "position": [
-            3.54,
-            2.4000000000000004,
-            9.44
+            3,
+            -4.5,
+            -11
           ],
           "target": [
             0,
-            -2.2,
-            0
+            -6.3,
+            -16
           ],
-          "fov": 48
+          "fov": 64
         },
         "to": {
           "position": [
-            -5.8999999999999995,
-            3.8,
-            8.26
+            0,
+            0.3,
+            3
           ],
           "target": [
             0,
-            -2.2,
-            0
+            -1.8,
+            -2
           ],
-          "fov": 48
-        }
+          "fov": 70
+        },
+        "waypoints": [
+          [
+            0,
+            -5.2,
+            -10
+          ],
+          [
+            0,
+            -3.5,
+            -6
+          ],
+          [
+            0,
+            -1.5,
+            -4
+          ],
+          [
+            0,
+            0,
+            -1.4
+          ],
+          [
+            0,
+            0.05,
+            0.6
+          ]
+        ]
       },
       "hero": {
         "motion": "linear",
         "from": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -1490,8 +1636,8 @@
         "to": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -1505,11 +1651,11 @@
         "background": "#151719",
         "fog": "#151719",
         "fogDensity": 0,
-        "ambient": 0.5,
-        "key": 4.4,
-        "rim": 9,
-        "keyColor": "#fff1db",
-        "rimColor": "#a3c9cd",
+        "ambient": 0.28,
+        "key": 1.5,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
         "exposure": 1.05
       },
       "material": {
@@ -1544,67 +1690,91 @@
         "path": "crane",
         "from": {
           "position": [
+            0,
+            0.3,
+            3
+          ],
+          "target": [
+            0,
+            0,
+            -2
+          ],
+          "fov": 52
+        },
+        "to": {
+          "position": [
             -5,
-            3,
+            4,
             7
           ],
           "target": [
             0,
             0,
-            0
+            -1
           ],
-          "fov": 42
+          "fov": 46
         },
-        "to": {
-          "position": [
-            4,
-            2,
-            9
+        "waypoints": [
+          [
+            -1,
+            1.2,
+            4
           ],
-          "target": [
-            -0.8,
-            0,
-            0
-          ],
-          "fov": 38
-        }
+          [
+            -3,
+            3,
+            5
+          ]
+        ]
       },
       "mobileCamera": {
         "path": "crane",
         "from": {
           "position": [
-            -5.8999999999999995,
-            3.8,
-            8.26
+            0,
+            0.3,
+            3
           ],
           "target": [
             0,
-            -2.2,
-            0
+            -1.8,
+            -2
           ],
-          "fov": 48
+          "fov": 70
         },
         "to": {
           "position": [
-            4.72,
-            2.8,
-            10.62
+            -5,
+            4,
+            7
           ],
           "target": [
             0,
-            -2.2,
-            0
+            -1.8,
+            -1
           ],
-          "fov": 48
-        }
+          "fov": 64
+        },
+        "waypoints": [
+          [
+            -1,
+            1.2,
+            4
+          ],
+          [
+            -3,
+            3,
+            5
+          ]
+        ]
       },
       "hero": {
         "motion": "linear",
         "from": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -1616,8 +1786,8 @@
         "to": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -1631,11 +1801,11 @@
         "background": "#151719",
         "fog": "#151719",
         "fogDensity": 0,
-        "ambient": 0.5,
-        "key": 4.4,
-        "rim": 9,
-        "keyColor": "#fff1db",
-        "rimColor": "#a3c9cd",
+        "ambient": 0.65,
+        "key": 4,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
         "exposure": 1.05
       },
       "material": {
@@ -1670,58 +1840,58 @@
         "path": "linear",
         "from": {
           "position": [
+            -5,
             4,
-            2,
-            9
+            7
           ],
           "target": [
-            -0.8,
             0,
-            0
+            0,
+            -1
           ],
-          "fov": 38
+          "fov": 46
         },
         "to": {
           "position": [
             4,
-            2,
-            9
+            2.6,
+            6
           ],
           "target": [
-            -0.8,
             0,
+            -0.2,
             0
           ],
-          "fov": 38
+          "fov": 43
         }
       },
       "mobileCamera": {
         "path": "linear",
         "from": {
           "position": [
-            4.72,
-            2.8,
-            10.62
+            -5,
+            4,
+            7
           ],
           "target": [
             0,
-            -2.2,
-            0
+            -1.8,
+            -1
           ],
-          "fov": 48
+          "fov": 64
         },
         "to": {
           "position": [
-            4.72,
-            2.8,
-            10.62
+            4,
+            2.6,
+            6
           ],
           "target": [
             0,
-            -2.2,
+            -1.8,
             0
           ],
-          "fov": 48
+          "fov": 61
         }
       },
       "hero": {
@@ -1729,8 +1899,8 @@
         "from": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -1742,8 +1912,8 @@
         "to": {
           "position": [
             0,
-            0,
-            0
+            -5.05,
+            -16
           ],
           "rotation": [
             0,
@@ -1757,11 +1927,11 @@
         "background": "#151719",
         "fog": "#151719",
         "fogDensity": 0,
-        "ambient": 0.5,
-        "key": 4.4,
-        "rim": 9,
-        "keyColor": "#fff1db",
-        "rimColor": "#a3c9cd",
+        "ambient": 0.65,
+        "key": 4,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
         "exposure": 1.05
       },
       "material": {

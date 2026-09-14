@@ -10,7 +10,7 @@ for (let i = 0; i < 80; i++) {
 const browser = await chromium.launch({
   executablePath: process.env.CHROMIUM_EXECUTABLE || undefined,
   headless: true,
-  args: ['--no-sandbox', '--no-zygote', '--in-process-gpu', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'],
+  args: ['--no-sandbox', '--no-zygote', '--disable-gpu-sandbox', '--disable-features=CDPScreenshotNewSurface', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'],
 });
 fs.mkdirSync('generated/heliot', { recursive: true });
 const report = [];
@@ -24,7 +24,9 @@ for (const [name, width, height] of [['desktop',1440,1000],['mobile',390,844]]) 
     if (process.env.CAPTURE_ACT && process.env.CAPTURE_ACT !== act) continue;
     await page.evaluate(({act,fraction})=>{const el=document.getElementById(act);window.scrollTo({top:el.offsetTop+el.offsetHeight*fraction,behavior:'instant'});},{act,fraction});
     await page.waitForTimeout(1500);
-    await page.screenshot({path:`generated/heliot/${name}-${act}.png`});
+    await page.waitForFunction(act=>Number(document.querySelector('.heliot')?.getAttribute('data-chapter'))===Array.from(document.querySelectorAll('.heliot-act')).findIndex(el=>el.id===act),act,{timeout:60000});
+    console.log('Capture',name,act,await page.evaluate(()=>({budget:document.documentElement.dataset.heliotRenderBudget,chapter:document.querySelector('.heliot')?.getAttribute('data-chapter')})));
+    await page.screenshot({path:`generated/heliot/${name}-${act}.png`,timeout:180000});
   }
   report.push({name,errors,overflow:await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),renderBudget:await page.evaluate(()=>document.documentElement.dataset.heliotRenderBudget)});
   await page.close();

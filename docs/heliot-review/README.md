@@ -1,21 +1,27 @@
-# Observatory visual review
+# Spatial flight review
 
-Production Chromium captures. Desktop: 1440×1000; phone: 390×844. The retained WebP files are reduced-size review copies, not runtime assets.
+Production Chromium captures. Desktop: 1440×1000; phone: 390×844. The retained WebP files are reduced-size review copies, not runtime assets. The journey now traverses actual architecture. The distant mountain backdrop is an original matte on a world-space cylinder.
 
 ## Arrival
 ![Desktop arrival](desktop-first-light.webp)
 
-## Material macro
-![Bronze material study](desktop-surface.webp)
+## Cross the gateway
+![Approach to the hollow bronze entrance](desktop-form.webp)
+
+## Descend inside
+![Modeled curved passage and bronze ribs](desktop-surface.webp)
+
+## Underground gallery
+![Vaulted gallery and structural exhibit](desktop-separation.webp)
 
 ## Interactive aperture laboratory
 ![Frontal light lab](desktop-aperture.webp)
 
 ## Return to the landscape
-![Spatial terrain and returning maquette](desktop-convergence.webp)
+![Return through the continuous architectural world](desktop-convergence.webp)
 
 ## Phone compositions
 ![Phone arrival](mobile-first-light.webp)
 ![Phone inspection controls](mobile-perspective.webp)
 
-The complete automated capture covered all ten chapter holds at both sizes. No JavaScript errors or horizontal overflow were reported. The terrain composition was refined after this review to separate the editorial content from the maquette. Render-cost observations peaked at 20 draw calls, 18,796 triangles and 4,480 line segments; physical-device frame rate and Safari remain unmeasured.
+The renderer rests when a shot settles and wakes for scroll, pointer, aperture and inspection input. Low quality reduces geometry density and disables shadow maps. Captures use software WebGL; they do not establish physical-device frame rate or Safari compatibility. The final header also includes an additional contrast gradient for legibility over bright skies.

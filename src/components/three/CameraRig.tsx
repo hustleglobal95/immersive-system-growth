@@ -11,7 +11,7 @@ import { resolveRuntimeCameraSafety } from "@/src/lib/runtimeCameraSafety";
 import { getSpatialBoundsSnapshot } from "@/src/runtime/spatialRegistry";
 import type { LiveSpatialBoundInput } from "@/src/lib/spatialCamera";
 
-export function CameraRig() {
+export function CameraRig({ banking = false }: { banking?: boolean } = {}) {
   const experience = useExperienceConfig();
   const frame = useCinematicFrame();
   const target = useRef(new THREE.Vector3());
@@ -51,8 +51,8 @@ export function CameraRig() {
     target.current.set(...current.target);
     camera.lookAt(target.current);
 
-    if (!state.runtimeCamera && !state.cameraPreview && !state.reducedMotion && hasDirectorMotion(frame.current.scene.motionTracks)) {
-      const progress = state.runtimeProgress ?? state.progress;
+    if (!state.runtimeCamera && !state.cameraPreview && !state.reducedMotion && (banking || hasDirectorMotion(frame.current.scene.motionTracks))) {
+      const progress = frame.progress;
       const span = frame.current.scene.range[1] - frame.current.scene.range[0];
       const sampleDelta = Math.max(0.00005, span * 0.0075);
       const min = frame.current.scene.range[0] + 1e-7;

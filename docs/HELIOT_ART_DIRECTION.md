@@ -9,6 +9,16 @@ Generated with the built-in image-generation tool for this project, then encoded
 
 ## Visual vocabulary
 
+### Spatial flight revision
+
+The active Canvas now renders an actual continuous architectural world through `ObservatoryWorld`, replacing the photographic plane and wire terrain. The exterior plate remains the semantic fallback. The interior is newly modeled architecture; it is not a scan or an exact reconstruction of the generated plate.
+
+`public/models/heliot/basalt.webp` is an original generated seamless albedo texture: orthographic weathered volcanic basalt, charcoal mineral grains, fractured stone and warm dust, flat diffuse illumination, no perspective or baked cast shadows. It is encoded at 1024×1024 and used with repeating UVs and diffuse lighting. `public/models/heliot/distant-landscape.webp` is an original generated matte of an empty volcanic plain and distant jagged mountains at golden hour, with no architecture or people. It occupies a distant world-space cylinder; nearby terrain, the gateway and the entire traversed interior are modeled. Bronze profiles and passage fins are native geometry; the gallery uses local procedural grain.
+
+The basin reflects gateway geometry across its horizontal plane in the main render pass. It intentionally does not perform a second full-scene reflection render. Geometry detail adapts to the existing quality tier. All motion stays in the shared Forge frame and can be reversed by scrolling.
+
+### Earlier photographic edition
+
 Warm mineral light, blackened bronze, chalk typography and restrained technical linework. Landscape has breathing room; macro has tactile density; the assembly is explicitly an architectural maquette; the lab is a useful interactive diagram; the field restores environmental scale. Photographic plates are spatially reframed with small pointer parallax, not claimed to be reconstructed 3D scans.
 
 `ObservatoryPlate` is a camera-independent plane within the one persistent Canvas. It uses a directional macro reveal and circular aperture handoffs driven by CinematicFrame. It never starts a second render loop. `TerrainField` is deterministic line geometry, with lower density on low quality. `lightLab` synchronizes an actual geometric opening, ray width, semantic output and exports. The radial aperture is a conceptual circular diaphragm, not a mechanical engineering simulation.
@@ -17,4 +27,4 @@ The optional user-activated atmosphere is synthesized locally through Web Audio.
 
 ## Files for maintainers
 
-The canonical generator is `scripts/generate-heliot.mjs`; edit it before regenerating either GLB or timeline. The named nodes preserve Forge ProductRig compatibility. `asset-manifest.json` records both model tiers and the two visual plates with byte counts and SHA-256 hashes. The designed SVG field sheet is generated locally from the visitor's selected finish and aperture; the companion JSON export contains the same settings.
+The canonical generator is `scripts/generate-heliot.mjs`; edit it before regenerating either GLB or timeline. The named nodes preserve Forge ProductRig compatibility. `asset-manifest.json` records both model tiers and the four local visual textures with byte counts and SHA-256 hashes. The designed SVG field sheet is generated locally from the visitor's selected finish and aperture; the companion JSON export contains the same settings.

@@ -1,6 +1,6 @@
 # HELIOT / Observatory for the unseen
 
-An original ten-act architectural light study at `/heliot`. Landscape-scale art moves into bronze macro detail, a structural maquette, an interactive aperture laboratory, a topographic field and an atmospheric return. The existing `/`, `/lab`, `/design` and `/studio` are preserved.
+An original ten-act architectural light study at `/heliot`. A real 3D aerial approach descends through a bronze gateway into an underground gallery, circles an interactive structural exhibit, and flies back into the landscape. The existing `/`, `/lab`, `/design` and `/studio` are preserved.
 
 ## Run
 
@@ -13,10 +13,9 @@ Use Node 22.13 or later, run `npm ci`, then `npm run dev` and open `/heliot`.
 - `src/experiences/heliot/HeliotStage.tsx`: environment lighting, crown markings and progressive optical rays, using Forge's persistent CinematicFrame.
 - `src/experiences/heliot/HeliotExperience.tsx`: accessible chapter document, aperture diagram, inspection and configuration export.
 - `app/heliot/observatory.css`: the rebuilt desktop and mobile art direction, layered over the semantic base styles.
-- `ObservatoryPlate.tsx`: photographic reframing and aperture transitions within the persistent Canvas.
-- `TerrainField.tsx`: deterministic spatial terrain with quality-dependent line density.
+- `ObservatoryWorld.tsx`: textured basalt terrain, instanced rocks, gateway, radial passage, lit gallery, basin and reflection geometry. The earlier `ObservatoryPlate.tsx` and `TerrainField.tsx` studies are no longer mounted.
 - `lightLab.ts`: the shared aperture state for geometry, ray width, readout and exports.
-- `docs/HELIOT_REBUILD_PLAN.md`: current creative rationale and shot list. `HELIOT_SCENE_PLAN.md` records the superseded first concept.
+- `docs/HELIOT_FLIGHT_PLAN.md`: current spatial shot list. Earlier scene plans record superseded concepts.
 - `docs/HELIOT_ART_DIRECTION.md`: original image provenance, prompts and implementation rationale.
 
 No runtime remote GLB, font, HDR, photography, AI API, form service, analytics, or payment credentials are needed. The two generated architectural plates are optimized local WebP assets. All graphics and model geometry are original. The existing font licenses apply to the local Manrope and Cormorant Garamond families. This is imagined architecture: diagrams demonstrate principles and do not claim construction-ready engineering.
@@ -33,7 +32,9 @@ The custom optical diagram is necessary because it shows a changing aperture con
 
 `node scripts/export-heliot.mjs` packages the prerendered route and hashed client assets into `out`. The root redirects to `/heliot`; only this microsite is exported, without Studio or server routes. Rebuild and re-export whenever source changes. Verify the exact output with `HELIOT_STATIC=1 npx playwright test tests/browser/heliot.spec.ts --project=chromium`. This distribution is suitable only while HELIOT remains client-interactive and has no Next server actions or server navigation. `node scripts/capture-heliot.mjs` captures production desktop/mobile screenshots in `generated/heliot`.
 
-## Delivery verification — 2026-09-14
+## Previous photographic edition verification — 2026-09-14
+
+This section records the superseded photographic edition. Current flight-release evidence is recorded below.
 
 - `npm run check`: all audits completed, 125 unit tests passed, TypeScript passed; lint reports zero errors and eight existing warnings. Project validation also passes with the HELIOT client registered.
 - Rebuilt production Next build passes. Four HELIOT Chromium end-to-end tests pass against the exported static distribution, covering persistent canvas, reverse navigation, sound on/off, keyboard inspection, both SVG/JSON downloads, mobile/reduced motion, short landscape layout, and no-JavaScript/no-WebGL fallbacks.
@@ -49,3 +50,13 @@ The custom optical diagram is necessary because it shows a changing aperture con
 - Canvas fallback content no longer marks working WebGL as failed merely because fallback DOM mounts inside a canvas.
 - Cinematic shader props synchronize after commit; scene changes reset compositor readiness through keyed ownership.
 - Shader compiler failures now retain diagnostic logs.
+
+## Spatial flight release
+
+The camera now approaches across a modeled reflection basin, crosses the hollow gateway, descends through a curved bronze passage, circles an underground gallery exhibit and returns through the same passage. Exterior and interior remain in one world. The distant mountains are an original matte on a curved backdrop; the traversed architecture is geometry. See `HELIOT_FLIGHT_PLAN.md` for coordinates and `heliot-review` for rendered evidence.
+
+Camera banking uses the same smoothed frame as position and target. The renderer uses demand frames: input invalidates the canvas, the shared damped transition continues until settled, and an idle shot rests. Aperture, finish, orbit, reset and navigation all invalidate the same renderer. The complete environment and exhibit share one loading boundary before readiness is announced.
+
+The 126-test unit suite and Forge audits pass, including 2,001 samples per viewport checking the actual passage centerline, doorway clearance, gallery floor/ceiling and exterior/exhibit framing. Production build, TypeScript and lint pass (eight existing lint warnings, no errors). The original model tiers remain under 1 MB each; all four local visual textures total approximately 1.2 MB. No claim of physical-device FPS or a verified Safari run is made.
+
+Final delivery: all four HELIOT Chromium end-to-end tests pass against the exported production distribution, including actual camera entry into the underground gallery and return outside, persistent-canvas navigation, sound, keyboard inspection, both downloads, mobile/reduced motion and no-JavaScript/no-WebGL fallback. All 20 chapter captures completed with no page errors or horizontal overflow. The observed render ledger peaked at 129 calls / 195,690 triangles on desktop and 196 calls / 381,612 triangles on phone, including initialization and multiple rendering passes; these are cost observations, not physical-device performance claims. See `heliot-review/report.json`.

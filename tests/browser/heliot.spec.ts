@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+test.setTimeout(120000);
 
 test('HELIOT preserves its canvas, chapter navigation and reverse scrolling', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
@@ -8,6 +9,10 @@ test('HELIOT preserves its canvas, chapter navigation and reverse scrolling', as
   await expect(page.locator('canvas')).toHaveCount(1);
   await page.waitForFunction(() => document.documentElement.dataset.heliotReady === 'true');
   const canvas = await page.locator('canvas').elementHandle();
+  await page.evaluate(() => document.getElementById('separation')!.scrollIntoView({behavior:'instant'}));
+  await page.waitForFunction(() => {const p=JSON.parse(document.documentElement.dataset.heliotCamera || '[0,0,0]');return p[2]<-10&&p[1]<-4.5;});
+  await page.evaluate(() => document.getElementById('signature')!.scrollIntoView({behavior:'instant'}));
+  await page.waitForFunction(() => JSON.parse(document.documentElement.dataset.heliotCamera || '[0,0,0]')[2] > 2);
   for (const id of ['optical-path', 'convergence', 'form', 'first-light']) {
     await page.evaluate(id => document.getElementById(id)!.scrollIntoView({behavior:'instant'}), id);
     await expect(page.locator(`#${id} h1, #${id} h2`)).toBeInViewport();
