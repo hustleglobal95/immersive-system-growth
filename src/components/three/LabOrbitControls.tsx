@@ -11,7 +11,7 @@ export function LabOrbitControls() {
   const freeCamera = useExperienceStore((state) => state.freeCamera);
   const controls = useRef<ElementRef<typeof OrbitControls>>(null);
   const { camera } = useThree();
-  const frame = useRef(0);
+
   useEffect(() => {
     if (freeCamera && controls.current) {
       controls.current.target.set(
@@ -23,8 +23,8 @@ export function LabOrbitControls() {
 
   useFrame(() => {
     if (!freeCamera || !controls.current) return;
-    frame.current += 1;
-    if (frame.current % 8 !== 0) return;
+    const prior=useExperienceStore.getState().cameraTelemetry;
+    if (camera.position.distanceToSquared({x:prior.position[0],y:prior.position[1],z:prior.position[2]} as THREE.Vector3)<.0000001 && controls.current.target.distanceToSquared({x:prior.target[0],y:prior.target[1],z:prior.target[2]} as THREE.Vector3)<.0000001) return;
     const target = controls.current.target;
     useExperienceStore.getState().setCameraTelemetry({
       position: [camera.position.x, camera.position.y, camera.position.z],

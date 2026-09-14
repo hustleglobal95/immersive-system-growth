@@ -9,7 +9,7 @@ import type { Vec3 } from '@/src/types/experience';
 export function StudioViewportTools({ onSelect, points = [], onPointSelect, selectedPoint = -1 }: {
   onSelect?: (target: string) => void; points?: Vec3[]; onPointSelect?: (index: number) => void; selectedPoint?: number;
 }) {
-  const { gl, scene, camera, invalidate } = useThree();
+  const { gl, scene, camera, invalidate, get } = useThree();
   const down = useRef<{ x: number; y: number } | null>(null);
   const raycaster = useMemo(() => new Raycaster(), []);
   useEffect(() => {
@@ -37,6 +37,18 @@ export function StudioViewportTools({ onSelect, points = [], onPointSelect, sele
     canvas.addEventListener('pointerdown', start); canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', cancel);
     return () => { canvas.removeEventListener('pointerdown', start); canvas.removeEventListener('pointerup', up); canvas.removeEventListener('pointercancel', cancel); };
   }, [camera, gl, onSelect, raycaster, scene]);
+  useEffect(() => {
+    const frameSelection=(event: Event)=>{
+      const data=(event as CustomEvent<{position:Vec3;radius:number}>).detail;
+      if(!data||!data.position?.every(Number.isFinite)||!Number.isFinite(data.radius))return;
+      const distance=Math.max(1,data.radius)*3;
+      camera.position.set(data.position[0]+distance*.7,data.position[1]+distance*.45,data.position[2]+distance);
+      camera.lookAt(...data.position);
+      const controls=get().controls as unknown as {target?:{set:(...p:Vec3)=>void};update?:()=>void}|null;
+      controls?.target?.set(...data.position);controls?.update?.();invalidate();
+    };
+    window.addEventListener('forge:frame-selection',frameSelection);return()=>window.removeEventListener('forge:frame-selection',frameSelection);
+  },[camera,get,invalidate]);
   useEffect(() => { invalidate(); }, [points, selectedPoint, invalidate]);
   if (points.length < 2) return null;
   return <group userData={{ studioHelper: true }}>

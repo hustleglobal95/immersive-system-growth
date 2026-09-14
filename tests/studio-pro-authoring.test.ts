@@ -1,0 +1,18 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import raw from '../src/experiences/heliot/experience.json';
+import { parseExperience } from '../src/lib/configSchema';
+import { newScene, removeScene, shotNames, shotPreset, capturePose, cloneAsset, readSnapshots, writeSnapshot, cameraTrackWarning } from '../src/studio/pro/authoring';
+import { addModel } from '../src/studio/workspaceOperations';
+const base=()=>parseExperience(structuredClone(raw));
+test('new scene preserves original and a contiguous schema-valid timeline',()=>{const c=base();const n=newScene(c,0); assert.equal(c.scenes.length,10);assert.equal(n.scenes.length,11);assert.equal(n.scenes[1].camera.from.position[0],c.scenes[0].camera.to.position[0]);assert.equal(n.scenes[0].range[1],n.scenes[1].range[0]);parseExperience(n);});
+test('duplicate copies independent camera and media structures',()=>{const c=base(),n=newScene(c,0,true);n.scenes[1].camera.from.position[0]=99;assert.notEqual(n.scenes[0].camera.from.position[0],99);});
+test('removing first, interior or final scene repairs neighbors',()=>{for(const i of [0,4,9]){const c=removeScene(base(),i);assert.equal(c.scenes.length,9);parseExperience(c);}});
+test('last remaining scene cannot be removed',()=>{let c=base();while(c.scenes.length>1)c=removeScene(c,0);assert.throws(()=>removeScene(c,0));});
+test('scene deletion removes orphaned scoped assets and hotspots',()=>{let c=addModel(base(),0,'/models/reference/product.glb',[0,0,0]);c.hotspots.push({id:'test',sceneId:c.scenes[0].id,label:'test',description:'test',position:[0,0,0]});c=removeScene(c,0);assert.equal(c.assets.length,0);assert.equal(c.hotspots.length,0);});
+test('duplicating scene shares scoped assets without mutating original',()=>{const c=addModel(base(),0,'/models/reference/product.glb',[0,0,0]);const n=newScene(c,0,true);assert.equal(n.assets[0].scenes?.length,2);assert.equal(c.assets[0].scenes?.length,1);});
+test('shot presets are schema-valid and clear superseded waypoints',()=>{for(const name of shotNames){const c=base();c.scenes[0].camera=shotPreset(c.scenes[0].camera,name);assert.equal(c.scenes[0].camera.waypoints,undefined);parseExperience(c);}});
+test('camera capture preserves other endpoint and clamps FOV',()=>{const c=base().scenes[0].camera;const n=capturePose(c,'from',{position:[1,2,3],target:[0,0,0],fov:110});assert.equal(n.from.fov,90);assert.deepEqual(n.to,c.to);assert.throws(()=>capturePose(c,'to',{position:[0,0,0],target:[0,0,0],fov:40}));});
+test('asset duplicate gets unique ID and keeps source unchanged',()=>{const c=addModel(base(),0,'/models/reference/product.glb',[1,0,0]);const n=cloneAsset(cloneAsset(c,'product'),'product');assert.equal(new Set(n.assets.map(a=>a.id)).size,3);assert.equal(c.assets[0].position[0],1);});
+test('snapshot history keeps eight validated independent versions',()=>{const entries=new Map<string,string>();const store={getItem:(k:string)=>entries.get(k)??null,setItem:(k:string,v:string)=>{entries.set(k,v);}};for(let i=0;i<10;i++)writeSnapshot(store,'history',base(),`version ${i}`,String(i));assert.equal(readSnapshots(store,'history').length,8);assert.equal(readSnapshots(store,'history')[0].name,'version 9');entries.set('history','bad-json');assert.throws(()=>writeSnapshot(store,'history',base(),'new'));assert.equal(entries.get('history'),'bad-json');});
+test('camera-track warning ignores muted or opposite device tracks',()=>{const s=base().scenes[0];assert.equal(cameraTrackWarning(s,false),false);});

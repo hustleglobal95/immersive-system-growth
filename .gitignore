@@ -17,3 +17,6 @@ config/backups/
 public/decoders/draco/
 public/decoders/basis/
 generated/
+
+# Local Studio imports (keep with local projects; never commit client models)
+data/studio-assets/
