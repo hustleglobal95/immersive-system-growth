@@ -13,14 +13,18 @@ try {
   if (!ready) throw new Error('Production server failed to start.');
   browser = await chromium.launch({ headless: true, args: ['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'] });
   page = await browser.newPage({ viewport: { width: 1600, height: 1100 }, deviceScaleFactor: 1 });
+  page.setDefaultTimeout(30000);
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('http://127.0.0.1:3000/studio', { waitUntil: 'domcontentloaded' });
   await page.getByLabel('Studio project', { exact: true }).selectOption('HELIOT');
   await expect(page.locator('.studio-preview')).toHaveAttribute('data-runtime','heliot');
   await expect(page.locator('.studio-preview canvas')).toBeVisible({ timeout: 60000 });
   await page.waitForFunction(() => document.documentElement.dataset.heliotReady === 'true', null, { timeout: 60000 });
-  const select = page.getByLabel('Selected point', { exact: true });
+  // The wrapping label also contains the select's option text. Match its label prefix.
+  const select = page.getByRole('combobox', { name: /^Selected point/ });
+  await expect(select).toBeVisible();
   const before = await select.locator('option').count();
+  if (before < 2) throw new Error('Camera is missing its start/end points.');
   await page.getByRole('button', { name: 'Add waypoint', exact: true }).click();
   await expect(select.locator('option')).toHaveCount(before + 1);
   const pointX = page.getByLabel('Point position X', { exact: true });
@@ -30,6 +34,7 @@ try {
   parseExperience(saved);
   if (saved.scenes[0].camera.from.position[0] !== 6) throw new Error('Snapshot does not contain camera edit.');
   const circle = page.getByRole('button', { name: 'TOP / XZ point 1', exact: true });
+  await circle.scrollIntoViewIfNeeded();
   const box = await circle.boundingBox(); if (!box) throw new Error('No draggable camera handle.');
   await page.mouse.move(box.x+box.width/2,box.y+box.height/2); await page.mouse.down(); await page.mouse.move(box.x+box.width/2+15,box.y+box.height/2,{ steps: 5 }); await page.mouse.up();
   await expect(pointX).not.toHaveValue('6');
@@ -38,6 +43,7 @@ try {
   await expect(page.getByRole('button', { name: 'Return to film camera', exact: true })).toBeVisible();
   await page.screenshot({ path: `${output}/studio-camera-editor.png`, fullPage: true });
   await page.getByRole('button', { name: 'Return to film camera', exact: true }).click();
+  await page.screenshot({ path: `${output}/studio-workspace.png`, fullPage: true });
   const range = page.getByLabel('Global cinematic progress', { exact: true });
   await range.focus(); await range.press('Home'); for(let i=0;i<23;i++) await range.press('ArrowRight');
   await expect(range).toHaveValue('0.023');
@@ -48,7 +54,7 @@ try {
   await page.getByRole('button', { name: 'environment', exact: true }).click();
   await page.getByRole('button', { name: 'Cool gallery', exact: true }).click();
   await page.getByRole('button', { name: 'camera', exact: true }).click();
-  await page.getByLabel('Edit camera', { exact: true }).selectOption('mobile');
+  await page.getByRole('combobox', { name: /^Edit camera/ }).selectOption('mobile');
   await expect(page.locator('.studio-preview__viewport')).toHaveAttribute('data-viewport','mobile');
   await page.screenshot({ path: `${output}/studio-mobile-framing.png`, fullPage: true });
   const downloadPromise = page.waitForEvent('download');
@@ -60,7 +66,7 @@ try {
   if (errors.length) throw new Error(`Browser errors: ${errors.join('; ')}`);
   await writeFile(`${output}/report.json`, JSON.stringify({ passed: true, checks: ['production HELIOT world','camera waypoint insert','camera numeric edit','grouped drag undo','orbit view','exact seek','project draft recovery','lighting preset','mobile framing','validated JSON export'], browserErrors: errors },null,2));
 } catch (error) {
-  if (page) await page.screenshot({ path: `${output}/failure.png`, fullPage: true }).catch(()=>{});
+  if (page) { await page.screenshot({ path: `${output}/failure.png`, fullPage: true }).catch(()=>{}); await writeFile(`${output}/page.html`,await page.content()).catch(()=>{}); }
   await writeFile(`${output}/report.json`, JSON.stringify({ passed: false, error: String(error), browserErrors: errors },null,2));
   throw error;
 } finally { await writeFile(`${output}/server.log`,log); await browser?.close(); server.kill('SIGTERM'); }
