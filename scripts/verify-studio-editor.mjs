@@ -9,7 +9,28 @@ let log = ''; server.stdout.on('data', d => log += d); server.stderr.on('data', 
 let browser, page;
 const errors = [], checks = [], captures = [], captureWarnings = [];
 const passed = name => { checks.push(name); console.log(`PASS: ${name}`); };
+async function assertViewport() {
+  // Wait for both the CSS width transition and R3F's ResizeObserver to settle.
+  // A changed data attribute alone does not prove the actual 3D camera aspect changed.
+  await page.waitForFunction(() => {
+    const viewport = document.querySelector('.studio-preview__viewport');
+    const frame = viewport?.querySelector('.studio-preview__canvas');
+    const canvas = frame?.querySelector('canvas');
+    if (!frame || !canvas) return false;
+    const bounds = frame.getBoundingClientRect();
+    const rendered = canvas.getBoundingClientRect();
+    const kind = viewport.dataset.viewport;
+    const ratio = kind === 'mobile' ? 9 / 16 : kind === 'tablet' ? 4 / 3 : 16 / 9;
+    return bounds.width > 0 && bounds.height > 0 && rendered.height > 0 && canvas.height > 0
+      && Math.abs(bounds.width / bounds.height - ratio) < .015
+      && Math.abs(rendered.width / rendered.height - ratio) < .015
+      && Math.abs(canvas.width / canvas.height - ratio) < .015
+      && Math.abs(rendered.width - bounds.width) < 2
+      && (kind !== 'mobile' || bounds.width <= 320.5);
+  }, null, { timeout: 60000 });
+}
 async function capture(name) {
+  await assertViewport();
   let session;
   try {
     await page.evaluate(() => window.scrollTo(0,0));
@@ -29,14 +50,14 @@ try {
   page.setDefaultTimeout(60000);
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('http://127.0.0.1:3000/studio', { waitUntil: 'domcontentloaded' });
-  // Exercise the supported low-quality renderer on a software GPU, not a mocked canvas.
-  // The production default remains unchanged. This is functional QA, not hardware FPS certification.
+  // Test the real low-quality renderer on a software GPU, not a mocked canvas.
   await page.getByLabel('Preview quality', { exact: true }).selectOption('low');
   await page.getByLabel('Studio project', { exact: true }).selectOption('HELIOT');
   await expect(page.locator('.studio-preview')).toHaveAttribute('data-runtime','heliot');
   await expect(page.locator('.studio-preview canvas')).toBeVisible({ timeout: 60000 });
   await page.waitForFunction(() => document.documentElement.dataset.heliotReady === 'true', null, { timeout: 60000 });
-  passed('production HELIOT world at low quality');
+  await assertViewport();
+  passed('production HELIOT world and desktop canvas aspect');
   const select = page.getByRole('combobox', { name: /^Selected point/ });
   await expect(select).toBeVisible();
   const before = await select.locator('option').count();
@@ -77,7 +98,8 @@ try {
   await page.getByRole('button', { name: 'camera', exact: true }).click();
   await page.getByRole('combobox', { name: /^Edit camera/ }).selectOption('mobile');
   await expect(page.locator('.studio-preview__viewport')).toHaveAttribute('data-viewport','mobile');
-  passed('mobile preview framing');
+  await assertViewport();
+  passed('mobile preview framing and actual 9:16 canvas');
   await page.getByRole('combobox', { name: /^Edit camera/ }).selectOption('desktop');
   await page.locator('.builder-library summary').click();
   await page.getByLabel('Hosted GLB path').fill('/models/heliot/heliot-01-low.glb');
