@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import type { RevealConfig, SpatialConfig } from "@/src/lib/cinematic/schema";
+import { forgeTicker } from "@/src/lib/cinematic/ticker";
 
 interface Props {
   src: string;
@@ -13,6 +14,8 @@ interface Props {
   pointerY: number;
   scrollProgress: number;
   opacity?: number;
+  onReady?: () => void;
+  onError?: (error: Error) => void;
 }
 
 type Runtime = {
@@ -111,26 +114,70 @@ void main(){
 }`;
 
 function compile(gl: WebGL2RenderingContext, type: number, source: string) {
-  const shader=gl.createShader(type); if(!shader) throw new Error("Unable to create shader");
-  gl.shaderSource(shader,source); gl.compileShader(shader);
-  if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS)){const log=gl.getShaderInfoLog(shader);gl.deleteShader(shader);throw new Error(`Cinematic shader compile failed: ${log}`);}
+  const shader=gl.createShader(type);
+  if(!shader) throw new Error("Unable to create shader");
+  gl.shaderSource(shader,source);
+  gl.compileShader(shader);
+  if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS)){
+    const log=gl.getShaderInfoLog(shader);
+    gl.deleteShader(shader);
+    throw new Error(`Cinematic shader compile failed: ${log}`);
+  }
   return shader;
 }
-function program(gl: WebGL2RenderingContext){const vs=compile(gl,gl.VERTEX_SHADER,vertex),fs=compile(gl,gl.FRAGMENT_SHADER,fragment),p=gl.createProgram();if(!p)throw new Error("Unable to create program");gl.attachShader(p,vs);gl.attachShader(p,fs);gl.linkProgram(p);gl.deleteShader(vs);gl.deleteShader(fs);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw new Error(`Cinematic shader link failed: ${gl.getProgramInfoLog(p)}`);return p;}
-function texture(gl:WebGL2RenderingContext){const value=gl.createTexture();if(!value)throw new Error("Unable to create texture");gl.bindTexture(gl.TEXTURE_2D,value);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([128,128,255,255]));return value;}
+function createProgram(gl: WebGL2RenderingContext){
+  const vs=compile(gl,gl.VERTEX_SHADER,vertex),fs=compile(gl,gl.FRAGMENT_SHADER,fragment),p=gl.createProgram();
+  if(!p)throw new Error("Unable to create program");
+  gl.attachShader(p,vs);gl.attachShader(p,fs);gl.linkProgram(p);gl.deleteShader(vs);gl.deleteShader(fs);
+  if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw new Error(`Cinematic shader link failed: ${gl.getProgramInfoLog(p)}`);
+  return p;
+}
+function createTexture(gl:WebGL2RenderingContext){
+  const value=gl.createTexture();if(!value)throw new Error("Unable to create texture");
+  gl.bindTexture(gl.TEXTURE_2D,value);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([128,128,255,255]));
+  return value;
+}
 function loadImage(url:string){return new Promise<HTMLImageElement>((resolve,reject)=>{const image=new Image();image.crossOrigin="anonymous";image.decoding="async";image.onload=()=>resolve(image);image.onerror=()=>reject(new Error(`Unable to load cinematic texture ${url}`));image.src=url;});}
 const effectCode=(effect:RevealConfig["effect"]|undefined)=>effect==="directional"?1:effect==="radial"?2:effect==="liquid"?3:effect==="burn"?4:effect==="particle"?5:effect==="wireframe"?6:effect==="contour"?7:0;
 const directionCode=(direction:RevealConfig["direction"]|undefined)=>direction==="left"?1:direction==="up"?2:direction==="down"?3:0;
 function hex(value:string|undefined){const v=(value??"#ffffff").replace("#","");const n=parseInt(v.length===3?v.split("").map(x=>x+x).join(""):v,16);return[(n>>16&255)/255,(n>>8&255)/255,(n&255)/255] as const;}
 
 export function CinematicShaderCanvas(props:Props){
-  const canvas=useRef<HTMLCanvasElement>(null),runtime=useRef<Runtime|null>(null),values=useRef(props);values.current=props;
-  useEffect(()=>{let disposed=false;const element=canvas.current;if(!element)return;const gl=element.getContext("webgl2",{alpha:true,antialias:false,premultipliedAlpha:true,powerPreference:"high-performance"});if(!gl)return;let rt:Runtime|null=null;
-    (async()=>{const p=program(gl),vao=gl.createVertexArray();if(!vao)throw new Error("Unable to create cinematic VAO");gl.bindVertexArray(vao);const names=["uBase","uDepth","uNormal","uResolution","uImageSize","uPointer","uProgress","uScroll","uDepthStrength","uRelightStrength","uUseDepth","uUseNormal","uReveal","uSoftness","uSeed","uDirection","uEdge","uEdgeWidth","uOpacity"];const uniforms=Object.fromEntries(names.map(name=>[name,gl.getUniformLocation(p,name)]));const textures=[texture(gl),texture(gl),texture(gl)];const [base,depth,normal]=await Promise.all([loadImage(props.src),props.depthMap?loadImage(props.depthMap):null,props.normalMap?loadImage(props.normalMap):null]);if(disposed)return;for(const [index,image] of [base,depth,normal].entries()){if(!image)continue;gl.activeTexture(gl.TEXTURE0+index);gl.bindTexture(gl.TEXTURE_2D,textures[index]);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image);}rt={gl,program:p,vao,uniforms,textures,imageSize:[base.naturalWidth,base.naturalHeight]};runtime.current=rt;render();})().catch(()=>{runtime.current=null;});
-    const render=()=>{const current=runtime.current;if(!current)return;const {gl,program:p,vao,uniforms,imageSize}=current,v=values.current,dpr=Math.min(window.devicePixelRatio||1,2),w=Math.max(1,window.innerWidth),h=Math.max(1,window.innerHeight),dw=Math.round(w*dpr),dh=Math.round(h*dpr);if(element.width!==dw||element.height!==dh){element.width=dw;element.height=dh;element.style.width=`${w}px`;element.style.height=`${h}px`;}gl.viewport(0,0,dw,dh);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.useProgram(p);gl.bindVertexArray(vao);gl.uniform1i(uniforms.uBase,0);gl.uniform1i(uniforms.uDepth,1);gl.uniform1i(uniforms.uNormal,2);gl.uniform2f(uniforms.uResolution,dw,dh);gl.uniform2f(uniforms.uImageSize,imageSize[0],imageSize[1]);gl.uniform2f(uniforms.uPointer,v.pointerX,v.pointerY);gl.uniform1f(uniforms.uProgress,v.progress);gl.uniform1f(uniforms.uScroll,v.scrollProgress);gl.uniform1f(uniforms.uDepthStrength,v.spatial?.depthStrength??0);gl.uniform1f(uniforms.uRelightStrength,v.spatial?.relightStrength??0);gl.uniform1f(uniforms.uUseDepth,v.depthMap?1:0);gl.uniform1f(uniforms.uUseNormal,v.normalMap?1:0);gl.uniform1f(uniforms.uReveal,effectCode(v.reveal?.effect));gl.uniform1f(uniforms.uSoftness,v.reveal?.softness??.1);gl.uniform1f(uniforms.uSeed,v.reveal?.seed??47);gl.uniform1f(uniforms.uDirection,directionCode(v.reveal?.direction));const edge=hex(v.reveal?.edgeColor);gl.uniform3f(uniforms.uEdge,edge[0],edge[1],edge[2]);gl.uniform1f(uniforms.uEdgeWidth,v.reveal?.edgeWidth??0);gl.uniform1f(uniforms.uOpacity,v.opacity??1);gl.drawArrays(gl.TRIANGLES,0,3);};
-    const onResize=()=>render();window.addEventListener("resize",onResize);const frame=()=>render();const id=requestAnimationFrame(frame);
-    return()=>{disposed=true;cancelAnimationFrame(id);window.removeEventListener("resize",onResize);if(rt){rt.textures.forEach(value=>gl.deleteTexture(value));gl.deleteVertexArray(rt.vao);gl.deleteProgram(rt.program);}runtime.current=null;};
+  const canvas=useRef<HTMLCanvasElement>(null),runtime=useRef<Runtime|null>(null),values=useRef(props);
+  values.current=props;
+  useEffect(()=>{
+    let disposed=false, unsubscribe: null | (()=>void)=null;
+    const element=canvas.current;
+    if(!element)return;
+    const gl=element.getContext("webgl2",{alpha:true,antialias:false,premultipliedAlpha:true,powerPreference:"high-performance"});
+    if(!gl){props.onError?.(new Error("WebGL2 unavailable for cinematic compositor"));return;}
+    let rt:Runtime|null=null;
+    const render=()=>{
+      const current=runtime.current;if(!current)return;
+      const {gl,program:p,vao,uniforms,imageSize}=current,v=values.current,dpr=Math.min(window.devicePixelRatio||1,2),w=Math.max(1,window.innerWidth),h=Math.max(1,window.innerHeight),dw=Math.round(w*dpr),dh=Math.round(h*dpr);
+      if(element.width!==dw||element.height!==dh){element.width=dw;element.height=dh;element.style.width=`${w}px`;element.style.height=`${h}px`;}
+      gl.viewport(0,0,dw,dh);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.useProgram(p);gl.bindVertexArray(vao);
+      gl.uniform1i(uniforms.uBase,0);gl.uniform1i(uniforms.uDepth,1);gl.uniform1i(uniforms.uNormal,2);gl.uniform2f(uniforms.uResolution,dw,dh);gl.uniform2f(uniforms.uImageSize,imageSize[0],imageSize[1]);gl.uniform2f(uniforms.uPointer,v.pointerX,v.pointerY);gl.uniform1f(uniforms.uProgress,v.progress);gl.uniform1f(uniforms.uScroll,v.scrollProgress);gl.uniform1f(uniforms.uDepthStrength,v.spatial?.depthStrength??0);gl.uniform1f(uniforms.uRelightStrength,v.spatial?.relightStrength??0);gl.uniform1f(uniforms.uUseDepth,v.depthMap?1:0);gl.uniform1f(uniforms.uUseNormal,v.normalMap?1:0);gl.uniform1f(uniforms.uReveal,effectCode(v.reveal?.effect));gl.uniform1f(uniforms.uSoftness,v.reveal?.softness??.1);gl.uniform1f(uniforms.uSeed,v.reveal?.seed??47);gl.uniform1f(uniforms.uDirection,directionCode(v.reveal?.direction));
+      const edge=hex(v.reveal?.edgeColor);gl.uniform3f(uniforms.uEdge,edge[0],edge[1],edge[2]);gl.uniform1f(uniforms.uEdgeWidth,v.reveal?.edgeWidth??0);gl.uniform1f(uniforms.uOpacity,v.opacity??1);gl.drawArrays(gl.TRIANGLES,0,3);
+    };
+    (async()=>{
+      const p=createProgram(gl),vao=gl.createVertexArray();if(!vao)throw new Error("Unable to create cinematic VAO");gl.bindVertexArray(vao);
+      const names=["uBase","uDepth","uNormal","uResolution","uImageSize","uPointer","uProgress","uScroll","uDepthStrength","uRelightStrength","uUseDepth","uUseNormal","uReveal","uSoftness","uSeed","uDirection","uEdge","uEdgeWidth","uOpacity"];
+      const uniforms=Object.fromEntries(names.map(name=>[name,gl.getUniformLocation(p,name)]));const textures=[createTexture(gl),createTexture(gl),createTexture(gl)];
+      const [base,depth,normal]=await Promise.all([loadImage(props.src),props.depthMap?loadImage(props.depthMap):null,props.normalMap?loadImage(props.normalMap):null]);
+      if(disposed)return;
+      for(const [index,image] of [base,depth,normal].entries()){
+        if(!image)continue;gl.activeTexture(gl.TEXTURE0+index);gl.bindTexture(gl.TEXTURE_2D,textures[index]);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image);
+      }
+      rt={gl,program:p,vao,uniforms,textures,imageSize:[base.naturalWidth,base.naturalHeight]};runtime.current=rt;render();props.onReady?.();unsubscribe=forgeTicker.subscribe(render);
+    })().catch((error)=>{runtime.current=null;props.onError?.(error instanceof Error?error:new Error(String(error)));});
+    const onResize=()=>render();window.addEventListener("resize",onResize);
+    return()=>{disposed=true;unsubscribe?.();window.removeEventListener("resize",onResize);if(rt){rt.textures.forEach(value=>gl.deleteTexture(value));gl.deleteVertexArray(rt.vao);gl.deleteProgram(rt.program);}runtime.current=null;};
   },[props.src,props.depthMap,props.normalMap]);
-  useEffect(()=>{const rt=runtime.current;if(!rt)return;const event=new Event("resize");window.dispatchEvent(event);},[props.progress,props.pointerX,props.pointerY,props.scrollProgress,props.opacity]);
   return <canvas ref={canvas} className="forge-cinematic-shader" style={{position:"absolute",inset:0,width:"100%",height:"100%",pointerEvents:"none"}}/>;
 }
