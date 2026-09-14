@@ -2,6 +2,7 @@ import fs from "node:fs";
 import { auditAssets } from "./asset-audit-lib.mjs";
 const files = [
   "config/experience.json",
+  "config/cinematic-systems.json",
   ...fs
     .readdirSync("recipes")
     .filter((f) => f.endsWith(".json"))
