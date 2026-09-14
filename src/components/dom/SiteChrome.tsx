@@ -1,39 +1,57 @@
 import Link from "next/link";
 import { experience } from "@/src/lib/experience";
+
 export function SiteChrome() {
   const nocterra = experience.meta.name.startsWith("NOCTERRA");
-  if (nocterra) {
+  const atelierMaris = experience.meta.name.startsWith("ATELIER MARIS");
+
+  if (atelierMaris) {
     return (
-      <header className="site-chrome site-chrome--nocterra">
-        <a className="skip-link" href="#experience-content">
-          Skip to content
-        </a>
-        <Link href="#arrival" className="nocterra-brand" aria-label="NOCTERRA Residence 01">
-          <strong>NOCTERRA</strong>
-          <span>Residence 01</span>
+      <header className="atelier-maris-chrome" aria-label="Atelier Maris navigation">
+        <Link className="atelier-maris-brand" href="#approach" aria-label="Atelier Maris, return to project opening">
+          <span>ATELIER</span><span>MARIS</span>
         </Link>
-        <nav className="nocterra-nav" aria-label="Residence navigation">
-          <Link href="#exterior">Residence</Link>
-          <Link href="#interior">Interior</Link>
-          <Link href="#horizon">Horizon</Link>
-          <Link href="#private-presentation" className="nocterra-nav__cta">
-            Private presentation
-          </Link>
+        <nav className="atelier-maris-nav" aria-label="Project chapters">
+          <Link href="#parti">Project</Link>
+          <Link href="#material">Material</Link>
+          <Link href="#studio">Studio</Link>
+          <Link href="#inquiry">Inquire</Link>
         </nav>
+        <div className="atelier-maris-meta">
+          <span>Casa Lumen / 01</span><br />
+          <span>Costa Brava, Spain</span>
+          <i className="atelier-maris-rule" />
+        </div>
       </header>
     );
   }
+
+  if (nocterra) {
+    return (
+      <header className="nocterra-chrome" aria-label="NOCTERRA navigation">
+        <Link className="nocterra-brand" href="#arrival" aria-label="NOCTERRA, return to opening">
+          <span className="nocterra-brand__mark" aria-hidden="true">N</span>
+          <span>NOCTERRA</span>
+        </Link>
+        <nav className="nocterra-nav" aria-label="Experience chapters">
+          <Link href="#machine">Machine</Link>
+          <Link href="#exterior">Residence</Link>
+          <Link href="#material">Materials</Link>
+        </nav>
+        <div className="nocterra-inquire">
+          <span>RESIDENCE 01 / TAMPA BAY</span>
+          <Link href="#private-presentation">PRIVATE PRESENTATION</Link>
+        </div>
+      </header>
+    );
+  }
+
   return (
-    <header className="site-chrome">
-      <a className="skip-link" href="#experience-content">
-        Skip to content
-      </a>
-      <Link href="/" className="wordmark">
-        {experience.meta.name}
-      </Link>
-      <nav aria-label="Authoring tools"><Link href="/studio" className="lab-link">Studio</Link><Link href="/design" className="lab-link">Design atelier</Link><Link href="/lab" className="lab-link">
-        Scene lab
-      </Link></nav>
+    <header className="site-chrome" aria-label="Experience navigation">
+      <Link href="#experience-content">{experience.meta.name}</Link>
+      <nav aria-label="Scene navigation">
+        {experience.scenes.slice(0, 4).map((scene) => <Link key={scene.id} href={`#${scene.id}`}>{scene.label}</Link>)}
+      </nav>
     </header>
   );
 }
