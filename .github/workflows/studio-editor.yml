@@ -29,10 +29,10 @@ jobs:
       - name: Verify real Studio editing and export
         timeout-minutes: 7
         run: node --import tsx scripts/verify-studio-editor.mjs
-      - name: Verify storage recovery and asset-kit compatibility
+      - name: Verify recovery, kit compatibility and idle-render diagnostics
         if: always() && steps.build.outcome == 'success' && steps.browser.outcome == 'success'
-        timeout-minutes: 4
-        run: npx playwright test tests/browser/studio-storage.spec.ts tests/browser/asset-bank.spec.ts --project=chromium --output=test-results/studio-storage
+        timeout-minutes: 5
+        run: npx playwright test tests/browser/studio-storage.spec.ts tests/browser/studio-render-stats.spec.ts tests/browser/asset-bank.spec.ts --project=chromium --output=test-results/studio-storage
       - name: Upload Studio evidence
         if: always()
         uses: actions/upload-artifact@v4

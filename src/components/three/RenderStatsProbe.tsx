@@ -1,36 +1,39 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useExperienceStore } from "@/src/store/experienceStore";
+import { useExperienceStore, type RendererStats } from "@/src/store/experienceStore";
+
 export function RenderStatsProbe() {
   const { gl } = useThree();
   const sum = useRef({ frames: 0, ms: 0 });
+  const last = useRef<RendererStats | null>(null);
   useEffect(() => {
     const previous = gl.info.autoReset;
     gl.info.autoReset = false;
-    return () => {
-      gl.info.autoReset = previous;
-    };
+    last.current = null;
+    return () => { gl.info.autoReset = previous; };
   }, [gl]);
   useFrame((_, delta) => {
-    // At the start of a frame, counters include ALL render passes from the previous frame.
+    // Counters include all render passes from the previous completed frame.
     sum.current.frames++;
     sum.current.ms += delta * 1000;
-    if (sum.current.frames >= 30) {
-      if (useExperienceStore.getState().debug) {
-        const r = gl.info.render;
-        useExperienceStore
-          .getState()
-          .setRendererStats({
-            calls: r.calls,
-            triangles: r.triangles,
-            lines: r.lines,
-            points: r.points,
-            textures: gl.info.memory.textures,
-            geometries: gl.info.memory.geometries,
-            frameMs: sum.current.ms / sum.current.frames,
-          });
-      }
+    const r = gl.info.render;
+    const prior = last.current;
+    const changed = !prior || prior.calls !== r.calls || prior.triangles !== r.triangles
+      || prior.lines !== r.lines || prior.points !== r.points
+      || prior.textures !== gl.info.memory.textures || prior.geometries !== gl.info.memory.geometries;
+    // A demand-rendered scene may settle before 30 frames. Publish its first
+    // nonempty result and changed budgets immediately; never invalidate here.
+    if (r.calls > 0 && useExperienceStore.getState().debug && (changed || sum.current.frames >= 30)) {
+      const snapshot: RendererStats = {
+        calls: r.calls, triangles: r.triangles, lines: r.lines, points: r.points,
+        textures: gl.info.memory.textures, geometries: gl.info.memory.geometries,
+        frameMs: sum.current.ms / sum.current.frames,
+      };
+      last.current = snapshot;
+      useExperienceStore.getState().setRendererStats(snapshot);
+      sum.current = { frames: 0, ms: 0 };
+    } else if (sum.current.frames >= 30) {
       sum.current = { frames: 0, ms: 0 };
     }
     gl.info.reset();
