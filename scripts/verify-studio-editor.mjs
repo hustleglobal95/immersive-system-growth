@@ -10,8 +10,6 @@ let browser, page;
 const errors = [], checks = [], captures = [], captureWarnings = [];
 const passed = name => { checks.push(name); console.log(`PASS: ${name}`); };
 async function capture(name) {
-  // A native viewport capture avoids full-page resizing of the active WebGL surface.
-  // Capture warnings are reported separately; functional assertions remain mandatory.
   let session;
   try {
     await page.evaluate(() => window.scrollTo(0,0));
@@ -26,16 +24,19 @@ try {
   let ready = false;
   for (let i=0;i<60;i++) { try { const response = await fetch('http://127.0.0.1:3000/api/health'); if (response.ok) { ready = true; break; } } catch {} await new Promise(r => setTimeout(r,500)); }
   if (!ready) throw new Error('Production server failed to start.');
-  browser = await chromium.launch({ headless: true, args: ['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'] });
-  page = await browser.newPage({ viewport: { width: 1600, height: 1500 }, deviceScaleFactor: 1 });
-  page.setDefaultTimeout(30000);
+  browser = await chromium.launch({ headless: true, args: ['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-background-timer-throttling','--disable-renderer-backgrounding'] });
+  page = await browser.newPage({ viewport: { width: 1440, height: 1100 }, deviceScaleFactor: 1 });
+  page.setDefaultTimeout(60000);
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('http://127.0.0.1:3000/studio', { waitUntil: 'domcontentloaded' });
+  // Exercise the supported low-quality renderer on a software GPU, not a mocked canvas.
+  // The production default remains unchanged. This is functional QA, not hardware FPS certification.
+  await page.getByLabel('Preview quality', { exact: true }).selectOption('low');
   await page.getByLabel('Studio project', { exact: true }).selectOption('HELIOT');
   await expect(page.locator('.studio-preview')).toHaveAttribute('data-runtime','heliot');
   await expect(page.locator('.studio-preview canvas')).toBeVisible({ timeout: 60000 });
   await page.waitForFunction(() => document.documentElement.dataset.heliotReady === 'true', null, { timeout: 60000 });
-  passed('production HELIOT world');
+  passed('production HELIOT world at low quality');
   const select = page.getByRole('combobox', { name: /^Selected point/ });
   await expect(select).toBeVisible();
   const before = await select.locator('option').count();
@@ -85,6 +86,7 @@ try {
   await expect(objectX).toBeVisible(); await objectX.fill('3'); await objectX.press('Tab'); await expect(objectX).toHaveValue('3');
   passed('model placement and object transform');
   await page.getByRole('button', { name: 'Keyframe sequencer', exact: true }).click();
+  await page.getByLabel('Preview quality', { exact: true }).selectOption('low');
   await page.getByLabel('Motion target', { exact: true }).selectOption('camera.position');
   await page.getByRole('button', { name: 'Add track', exact: true }).click();
   await page.getByLabel('Keyframe X', { exact: true }).fill('6.25');
@@ -92,6 +94,7 @@ try {
   await expect(page.getByLabel('Keyframe X', { exact: true })).toHaveValue('6.25');
   passed('keyframe track creation and editing');
   await page.getByRole('button', { name: 'Back to workspace', exact: true }).click();
+  await page.getByLabel('Preview quality', { exact: true }).selectOption('low');
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Export JSON', exact: true }).click();
   const download = await downloadPromise;
@@ -103,7 +106,6 @@ try {
   if (!track || track.keyframes[0].value[0] !== 6.25) throw new Error('Edited camera keyframe missing from export.');
   passed('validated JSON export including assets, lighting and keyframes');
   if (errors.length) throw new Error(`Browser errors: ${errors.join('; ')}`);
-  // Evidence comes after assertions, so a slow software-GPU capture cannot conceal which checks ran.
   await page.getByRole('button', { name: 'camera', exact: true }).click();
   await capture('studio-workspace');
   await page.getByRole('button', { name: 'Orbit / edit view', exact: true }).click();
@@ -112,7 +114,7 @@ try {
   await page.getByRole('combobox', { name: /^Edit camera/ }).selectOption('mobile');
   await capture('studio-mobile-framing');
   if (errors.length) throw new Error(`Browser errors: ${errors.join('; ')}`);
-  await writeFile(`${output}/report.json`, JSON.stringify({ passed: true, checks, browserErrors: errors, captures, captureWarnings },null,2));
+  await writeFile(`${output}/report.json`, JSON.stringify({ passed: true, renderQuality: 'low', renderer: 'SwiftShader', checks, browserErrors: errors, captures, captureWarnings },null,2));
 } catch (error) {
   await writeFile(`${output}/report.json`, JSON.stringify({ passed: false, error: String(error), checks, browserErrors: errors, captures, captureWarnings },null,2));
   if (page) { await page.screenshot({ path: `${output}/failure.png`, timeout: 10000 }).catch(()=>{}); await writeFile(`${output}/page.html`,await page.content()).catch(()=>{}); }
