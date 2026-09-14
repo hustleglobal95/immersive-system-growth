@@ -68,18 +68,22 @@ function RuntimeStatus() {
 export function ExperienceRuntime({ children }: { children?: ReactNode }) {
   const pathname = usePathname(),
     lab = pathname === "/lab";
+  const standalone = pathname === "/design" || pathname.startsWith("/studio") || pathname.startsWith("/heliot");
   const ready = useExperienceStore((s) => s.profileReady),
     motion = useExperienceStore((s) => s.reducedMotion),
     debug = useExperienceStore((s) => s.debug),
     generation = useExperienceStore((s) => s.retryGeneration);
   useEffect(() => {
+    // Dedicated routes own their initialization. A parent passive effect must
+    // not reset the Studio preview after its child has enabled diagnostics.
+    if (standalone) return;
     const s = useExperienceStore.getState();
     s.resetLab();
     s.setDebug(lab || process.env.NEXT_PUBLIC_DEBUG_3D === "true");
-  }, [lab]);
+  }, [lab, standalone]);
   // Authoring routes do not mount the client interaction runtime or WebGL canvas.
   // The production canvas remains persistent when navigating between / and /lab.
-  if (pathname === "/design" || pathname.startsWith("/studio") || pathname.startsWith("/heliot")) return <>{children}</>;
+  if (standalone) return <>{children}</>;
   return (
     <div className="experience-root" data-reduced-motion={motion} data-media-motion={!motion} data-lab={lab}>
       <SystemProfile />

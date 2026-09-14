@@ -38,16 +38,29 @@ async function assertViewport() {
 }
 async function capture(name) {
   await assertViewport();
-  let session;
-  try {
-    await bounded(page.evaluate(() => window.scrollTo(0,0)), 10000, 'Position screenshot');
-    session = await page.context().newCDPSession(page);
-    const shot = await bounded(session.send('Page.captureScreenshot', { format: 'png', fromSurface: true, captureBeyondViewport: false }), 20000, name);
-    await writeFile(`${output}/${name}.png`, Buffer.from(shot.data,'base64'));
-    captures.push(`${name}.png`);
-  } catch (error) { captureWarnings.push(`${name}: ${String(error)}`); }
-  finally { if (session) await bounded(session.detach(), 3000, 'Detach screenshot session').catch(()=>{}); report('running'); }
+  await page.waitForFunction(() => document.documentElement.dataset.heliotReady === 'true', null, { timeout: 60000 });
+  await bounded(page.evaluate(() => window.scrollTo(0, 0)), 10000, 'Position screenshot');
+  // Capture the actual view. A software-GPU surface readback can stall, so allow
+  // one view-readback fallback without changing the scene or its quality.
+  for (const fromSurface of [true, false]) {
+    let session;
+    try {
+      session = await page.context().newCDPSession(page);
+      const shot = await bounded(session.send('Page.captureScreenshot', {
+        format: 'png', fromSurface, captureBeyondViewport: false,
+      }), 35000, `${name} (${fromSurface ? 'surface' : 'view'})`);
+      await writeFile(`${output}/${name}.png`, Buffer.from(shot.data, 'base64'));
+      captures.push(`${name}.png`);
+      return;
+    } catch (error) {
+      captureWarnings.push(`${name}: ${String(error)}`);
+    } finally {
+      if (session) await bounded(session.detach(), 3000, 'Detach screenshot session').catch(() => {});
+      report('running');
+    }
+  }
 }
+
 report('running');
 try {
   let ready = false;

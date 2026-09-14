@@ -21,6 +21,7 @@ import { useExperienceStore } from '@/src/store/experienceStore';
 import { apertureRadius, useLightLab } from './lightLab';
 import { ObservatoryWorld } from './ObservatoryWorld';
 import { CinematicRealism } from './CinematicRealism';
+import { needsDemandFrame } from './demandFrame';
 const StudioTransformGizmo = lazy(() => import('@/src/components/three/StudioTransformGizmo').then(m => ({ default: m.StudioTransformGizmo })));
 
 function StudioEnvironment() {
@@ -140,7 +141,7 @@ function PerformanceLedger() {
 }
 function FrameDemand() {
   const {invalidate,camera}=useThree();const frame=useCinematicFrame();
-  useEffect(()=>{const off=useExperienceStore.subscribe(()=>invalidate());const offLab=useLightLab.subscribe(()=>invalidate());invalidate();return()=>{off();offLab();};},[invalidate]);
+  useEffect(()=>{const off=useExperienceStore.subscribe((next, previous)=>{if(needsDemandFrame(next,previous))invalidate();});const offLab=useLightLab.subscribe(()=>invalidate());invalidate();return()=>{off();offLab();};},[invalidate]);
   useFrame(()=>{const state=useExperienceStore.getState();document.documentElement.dataset.heliotCamera=JSON.stringify(camera.position.toArray());if(Math.abs(frame.progress-(state.runtimeProgress??state.progress))>.000001)invalidate();});
   return null;
 }
