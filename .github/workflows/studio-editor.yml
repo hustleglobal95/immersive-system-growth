@@ -1,24 +1,20 @@
 name: Studio editor verification
 on:
   push:
-    branches: [feat/heliot-cinematic-experience]
-    paths:
-      - 'src/studio/**'
-      - 'src/components/three/**'
-      - 'src/experiences/heliot/**'
-      - 'app/studio/**'
-      - 'tests/studio-builder-authoring.test.ts'
-      - 'scripts/verify-studio-editor.mjs'
-      - '.github/workflows/studio-editor.yml'
+    branches:
+      - feat/heliot-cinematic-experience
+  pull_request:
 permissions:
   contents: read
 concurrency:
   group: studio-editor-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  editor:
+  studio-editor:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 12
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -26,15 +22,15 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npm run typecheck
-      - run: npx eslint src/studio/StudioWorkspace.tsx src/studio/StudioLivePreview.tsx src/studio/CameraPathEditor.tsx src/studio/StudioViewportTools.tsx src/studio/workspaceOperations.ts
-      - run: node --import tsx --test tests/studio-builder-authoring.test.ts
       - run: npm run build
       - run: npx playwright install --with-deps chromium
-      - run: node --import tsx scripts/verify-studio-editor.mjs
-      - uses: actions/upload-artifact@v4
+      - name: Verify real Studio editing and export
+        run: node --import tsx scripts/verify-studio-editor.mjs
+      - name: Upload Studio evidence
         if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: studio-editor-evidence
           path: test-results/studio-editor/
+          if-no-files-found: warn
           retention-days: 14

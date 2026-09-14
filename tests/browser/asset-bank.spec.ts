@@ -1,4 +1,6 @@
 import { expect, test } from "@playwright/test";
+import { parseExperience } from "../../src/lib/configSchema";
+import { parseInteractionGraph } from "../../src/lib/interactionGraph";
 
 test("catalog API bounds responses, validates queries and resolves kit dependencies", async ({ request }) => {
   const response = await request.get("/api/asset-bank?limit=48");
@@ -52,18 +54,45 @@ test("Studio searches sources, exports provenance and inserts with undo and draf
   await expect.poll(hasInserted).toBe(true);
 });
 
-test("kit replacement requires review, blocks incompatible interactions and supports undo", async ({ page }) => {
+test("kit replacement requires review, blocks incompatible interactions and supports undo", async ({ page, request }) => {
+  // Use explicit compatible/incompatible fixtures, not whichever showcase is active.
+  const burgerResponse = await request.get("/api/asset-bank?kit=forge-burger-showcase-kit");
+  const restaurantResponse = await request.get("/api/asset-bank?kit=forge-restaurant-kit");
+  expect(burgerResponse.ok()).toBeTruthy();
+  expect(restaurantResponse.ok()).toBeTruthy();
+  const burger = parseExperience((await burgerResponse.json()).experience);
+  const restaurant = parseExperience((await restaurantResponse.json()).experience);
+  const boundScene = burger.scenes.find(scene => !restaurant.scenes.some(other => other.id === scene.id));
+  expect(boundScene, "Fixture needs a scene present in burger but absent from restaurant").toBeDefined();
+  const baseline = parseExperience({ ...burger, meta: { ...burger.meta, name: "Kit replacement fixture" } });
+  const graph = parseInteractionGraph({
+    version: 1, id: "kit-replacement-fixture", initialState: "idle", states: ["idle"], variables: {},
+    nodes: [{ id: "bound-scene", kind: "trigger", label: "Required fixture scene", position: { x: 40, y: 80 }, event: "scene-enter", sceneId: boundScene!.id, states: ["idle"] }],
+    edges: [], mobileSubstitutions: [],
+  });
   await page.goto("/studio");
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("forge-studio-v2") !== null)).toBe(true);
+  await page.evaluate(({ experience, interactionGraph }) => {
+    const draft = JSON.parse(localStorage.getItem("forge-studio-v2")!);
+    localStorage.setItem("forge-studio-v2", JSON.stringify({ ...draft, experience, interactionGraph }));
+  }, { experience: baseline, interactionGraph: graph });
+  await page.reload();
+  await expect(page.locator(".forge-workspace__project")).toContainText(baseline.meta.name);
   await page.getByRole("button", { name: "bank", exact: true }).click();
+  const savedExperience = () => page.evaluate(() => JSON.parse(localStorage.getItem("forge-studio-v2")!).experience);
   await page.getByRole("button", { name: "Review restaurant kit", exact: true }).click();
   await expect(page.getByText(/Applying this kit replaces/)).toBeVisible();
   await page.getByRole("button", { name: "Apply reviewed kit", exact: true }).click();
   await expect(page.getByText(/Existing interactions reference scenes or hotspots outside this kit/)).toBeVisible();
+  await expect.poll(savedExperience).toEqual(baseline);
+  await expect(page.getByRole("button", { name: "Undo experience change" })).toBeDisabled();
   await page.getByRole("button", { name: "Review burger-showcase kit", exact: true }).click();
   await page.getByRole("button", { name: "Apply reviewed kit", exact: true }).click();
   await expect(page.getByText(/Reference kit applied/)).toBeVisible();
+  await expect.poll(async () => (await savedExperience()).meta.name).toBe(burger.meta.name);
   await expect(page.getByRole("button", { name: "Undo experience change" })).toBeEnabled();
   await page.getByRole("button", { name: "Undo experience change" }).click();
+  await expect.poll(savedExperience).toEqual(baseline);
   await expect(page.getByText("Production schema valid")).toBeVisible();
   await expect(page.locator("canvas")).toHaveCount(0);
 });
