@@ -27,7 +27,7 @@ export function StudioTransformGizmo() {
   if (!editor) return null;
   const emit = () => {
     const object = proxy.current;
-    if (!object) return;
+    if (!object || !dragging.current) return;
     const value = editor.mode === "translate"
       ? editor.display
         ? [
@@ -43,29 +43,31 @@ export function StudioTransformGizmo() {
   };
   const snap = editor.snap || null;
   return (
-    <TransformControls
-      mode={editor.mode}
-      space={editor.mode === "translate" ? "world" : "local"}
-      size={0.72}
-      translationSnap={snap}
-      rotationSnap={snap}
-      scaleSnap={snap}
-      onMouseDown={() => {
-        dragging.current = true;
-        startValue.current = [...editor.value];
-        const position = proxy.current?.position.toArray();
-        startPosition.current = position ? position as Vec3 : [0, 0, 0];
-        editor.onBegin();
-      }}
-      onObjectChange={emit}
-      onMouseUp={() => { emit(); dragging.current = false; editor.onEnd(); }}
-    >
-      <group ref={proxy}>
+    <group userData={{ studioHelper: true }}>
+      <TransformControls
+        object={proxy}
+        mode={editor.mode}
+        space={editor.mode === "translate" ? "world" : "local"}
+        size={0.72}
+        translationSnap={snap}
+        rotationSnap={snap}
+        scaleSnap={snap}
+        onMouseDown={() => {
+          dragging.current = true;
+          startValue.current = [...editor.value];
+          const position = proxy.current?.position.toArray();
+          startPosition.current = position ? position as Vec3 : [0, 0, 0];
+          editor.onBegin();
+        }}
+        onObjectChange={emit}
+        onMouseUp={() => { emit(); dragging.current = false; editor.onEnd(); }}
+      />
+      <group ref={proxy} userData={{ studioHelper: true }}>
         <mesh renderOrder={999}>
           <sphereGeometry args={[0.075, 16, 16]} />
           <meshBasicMaterial color="#ff6a2b" depthTest={false} transparent opacity={0.95} />
         </mesh>
       </group>
-    </TransformControls>
+    </group>
   );
 }
