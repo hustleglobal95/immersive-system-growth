@@ -1,45 +1,49 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useMemo, useRef } from "react";
+import { useThree } from "@react-three/fiber";
 import { TransformControls } from "@react-three/drei";
-import type { Group } from "three";
+import { Group } from "three";
 import { useStudioEditor } from "@/src/components/runtime/StudioEditorContext";
 import type { Vec3 } from "@/src/types/experience";
 
 export function StudioTransformGizmo() {
   const editor = useStudioEditor();
-  const proxy = useRef<Group>(null);
+  const { invalidate } = useThree();
+  // The controls and value emitter must manipulate the same stable Object3D.
+  const proxy = useMemo(() => new Group(), []);
   const dragging = useRef(false);
   const startValue = useRef<Vec3>([0, 0, 0]);
   const startPosition = useRef<Vec3>([0, 0, 0]);
 
   useLayoutEffect(() => {
-    if (!editor || !proxy.current || dragging.current) return;
-    const object = proxy.current;
+    if (!editor || dragging.current) return;
     const position: Vec3 = editor.mode === "translate" ? editor.display ?? editor.value : editor.anchor;
     const rotation: Vec3 = editor.mode === "rotate" ? editor.value : [0, 0, 0];
     const scale: Vec3 = editor.mode === "scale" ? editor.value : [1, 1, 1];
-    object.position.set(...position);
-    object.rotation.set(...rotation);
-    object.scale.set(...scale);
-  }, [editor]);
+    proxy.position.set(...position);
+    proxy.rotation.set(...rotation);
+    proxy.scale.set(...scale);
+    proxy.updateMatrixWorld(true);
+    invalidate();
+  }, [editor, proxy, invalidate]);
 
   if (!editor) return null;
   const emit = () => {
-    const object = proxy.current;
-    if (!object || !dragging.current) return;
+    if (!dragging.current) return;
     const value = editor.mode === "translate"
       ? editor.display
         ? [
-            startValue.current[0] + object.position.x - startPosition.current[0],
-            startValue.current[1] + object.position.y - startPosition.current[1],
-            startValue.current[2] + object.position.z - startPosition.current[2],
+            startValue.current[0] + proxy.position.x - startPosition.current[0],
+            startValue.current[1] + proxy.position.y - startPosition.current[1],
+            startValue.current[2] + proxy.position.z - startPosition.current[2],
           ]
-        : object.position.toArray()
+        : proxy.position.toArray()
       : editor.mode === "rotate"
-        ? [object.rotation.x, object.rotation.y, object.rotation.z]
-        : object.scale.toArray();
+        ? [proxy.rotation.x, proxy.rotation.y, proxy.rotation.z]
+        : proxy.scale.toArray();
     editor.onChange(value as Vec3);
+    invalidate();
   };
   const snap = editor.snap || null;
   return (
@@ -55,19 +59,18 @@ export function StudioTransformGizmo() {
         onMouseDown={() => {
           dragging.current = true;
           startValue.current = [...editor.value];
-          const position = proxy.current?.position.toArray();
-          startPosition.current = position ? position as Vec3 : [0, 0, 0];
+          startPosition.current = proxy.position.toArray() as Vec3;
           editor.onBegin();
         }}
         onObjectChange={emit}
         onMouseUp={() => { emit(); dragging.current = false; editor.onEnd(); }}
       />
-      <group ref={proxy} userData={{ studioHelper: true }}>
+      <primitive object={proxy} userData={{ studioHelper: true }}>
         <mesh renderOrder={999}>
           <sphereGeometry args={[0.075, 16, 16]} />
           <meshBasicMaterial color="#ff6a2b" depthTest={false} transparent opacity={0.95} />
         </mesh>
-      </group>
+      </primitive>
     </group>
   );
 }
