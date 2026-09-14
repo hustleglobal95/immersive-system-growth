@@ -19,6 +19,42 @@ function clamp01(value: number) {
 }
 
 /**
+ * Adds a tiny inertial response after the authored CameraRig has positioned the camera.
+ * This is scroll-derived rather than time-derived, so a stopped page becomes perfectly still.
+ */
+function PhysicalCameraInertia() {
+  const frame = useCinematicFrame();
+  const previous = useRef(frame.progress);
+  const drift = useRef({ x: 0, y: 0, roll: 0 });
+
+  useFrame(({ camera }, delta) => {
+    const state = useExperienceStore.getState();
+    if (state.reducedMotion || state.freeCamera || state.cameraPreview || state.runtimeCamera) {
+      previous.current = frame.progress;
+      drift.current.x = drift.current.y = drift.current.roll = 0;
+      return;
+    }
+
+    const dt = Math.max(1 / 240, Math.min(0.05, delta));
+    const velocity = (frame.progress - previous.current) / dt;
+    previous.current = frame.progress;
+    const capped = Math.max(-1.8, Math.min(1.8, velocity));
+    const interior = clamp01((frame.progress - 0.1) / 0.1) * (1 - clamp01((frame.progress - 0.82) / 0.12));
+    const smoothing = 1 - Math.exp(-10 * dt);
+
+    drift.current.x += ((-capped * 0.018 * interior) - drift.current.x) * smoothing;
+    drift.current.y += ((Math.abs(capped) * -0.006 * interior) - drift.current.y) * smoothing;
+    drift.current.roll += ((-capped * 0.0025 * interior) - drift.current.roll) * smoothing;
+
+    camera.translateX(drift.current.x);
+    camera.translateY(drift.current.y);
+    camera.rotateZ(drift.current.roll);
+  });
+
+  return null;
+}
+
+/**
  * Sparse suspended particulate gives the camera something physical to travel through.
  * The field is deterministic, cheap, and intentionally strongest around the threshold
  * and interior chapters where depth cues matter most.
@@ -40,7 +76,6 @@ function SuspendedParticulate() {
     };
 
     for (let i = 0; i < count; i += 1) {
-      // A long, narrow volume follows the actual approach -> passage -> gallery route.
       const t = random();
       const spread = 1.2 + t * 5.4;
       positions[i * 3] = (random() - 0.5) * spread;
@@ -87,8 +122,6 @@ function SuspendedParticulate() {
   );
 }
 
-/** Warm practical pools make the descent and gallery feel lit by architecture rather
- * than by a generic studio. Intensities follow story progress so exterior shots stay clean. */
 function ArchitecturalPracticals() {
   const frame = useCinematicFrame();
   const threshold = useRef<Group>(null);
@@ -127,10 +160,6 @@ function ArchitecturalPracticals() {
   );
 }
 
-/**
- * Soft geometric shafts are intentionally subtle: they provide participating-media
- * cues without a full-screen volumetric post pass or another heavy render target.
- */
 function LightShafts() {
   const frame = useCinematicFrame();
   const root = useRef<Group>(null);
@@ -163,10 +192,10 @@ function LightShafts() {
   );
 }
 
-/** One lightweight pass of physical scale/depth cues layered onto the authored world. */
 export function CinematicRealism() {
   return (
     <>
+      <PhysicalCameraInertia />
       <SuspendedParticulate />
       <ArchitecturalPracticals />
       <LightShafts />
