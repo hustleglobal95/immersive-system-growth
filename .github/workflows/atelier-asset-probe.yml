@@ -1,0 +1,37 @@
+name: Atelier Asset Probe
+on:
+  push:
+    paths:
+      - '.github/workflows/atelier-asset-probe.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Measure remote cinematic assets
+        shell: bash
+        run: |
+          node <<'NODE'
+          const { createHash } = require('node:crypto');
+          const urls = [
+            'https://images.unsplash.com/photo-1762337018404-052afb0e3370?auto=format&fit=crop&fm=jpg&q=86&w=2400',
+            'https://images.unsplash.com/photo-1774423864869-702b21c2490a?auto=format&fit=crop&fm=jpg&q=86&w=2400',
+            'https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=84&w=2400',
+            'https://images.unsplash.com/photo-1769737122085-97b1ee5ab104?auto=format&fit=crop&fm=jpg&q=86&w=2400',
+            'https://images.unsplash.com/photo-1770970831074-6e88b6cc260b?auto=format&fit=crop&fm=jpg&q=86&w=2200',
+            'https://images.unsplash.com/photo-1763485956343-61b0163a3e7e?auto=format&fit=crop&fm=jpg&q=86&w=2200',
+            'https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=82&w=2400',
+            'https://images.unsplash.com/photo-1762337018404-052afb0e3370?auto=format&fit=crop&fm=jpg&q=84&w=2600',
+            'https://images.unsplash.com/photo-1774423864869-702b21c2490a?auto=format&fit=crop&fm=jpg&q=84&w=2600'
+          ];
+          (async()=>{
+            for (const path of urls) {
+              const r = await fetch(path);
+              if (!r.ok) throw new Error(`${r.status} ${path}`);
+              const bytes = Buffer.from(await r.arrayBuffer());
+              console.log(JSON.stringify({path, bytes: bytes.length, sha256:createHash('sha256').update(bytes).digest('hex')}));
+            }
+          })().catch(e=>{ console.error(e); process.exit(1); });
+          NODE
