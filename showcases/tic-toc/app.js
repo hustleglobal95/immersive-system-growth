@@ -23,7 +23,7 @@
   const explodedScene = $('.exploded');
   const atelierStudio = $('.atelier-studio');
   const atelierPrompter = $('.atelier-prompter', atelierStudio);
-  const atelierLines = $$('#atelierStudioTitle > span');
+  const atelierTitle = $('#atelierStudioTitle');
   const lightHeaderSections = $$('[data-header-theme="light"]');
   const dialog = $('#checkoutDialog');
   const checkoutShowcase = $('#checkoutShowcase');
@@ -243,6 +243,16 @@
     return smoothStep(normalized);
   };
 
+  // Integrate a smooth velocity ramp at each end; keep a steady reading speed between.
+  const teleprompterProgress = (value) => {
+    const p = Math.max(0, Math.min(1, (value - .02) / .97));
+    const edge = .12;
+    const ramp = (t) => (t * t * t / (edge * edge)) * (1 - t / (2 * edge));
+    if (p < edge) return ramp(p) / (1 - edge);
+    if (p > 1 - edge) return 1 - ramp(1 - p) / (1 - edge);
+    return (p - edge / 2) / (1 - edge);
+  };
+
   const renderExpeditionMotion = () => {
     const calibreProgress = stagedProgress(calibreScene, .05, .78);
     const explodedProgress = stagedProgress(explodedScene, .06, .74);
@@ -250,13 +260,9 @@
     const montageProgress = stagedProgress(atelierStudio, .05, .82);
     const atelierProgress = sectionProgress(atelierStudio);
     const atelierTravel = Math.max(1, atelierStudio.offsetHeight - innerHeight);
-    // Advance each phrase through the same reading window, with scroll-distance holds.
+    // One continuous pass removes the repeated stops and acceleration between phrases.
     const windowHeight = atelierPrompter.clientHeight;
-    const stops = atelierLines.map((line) => windowHeight / 2 - line.offsetTop - line.offsetHeight / 2);
-    let prompterY = windowHeight + (stops[0] - windowHeight) * range(atelierProgress, .02, .16);
-    prompterY += (stops[1] - stops[0]) * range(atelierProgress, .30, .42);
-    prompterY += (stops[2] - stops[1]) * range(atelierProgress, .58, .70);
-    prompterY -= windowHeight * range(atelierProgress, .86, .99);
+    const prompterY = windowHeight - (windowHeight + atelierTitle.offsetHeight) * teleprompterProgress(atelierProgress);
 
     const set = (element, property, value) => element.style.setProperty(property, value);
 
