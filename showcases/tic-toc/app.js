@@ -13,6 +13,7 @@
   const heroToc = $('#heroTitle span:last-child');
   const calibreScene = $('#calibre');
   const calibreImage = $('.calibre-image', calibreScene);
+  const cinematicTransitions = $$('.cinematic-transition');
   const dialog = $('#checkoutDialog');
   const checkoutShowcase = $('#checkoutShowcase');
   const checkoutWatch = $('#checkoutWatch');
@@ -162,6 +163,15 @@
     if (!calibreFrame) calibreFrame = requestAnimationFrame(renderCalibreMotion);
   };
 
+  const renderCinematicTransitions = () => {
+    cinematicTransitions.forEach((transition) => {
+      const rect = transition.getBoundingClientRect();
+      const distance = Math.max(1, rect.height - innerHeight);
+      const progress = Math.max(0, Math.min(1, -rect.top / distance));
+      transition.style.setProperty('--p', progress.toFixed(4));
+    });
+  };
+
   const onScroll = () => {
     const y = window.scrollY;
     const max = document.documentElement.scrollHeight - innerHeight;
@@ -169,6 +179,7 @@
     header.classList.toggle('scrolled', y > 50);
     if (!reducedMotion) renderHeroProgress(Math.max(0, Math.min(y / (innerHeight * .92), 1)));
     queueCalibreMotion();
+    if (!reducedMotion) renderCinematicTransitions();
   };
 
   let scrollTick = false;
