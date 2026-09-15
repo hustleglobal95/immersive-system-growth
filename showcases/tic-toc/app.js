@@ -8,6 +8,7 @@
   const meter = $('#scrollMeter');
   const watchStage = $('#watchStage');
   const watchImage = $('img', watchStage);
+  const watchXray = $('#watchXray');
   const heroTic = $('#heroTitle span:first-child');
   const heroToc = $('#heroTitle span:last-child');
   const calibreScene = $('#calibre');
@@ -125,6 +126,7 @@
 
     watchImage.style.transform = `rotateZ(${spin}deg) rotateY(${dimensionalTilt}deg) scale(${breathingScale})`;
     watchImage.style.filter = `brightness(${highlight}) drop-shadow(0 35px 35px rgba(0,0,0,.65))`;
+    watchXray.style.transform = `rotateZ(${spin}deg) rotateY(${dimensionalTilt}deg) scale(${breathingScale})`;
 
     const wordOpacity = Math.max(0, Math.min(1, 1 - (wordShift - 34) / 18));
     heroTic.style.transform = `translate3d(${-2 - wordShift}vw, 0, 0)`;
@@ -176,6 +178,16 @@
     requestAnimationFrame(() => { onScroll(); scrollTick = false; });
   }, { passive: true });
   addEventListener('resize', onScroll, { passive: true });
+
+  watchStage.addEventListener('pointermove', (event) => {
+    const bounds = watchStage.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((event.clientX - bounds.left) / bounds.width) * 100));
+    const y = Math.max(0, Math.min(100, ((event.clientY - bounds.top) / bounds.height) * 100));
+    watchXray.style.setProperty('--xray-x', `${x}%`);
+    watchXray.style.setProperty('--xray-y', `${y}%`);
+  });
+  watchStage.addEventListener('pointerenter', () => watchStage.classList.add('xray-active'));
+  watchStage.addEventListener('pointerleave', () => watchStage.classList.remove('xray-active'));
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add('visible'));

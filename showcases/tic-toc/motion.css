@@ -9,6 +9,69 @@
   will-change: transform, filter, translate;
 }
 
+.watch-xray {
+  --xray-x: 50%;
+  --xray-y: 48%;
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  background:
+    radial-gradient(circle at var(--xray-x) var(--xray-y), rgba(238, 218, 173, .28), transparent 23%),
+    var(--xray-image) 50% 50% / cover no-repeat;
+  -webkit-mask: var(--watch-mask) center / contain no-repeat;
+  mask: var(--watch-mask) center / contain no-repeat;
+  clip-path: circle(0 at var(--xray-x) var(--xray-y));
+  filter: grayscale(.18) sepia(.22) saturate(1.3) contrast(1.18) brightness(1.1);
+  opacity: 0;
+  transform-origin: 50% 50%;
+  transition: clip-path .42s cubic-bezier(.2, .75, .2, 1), opacity .25s ease;
+  will-change: transform, clip-path;
+  pointer-events: none;
+}
+
+.watch-stage.xray-active .watch-xray {
+  clip-path: circle(clamp(82px, 11vw, 172px) at var(--xray-x) var(--xray-y));
+  opacity: 1;
+}
+
+.watch-xray::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-radial-gradient(circle at 50% 48%, transparent 0 38px, rgba(239, 210, 151, .08) 39px 40px);
+  mix-blend-mode: screen;
+}
+
+.xray-status {
+  position: absolute;
+  z-index: 5;
+  left: 8%;
+  top: 48%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--gold);
+  font-size: .54rem;
+  letter-spacing: .2em;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity .25s ease, transform .35s ease;
+  pointer-events: none;
+}
+
+.xray-status i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 14px var(--gold);
+}
+
+.watch-stage.xray-active .xray-status {
+  opacity: 1;
+  transform: none;
+}
+
 .hero h1 span {
   will-change: transform, opacity;
 }
@@ -40,6 +103,17 @@
 
   .calibre-image::after {
     animation: none;
+  }
+
+  .watch-xray {
+    transition: none;
+  }
+}
+
+@media (hover: none) {
+  .watch-xray,
+  .xray-status {
+    display: none;
   }
 }
 
