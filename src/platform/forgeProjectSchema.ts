@@ -15,6 +15,7 @@ const pathSetSchema = z.object({
   creativeDirection: relativeJsonPath,
   assetManifest: relativeJsonPath,
   visualSystems: relativeJsonPath,
+  experienceModes: relativeJsonPath,
 }).strict();
 
 const performanceSchema = z.object({

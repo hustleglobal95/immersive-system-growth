@@ -17,5 +17,6 @@
     "consent": "analytics",
     "respectDnt": true
   },
-  "creativeDirectionPath": "config/creative-direction.json"
+  "creativeDirectionPath": "config/creative-direction.json",
+  "experienceModesPath": "config/experience-modes.json"
 }

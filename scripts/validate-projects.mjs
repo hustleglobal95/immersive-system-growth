@@ -5,6 +5,7 @@ import { parseStudioProject } from "../src/platform/studioSchema.ts";
 import { parseCreativeDirection } from "../src/platform/creativeDirectionSchema.ts";
 import { parseAssetManifest } from "../src/platform/assetManifestSchema.ts";
 import { parseVisualSystems } from "../src/platform/visualSystems.ts";
+import { activeExperienceMode, auditExperienceMode, parseExperienceModes } from "../src/platform/experienceModes.ts";
 import { parseForgeProject } from "../src/platform/forgeProjectSchema.ts";
 
 const root = process.cwd();
@@ -25,8 +26,14 @@ try {
   parseCreativeDirection(readJson(forge.paths.creativeDirection, "Creative direction"));
   parseAssetManifest(readJson(forge.paths.assetManifest, "Asset manifest"));
   parseVisualSystems(readJson(forge.paths.visualSystems, "Visual systems"));
+  const modes = parseExperienceModes(readJson(forge.paths.experienceModes, "Experience modes"));
+  const modeFailures = auditExperienceMode(activeExperienceMode(modes), experience);
+  if (modeFailures.length) throw new Error(modeFailures.join(". "));
   if (studio.experiencePath !== forge.paths.experience) {
     throw new Error("Forge project and Studio project point to different experience files");
+  }
+  if (studio.experienceModesPath !== forge.paths.experienceModes) {
+    throw new Error("Forge project and Studio project point to different experience mode files");
   }
   if (studio.creativeDirectionPath !== forge.paths.creativeDirection) {
     throw new Error("Forge project and Studio project point to different creative direction files");
@@ -51,6 +58,9 @@ for (const projectPath of candidates) {
     const experience = parseExperience(readJson(project.experiencePath, "Experience"));
     parseCreativeDirection(readJson(project.creativeDirectionPath, "Creative direction"));
     parseVisualSystems(readJson(project.visualSystemsPath, "Visual systems"));
+    const modes = parseExperienceModes(readJson(project.experienceModesPath, "Experience modes"));
+    const modeFailures = auditExperienceMode(activeExperienceMode(modes), experience);
+    if (modeFailures.length) throw new Error(modeFailures.join(". "));
     console.log(`VALID ${projectPath}: ${project.name}, ${experience.scenes.length} scenes, ${project.contentSources.length} sources`);
   } catch (error) {
     failures++;

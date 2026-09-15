@@ -27,6 +27,7 @@ const documentOrder: ReleaseDocumentKind[] = [
   "creativeDirection",
   "assetManifest",
   "visualSystems",
+  "experienceModes",
 ];
 
 export function createReleaseManifest(

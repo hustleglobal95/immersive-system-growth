@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { experience } from "@/src/lib/experience";
 import { ExperienceRuntime } from "@/src/components/runtime/ExperienceRuntime";
 import "./globals.css";
+import "./experience-modes.css";
 import "./design-system.css";
 import "./nocterra.css";
 import "./atelier-maris.css";

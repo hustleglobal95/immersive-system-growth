@@ -12,12 +12,13 @@ const documents = {
   creativeDirection: "{}",
   assetManifest: "{}",
   visualSystems: "{}",
+  experienceModes: "{}",
 } satisfies Record<ReleaseDocumentKind, string>;
 
 test("release fingerprints cover every reviewed runtime document", () => {
   const manifest = createReleaseManifest(project, documents);
   assert.equal(manifest.version, 1);
-  assert.equal(manifest.documents.length, 6);
+  assert.equal(manifest.documents.length, 7);
   assert.deepEqual(manifest.documents.map((document) => document.kind), [
     "forgeProject",
     "experience",
@@ -25,12 +26,14 @@ test("release fingerprints cover every reviewed runtime document", () => {
     "creativeDirection",
     "assetManifest",
     "visualSystems",
+    "experienceModes",
   ]);
   manifest.documents.forEach((document) => {
     assert.match(document.sha256, /^[a-f0-9]{64}$/);
     assert.ok(document.bytes > 0);
   });
   assert.equal(manifest.documents[5].path, project.paths.visualSystems);
+  assert.equal(manifest.documents[6].path, project.paths.experienceModes);
 });
 
 test("release fingerprints are deterministic and fail closed on missing documents", () => {
