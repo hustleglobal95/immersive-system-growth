@@ -19,11 +19,6 @@
   const form = $('#checkoutForm');
   const steps = $$('.checkout-step');
   let activeStep = 1;
-  let currentSpin = 0;
-  let targetSpin = 0;
-  let spinFrame = 0;
-  let currentWordShift = 0;
-  let targetWordShift = 0;
   let currentCalibreMotion = 0;
   let targetCalibreMotion = 0;
   let calibreFrame = 0;
@@ -120,39 +115,22 @@
     dialog.classList.toggle('accent-cobalt', accent === 'cobalt');
   };
 
-  const renderWatchSpin = () => {
-    const delta = targetSpin - currentSpin;
-    const wordDelta = targetWordShift - currentWordShift;
-    currentSpin += delta * .075;
-    currentWordShift += wordDelta * .065;
-    if (Math.abs(delta) < .025) currentSpin = targetSpin;
-    if (Math.abs(wordDelta) < .015) currentWordShift = targetWordShift;
-
-    const radians = currentSpin * Math.PI / 180;
+  const renderHeroProgress = (progress) => {
+    const spin = progress * 180;
+    const wordShift = progress * 58;
+    const radians = spin * Math.PI / 180;
     const dimensionalTilt = Math.sin(radians) * 13;
     const breathingScale = 1 - Math.abs(Math.sin(radians)) * .025;
-    const motionBlur = Math.min(Math.abs(delta) * .0025, .65);
     const highlight = 1 + Math.abs(Math.sin(radians)) * .09;
 
-    watchImage.style.transform = `rotateZ(${currentSpin}deg) rotateY(${dimensionalTilt}deg) scale(${breathingScale})`;
-    watchImage.style.filter = `brightness(${highlight}) blur(${motionBlur}px) drop-shadow(0 35px 35px rgba(0,0,0,.65))`;
+    watchImage.style.transform = `rotateZ(${spin}deg) rotateY(${dimensionalTilt}deg) scale(${breathingScale})`;
+    watchImage.style.filter = `brightness(${highlight}) drop-shadow(0 35px 35px rgba(0,0,0,.65))`;
 
-    const wordOpacity = Math.max(0, Math.min(1, 1 - (currentWordShift - 34) / 18));
-    heroTic.style.transform = `translate3d(${-2 - currentWordShift}vw, 0, 0)`;
-    heroToc.style.transform = `translate3d(${2 + currentWordShift}vw, 0, 0)`;
+    const wordOpacity = Math.max(0, Math.min(1, 1 - (wordShift - 34) / 18));
+    heroTic.style.transform = `translate3d(${-2 - wordShift}vw, 0, 0)`;
+    heroToc.style.transform = `translate3d(${2 + wordShift}vw, 0, 0)`;
     heroTic.style.opacity = wordOpacity;
     heroToc.style.opacity = wordOpacity;
-
-    if (currentSpin !== targetSpin || currentWordShift !== targetWordShift) spinFrame = requestAnimationFrame(renderWatchSpin);
-    else spinFrame = 0;
-  };
-
-  const queueWatchSpin = (progress) => {
-    if (reducedMotion) return;
-    const eased = progress * progress * (3 - 2 * progress);
-    targetSpin = eased * 180;
-    targetWordShift = eased * 58;
-    if (!spinFrame) spinFrame = requestAnimationFrame(renderWatchSpin);
   };
 
   const renderCalibreMotion = () => {
@@ -187,10 +165,7 @@
     const max = document.documentElement.scrollHeight - innerHeight;
     meter.style.width = `${max ? (y / max) * 100 : 0}%`;
     header.classList.toggle('scrolled', y > 50);
-    if (!reducedMotion && y < innerHeight * 1.25) {
-      const p = Math.min(y / (innerHeight * .92), 1);
-      queueWatchSpin(p);
-    }
+    if (!reducedMotion) renderHeroProgress(Math.max(0, Math.min(y / (innerHeight * .92), 1)));
     queueCalibreMotion();
   };
 
@@ -200,16 +175,7 @@
     scrollTick = true;
     requestAnimationFrame(() => { onScroll(); scrollTick = false; });
   }, { passive: true });
-
-  if (!reducedMotion && matchMedia('(pointer:fine)').matches) {
-    $('#top').addEventListener('pointermove', (event) => {
-      if (window.scrollY > innerHeight * .8) return;
-      const x = (event.clientX / innerWidth - .5) * 16;
-      const y = (event.clientY / innerHeight - .5) * 10;
-      watchImage.style.translate = `${x}px ${y}px`;
-    });
-    $('#top').addEventListener('pointerleave', () => { watchImage.style.translate = '0 0'; });
-  }
+  addEventListener('resize', onScroll, { passive: true });
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add('visible'));
