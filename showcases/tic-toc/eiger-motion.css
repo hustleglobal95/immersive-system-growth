@@ -1,4 +1,17 @@
 /* Scroll-bound scene transformations inspired by expedition editorial pacing. */
+.hero-sequence {
+  position: relative;
+  height: 210vh;
+  background: #070808;
+}
+
+.hero-sequence .hero {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+}
+
 .motion-chapter {
   position: sticky;
   z-index: 8;
@@ -22,7 +35,7 @@
 .motion-chapter b { font-weight: 400; writing-mode: vertical-rl; }
 
 .calibre {
-  min-height: 265vh;
+  min-height: 300vh;
   display: block;
   isolation: isolate;
 }
@@ -36,9 +49,13 @@
   margin-bottom: -100vh;
 }
 
-.calibre-image { transform-origin: 35% 50%; will-change: transform, filter; }
+.calibre-image { transform-origin: 35% 50%; will-change: transform; backface-visibility: hidden; }
+.calibre-image::after {
+  animation: none;
+  transform: translate3d(var(--scene-light-x, -38%), 0, 0);
+}
 .calibre-shade {
-  opacity: calc(.48 + var(--scene-progress, 0) * .52);
+  opacity: var(--scene-shade, .48);
   background:
     linear-gradient(90deg, rgba(5,6,6,.08), rgba(5,6,6,.45) 43%, rgba(5,6,6,.97) 78%),
     linear-gradient(0deg, #070808 0, transparent 18%, transparent 73%, rgba(7,8,8,.78) 100%);
@@ -51,8 +68,8 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  transform: translate3d(0, calc((1 - var(--scene-progress, 0)) * 18vh), 0);
-  opacity: min(1, calc(var(--scene-progress, 0) * 2.4));
+  transform: translate3d(0, var(--scene-copy-y, 18vh), 0);
+  opacity: var(--scene-copy-opacity, 0);
   will-change: transform, opacity;
 }
 
@@ -62,11 +79,11 @@
   top: 39vh;
   width: max-content;
   margin: -58vh 0 0 37%;
-  opacity: calc(1 - var(--scene-progress, 0));
+  opacity: var(--scene-callout-opacity, 1);
 }
 
 .wrist {
-  min-height: 225vh;
+  min-height: 265vh;
   display: block;
   isolation: isolate;
   background: #070808;
@@ -79,17 +96,18 @@
   width: 100%;
   height: 100vh;
   margin-bottom: -100vh;
-  will-change: transform, clip-path, filter;
+  will-change: transform, clip-path;
+  backface-visibility: hidden;
 }
 
 .wrist > img {
-  transform: translate3d(calc(var(--wrist-progress, 0) * 7vw), 0, 0) scale(calc(1 + var(--wrist-progress, 0) * .12));
-  clip-path: inset(calc(var(--wrist-progress, 0) * 8vh) calc(var(--wrist-progress, 0) * 5vw) calc(var(--wrist-progress, 0) * 8vh) calc(var(--wrist-progress, 0) * 42vw));
-  filter: saturate(calc(1 - var(--wrist-progress, 0) * .22)) brightness(calc(1 - var(--wrist-progress, 0) * .2));
+  transform: translate3d(var(--wrist-x, 0vw), 0, 0) scale(var(--wrist-scale, 1));
+  clip-path: inset(var(--wrist-inset-y, 0vh) var(--wrist-inset-r, 0vw) var(--wrist-inset-y, 0vh) var(--wrist-inset-l, 0vw));
+  filter: saturate(.88) brightness(.92);
 }
 
 .wrist-overlay {
-  opacity: calc(1 - var(--wrist-progress, 0) * .55);
+  opacity: var(--wrist-overlay-opacity, 1);
   pointer-events: none;
 }
 
@@ -102,7 +120,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  transform: translate3d(calc(var(--wrist-progress, 0) * -2vw), calc((.45 - var(--wrist-progress, 0)) * 12vh), 0);
+  transform: translate3d(var(--wrist-copy-x, 0vw), var(--wrist-copy-y, 5.4vh), 0);
   will-change: transform;
 }
 
@@ -117,7 +135,7 @@
 
 .atelier-studio {
   position: relative;
-  min-height: 315vh;
+  min-height: 345vh;
   display: block;
   padding: 0;
   overflow: visible;
@@ -145,7 +163,7 @@
   align-items: center;
   gap: 2vw;
   padding: 13vh 7vw 9vh 34vw;
-  transform: translate3d(calc(var(--montage-progress, 0) * -145vw), 0, 0);
+  transform: translate3d(var(--montage-x, 0vw), 0, 0);
   will-change: transform;
 }
 
@@ -160,7 +178,7 @@
 .atelier-montage figure:nth-child(3) { flex-basis: 28vw; height: 60vh; }
 .atelier-montage figure:nth-child(4) { height: 76vh; }
 .atelier-montage figure:nth-child(5) { height: 66vh; }
-.atelier-montage img { transform: scale(calc(1.07 - var(--montage-progress, 0) * .03)); }
+.atelier-montage img { transform: scale(var(--montage-scale, 1.07)); }
 
 .montage-progress {
   position: sticky;
@@ -182,20 +200,22 @@
 
 @media (max-width: 900px) {
   .motion-chapter { left: 3vw; }
-  .calibre { min-height: 220vh; }
+  .hero-sequence { height: 190vh; }
+  .calibre { min-height: 250vh; }
   .calibre-content { padding-top: 30vh; }
-  .wrist { min-height: 200vh; }
-  .wrist > img { clip-path: inset(calc(var(--wrist-progress, 0) * 7vh) calc(var(--wrist-progress, 0) * 4vw) calc(var(--wrist-progress, 0) * 42vh) calc(var(--wrist-progress, 0) * 4vw)); }
+  .wrist { min-height: 230vh; }
+  .wrist > img { clip-path: inset(var(--wrist-mobile-inset-y, 0vh) var(--wrist-mobile-inset-x, 0vw) var(--wrist-mobile-inset-b, 0vh) var(--wrist-mobile-inset-x, 0vw)); }
   .wrist-copy { padding: 0 7vw 12vh; justify-content: flex-end; }
-  .atelier-studio { min-height: 250vh; }
+  .atelier-studio { min-height: 285vh; }
   .atelier-studio h3 { top: 10vh; }
-  .atelier-montage { width: 360vw; gap: 4vw; padding: 27vh 6vw 7vh 64vw; transform: translate3d(calc(var(--montage-progress, 0) * -264vw), 0, 0); }
+  .atelier-montage { width: 360vw; gap: 4vw; padding: 27vh 6vw 7vh 64vw; transform: translate3d(var(--montage-mobile-x, 0vw), 0, 0); }
   .atelier-montage figure, .atelier-montage figure:nth-child(n) { display: block; flex-basis: 62vw; height: 58vh; }
   .montage-progress { width: 68vw; margin-left: 4vw; }
   .montage-progress span { width: 18vw; }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .hero-sequence { height: 100vh; }
   .calibre, .wrist, .atelier-studio { min-height: 100vh; }
   .calibre-image, .calibre-shade, .calibre-content, .wrist > img, .wrist-overlay, .wrist-copy, .atelier-montage { position: absolute; transform: none; clip-path: none; opacity: 1; }
   .atelier-studio { min-height: auto; padding: 10vh 0; }
