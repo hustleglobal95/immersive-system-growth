@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="showroom.css">
   <link rel="stylesheet" href="transitions.css">
   <link rel="stylesheet" href="pollen-direction.css">
+  <link rel="stylesheet" href="eiger-motion.css">
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
@@ -63,6 +64,7 @@
     </section>
 
     <section class="calibre" id="calibre" aria-labelledby="calibreTitle">
+      <div class="motion-chapter" aria-hidden="true"><span>02</span><i></i><b>MECHANISM</b></div>
       <div class="calibre-image" aria-hidden="true"></div>
       <div class="calibre-shade" aria-hidden="true"></div>
       <div class="calibre-content">
@@ -78,20 +80,25 @@
       <div class="calibre-callout" aria-hidden="true"><span></span>Hand-bevelled bridge</div>
     </section>
 
-    <section class="chapter-manifesto" aria-labelledby="manifestoTitle">
+    <section class="chapter-manifesto" data-header-theme="light" aria-labelledby="manifestoTitle">
       <header class="manifesto-meta reveal">
         <span>TIC TOC MANUFACTURE</span>
         <span>GENEVA / 2026</span>
       </header>
-      <h2 id="manifestoTitle" class="reveal">Precision is not<br>a detail. It is the<br><em>entire language.</em></h2>
-      <div class="manifesto-bottom reveal">
-        <p>Every component earns its place through proportion, tension, finish, and the way it catches light.</p>
-        <ol>
-          <li><span>01</span> Mechanical architecture</li>
-          <li><span>02</span> Material restraint</li>
-          <li><span>03</span> Hand finishing</li>
-          <li><span>04</span> Numbered provenance</li>
-        </ol>
+      <div class="manifesto-split">
+        <div class="manifesto-primary reveal">
+          <h2 id="manifestoTitle"><span>Precision is not a detail.</span><span><em>It is the entire language.</em></span></h2>
+          <a class="manifesto-link" href="#materials">Explore the construction <i>↘</i></a>
+        </div>
+        <div class="manifesto-aside reveal">
+          <p>Every component earns its place through proportion, tension, finish, and the way it catches light.</p>
+          <ol>
+            <li><span>01</span> Mechanical architecture</li>
+            <li><span>02</span> Material restraint</li>
+            <li><span>03</span> Hand finishing</li>
+            <li><span>04</span> Numbered provenance</li>
+          </ol>
+        </div>
       </div>
     </section>
 
@@ -125,6 +132,7 @@
     </section>
 
     <section class="wrist" aria-labelledby="wristTitle">
+      <div class="motion-chapter" aria-hidden="true"><span>03</span><i></i><b>PRESENCE</b></div>
       <img src="assets/watch-lifestyle.webp" width="1672" height="941" alt="Tic Toc Obsidian Tourbillon worn with a black suit in a midnight penthouse" loading="lazy">
       <div class="wrist-overlay"></div>
       <div class="wrist-copy reveal">
@@ -159,28 +167,81 @@
       </div>
     </section>
 
-    <section class="atelier-editorial" aria-labelledby="atelierEditorialTitle">
+    <section class="atelier-editorial" data-header-theme="light" aria-labelledby="atelierEditorialTitle">
       <header class="atelier-editorial-heading reveal">
         <div>
           <p class="eyebrow">THE TIC TOC ATELIER</p>
-          <h2 id="atelierEditorialTitle">Crafted for the<br><em>next moment.</em></h2>
+          <h2 id="atelierEditorialTitle"><span>Crafted for the</span><span><em>next moment.</em></span></h2>
         </div>
-        <p>Explore the details behind No. 01 through the materials, gestures, and precision that give the piece its presence.</p>
+        <div class="atelier-heading-aside">
+          <p>Explore No. 01 through the architecture, gestures, and finishing that give the piece its presence.</p>
+          <ol>
+            <li>Calibre</li>
+            <li>Presence</li>
+            <li>Ritual</li>
+          </ol>
+        </div>
       </header>
-      <div class="atelier-feature-grid">
-        <article class="atelier-feature atelier-feature-large reveal">
+
+      <div class="atelier-work-grid atelier-work-grid-primary">
+        <article class="atelier-feature atelier-feature-anchor reveal">
+          <div class="atelier-project-meta"><span>01</span><span>CALIBRE TT-01</span></div>
           <div class="atelier-feature-image"><img src="assets/movement-macro.webp" width="1672" height="941" alt="Macro view of the TT-01 tourbillon movement" loading="lazy"></div>
-          <div class="atelier-feature-copy"><span>01 / CALIBRE</span><h3>The mechanism<br>is the message.</h3><a href="#calibre">Explore TT-01 <i>↗</i></a></div>
+          <div class="atelier-feature-copy"><h3>The mechanism<br>is the message.</h3><a href="#calibre">View calibre <i>↗</i></a></div>
         </article>
-        <article class="atelier-feature reveal">
-          <div class="atelier-feature-image"><img src="assets/watch-lifestyle.webp" width="1672" height="941" alt="Obsidian Tourbillon worn in a midnight interior" loading="lazy"></div>
-          <div class="atelier-feature-copy"><span>02 / PRESENCE</span><h3>Designed to<br>hold attention.</h3><a href="#materials">See the materials <i>↗</i></a></div>
-        </article>
-        <article class="atelier-feature reveal">
-          <div class="atelier-feature-image"><img src="assets/presentation-set.webp" width="1536" height="1024" alt="Tic Toc presentation case and archive card" loading="lazy"></div>
-          <div class="atelier-feature-copy"><span>03 / RITUAL</span><h3>The arrival is<br>part of the piece.</h3><a href="#edition">Enter the edition <i>↗</i></a></div>
-        </article>
+        <div class="atelier-work-column">
+          <article class="atelier-feature atelier-feature-portrait reveal">
+            <div class="atelier-project-meta"><span>02</span><span>ON THE WRIST</span></div>
+            <div class="atelier-feature-image"><img src="assets/watch-lifestyle.webp" width="1672" height="941" alt="Obsidian Tourbillon worn in a midnight interior" loading="lazy"></div>
+            <div class="atelier-feature-copy"><h3>Presence,<br>without noise.</h3><a href="#materials">View materials <i>↗</i></a></div>
+          </article>
+          <article class="atelier-feature atelier-feature-object reveal">
+            <div class="atelier-project-meta"><span>03</span><span>THE OBJECT</span></div>
+            <div class="atelier-feature-image"><img src="assets/watch-hero.webp" width="1122" height="1402" alt="Tic Toc No. 01 Obsidian Tourbillon" loading="lazy"></div>
+            <div class="atelier-feature-copy"><h3>Built around<br>the view.</h3><a href="#top">Inspect No. 01 <i>↗</i></a></div>
+          </article>
+        </div>
       </div>
+
+      <section class="atelier-interlude" aria-label="Tic Toc design philosophy">
+        <h3 class="reveal"><span>Every surface is engineered</span><span>to catch light only once.</span></h3>
+        <div class="atelier-interlude-lower reveal">
+          <figure><img src="assets/watch-hero.webp" width="1122" height="1402" alt="Profile of the Tic Toc No. 01 case" loading="lazy"></figure>
+          <div>
+            <p>The silhouette remains quiet. The movement does not. Brushed titanium absorbs the room while the suspended tourbillon reveals the energy inside it.</p>
+            <a href="#edition">Discover the edition</a>
+          </div>
+        </div>
+      </section>
+
+      <div class="atelier-work-grid atelier-work-grid-secondary">
+        <article class="atelier-feature atelier-feature-anchor reveal">
+          <div class="atelier-project-meta"><span>04</span><span>PRESENTATION</span></div>
+          <div class="atelier-feature-image"><img src="assets/presentation-set.webp" width="1536" height="1024" alt="Tic Toc presentation case and archive card" loading="lazy"></div>
+          <div class="atelier-feature-copy"><h3>The arrival is<br>part of the piece.</h3><a href="#edition">View the ritual <i>↗</i></a></div>
+        </article>
+        <div class="atelier-work-column atelier-work-column-copy">
+          <article class="atelier-feature atelier-feature-detail reveal">
+            <div class="atelier-project-meta"><span>05</span><span>NUMBERED PROVENANCE</span></div>
+            <div class="atelier-feature-image"><img src="assets/movement-macro.webp" width="1672" height="941" alt="Hand-finished details of the TT-01 movement" loading="lazy"></div>
+            <div class="atelier-feature-copy"><h3>One of<br>eighty-eight.</h3><a href="#edition">Enter the edition <i>↗</i></a></div>
+          </article>
+          <p class="atelier-side-statement reveal">A numbered object should feel singular before its number is ever seen.</p>
+        </div>
+      </div>
+
+      <section class="atelier-studio" aria-labelledby="atelierStudioTitle">
+        <h3 id="atelierStudioTitle" class="reveal"><span>From Geneva workshops to</span><span>eighty-eight numbered wrists,</span><span>every piece remains personal.</span></h3>
+        <div class="atelier-montage reveal" aria-hidden="true">
+          <figure><img src="assets/movement-macro.webp" alt=""></figure>
+          <figure><img src="assets/presentation-set.webp" alt=""></figure>
+          <figure><img src="assets/watch-hero.webp" alt=""></figure>
+          <figure><img src="assets/watch-lifestyle.webp" alt=""></figure>
+          <figure><img src="assets/movement-macro.webp" alt=""></figure>
+        </div>
+        <div class="montage-progress" aria-hidden="true"><span></span><b>SCROLL TO CROSS THE ATELIER</b></div>
+      </section>
+
       <div class="atelier-tracks reveal" aria-label="Tic Toc atelier tracks">
         <span class="atelier-tracks-label">CONTINUE THROUGH THE ATELIER</span>
         <a href="#calibre"><b>01</b> Calibre <i>↗</i></a>
@@ -198,10 +259,14 @@
     </section>
   </main>
 
-  <footer>
-    <a class="brand footer-brand" href="#top"><span>TIC</span><i></i><span>TOC</span></a>
-    <p>GENEVA / NEW YORK / TOKYO</p>
-    <p>© 2026 TIC TOC MANUFACTURE</p>
+  <footer class="site-footer">
+    <div class="footer-top">
+      <nav aria-label="Footer navigation"><a href="#calibre">Calibre</a><a href="#materials">Materials</a><a href="#edition">Edition</a></nav>
+      <button type="button" id="footerReserve">Private reservation</button>
+      <a class="footer-brand" href="#top" aria-label="Back to top">TIC TOC</a>
+    </div>
+    <div class="footer-monument" aria-hidden="true"><span>TIC</span><i></i><span>TOC</span></div>
+    <div class="footer-bottom"><p>GENEVA / NEW YORK / TOKYO</p><p>© 2026 TIC TOC MANUFACTURE</p></div>
   </footer>
 
   <dialog class="checkout" id="checkoutDialog" aria-labelledby="checkoutTitle">
