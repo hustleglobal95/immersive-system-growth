@@ -12,6 +12,9 @@
   const form = $('#checkoutForm');
   const steps = $$('.checkout-step');
   let activeStep = 1;
+  let currentSpin = 0;
+  let targetSpin = 0;
+  let spinFrame = 0;
 
   const getConfig = () => {
     const data = new FormData(form);
@@ -47,15 +50,40 @@
     dialog.classList.toggle('accent-cobalt', accent === 'cobalt');
   };
 
+  const renderWatchSpin = () => {
+    const delta = targetSpin - currentSpin;
+    currentSpin += delta * .105;
+    if (Math.abs(delta) < .025) currentSpin = targetSpin;
+
+    const radians = currentSpin * Math.PI / 180;
+    const dimensionalTilt = Math.sin(radians) * 13;
+    const breathingScale = 1 - Math.abs(Math.sin(radians)) * .025;
+    const motionBlur = Math.min(Math.abs(delta) * .0025, .65);
+    const highlight = 1 + Math.abs(Math.sin(radians)) * .09;
+
+    watchImage.style.transform = `rotateZ(${currentSpin}deg) rotateY(${dimensionalTilt}deg) scale(${breathingScale})`;
+    watchImage.style.filter = `brightness(${highlight}) blur(${motionBlur}px) drop-shadow(0 35px 35px rgba(0,0,0,.65))`;
+
+    if (currentSpin !== targetSpin) spinFrame = requestAnimationFrame(renderWatchSpin);
+    else spinFrame = 0;
+  };
+
+  const queueWatchSpin = (progress) => {
+    if (reducedMotion) return;
+    const eased = progress * progress * (3 - 2 * progress);
+    targetSpin = eased * 720;
+    if (!spinFrame) spinFrame = requestAnimationFrame(renderWatchSpin);
+  };
+
   const onScroll = () => {
     const y = window.scrollY;
     const max = document.documentElement.scrollHeight - innerHeight;
     meter.style.width = `${max ? (y / max) * 100 : 0}%`;
     header.classList.toggle('scrolled', y > 50);
     if (!reducedMotion && y < innerHeight * 1.25) {
-      const p = Math.min(y / innerHeight, 1.25);
+      const p = Math.min(y / (innerHeight * .92), 1);
       watchStage.style.transform = `translate3d(0, ${p * 15}vh, 0) scale(${1 - p * .13})`;
-      watchImage.style.transform = `rotate(${p * 12}deg)`;
+      queueWatchSpin(p);
     }
   };
 
@@ -73,6 +101,7 @@
       const y = (event.clientY / innerHeight - .5) * 10;
       watchImage.style.translate = `${x}px ${y}px`;
     });
+    $('#top').addEventListener('pointerleave', () => { watchImage.style.translate = '0 0'; });
   }
 
   const observer = new IntersectionObserver((entries) => {

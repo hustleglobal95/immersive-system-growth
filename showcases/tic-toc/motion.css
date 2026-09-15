@@ -1,0 +1,16 @@
+.watch-stage {
+  perspective: 1400px;
+  transform-style: preserve-3d;
+}
+
+.watch-stage img {
+  transform-origin: 50% 50%;
+  backface-visibility: visible;
+  will-change: transform, filter, translate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .watch-stage img {
+    filter: drop-shadow(0 35px 35px rgba(0, 0, 0, .65)) !important;
+  }
+}
