@@ -16,6 +16,7 @@
   const calibreImage = $('.calibre-image', calibreScene);
   const cinematicTransitions = $$('.cinematic-transition');
   const editorialProjects = $$('.atelier-feature');
+  const cinematicTitles = $$('.cinematic-title');
   const wristScene = $('.wrist');
   const explodedScene = $('.exploded');
   const atelierStudio = $('.atelier-studio');
@@ -168,6 +169,25 @@
     });
   };
 
+  const renderCinematicType = () => {
+    cinematicTitles.forEach((title) => {
+      const rect = title.getBoundingClientRect();
+      const scene = title.closest('.calibre, .exploded, .wrist, .atelier-studio');
+      const raw = scene
+        ? Math.max(0, Math.min(1, sectionProgress(scene) / .34))
+        : Math.max(0, Math.min(1, (innerHeight * .92 - rect.top) / (innerHeight * .48)));
+      $$(':scope > span > b', title).forEach((line, index) => {
+        const lineRaw = Math.max(0, Math.min(1, (raw - index * .12) / .82));
+        const progress = smoothStep(lineRaw);
+        line.style.setProperty('--line-opacity', progress.toFixed(5));
+        line.style.setProperty('--line-blur', `${((1 - progress) * 12).toFixed(3)}px`);
+        line.style.setProperty('--line-y', `${((1 - progress) * 1.05).toFixed(4)}em`);
+        line.style.setProperty('--line-x', `${((1 - progress) * (index % 2 ? 2.4 : -2.4)).toFixed(4)}vw`);
+        line.style.setProperty('--line-tilt', `${((1 - progress) * 8).toFixed(3)}deg`);
+      });
+    });
+  };
+
   const sectionProgress = (section) => {
     const rect = section.getBoundingClientRect();
     const distance = Math.max(1, rect.height - innerHeight);
@@ -250,6 +270,7 @@
     if (!reducedMotion) renderHeroProgress(stagedProgress(heroSequence, .03, .78));
     if (!reducedMotion) renderCinematicTransitions();
     if (!reducedMotion) renderEditorialProjects();
+    if (!reducedMotion) renderCinematicType();
     if (!reducedMotion) renderExpeditionMotion();
   };
 
@@ -280,8 +301,17 @@
 
   $$('.material-card').forEach((card) => card.addEventListener('click', () => {
     $$('.material-card').forEach((item) => item.classList.toggle('active', item === card));
+    $('.material-vault').dataset.active = card.dataset.key;
     $('#materialName').textContent = card.dataset.material;
     $('#materialDetail').textContent = card.dataset.detail;
+    const specifications = {
+      obsidian: ['Satin black', 'Structural lightness'],
+      gold: ['Hand polished', 'Controlled brilliance'],
+      leather: ['Matte hand-cut', 'Tactile restraint']
+    }[card.dataset.key];
+    $('#materialFinish').textContent = specifications[0];
+    $('#materialPurpose').textContent = specifications[1];
+    $('.material-object-index b').textContent = card.dataset.key.toUpperCase();
   }));
 
   const updateTime = () => {
