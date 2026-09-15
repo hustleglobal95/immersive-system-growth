@@ -15,6 +15,8 @@
   const calibreScene = $('#calibre');
   const calibreImage = $('.calibre-image', calibreScene);
   const cinematicTransitions = $$('.cinematic-transition');
+  const diameterTransition = $('.transition-domino');
+  const diameterStrips = diameterTransition ? $$('.domino-field i', diameterTransition) : [];
   const editorialProjects = $$('.atelier-feature');
   const cinematicTitles = $$('.cinematic-title');
   const wristScene = $('.wrist');
@@ -154,6 +156,43 @@
     cinematicTransitions.forEach((transition) => {
       const progress = stagedProgress(transition, .04, .88);
       transition.style.setProperty('--p', progress.toFixed(5));
+      if (transition === diameterTransition) renderDiameterTransition(progress);
+    });
+  };
+
+  const range = (value, start, end) => smoothStep(Math.max(0, Math.min(1, (value - start) / (end - start))));
+
+  const renderDiameterTransition = (progress) => {
+    const set = (property, value) => diameterTransition.style.setProperty(property, value);
+    const reveal = range(progress, .02, .47);
+    const imageReveal = range(progress, .08, .28);
+    const settle = range(progress, .38, .78);
+    const typeExit = range(progress, .62, .84);
+    const guide = Math.min(range(progress, .08, .34), 1 - range(progress, .57, .78));
+    const scan = Math.min(range(progress, .1, .28), 1 - range(progress, .48, .68));
+
+    set('--diameter-image-opacity', imageReveal.toFixed(5));
+    set('--diameter-image-scale', (1.14 - settle * .14).toFixed(5));
+    set('--diameter-image-x', `${(-2 + settle * 2).toFixed(4)}vw`);
+    set('--diameter-image-blur', `${((1 - settle) * 12).toFixed(3)}px`);
+    set('--diameter-shade-opacity', '1');
+    set('--diameter-copy-opacity', (reveal * (1 - typeExit)).toFixed(5));
+    set('--diameter-copy-y', `${((1 - reveal) * 8 - typeExit * 5).toFixed(4)}vh`);
+    set('--diameter-copy-blur', `${((1 - reveal + typeExit) * 12).toFixed(3)}px`);
+    set('--diameter-number-x', `${((1 - reveal) * -7 - typeExit * 9).toFixed(4)}vw`);
+    set('--diameter-unit-x', `${((1 - reveal) * 7 + typeExit * 9).toFixed(4)}vw`);
+    set('--diameter-guide-opacity', guide.toFixed(5));
+    set('--diameter-guide-scale', (.72 + reveal * .28 + typeExit * .12).toFixed(5));
+    set('--diameter-scan-opacity', scan.toFixed(5));
+    set('--diameter-scan-y', `${(30 + progress * 44).toFixed(4)}%`);
+    set('--diameter-meta-opacity', Math.max(0, .5 - typeExit * .5).toFixed(5));
+
+    diameterStrips.forEach((strip, index) => {
+      const stagger = index * .018;
+      const open = range(progress, .14 + stagger, .5 + stagger);
+      const direction = index % 2 === 0 ? -1 : 1;
+      strip.style.setProperty('--strip-y', `${(open * direction * 104).toFixed(4)}%`);
+      strip.style.setProperty('--strip-opacity', (1 - open * .92).toFixed(5));
     });
   };
 
