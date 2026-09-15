@@ -11,12 +11,14 @@ import {
 import { useExperienceStore } from "@/src/store/experienceStore";
 import { downloadJson } from "@/src/studio/useStudioDraft";
 import { CinematicSystemsPanel } from "@/src/studio/CinematicSystemsPanel";
+import { ExperienceModesPanel } from "@/src/studio/ExperienceModesPanel";
 
 const defaults = parseVisualSystems(rawVisualSystems);
 
 export function VisualSystemsPanel() {
   return <>
     <VisualSystemsCorePanel />
+    <ExperienceModesPanel />
     <CinematicSystemsPanel />
   </>;
 }

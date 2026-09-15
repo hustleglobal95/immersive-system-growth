@@ -8,7 +8,8 @@
     "studioProject": "config/studio-project.json",
     "creativeDirection": "config/creative-direction.json",
     "assetManifest": "config/asset-manifest.json",
-    "visualSystems": "config/visual-systems.json"
+    "visualSystems": "config/visual-systems.json",
+    "experienceModes": "config/experience-modes.json"
   },
   "performance": {
     "initialCriticalMb": 8,

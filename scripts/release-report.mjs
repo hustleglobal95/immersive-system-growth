@@ -21,6 +21,7 @@ const documents = {
   creativeDirection: read(project.paths.creativeDirection),
   assetManifest: read(project.paths.assetManifest),
   visualSystems: read(project.paths.visualSystems),
+  experienceModes: read(project.paths.experienceModes),
 };
 
 console.log(JSON.stringify(createReleaseManifest(project, documents), null, 2));

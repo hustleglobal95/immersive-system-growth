@@ -8,6 +8,8 @@ import { CinematicTransitionLayers } from "@/src/components/dom/CinematicTransit
 import { ProgressRail } from "@/src/components/dom/ProgressRail";
 import { HotspotDialog } from "@/src/components/dom/HotspotDialog";
 import { SiteChrome } from "@/src/components/dom/SiteChrome";
+import { ExperienceModeLayer, currentExperienceMode } from "@/src/components/dom/ExperienceModeLayer";
+import { experienceModeClass } from "@/src/platform/experienceModes";
 import { WebGLBoundary } from "@/src/components/runtime/WebGLBoundary";
 import { ScrollController } from "@/src/runtime/ScrollController";
 import { PointerController } from "@/src/runtime/PointerController";
@@ -81,7 +83,7 @@ export function ExperienceRuntime({ children }: { children?: ReactNode }) {
   // The production canvas remains persistent when navigating between / and /lab.
   if (pathname === "/design" || pathname.startsWith("/studio")) return <>{children}</>;
   return (
-    <div className="experience-root" data-reduced-motion={motion} data-media-motion={!motion} data-lab={lab}>
+    <div className={`experience-root ${experienceModeClass(currentExperienceMode.id)}`} data-experience-mode={currentExperienceMode.id} data-reduced-motion={motion} data-media-motion={!motion} data-lab={lab}>
       <SystemProfile />
       <ScrollController />
       <PointerController />
@@ -89,7 +91,8 @@ export function ExperienceRuntime({ children }: { children?: ReactNode }) {
       <RuntimeCommandController />
       <InteractionGraphController />
       <TelemetryClient />
-      <SiteChrome />
+      {currentExperienceMode.composition.navigation === "standard" && <SiteChrome />}
+      <ExperienceModeLayer />
       {ready && (
         <WebGLBoundary key={generation}>
           <SceneCanvas />
@@ -98,7 +101,7 @@ export function ExperienceRuntime({ children }: { children?: ReactNode }) {
       <NarrativeOverlay />
       <CinematicMedia />
       <CinematicTransitionLayers />
-      <ProgressRail />
+      {currentExperienceMode.composition.navigation === "standard" && <ProgressRail />}
       <HotspotDialog />
       <RuntimeStatus />
       {debug && <DebugHUD />}
