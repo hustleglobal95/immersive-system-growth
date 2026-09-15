@@ -34,11 +34,21 @@ const initialProject = parseStudioProject(rawProject);
 const initialAssetManifest = rawAssetManifest as AssetManifest;
 const initialInteractionGraph = parseInteractionGraph(rawInteractionGraph);
 const initialCreativeDirection = parseCreativeDirection(rawCreativeDirection);
-const tabs = ["project", "creative", "visuals", "recipe", "templates", "preview", "director", "timeline", "sequence", "interactions", "masks", "layers", "assets", "bank", "model", "integrations", "publish", "telemetry"] as const;
-type Tab = (typeof tabs)[number];
+
+const workspaces = [
+  { id: "create", label: "Create", tools: ["project", "creative", "visuals", "recipe", "templates", "preview", "director"] },
+  { id: "motion", label: "Motion", tools: ["timeline", "sequence", "masks", "layers"] },
+  { id: "interact", label: "Interact", tools: ["interactions"] },
+  { id: "assets", label: "Assets", tools: ["assets", "bank", "model"] },
+  { id: "ship", label: "Ship", tools: ["integrations", "publish", "telemetry"] },
+] as const;
+
+type Workspace = (typeof workspaces)[number]["id"];
+type Tab = (typeof workspaces)[number]["tools"][number];
 
 export function StudioWorkbench() {
   const draft = useStudioDraft(initialExperience, initialProject, initialAssetManifest, initialInteractionGraph);
+  const [workspace, setWorkspace] = useState<Workspace>("create");
   const [tab, setTab] = useState<Tab>("project");
   const [creative, setCreative] = useState(initialCreativeDirection);
   const [activeScene, setActiveScene] = useState(0);
@@ -58,49 +68,73 @@ export function StudioWorkbench() {
     }
   };
 
+  const chooseWorkspace = (next: Workspace) => {
+    setWorkspace(next);
+    const firstTool = workspaces.find((item) => item.id === next)?.tools[0];
+    if (firstTool) setTab(firstTool);
+  };
+
+  const currentWorkspace = workspaces.find((item) => item.id === workspace) ?? workspaces[0];
+
   return (
     <main className="studio-shell">
-      <header className="studio-header">
-        <div>
+      <header className="studio-header studio-header--compact">
+        <div className="studio-header__brandrow">
           <Link href="/" className="studio-brand">FORGE</Link>
-          <span>IMMERSIVE PRODUCTION STUDIO</span>
+          <span>STUDIO</span>
         </div>
         <div className="studio-header__status" data-valid={!draft.validation.length}>
           <i />
-          {draft.validation.length ? "Draft needs attention" : "Production schema valid"}
+          {draft.validation.length ? "Needs attention" : "Ready"}
         </div>
-        <div className="studio-actions">
+        <div className="studio-actions studio-actions--compact">
           <input ref={importRef} hidden type="file" accept="application/json,.json" onChange={(event) => void importExperience(event.target.files?.[0])} />
-          <button type="button" onClick={() => importRef.current?.click()}>Import</button>
-          <button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Export experience</button>
-          <button type="button" onClick={() => downloadJson("interaction-graph.json", draft.interactionGraph)}>Export interactions</button>
-          <button type="button" onClick={() => downloadJson("studio-project.json", draft.project)}>Export project</button>
-          <button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Export assets</button>
-          <button type="button" onClick={() => downloadJson("creative-direction.json", creative)}>Export direction</button>
+          <details className="studio-menu">
+            <summary>Project</summary>
+            <div className="studio-menu__panel">
+              <button type="button" onClick={() => importRef.current?.click()}>Import experience</button>
+              <button type="button" onClick={draft.reset}>Reset draft</button>
+            </div>
+          </details>
+          <details className="studio-menu">
+            <summary>Export</summary>
+            <div className="studio-menu__panel studio-menu__panel--right">
+              <button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Experience</button>
+              <button type="button" onClick={() => downloadJson("interaction-graph.json", draft.interactionGraph)}>Interactions</button>
+              <button type="button" onClick={() => downloadJson("studio-project.json", draft.project)}>Project</button>
+              <button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Assets</button>
+              <button type="button" onClick={() => downloadJson("creative-direction.json", creative)}>Direction</button>
+            </div>
+          </details>
         </div>
       </header>
 
-      <nav className="studio-tabs" aria-label="Studio areas">
-        {tabs.map((item) => (
-          <button key={item} type="button" aria-current={tab === item ? "page" : undefined} onClick={() => setTab(item)}>
-            {item}
+      <nav className="studio-workspaces" aria-label="Studio workspaces">
+        {workspaces.map((item) => (
+          <button key={item.id} type="button" aria-current={workspace === item.id ? "page" : undefined} onClick={() => chooseWorkspace(item.id)}>
+            {item.label}
           </button>
         ))}
       </nav>
 
-      <div className="studio-title">
-        <div><span>{draft.project.id}</span><h1>{titleFor(tab)}</h1></div>
-        <div>
-          <button type="button" onClick={draft.reset}>Reset draft</button>
-          <small>Changes save locally until exported.</small>
+      <div className="studio-contextbar">
+        <div className="studio-contextbar__title">
+          <span>{draft.project.id}</span>
+          <strong>{titleFor(tab)}</strong>
         </div>
+        <label className="studio-tool-picker">
+          <span>Tool</span>
+          <select value={tab} onChange={(event) => setTab(event.target.value as Tab)}>
+            {currentWorkspace.tools.map((tool) => <option key={tool} value={tool}>{labelFor(tool)}</option>)}
+          </select>
+        </label>
       </div>
 
       {draft.validation.length > 0 && (
-        <div className="studio-validation" role="alert">
-          <strong>Validation</strong>
+        <details className="studio-validation studio-validation--compact" open>
+          <summary>{draft.validation.length} validation issue{draft.validation.length === 1 ? "" : "s"}</summary>
           {draft.validation.map((issue) => <p key={issue}>{issue}</p>)}
-        </div>
+        </details>
       )}
       {notice && <p className="studio-message" role="status">{notice}</p>}
 
@@ -125,10 +159,33 @@ export function StudioWorkbench() {
 
       <footer className="studio-footer">
         <span>Forge Studio v7.0</span>
-        <span>Live runtime / motion sequencer / interaction graph / review PR</span>
+        <span>{currentWorkspace.label} workspace</span>
       </footer>
     </main>
   );
+}
+
+function labelFor(tab: Tab) {
+  return {
+    project: "Project",
+    creative: "Creative direction",
+    visuals: "Visual system",
+    recipe: "Recipe",
+    templates: "Templates",
+    preview: "Preview",
+    director: "Director",
+    timeline: "Timeline",
+    sequence: "Sequencer",
+    interactions: "Interactions",
+    masks: "Masks",
+    layers: "Transitions",
+    assets: "Asset intake",
+    bank: "Asset bank",
+    model: "Model inspector",
+    integrations: "Integrations",
+    publish: "Publish",
+    telemetry: "Performance",
+  }[tab];
 }
 
 function titleFor(tab: Tab) {
@@ -137,19 +194,19 @@ function titleFor(tab: Tab) {
     creative: "Creative direction",
     visuals: "Visual systems",
     recipe: "Recipe editor",
-    templates: "Industry template gallery",
-    preview: "Live production preview",
-    director: "Camera and art direction",
-    timeline: "Visual timeline",
+    templates: "Industry templates",
+    preview: "Live preview",
+    director: "Camera direction",
+    timeline: "Scene timing",
     sequence: "Motion sequencer",
     interactions: "Interaction graph",
-    masks: "Mask reveal laboratory",
-    layers: "Transition layer composer",
-    assets: "Asset intake and budgets",
+    masks: "Mask lab",
+    layers: "Transition layers",
+    assets: "Asset intake",
     bank: "Asset bank",
     model: "Model inspection",
-    integrations: "Content connections",
-    publish: "Release pipeline",
-    telemetry: "Device performance",
+    integrations: "Connections",
+    publish: "Release",
+    telemetry: "Performance",
   }[tab];
 }
