@@ -34,19 +34,34 @@
 .motion-chapter i { flex: 1; width: 1px; background: linear-gradient(var(--gold), rgba(243,238,229,.12)); transform-origin: top; transform: scaleY(var(--scene-progress, 0)); }
 .motion-chapter b { font-weight: 400; writing-mode: vertical-rl; }
 
-.calibre {
-  min-height: 300vh;
-  display: block;
-  isolation: isolate;
-}
-
-.calibre-image,
-.calibre-shade {
+.scene-sticky,
+.exploded-stage {
   position: sticky;
   top: 0;
   width: 100%;
   height: 100vh;
-  margin-bottom: -100vh;
+  overflow: hidden;
+}
+
+.scene-sticky .motion-chapter,
+.exploded-stage .motion-chapter {
+  position: absolute;
+}
+
+.calibre {
+  min-height: 300vh;
+  display: block;
+  isolation: isolate;
+  overflow: visible;
+}
+
+.calibre-image,
+.calibre-shade {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  margin-bottom: 0;
 }
 
 .calibre-image { transform-origin: 35% 50%; will-change: transform; backface-visibility: hidden; }
@@ -62,8 +77,9 @@
 }
 
 .calibre-content {
-  position: sticky;
+  position: absolute;
   top: 0;
+  right: 0;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -74,11 +90,11 @@
 }
 
 .calibre-callout {
-  position: sticky;
+  position: absolute;
   z-index: 3;
   top: 39vh;
   width: max-content;
-  margin: -58vh 0 0 37%;
+  margin: 0;
   opacity: var(--scene-callout-opacity, 1);
 }
 
@@ -87,20 +103,21 @@
   display: block;
   isolation: isolate;
   background: #070808;
+  overflow: visible;
 }
 
-.wrist > img,
-.wrist-overlay {
-  position: sticky;
+.wrist .scene-sticky > img,
+.wrist .scene-sticky > .wrist-overlay {
+  position: absolute;
   top: 0;
   width: 100%;
   height: 100vh;
-  margin-bottom: -100vh;
+  margin-bottom: 0;
   will-change: transform, clip-path;
   backface-visibility: hidden;
 }
 
-.wrist > img {
+.wrist .scene-sticky > img {
   transform: translate3d(var(--wrist-x, 0vw), 0, 0) scale(var(--wrist-scale, 1));
   clip-path: inset(var(--wrist-inset-y, 0vh) var(--wrist-inset-r, 0vw) var(--wrist-inset-y, 0vh) var(--wrist-inset-l, 0vw));
   filter: saturate(.88) brightness(.92);
@@ -112,7 +129,7 @@
 }
 
 .wrist-copy {
-  position: sticky;
+  position: absolute;
   top: 0;
   height: 100vh;
   margin: 0;
@@ -125,13 +142,55 @@
 }
 
 .wrist .time-readout {
-  position: sticky;
+  position: absolute;
   z-index: 4;
-  top: 84vh;
-  float: right;
+  top: auto;
+  right: 5vw;
+  bottom: 8vh;
   width: max-content;
-  margin: -16vh 5vw 0 0;
+  margin: 0;
 }
+
+.exploded {
+  position: relative;
+  min-height: 360vh;
+  overflow: visible;
+  isolation: isolate;
+  background: radial-gradient(circle at 50% 54%, #211d17 0, #0b0c0c 42%, #050606 78%);
+}
+
+.exploded-stage { perspective: 1800px; }
+.exploded-stage::after { content: ""; position: absolute; inset: 0; z-index: 1; background: radial-gradient(circle at 52% 52%, transparent 25%, rgba(5,6,6,.62) 82%); pointer-events: none; }
+
+.exploded-heading {
+  position: absolute;
+  z-index: 4;
+  top: 10vh;
+  left: 7vw;
+  opacity: var(--explode-copy-opacity, 1);
+  transform: translate3d(0, var(--explode-heading-y, 0vh), 0);
+}
+
+.exploded-heading h2 { margin: 22px 0 0; font-family: var(--serif); font-size: clamp(4rem, 7vw, 8rem); font-weight: 400; line-height: .86; letter-spacing: -.05em; }
+.exploded-heading em { color: var(--gold); font-weight: 400; }
+
+.exploded-watch { position: absolute; z-index: 2; inset: 0; transform-style: preserve-3d; }
+.exploded-layer { position: absolute; left: 50%; top: 52%; transform-style: preserve-3d; backface-visibility: hidden; will-change: transform, opacity; }
+.exploded-layer img { width: 100%; height: 100%; object-fit: contain; }
+.exploded-shell { z-index: 4; width: min(37vw, 540px); height: 76vh; transform: translate3d(-50%, -50%, 80px) translate3d(var(--explode-shell-x, 0vw), var(--explode-shell-y, 0vh), 0) rotateY(var(--explode-shell-rotate, 0deg)) scale(var(--explode-shell-scale, 1)); filter: drop-shadow(0 34px 32px rgba(0,0,0,.72)); }
+.exploded-dial,
+.exploded-calibre,
+.exploded-crystal { width: min(27vw, 390px); aspect-ratio: 1; border-radius: 50%; opacity: var(--explode-inner-opacity, 0); }
+.exploded-dial { z-index: 3; overflow: hidden; transform: translate3d(-50%, -50%, 30px) translateX(var(--explode-dial-x, 0vw)) rotateY(var(--explode-dial-rotate, 0deg)) scale(.92); border: 1px solid rgba(201,168,106,.5); box-shadow: 0 24px 55px rgba(0,0,0,.55); }
+.exploded-dial img { object-fit: cover; filter: sepia(.12) contrast(1.1); }
+.exploded-calibre { z-index: 2; overflow: hidden; transform: translate3d(-50%, -50%, -20px) translateX(var(--explode-calibre-x, 0vw)) rotateY(var(--explode-calibre-rotate, 0deg)) scale(.83); border: 1px solid rgba(243,238,229,.26); box-shadow: inset 0 0 40px rgba(201,168,106,.14), 0 24px 55px rgba(0,0,0,.62); }
+.exploded-calibre img { object-fit: cover; transform: rotate(17deg) scale(1.18); filter: contrast(1.18) brightness(.84); }
+.exploded-crystal { z-index: 1; transform: translate3d(-50%, -50%, -70px) translateX(var(--explode-crystal-x, 0vw)) rotateY(var(--explode-crystal-rotate, 0deg)) scale(.88); border: 2px solid rgba(210,225,224,.4); background: radial-gradient(circle at 35% 25%, rgba(255,255,255,.24), rgba(124,159,164,.06) 38%, rgba(4,8,9,.16) 72%); box-shadow: inset 0 0 32px rgba(209,232,231,.12), 0 20px 50px rgba(0,0,0,.55); }
+.exploded-crystal i { position: absolute; inset: 7%; border: 1px solid rgba(255,255,255,.16); border-radius: inherit; }
+
+.exploded-labels { position: absolute; z-index: 5; left: 5vw; right: 5vw; bottom: 6vh; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2vw; opacity: var(--explode-label-opacity, 0); color: rgba(243,238,229,.72); font-size: .58rem; letter-spacing: .14em; }
+.exploded-labels span { padding-top: 13px; border-top: 1px solid rgba(243,238,229,.22); }
+.exploded-note { position: absolute; z-index: 5; right: 5vw; top: 10vh; width: min(300px, 26vw); margin: 0; color: rgba(243,238,229,.64); font-size: .82rem; line-height: 1.65; opacity: var(--explode-label-opacity, 0); }
 
 .atelier-studio {
   position: relative;
@@ -204,7 +263,7 @@
   .calibre { min-height: 250vh; }
   .calibre-content { padding-top: 30vh; }
   .wrist { min-height: 230vh; }
-  .wrist > img { clip-path: inset(var(--wrist-mobile-inset-y, 0vh) var(--wrist-mobile-inset-x, 0vw) var(--wrist-mobile-inset-b, 0vh) var(--wrist-mobile-inset-x, 0vw)); }
+  .wrist .scene-sticky > img { clip-path: inset(var(--wrist-mobile-inset-y, 0vh) var(--wrist-mobile-inset-x, 0vw) var(--wrist-mobile-inset-b, 0vh) var(--wrist-mobile-inset-x, 0vw)); }
   .wrist-copy { padding: 0 7vw 12vh; justify-content: flex-end; }
   .atelier-studio { min-height: 285vh; }
   .atelier-studio h3 { top: 10vh; }
@@ -212,12 +271,24 @@
   .atelier-montage figure, .atelier-montage figure:nth-child(n) { display: block; flex-basis: 62vw; height: 58vh; }
   .montage-progress { width: 68vw; margin-left: 4vw; }
   .montage-progress span { width: 18vw; }
+  .exploded { min-height: 330vh; }
+  .exploded-heading { top: 9vh; left: 7vw; }
+  .exploded-heading h2 { font-size: clamp(3.5rem, 14vw, 6rem); }
+  .exploded-note { display: none; }
+  .exploded-layer { top: 51%; }
+  .exploded-shell { width: 72vw; height: 62vh; transform: translate3d(-50%, -50%, 80px) translateY(var(--explode-mobile-shell-y, 0vh)) rotateY(var(--explode-shell-rotate, 0deg)) scale(var(--explode-shell-scale, 1)); }
+  .exploded-dial, .exploded-calibre, .exploded-crystal { width: 48vw; }
+  .exploded-dial { transform: translate3d(-50%, -50%, 30px) translateY(var(--explode-mobile-dial-y, 0vh)) rotateY(var(--explode-dial-rotate, 0deg)) scale(.92); }
+  .exploded-calibre { transform: translate3d(-50%, -50%, -20px) translateY(var(--explode-mobile-calibre-y, 0vh)) rotateY(var(--explode-calibre-rotate, 0deg)) scale(.83); }
+  .exploded-crystal { transform: translate3d(-50%, -50%, -70px) translateY(var(--explode-mobile-crystal-y, 0vh)) rotateY(var(--explode-crystal-rotate, 0deg)) scale(.88); }
+  .exploded-labels { grid-template-columns: 1fr 1fr; bottom: 3vh; font-size: .5rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-sequence { height: 100vh; }
-  .calibre, .wrist, .atelier-studio { min-height: 100vh; }
-  .calibre-image, .calibre-shade, .calibre-content, .wrist > img, .wrist-overlay, .wrist-copy, .atelier-montage { position: absolute; transform: none; clip-path: none; opacity: 1; }
+  .calibre, .wrist, .exploded, .atelier-studio { min-height: 100vh; }
+  .calibre-image, .calibre-shade, .calibre-content, .wrist .scene-sticky > img, .wrist-overlay, .wrist-copy, .atelier-montage { position: absolute; transform: none; clip-path: none; opacity: 1; }
+  .exploded-dial, .exploded-calibre, .exploded-crystal, .exploded-labels { display: none; }
   .atelier-studio { min-height: auto; padding: 10vh 0; }
   .atelier-studio h3 { position: relative; top: auto; }
   .atelier-montage { position: relative; width: 100%; height: 44vh; padding: 0; display: grid; transform: none; }

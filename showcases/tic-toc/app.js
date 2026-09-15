@@ -17,6 +17,7 @@
   const cinematicTransitions = $$('.cinematic-transition');
   const editorialProjects = $$('.atelier-feature');
   const wristScene = $('.wrist');
+  const explodedScene = $('.exploded');
   const atelierStudio = $('.atelier-studio');
   const lightHeaderSections = $$('[data-header-theme="light"]');
   const dialog = $('#checkoutDialog');
@@ -183,6 +184,7 @@
 
   const renderExpeditionMotion = () => {
     const calibreProgress = stagedProgress(calibreScene, .05, .78);
+    const explodedProgress = stagedProgress(explodedScene, .06, .74);
     const wristProgress = stagedProgress(wristScene, .06, .79);
     const montageProgress = stagedProgress(atelierStudio, .05, .82);
 
@@ -195,7 +197,28 @@
     set(calibreScene, '--scene-callout-opacity', (1 - calibreProgress).toFixed(5));
     set(calibreScene, '--scene-light-x', `${(-38 + calibreProgress * 76).toFixed(4)}%`);
 
+    set(explodedScene, '--scene-progress', explodedProgress.toFixed(5));
+    set(explodedScene, '--explode-shell-x', `${(explodedProgress * -25).toFixed(4)}vw`);
+    set(explodedScene, '--explode-shell-y', `${(explodedProgress * 4).toFixed(4)}vh`);
+    set(explodedScene, '--explode-shell-rotate', `${(explodedProgress * -18).toFixed(4)}deg`);
+    set(explodedScene, '--explode-shell-scale', (1 - explodedProgress * .12).toFixed(5));
+    set(explodedScene, '--explode-dial-x', `${(explodedProgress * 2).toFixed(4)}vw`);
+    set(explodedScene, '--explode-dial-rotate', `${(explodedProgress * 9).toFixed(4)}deg`);
+    set(explodedScene, '--explode-calibre-x', `${(explodedProgress * 25).toFixed(4)}vw`);
+    set(explodedScene, '--explode-calibre-rotate', `${(explodedProgress * 22).toFixed(4)}deg`);
+    set(explodedScene, '--explode-crystal-x', `${(explodedProgress * 43).toFixed(4)}vw`);
+    set(explodedScene, '--explode-crystal-rotate', `${(explodedProgress * 52).toFixed(4)}deg`);
+    set(explodedScene, '--explode-inner-opacity', Math.min(1, explodedProgress * 3.2).toFixed(5));
+    set(explodedScene, '--explode-copy-opacity', Math.max(0, 1 - explodedProgress * 2.1).toFixed(5));
+    set(explodedScene, '--explode-heading-y', `${(Math.min(1, explodedProgress * 2.1) * -4).toFixed(4)}vh`);
+    set(explodedScene, '--explode-label-opacity', Math.max(0, Math.min(1, (explodedProgress - .45) * 3.4)).toFixed(5));
+    set(explodedScene, '--explode-mobile-shell-y', `${(explodedProgress * -25).toFixed(4)}vh`);
+    set(explodedScene, '--explode-mobile-dial-y', `${(explodedProgress * -3).toFixed(4)}vh`);
+    set(explodedScene, '--explode-mobile-calibre-y', `${(explodedProgress * 19).toFixed(4)}vh`);
+    set(explodedScene, '--explode-mobile-crystal-y', `${(explodedProgress * 38).toFixed(4)}vh`);
+
     set(wristScene, '--wrist-progress', wristProgress.toFixed(5));
+    set(wristScene, '--scene-progress', wristProgress.toFixed(5));
     set(wristScene, '--wrist-x', `${(wristProgress * 7).toFixed(4)}vw`);
     set(wristScene, '--wrist-scale', (1 + wristProgress * .12).toFixed(5));
     set(wristScene, '--wrist-inset-y', `${(wristProgress * 8).toFixed(4)}vh`);
