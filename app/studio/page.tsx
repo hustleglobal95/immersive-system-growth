@@ -4,5 +4,6 @@ import "./studio.css";
 import "./workspace.css";
 import "./builder.css";
 import "./studio-pro.css";
+import "./intake.css";
 export const metadata: Metadata = { title: "Forge Studio", description: "Visual production control for immersive experiences." };
 export default function StudioPage() { return <StudioWorkbench />; }
