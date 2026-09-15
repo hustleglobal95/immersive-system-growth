@@ -7,6 +7,7 @@
   const header = $('#siteHeader');
   const meter = $('#scrollMeter');
   const watchStage = $('#watchStage');
+  const heroSequence = $('.hero-sequence');
   const watchImage = $('img', watchStage);
   const watchXray = $('#watchXray');
   const heroTic = $('#heroTitle span:first-child');
@@ -25,9 +26,6 @@
   const form = $('#checkoutForm');
   const steps = $$('.checkout-step');
   let activeStep = 1;
-  let currentCalibreMotion = 0;
-  let targetCalibreMotion = 0;
-  let calibreFrame = 0;
   let checkoutRotation = 0;
   let checkoutTilt = 0;
   let showcaseDragging = false;
@@ -140,39 +138,20 @@
     heroToc.style.opacity = wordOpacity;
   };
 
-  const renderCalibreMotion = () => {
-    const delta = targetCalibreMotion - currentCalibreMotion;
-    currentCalibreMotion += delta * .075;
-    if (Math.abs(delta) < .0005) currentCalibreMotion = targetCalibreMotion;
-
-    const p = currentCalibreMotion;
+  const renderCalibreMotion = (p) => {
     const scale = 1.12 + p * .075;
     const x = (p - .5) * -4.5;
     const y = (p - .5) * -3;
     const rotation = (p - .5) * 2.2;
-    const light = .92 + Math.sin(p * Math.PI) * .16;
 
     calibreImage.style.transform = `translate3d(${x}%, ${y}%, 0) scale(${scale}) rotate(${rotation}deg)`;
-    calibreImage.style.filter = `brightness(${light}) contrast(${1.04 + p * .05})`;
 
-    if (currentCalibreMotion !== targetCalibreMotion) calibreFrame = requestAnimationFrame(renderCalibreMotion);
-    else calibreFrame = 0;
-  };
-
-  const queueCalibreMotion = () => {
-    if (reducedMotion) return;
-    const rect = calibreScene.getBoundingClientRect();
-    const travel = innerHeight + rect.height;
-    targetCalibreMotion = Math.max(0, Math.min(1, (innerHeight - rect.top) / travel));
-    if (!calibreFrame) calibreFrame = requestAnimationFrame(renderCalibreMotion);
   };
 
   const renderCinematicTransitions = () => {
     cinematicTransitions.forEach((transition) => {
-      const rect = transition.getBoundingClientRect();
-      const distance = Math.max(1, rect.height - innerHeight);
-      const progress = Math.max(0, Math.min(1, -rect.top / distance));
-      transition.style.setProperty('--p', progress.toFixed(4));
+      const progress = stagedProgress(transition, .04, .88);
+      transition.style.setProperty('--p', progress.toFixed(5));
     });
   };
 
@@ -194,10 +173,46 @@
     return Math.max(0, Math.min(1, -rect.top / distance));
   };
 
+  const smoothStep = (value) => value * value * (3 - 2 * value);
+
+  const stagedProgress = (section, start = .06, end = .8) => {
+    const raw = sectionProgress(section);
+    const normalized = Math.max(0, Math.min(1, (raw - start) / (end - start)));
+    return smoothStep(normalized);
+  };
+
   const renderExpeditionMotion = () => {
-    calibreScene.style.setProperty('--scene-progress', sectionProgress(calibreScene).toFixed(4));
-    wristScene.style.setProperty('--wrist-progress', sectionProgress(wristScene).toFixed(4));
-    atelierStudio.style.setProperty('--montage-progress', sectionProgress(atelierStudio).toFixed(4));
+    const calibreProgress = stagedProgress(calibreScene, .05, .78);
+    const wristProgress = stagedProgress(wristScene, .06, .79);
+    const montageProgress = stagedProgress(atelierStudio, .05, .82);
+
+    const set = (element, property, value) => element.style.setProperty(property, value);
+
+    set(calibreScene, '--scene-progress', calibreProgress.toFixed(5));
+    set(calibreScene, '--scene-shade', (.48 + calibreProgress * .52).toFixed(5));
+    set(calibreScene, '--scene-copy-y', `${((1 - calibreProgress) * 18).toFixed(4)}vh`);
+    set(calibreScene, '--scene-copy-opacity', Math.min(1, calibreProgress * 2.4).toFixed(5));
+    set(calibreScene, '--scene-callout-opacity', (1 - calibreProgress).toFixed(5));
+    set(calibreScene, '--scene-light-x', `${(-38 + calibreProgress * 76).toFixed(4)}%`);
+
+    set(wristScene, '--wrist-progress', wristProgress.toFixed(5));
+    set(wristScene, '--wrist-x', `${(wristProgress * 7).toFixed(4)}vw`);
+    set(wristScene, '--wrist-scale', (1 + wristProgress * .12).toFixed(5));
+    set(wristScene, '--wrist-inset-y', `${(wristProgress * 8).toFixed(4)}vh`);
+    set(wristScene, '--wrist-inset-r', `${(wristProgress * 5).toFixed(4)}vw`);
+    set(wristScene, '--wrist-inset-l', `${(wristProgress * 42).toFixed(4)}vw`);
+    set(wristScene, '--wrist-overlay-opacity', (1 - wristProgress * .55).toFixed(5));
+    set(wristScene, '--wrist-copy-x', `${(wristProgress * -2).toFixed(4)}vw`);
+    set(wristScene, '--wrist-copy-y', `${((.45 - wristProgress) * 12).toFixed(4)}vh`);
+    set(wristScene, '--wrist-mobile-inset-y', `${(wristProgress * 7).toFixed(4)}vh`);
+    set(wristScene, '--wrist-mobile-inset-x', `${(wristProgress * 4).toFixed(4)}vw`);
+    set(wristScene, '--wrist-mobile-inset-b', `${(wristProgress * 42).toFixed(4)}vh`);
+
+    set(atelierStudio, '--montage-progress', montageProgress.toFixed(5));
+    set(atelierStudio, '--montage-x', `${(montageProgress * -145).toFixed(4)}vw`);
+    set(atelierStudio, '--montage-mobile-x', `${(montageProgress * -264).toFixed(4)}vw`);
+    set(atelierStudio, '--montage-scale', (1.07 - montageProgress * .03).toFixed(5));
+    renderCalibreMotion(calibreProgress);
   };
 
   const onScroll = () => {
@@ -209,8 +224,7 @@
       const rect = section.getBoundingClientRect();
       return rect.top <= 68 && rect.bottom >= 68;
     }));
-    if (!reducedMotion) renderHeroProgress(Math.max(0, Math.min(y / (innerHeight * .92), 1)));
-    queueCalibreMotion();
+    if (!reducedMotion) renderHeroProgress(stagedProgress(heroSequence, .03, .78));
     if (!reducedMotion) renderCinematicTransitions();
     if (!reducedMotion) renderEditorialProjects();
     if (!reducedMotion) renderExpeditionMotion();
