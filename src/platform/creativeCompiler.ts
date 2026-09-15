@@ -14,6 +14,10 @@ import {
   type MotionPresetName,
 } from "@/src/platform/motionPresets";
 import {
+  createMotionArchetype,
+  type MotionArchetypeName,
+} from "@/src/platform/motionArchetypes";
+import {
   parseCreativePlan,
   type CreativePlan,
   type CreativePlanScene,
@@ -25,20 +29,10 @@ export interface CreativeCompilation {
   provenance: Record<string, string>;
 }
 
-/**
- * Backwards-compatible entry point for callers that only provide a creative
- * direction and experience config. The plan compiler adds runtime behavior
- * when a graph is supplied.
- */
 export function compileCreativeDirection(input: unknown, base: unknown): CreativeCompilation {
   return compileCreativePlan(input, base);
 }
 
-/**
- * Compile a validated creative plan into the existing experience and,
- * optionally, the interaction graph. Authored runtime data remains intact,
- * while generated data is namespaced and repeatable.
- */
 export function compileCreativePlan(
   input: unknown,
   base: unknown,
@@ -55,12 +49,11 @@ export function compileCreativePlan(
     const authoredTracks = scene.motionTracks.filter((track) => !track.id.startsWith("creative-"));
     const usedTargets = new Set(authoredTracks.map((track) => track.viewport + ":" + track.target));
     const creativeTracks: MotionTrack[] = [];
+    const generated = beat.runtime.motionArchetype
+      ? createMotionArchetype(beat.runtime.motionArchetype as MotionArchetypeName, source, sceneIndex)
+      : createMotionPreset(beat.runtime.motionPreset as MotionPresetName, source, sceneIndex);
 
-    for (const track of createMotionPreset(
-      beat.runtime.motionPreset as MotionPresetName,
-      source,
-      sceneIndex,
-    )) {
+    for (const track of generated) {
       const namespaced = namespaceMotionTrack(track, beatKey);
       const targetKey = namespaced.viewport + ":" + namespaced.target;
       if (usedTargets.has(targetKey)) {
@@ -74,8 +67,9 @@ export function compileCreativePlan(
 
     provenance["scenes." + sceneIndex + ".copy"] =
       "creative-plan.scenes[" + beatIndex + "]";
-    provenance["scenes." + sceneIndex + ".motionTracks"] =
-      "creative-plan.scenes[" + beatIndex + "].runtime.motionPreset";
+    provenance["scenes." + sceneIndex + ".motionTracks"] = beat.runtime.motionArchetype
+      ? "creative-plan.scenes[" + beatIndex + "].runtime.motionArchetype"
+      : "creative-plan.scenes[" + beatIndex + "].runtime.motionPreset";
 
     return {
       ...scene,
