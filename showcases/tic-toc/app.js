@@ -8,6 +8,8 @@
   const meter = $('#scrollMeter');
   const watchStage = $('#watchStage');
   const watchImage = $('img', watchStage);
+  const heroTic = $('#heroTitle span:first-child');
+  const heroToc = $('#heroTitle span:last-child');
   const dialog = $('#checkoutDialog');
   const form = $('#checkoutForm');
   const steps = $$('.checkout-step');
@@ -15,6 +17,8 @@
   let currentSpin = 0;
   let targetSpin = 0;
   let spinFrame = 0;
+  let currentWordShift = 0;
+  let targetWordShift = 0;
 
   const getConfig = () => {
     const data = new FormData(form);
@@ -52,8 +56,11 @@
 
   const renderWatchSpin = () => {
     const delta = targetSpin - currentSpin;
+    const wordDelta = targetWordShift - currentWordShift;
     currentSpin += delta * .105;
+    currentWordShift += wordDelta * .065;
     if (Math.abs(delta) < .025) currentSpin = targetSpin;
+    if (Math.abs(wordDelta) < .015) currentWordShift = targetWordShift;
 
     const radians = currentSpin * Math.PI / 180;
     const dimensionalTilt = Math.sin(radians) * 13;
@@ -64,7 +71,13 @@
     watchImage.style.transform = `rotateZ(${currentSpin}deg) rotateY(${dimensionalTilt}deg) scale(${breathingScale})`;
     watchImage.style.filter = `brightness(${highlight}) blur(${motionBlur}px) drop-shadow(0 35px 35px rgba(0,0,0,.65))`;
 
-    if (currentSpin !== targetSpin) spinFrame = requestAnimationFrame(renderWatchSpin);
+    const wordOpacity = Math.max(0, Math.min(1, 1 - (currentWordShift - 34) / 18));
+    heroTic.style.transform = `translate3d(${-2 - currentWordShift}vw, 0, 0)`;
+    heroToc.style.transform = `translate3d(${2 + currentWordShift}vw, 0, 0)`;
+    heroTic.style.opacity = wordOpacity;
+    heroToc.style.opacity = wordOpacity;
+
+    if (currentSpin !== targetSpin || currentWordShift !== targetWordShift) spinFrame = requestAnimationFrame(renderWatchSpin);
     else spinFrame = 0;
   };
 
@@ -72,6 +85,7 @@
     if (reducedMotion) return;
     const eased = progress * progress * (3 - 2 * progress);
     targetSpin = eased * 720;
+    targetWordShift = eased * 58;
     if (!spinFrame) spinFrame = requestAnimationFrame(renderWatchSpin);
   };
 
