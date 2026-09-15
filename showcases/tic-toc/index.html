@@ -9,6 +9,7 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="motion.css">
+  <link rel="stylesheet" href="showroom.css">
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
@@ -163,9 +164,21 @@
 
       <div class="checkout-body">
         <aside class="checkout-product">
-          <p class="eyebrow">YOUR NO. 01</p>
-          <img src="assets/watch-hero.webp" width="1122" height="1402" alt="Configured Tic Toc No. 01 Obsidian Tourbillon">
-          <div><span>NO. 01 OBSIDIAN TOURBILLON</span><strong>$18,800</strong></div>
+          <div class="checkout-showcase-heading">
+            <p class="eyebrow">PRIVATE VIEWING / NO. 01</p>
+            <span id="checkoutAngle">000°</span>
+          </div>
+          <div class="checkout-showcase" id="checkoutShowcase" role="img" tabindex="0" aria-label="Interactive view of the configured Tic Toc No. 01 Obsidian Tourbillon. Drag, swipe, or use the arrow keys to rotate the watch.">
+            <div class="checkout-showcase-number" aria-hidden="true">01</div>
+            <div class="checkout-orbit checkout-orbit-one" aria-hidden="true"></div>
+            <div class="checkout-orbit checkout-orbit-two" aria-hidden="true"></div>
+            <div class="checkout-watch-float">
+              <img id="checkoutWatch" src="assets/watch-hero.webp" width="1122" height="1402" alt="Configured Tic Toc No. 01 Obsidian Tourbillon" draggable="false">
+            </div>
+            <div class="checkout-watch-shadow" aria-hidden="true"></div>
+            <button class="checkout-drag-hint" id="checkoutResetView" type="button" aria-label="Reset watch viewing angle"><i aria-hidden="true"></i><span>Drag to inspect</span></button>
+          </div>
+          <div class="checkout-product-meta"><span>NO. 01<br><b>OBSIDIAN TOURBILLON</b></span><strong>$18,800</strong></div>
         </aside>
 
         <form id="checkoutForm" novalidate>

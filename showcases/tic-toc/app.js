@@ -13,6 +13,9 @@
   const calibreScene = $('#calibre');
   const calibreImage = $('.calibre-image', calibreScene);
   const dialog = $('#checkoutDialog');
+  const checkoutShowcase = $('#checkoutShowcase');
+  const checkoutWatch = $('#checkoutWatch');
+  const checkoutAngle = $('#checkoutAngle');
   const form = $('#checkoutForm');
   const steps = $$('.checkout-step');
   let activeStep = 1;
@@ -24,6 +27,64 @@
   let currentCalibreMotion = 0;
   let targetCalibreMotion = 0;
   let calibreFrame = 0;
+  let checkoutRotation = 0;
+  let checkoutTilt = 0;
+  let showcaseDragging = false;
+  let showcasePointerX = 0;
+  let showcasePointerY = 0;
+
+  const renderCheckoutWatch = () => {
+    const normalized = ((checkoutRotation % 360) + 360) % 360;
+    checkoutWatch.style.transform = `rotateZ(${checkoutRotation}deg) rotateX(${checkoutTilt}deg) scale(${1 + Math.abs(checkoutTilt) * .0015})`;
+    checkoutAngle.textContent = `${String(Math.round(normalized)).padStart(3, '0')}°`;
+  };
+
+  const resetCheckoutWatch = () => {
+    checkoutRotation = 0;
+    checkoutTilt = 0;
+    checkoutWatch.style.transition = 'transform .9s cubic-bezier(.2,.75,.2,1)';
+    renderCheckoutWatch();
+    setTimeout(() => { checkoutWatch.style.transition = ''; }, 920);
+  };
+
+  checkoutShowcase.addEventListener('pointerdown', (event) => {
+    if (event.target.closest('button')) return;
+    showcaseDragging = true;
+    showcasePointerX = event.clientX;
+    showcasePointerY = event.clientY;
+    checkoutShowcase.setPointerCapture(event.pointerId);
+    checkoutShowcase.classList.add('dragging');
+  });
+
+  checkoutShowcase.addEventListener('pointermove', (event) => {
+    if (!showcaseDragging) return;
+    const deltaX = event.clientX - showcasePointerX;
+    const deltaY = event.clientY - showcasePointerY;
+    showcasePointerX = event.clientX;
+    showcasePointerY = event.clientY;
+    checkoutRotation += deltaX * .72;
+    checkoutTilt = Math.max(-14, Math.min(14, checkoutTilt - deltaY * .13));
+    renderCheckoutWatch();
+  });
+
+  const releaseCheckoutWatch = () => {
+    showcaseDragging = false;
+    checkoutShowcase.classList.remove('dragging');
+  };
+
+  checkoutShowcase.addEventListener('pointerup', releaseCheckoutWatch);
+  checkoutShowcase.addEventListener('pointercancel', releaseCheckoutWatch);
+  checkoutShowcase.addEventListener('keydown', (event) => {
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home'].includes(event.key)) return;
+    event.preventDefault();
+    if (event.key === 'Home') { resetCheckoutWatch(); return; }
+    if (event.key === 'ArrowLeft') checkoutRotation -= 10;
+    if (event.key === 'ArrowRight') checkoutRotation += 10;
+    if (event.key === 'ArrowUp') checkoutTilt = Math.min(14, checkoutTilt + 2);
+    if (event.key === 'ArrowDown') checkoutTilt = Math.max(-14, checkoutTilt - 2);
+    renderCheckoutWatch();
+  });
+  $('#checkoutResetView').addEventListener('click', resetCheckoutWatch);
 
   const getConfig = () => {
     const data = new FormData(form);
@@ -186,6 +247,7 @@
   const openCheckout = (step = 1) => {
     if (!dialog.open) dialog.showModal();
     document.body.classList.add('checkout-open');
+    resetCheckoutWatch();
     $('#checkoutSuccess').classList.remove('active');
     steps.forEach((section) => section.hidden = false);
     $('#checkoutActions').hidden = false;
