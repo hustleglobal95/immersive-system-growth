@@ -1,5 +1,8 @@
 import fs from "node:fs";
 import { parseCreativeDirection } from "../src/platform/creativeDirectionSchema.ts";
+import { motionArchetypeCatalog } from "../src/platform/motionArchetypes.ts";
+import { motionCurveCatalog, motionEnergyCatalog } from "../src/platform/motionLanguage.ts";
+import { cameraChoreographyCatalog } from "../src/platform/cameraChoreography.ts";
 
 const d = parseCreativeDirection(JSON.parse(fs.readFileSync(process.argv[2] || "config/creative-direction.json", "utf8")));
 
@@ -24,6 +27,14 @@ const lines = [
     `Materials: ${join(d.visual.materials)}`,
     `Motion vocabulary: ${join(d.visual.motion)}`,
     `Sound vocabulary: ${join(d.visual.sound)}`,
+  ].join("\n")),
+  section("FORGE-NATIVE MOTION VOCABULARY", [
+    "Prefer these executable systems when they satisfy the direction. Do not invent a custom mechanism when an existing Forge-native system already expresses the intent.",
+    `Motion archetypes: ${motionArchetypeCatalog.map((x) => `${x.id} (${x.description})`).join("; ")}`,
+    `Camera choreographies: ${cameraChoreographyCatalog.map((x) => `${x.id} (${x.description})`).join("; ")}`,
+    `House motion curves: ${Object.keys(motionCurveCatalog).join(", ")}`,
+    `Energy levels: ${Object.entries(motionEnergyCatalog).map(([name, value]) => `${name} (${value.description})`).join("; ")}`,
+    "For architectural construction, prefer architectural-build and semantic GLB node naming. For editorial DOM-led sections, prefer editorial-reveal or parallax-story. For thresholds, prefer threshold-passage. For premium object presentation, prefer product-hero.",
   ].join("\n")),
 ];
 
@@ -108,14 +119,15 @@ for (const [i, s] of d.scenes.entries()) {
 lines.push(section("OUTPUT CONTRACT", [
   "1. Preserve the approved concept and emotional arc exactly; do not dilute it into generic luxury language.",
   "2. Resolve each scene into explicit camera, composition, light, material, motion, transition, interaction, asset and mobile decisions.",
-  "3. Every movement must have narrative or spatial purpose. No ornamental motion without a stated reason.",
-  "4. Prefer continuous spatial continuity over disconnected hero shots unless the brief explicitly calls for a cut.",
-  "5. Keep all directives technically plausible for real-time Three.js/R3F execution; flag anything that should be prebaked rather than simulated live.",
-  "6. Protect mobile performance with simplified paths, lower simultaneous motion density and equivalent narrative intent.",
-  "7. Describe assembly/reveal timing in ordered phases when construction, product assembly or architectural build-up is present.",
-  "8. Separate must-have direction from optional flourish. Never let flourish obscure the hero subject.",
-  "9. Do not invent dimensions, materials, model topology or asset availability. Mark missing dependencies explicitly.",
-  "10. Return grounded shot lists and implementation-ready direction only.",
+  "3. Map every scene to the closest Forge-native motion archetype and camera choreography when applicable; explain only genuine deviations.",
+  "4. Every movement must have narrative or spatial purpose. No ornamental motion without a stated reason.",
+  "5. Prefer continuous spatial continuity over disconnected hero shots unless the brief explicitly calls for a cut.",
+  "6. Keep all directives technically plausible for real-time Three.js/R3F execution; flag anything that should be prebaked rather than simulated live.",
+  "7. Protect mobile performance with simplified paths, lower simultaneous motion density and equivalent narrative intent.",
+  "8. Describe assembly/reveal timing in ordered phases when construction, product assembly or architectural build-up is present.",
+  "9. Separate must-have direction from optional flourish. Never let flourish obscure the hero subject.",
+  "10. Do not invent dimensions, materials, model topology or asset availability. Mark missing dependencies explicitly.",
+  "11. Return grounded shot lists and implementation-ready direction only.",
 ].join("\n")));
 
 console.log(lines.join("\n"));

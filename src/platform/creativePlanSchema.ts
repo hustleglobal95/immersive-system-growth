@@ -20,9 +20,18 @@ const motionPreset = z.enum([
   "rig-cascade",
 ]);
 
+const motionArchetype = z.enum([
+  "editorial-reveal",
+  "parallax-story",
+  "threshold-passage",
+  "architectural-build",
+  "product-hero",
+]);
+
 const runtimeSchema = z.object({
   sceneId: slug.optional(),
   motionPreset: motionPreset.default("cinematic-focus"),
+  motionArchetype: motionArchetype.optional(),
   trigger: z.object({
     event: interactionEventTypeSchema,
     target: token.optional(),
@@ -54,6 +63,7 @@ export const CreativePlanSchema = CreativeDirectionSchema.omit({ scenes: true })
 export type CreativePlan = z.infer<typeof CreativePlanSchema>;
 export type CreativePlanScene = CreativePlan["scenes"][number];
 export type CreativeMotionPreset = z.infer<typeof motionPreset>;
+export type CreativeMotionArchetype = z.infer<typeof motionArchetype>;
 
 export function parseCreativePlan(input: unknown): CreativePlan {
   return CreativePlanSchema.parse(input);
