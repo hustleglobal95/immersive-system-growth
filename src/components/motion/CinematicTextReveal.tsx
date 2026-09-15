@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type ElementType, type ReactNode } from "react";
+import { createElement, useEffect, useRef, type ElementType, type ReactNode } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
@@ -69,5 +69,10 @@ export function CinematicTextReveal({
     };
   }, [mode, once, stagger, start, yPercent]);
 
-  return <Tag ref={ref} className={className}>{children}</Tag>;
+  return createElement(Tag, {
+    ref: (node: HTMLElement | null) => {
+      ref.current = node;
+    },
+    className,
+  }, children);
 }
