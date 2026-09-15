@@ -34,7 +34,9 @@ const runtimeSchema = z.object({
   actions: z.array(interactionActionSchema).max(8).default([]),
 }).strict().default({ motionPreset: "cinematic-focus", actions: [] });
 
-const planSceneSchema = z.object({
+const baseScene = CreativeDirectionSchema.shape.scenes.element;
+
+const planSceneSchema = baseScene.extend({
   id: z.string().min(1).max(80),
   purpose: z.string().min(1).max(500),
   subject: z.string().min(1).max(160),
