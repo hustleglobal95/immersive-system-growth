@@ -1,0 +1,205 @@
+/* Scroll-bound scene transformations inspired by expedition editorial pacing. */
+.motion-chapter {
+  position: sticky;
+  z-index: 8;
+  top: calc(50vh - 115px);
+  left: 2.1vw;
+  width: 22px;
+  height: 230px;
+  margin-bottom: -230px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 13px;
+  color: rgba(243,238,229,.72);
+  font-size: .5rem;
+  letter-spacing: .16em;
+  pointer-events: none;
+}
+
+.motion-chapter span { color: var(--gold); }
+.motion-chapter i { flex: 1; width: 1px; background: linear-gradient(var(--gold), rgba(243,238,229,.12)); transform-origin: top; transform: scaleY(var(--scene-progress, 0)); }
+.motion-chapter b { font-weight: 400; writing-mode: vertical-rl; }
+
+.calibre {
+  min-height: 265vh;
+  display: block;
+  isolation: isolate;
+}
+
+.calibre-image,
+.calibre-shade {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  margin-bottom: -100vh;
+}
+
+.calibre-image { transform-origin: 35% 50%; will-change: transform, filter; }
+.calibre-shade {
+  opacity: calc(.48 + var(--scene-progress, 0) * .52);
+  background:
+    linear-gradient(90deg, rgba(5,6,6,.08), rgba(5,6,6,.45) 43%, rgba(5,6,6,.97) 78%),
+    linear-gradient(0deg, #070808 0, transparent 18%, transparent 73%, rgba(7,8,8,.78) 100%);
+}
+
+.calibre-content {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transform: translate3d(0, calc((1 - var(--scene-progress, 0)) * 18vh), 0);
+  opacity: min(1, calc(var(--scene-progress, 0) * 2.4));
+  will-change: transform, opacity;
+}
+
+.calibre-callout {
+  position: sticky;
+  z-index: 3;
+  top: 39vh;
+  width: max-content;
+  margin: -58vh 0 0 37%;
+  opacity: calc(1 - var(--scene-progress, 0));
+}
+
+.wrist {
+  min-height: 225vh;
+  display: block;
+  isolation: isolate;
+  background: #070808;
+}
+
+.wrist > img,
+.wrist-overlay {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  margin-bottom: -100vh;
+  will-change: transform, clip-path, filter;
+}
+
+.wrist > img {
+  transform: translate3d(calc(var(--wrist-progress, 0) * 7vw), 0, 0) scale(calc(1 + var(--wrist-progress, 0) * .12));
+  clip-path: inset(calc(var(--wrist-progress, 0) * 8vh) calc(var(--wrist-progress, 0) * 5vw) calc(var(--wrist-progress, 0) * 8vh) calc(var(--wrist-progress, 0) * 42vw));
+  filter: saturate(calc(1 - var(--wrist-progress, 0) * .22)) brightness(calc(1 - var(--wrist-progress, 0) * .2));
+}
+
+.wrist-overlay {
+  opacity: calc(1 - var(--wrist-progress, 0) * .55);
+  pointer-events: none;
+}
+
+.wrist-copy {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  margin: 0;
+  padding-left: 7vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transform: translate3d(calc(var(--wrist-progress, 0) * -2vw), calc((.45 - var(--wrist-progress, 0)) * 12vh), 0);
+  will-change: transform;
+}
+
+.wrist .time-readout {
+  position: sticky;
+  z-index: 4;
+  top: 84vh;
+  float: right;
+  width: max-content;
+  margin: -16vh 5vw 0 0;
+}
+
+.atelier-studio {
+  position: relative;
+  min-height: 315vh;
+  display: block;
+  padding: 0;
+  overflow: visible;
+}
+
+.atelier-studio h3 {
+  position: absolute;
+  z-index: 3;
+  top: 13vh;
+  left: 0;
+  max-width: 14ch;
+  mix-blend-mode: difference;
+  color: #fff;
+  pointer-events: none;
+}
+
+.atelier-montage {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 238vw;
+  height: 100vh;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  gap: 2vw;
+  padding: 13vh 7vw 9vh 34vw;
+  transform: translate3d(calc(var(--montage-progress, 0) * -145vw), 0, 0);
+  will-change: transform;
+}
+
+.atelier-montage figure,
+.atelier-montage figure:nth-child(n) {
+  flex: 0 0 34vw;
+  height: 70vh;
+  margin: 0;
+}
+
+.atelier-montage figure:nth-child(2) { height: 82vh; }
+.atelier-montage figure:nth-child(3) { flex-basis: 28vw; height: 60vh; }
+.atelier-montage figure:nth-child(4) { height: 76vh; }
+.atelier-montage figure:nth-child(5) { height: 66vh; }
+.atelier-montage img { transform: scale(calc(1.07 - var(--montage-progress, 0) * .03)); }
+
+.montage-progress {
+  position: sticky;
+  z-index: 4;
+  bottom: 3vh;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 24vw;
+  margin-left: 1vw;
+  color: #171919;
+  font-size: .5rem;
+  letter-spacing: .14em;
+}
+
+.montage-progress span { width: 8vw; height: 1px; background: rgba(20,22,22,.2); }
+.montage-progress span::after { content: ""; display: block; width: 100%; height: 100%; background: #171919; transform: scaleX(var(--montage-progress, 0)); transform-origin: left; }
+.montage-progress b { font-weight: 400; }
+
+@media (max-width: 900px) {
+  .motion-chapter { left: 3vw; }
+  .calibre { min-height: 220vh; }
+  .calibre-content { padding-top: 30vh; }
+  .wrist { min-height: 200vh; }
+  .wrist > img { clip-path: inset(calc(var(--wrist-progress, 0) * 7vh) calc(var(--wrist-progress, 0) * 4vw) calc(var(--wrist-progress, 0) * 42vh) calc(var(--wrist-progress, 0) * 4vw)); }
+  .wrist-copy { padding: 0 7vw 12vh; justify-content: flex-end; }
+  .atelier-studio { min-height: 250vh; }
+  .atelier-studio h3 { top: 10vh; }
+  .atelier-montage { width: 360vw; gap: 4vw; padding: 27vh 6vw 7vh 64vw; transform: translate3d(calc(var(--montage-progress, 0) * -264vw), 0, 0); }
+  .atelier-montage figure, .atelier-montage figure:nth-child(n) { display: block; flex-basis: 62vw; height: 58vh; }
+  .montage-progress { width: 68vw; margin-left: 4vw; }
+  .montage-progress span { width: 18vw; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calibre, .wrist, .atelier-studio { min-height: 100vh; }
+  .calibre-image, .calibre-shade, .calibre-content, .wrist > img, .wrist-overlay, .wrist-copy, .atelier-montage { position: absolute; transform: none; clip-path: none; opacity: 1; }
+  .atelier-studio { min-height: auto; padding: 10vh 0; }
+  .atelier-studio h3 { position: relative; top: auto; }
+  .atelier-montage { position: relative; width: 100%; height: 44vh; padding: 0; display: grid; transform: none; }
+  .motion-chapter, .montage-progress { display: none; }
+}
