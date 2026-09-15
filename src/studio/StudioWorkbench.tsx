@@ -20,7 +20,7 @@ import { AssetManager } from "@/src/studio/AssetManager";
 import { AssetBankPanel } from "@/src/studio/AssetBankPanel";
 import { TemplateGallery } from "@/src/studio/TemplateGallery";
 import { RecipeEditor } from "@/src/studio/RecipeEditor";
-import { SequencerEditor } from "@/src/studio/SequencerEditor";
+import { MotionComposer } from "@/src/studio/MotionComposer";
 import { InteractionGraphEditor } from "@/src/studio/InteractionGraphEditor";
 import type { AssetManifest } from "@/src/types/assets";
 import { IntegrationsPanel, ProjectPanel, PublishPanel, TelemetryPanel } from "@/src/studio/ProjectPanels";
@@ -37,7 +37,7 @@ const initialCreativeDirection = parseCreativeDirection(rawCreativeDirection);
 
 const workspaces = [
   { id: "create", label: "Create", tools: ["project", "creative", "visuals", "recipe", "templates", "preview", "director"] },
-  { id: "motion", label: "Motion", tools: ["timeline", "sequence", "masks", "layers"] },
+  { id: "motion", label: "Motion", tools: ["sequence", "timeline", "masks", "layers"] },
   { id: "interact", label: "Interact", tools: ["interactions"] },
   { id: "assets", label: "Assets", tools: ["assets", "bank", "model"] },
   { id: "ship", label: "Ship", tools: ["integrations", "publish", "telemetry"] },
@@ -146,7 +146,7 @@ export function StudioWorkbench() {
       {tab === "preview" && <StudioLivePreview experience={draft.experience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "director" && <SceneDirector experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "timeline" && <TimelineEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
-      {tab === "sequence" && <SequencerEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} beginGroup={draft.beginExperienceGroup} endGroup={draft.endExperienceGroup} undo={draft.undoExperience} redo={draft.redoExperience} canUndo={draft.canUndoExperience} canRedo={draft.canRedoExperience} />}
+      {tab === "sequence" && <MotionComposer experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} beginGroup={draft.beginExperienceGroup} endGroup={draft.endExperienceGroup} undo={draft.undoExperience} redo={draft.redoExperience} canUndo={draft.canUndoExperience} canRedo={draft.canRedoExperience} />}
       {tab === "interactions" && <InteractionGraphEditor graph={draft.interactionGraph} setGraph={draft.setInteractionGraph} />}
       {tab === "masks" && <MaskLab experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "layers" && <LayerEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
@@ -175,7 +175,7 @@ function labelFor(tab: Tab) {
     preview: "Preview",
     director: "Director",
     timeline: "Timeline",
-    sequence: "Sequencer",
+    sequence: "Composer",
     interactions: "Interactions",
     masks: "Masks",
     layers: "Transitions",
@@ -198,7 +198,7 @@ function titleFor(tab: Tab) {
     preview: "Live preview",
     director: "Camera direction",
     timeline: "Scene timing",
-    sequence: "Motion sequencer",
+    sequence: "Motion composer",
     interactions: "Interaction graph",
     masks: "Mask lab",
     layers: "Transition layers",
