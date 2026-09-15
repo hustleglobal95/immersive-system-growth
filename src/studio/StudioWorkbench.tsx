@@ -19,6 +19,7 @@ import { SceneDirector } from "@/src/studio/SceneDirector";
 import { LayerEditor } from "@/src/studio/LayerEditor";
 import { AssetManager } from "@/src/studio/AssetManager";
 import { AssetBankPanel } from "@/src/studio/AssetBankPanel";
+import { AssetIntakePanel } from "@/src/studio/AssetIntakePanel";
 import { TemplateGallery } from "@/src/studio/TemplateGallery";
 import { RecipeEditor } from "@/src/studio/RecipeEditor";
 import { SequencerEditor } from "@/src/studio/SequencerEditor";
@@ -36,7 +37,7 @@ const initialProject = parseStudioProject(rawProject);
 const initialAssetManifest = rawAssetManifest as AssetManifest;
 const initialInteractionGraph = parseInteractionGraph(rawInteractionGraph);
 const initialCreativeDirection = parseCreativeDirection(rawCreativeDirection);
-const tabs = ["workspace", "project", "creative", "visuals", "recipe", "templates", "preview", "director", "timeline", "sequence", "interactions", "masks", "layers", "assets", "bank", "model", "integrations", "publish", "telemetry"] as const;
+const tabs = ["workspace", "intake", "project", "creative", "visuals", "recipe", "templates", "preview", "director", "timeline", "sequence", "interactions", "masks", "layers", "assets", "bank", "model", "integrations", "publish", "telemetry"] as const;
 type Tab = (typeof tabs)[number];
 
 export function StudioWorkbench() {
@@ -81,13 +82,14 @@ export function StudioWorkbench() {
       </header>
 
       <nav className="studio-tabs" aria-label="Studio areas">
-        {(["workspace", "bank", "sequence", "publish"] as const).map((item) => (
+        {(["workspace", "intake", "bank", "sequence", "publish"] as const).map((item) => (
           <button key={item} type="button" aria-label={item} aria-current={tab === item ? "page" : undefined} onClick={() => setTab(item)}>
-            <StudioIcon name={item === 'workspace' ? 'cube' : item === 'bank' ? 'layers' : item === 'sequence' ? 'film' : 'export'}/>{item === 'workspace' ? 'Workspace' : item === 'bank' ? 'Asset library' : item === 'sequence' ? 'Sequencer' : 'Delivery'}
+            <StudioIcon name={item === 'workspace' ? 'cube' : item === 'intake' ? 'upload' : item === 'bank' ? 'layers' : item === 'sequence' ? 'film' : 'export'}/>
+            {item === 'workspace' ? 'Workspace' : item === 'intake' ? 'Client intake' : item === 'bank' ? 'Asset library' : item === 'sequence' ? 'Sequencer' : 'Delivery'}
           </button>
         ))}
-        <details className="pro-tool-menu"><summary><StudioIcon name="settings"/>All tools<StudioIcon name="chevron" size={12}/></summary><div>{tabs.filter(item => !['workspace','bank','sequence','publish'].includes(item)).map(item => <button key={item} type="button" aria-current={tab === item ? 'page' : undefined} onClick={e => { setTab(item); e.currentTarget.closest('details')?.removeAttribute('open'); }}>{item}</button>)}</div></details>
-        <span className="pro-workflow-note">Compose <i/> Direct <i/> Light <i/> Deliver</span>
+        <details className="pro-tool-menu"><summary><StudioIcon name="settings"/>All tools<StudioIcon name="chevron" size={12}/></summary><div>{tabs.filter(item => !['workspace','intake','bank','sequence','publish'].includes(item)).map(item => <button key={item} type="button" aria-current={tab === item ? 'page' : undefined} onClick={e => { setTab(item); e.currentTarget.closest('details')?.removeAttribute('open'); }}>{item}</button>)}</div></details>
+        <span className="pro-workflow-note">Qualify <i/> Intake <i/> Compose <i/> Direct <i/> Deliver</span>
       </nav>
 
       {draft.storageNotice && <div className="studio-warning" role="alert" data-testid="studio-storage-warning">
@@ -96,7 +98,7 @@ export function StudioWorkbench() {
         {draft.recoveryLocked && <button type="button" onClick={draft.exportRecovery}>Export recovery copy</button>}
       </div>}
 
-      {tab !== "workspace" && <div className="studio-title">
+      {tab !== "workspace" && tab !== "intake" && <div className="studio-title">
         <div><span>{draft.project.id}</span><h1>{titleFor(tab)}</h1></div>
         <div>
           <button type="button" onClick={draft.reset}>Reset draft</button>
@@ -113,6 +115,7 @@ export function StudioWorkbench() {
       {notice && <p className="studio-message" role="status">{notice}</p>}
 
       {tab === "workspace" && <StudioWorkspace experience={draft.experience} setExperience={draft.setExperience} active={active} setActive={setActiveScene} undo={draft.undoExperience} redo={draft.redoExperience} canUndo={draft.canUndoExperience} canRedo={draft.canRedoExperience} />}
+      {tab === "intake" && <AssetIntakePanel defaultProjectName={draft.project.name} />}
       {tab === "project" && <ProjectPanel {...draft} />}
       {tab === "creative" && <CreativeDirectionPanel direction={creative} setDirection={setCreative} />}
       {tab === "visuals" && <VisualSystemsPanel />}
@@ -142,7 +145,7 @@ export function StudioWorkbench() {
 
 function titleFor(tab: Tab) {
   return {
-    workspace: "Cinematic workspace", project: "Project control", creative: "Creative direction", visuals: "Visual systems",
+    workspace: "Cinematic workspace", intake: "Client asset intake", project: "Project control", creative: "Creative direction", visuals: "Visual systems",
     recipe: "Recipe editor", templates: "Industry template gallery", preview: "Live production preview",
     director: "Camera and art direction", timeline: "Visual timeline", sequence: "Motion sequencer", interactions: "Interaction graph",
     masks: "Mask reveal laboratory", layers: "Transition layer composer", assets: "Asset intake and budgets", bank: "Asset bank",
