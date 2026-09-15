@@ -1,5 +1,43 @@
 import { z } from "zod";
 
+const concise = z.string().min(1).max(500);
+const directiveList = z.array(z.string().min(1).max(300)).max(32).default([]);
+
+const sceneDirection = z.object({
+  objective: concise.optional(),
+  spatialStory: concise.optional(),
+  composition: directiveList,
+  camera: z.object({
+    framing: directiveList,
+    lens: directiveList,
+    path: directiveList,
+    speed: directiveList,
+    focus: directiveList,
+  }).strict().optional(),
+  lighting: z.object({
+    timeOfDay: directiveList,
+    key: directiveList,
+    fill: directiveList,
+    practicals: directiveList,
+    atmosphere: directiveList,
+  }).strict().optional(),
+  materials: directiveList,
+  motion: z.object({
+    subject: directiveList,
+    environment: directiveList,
+    assembly: directiveList,
+    easing: directiveList,
+    continuity: directiveList,
+  }).strict().optional(),
+  sound: directiveList,
+  interactionNotes: directiveList,
+  transitionNotes: directiveList,
+  assetRequirements: directiveList,
+  implementationNotes: directiveList,
+  mobileNotes: directiveList,
+  negativeDirectives: directiveList,
+}).strict().optional();
+
 const scene = z.object({
   id: z.string().min(1),
   purpose: z.string().min(1),
@@ -8,6 +46,7 @@ const scene = z.object({
   interaction: z.string().min(1),
   transitionIn: z.string().min(1),
   transitionOut: z.string().min(1),
+  direction: sceneDirection,
   // Runtime is validated more strictly by CreativePlanSchema, while this
   // base schema remains compatible with the creative audit command.
   runtime: z.unknown().optional(),
@@ -28,6 +67,28 @@ export const CreativeDirectionSchema = z.object({
     motion: z.array(z.string()),
     sound: z.array(z.string()),
   }),
+  artDirection: z.object({
+    northStar: concise,
+    hierarchy: directiveList,
+    compositionRules: directiveList,
+    cameraLanguage: directiveList,
+    lightingLanguage: directiveList,
+    materialLanguage: directiveList,
+    motionLanguage: directiveList,
+    transitionLanguage: directiveList,
+    interactionLanguage: directiveList,
+    soundLanguage: directiveList,
+    spatialRules: directiveList,
+    continuityRules: directiveList,
+    realismRules: directiveList,
+    assetRules: directiveList,
+    typographyRules: directiveList,
+    colorRules: directiveList,
+    mobileRules: directiveList,
+    performanceRules: directiveList,
+    accessibilityRules: directiveList,
+    forbiddenPatterns: directiveList,
+  }).strict().optional(),
   constraints: z.object({
     approved: z.array(z.string()),
     prohibited: z.array(z.string()),
