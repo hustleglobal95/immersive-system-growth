@@ -160,7 +160,75 @@
 .studio-validation--compact summary { cursor: pointer; color: #dbc5a4; font-size: 11px; }
 .studio-validation--compact p { color: #a79b89; }
 
-/* Reduce toolbar noise without removing capability. */
+.motion-composer {
+  display: grid;
+  grid-template-columns: minmax(300px, .72fr) minmax(0, 1.55fr);
+  gap: 14px;
+  align-items: start;
+}
+.motion-composer--advanced { display: block; }
+.motion-composer__topline {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--studio-muted);
+  font-size: 10px;
+}
+.motion-composer__controls { position: sticky; top: 78px; }
+.motion-composer__scene-strip {
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+.motion-composer__scene-strip::-webkit-scrollbar { display: none; }
+.motion-composer__scene-strip button {
+  min-width: 112px;
+  padding: 9px 10px;
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr);
+  align-items: center;
+  gap: 8px;
+  border-color: rgba(255,255,255,.07);
+  background: #0d0d0d;
+  text-align: left;
+}
+.motion-composer__scene-strip button.is-active {
+  border-color: rgba(255,90,31,.48);
+  background: rgba(255,90,31,.08);
+}
+.motion-composer__scene-strip small { color: var(--studio-muted); font-size: 8px; }
+.motion-composer__scene-strip span { overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.motion-composer__hero-control {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  gap: 8px;
+  align-items: end;
+}
+.motion-composer__hero-control label { display: grid; gap: 7px; color: var(--studio-muted); font-size: 9px; font-weight: 700; }
+.motion-composer__hero-control select { min-height: 42px !important; }
+.motion-composer__hero-control .studio-primary { min-height: 42px; padding-inline: 16px; }
+.motion-composer__description {
+  min-height: 38px;
+  margin: 10px 0 0;
+  color: var(--studio-muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+.motion-composer__quickbar {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.motion-composer__quickbar > button,
+.motion-composer__quickbar > .studio-menu > summary { min-height: 32px; font-size: 10px; }
+
+/* Dense expert surfaces still exist, but no longer define the default experience. */
 .sequencer-toolbar,
 .sequencer-add,
 .sequencer-range {
@@ -176,6 +244,11 @@
 .sequencer-scenes { scrollbar-width: none; }
 .sequencer-scenes::-webkit-scrollbar { display: none; }
 
+@media (max-width: 900px) {
+  .motion-composer { grid-template-columns: 1fr; }
+  .motion-composer__controls { position: static; }
+}
+
 @media (max-width: 760px) {
   .studio-header--compact { grid-template-columns: 1fr auto; gap: 10px; }
   .studio-header__status { display: none; }
@@ -183,4 +256,6 @@
   .studio-tool-picker { width: 100%; grid-template-columns: 40px 1fr; }
   .studio-workspaces { width: 100%; justify-content: flex-start; }
   .studio-workspaces button { flex: 0 0 auto; }
+  .motion-composer__hero-control { grid-template-columns: 1fr; }
+  .motion-composer__hero-control .studio-primary { width: 100%; }
 }
