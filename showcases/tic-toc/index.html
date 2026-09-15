@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="pollen-direction.css">
   <link rel="stylesheet" href="eiger-motion.css">
   <link rel="stylesheet" href="cinematic-type.css">
+  <link rel="stylesheet" href="diameter-transition.css">
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
@@ -164,10 +165,24 @@
 
     <section class="cinematic-transition transition-domino" style="--transition-image:url('assets/watch-lifestyle.webp')" aria-hidden="true">
       <div class="transition-sticky">
-        <div class="domino-reveal"><span>42 MM</span><strong>PRESENCE<br>WITHOUT NOISE</strong></div>
+        <div class="diameter-image"></div>
+        <div class="diameter-shade"></div>
+        <div class="diameter-guide">
+          <i class="diameter-guide-ring"></i>
+          <i class="diameter-guide-axis diameter-guide-axis-x"></i>
+          <i class="diameter-guide-axis diameter-guide-axis-y"></i>
+          <span class="diameter-guide-start">0</span>
+          <span class="diameter-guide-end">42</span>
+        </div>
+        <div class="domino-reveal">
+          <span>CASE DIAMETER / 42.00 MM</span>
+          <strong><b>42</b><i>MM</i></strong>
+          <small>PRESENCE WITHOUT NOISE</small>
+        </div>
         <div class="domino-field">
           <i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i><i style="--i:6"></i><i style="--i:7"></i><i style="--i:8"></i>
         </div>
+        <div class="diameter-scan"><i></i></div>
         <div class="transition-counter">02 / 03</div>
       </div>
     </section>
