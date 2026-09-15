@@ -36,7 +36,7 @@
 .mode-card span { color:var(--accent); font:700 10px/1 Arial,sans-serif; letter-spacing:.18em; }
 .mode-card strong { max-width:11ch; font:400 clamp(2rem,5vw,4.4rem)/.94 Georgia,serif; letter-spacing:-.045em; }
 .mode-card small { max-width:48ch; color:var(--muted); font-size:12px; line-height:1.5; }
-.experience-mode--interactive-cards .story-panel { opacity:.001; pointer-events:none; }
+.experience-mode--interactive-cards .story-panel { width:min(460px,42vw); background:linear-gradient(90deg,rgba(7,7,7,.9),rgba(7,7,7,.52) 72%,transparent); }
 
 .experience-mode--big-hero-type .story-panel { width:min(1100px,92vw); max-width:none; background:linear-gradient(0deg,rgba(7,7,7,.86),transparent 76%); justify-content:flex-end; }
 .experience-mode--big-hero-type .story-panel h1,.experience-mode--big-hero-type .story-panel h2 { max-width:12ch; font-size:clamp(4.5rem,12vw,12rem); line-height:.82; letter-spacing:-.07em; text-wrap:balance; }
@@ -74,6 +74,7 @@
   .mode-floating-nav { top:12px; }
   .mode-card-deck { right:18px; height:44svh; }
   .mode-card { min-height:210px; padding:20px; }
+  .experience-mode--interactive-cards .story-panel { width:calc(100% - 42px); }
   .experience-mode--big-hero-type .story-panel h1,.experience-mode--big-hero-type .story-panel h2 { font-size:clamp(3.5rem,18vw,7rem); }
   .mode-product-controls { bottom:76px; }
   .experience-mode-grid { grid-template-columns:1fr; }
