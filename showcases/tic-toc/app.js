@@ -167,7 +167,7 @@
     const reveal = range(progress, .02, .47);
     const imageReveal = range(progress, .08, .28);
     const settle = range(progress, .38, .78);
-    const typeExit = range(progress, .62, .84);
+    const typeExit = range(progress, .78, .94);
     const guide = Math.min(range(progress, .08, .34), 1 - range(progress, .57, .78));
     const scan = Math.min(range(progress, .1, .28), 1 - range(progress, .48, .68));
 
