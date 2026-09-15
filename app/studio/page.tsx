@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { StudioWorkbench } from "@/src/studio/StudioWorkbench";
+import { ProductionStudioWorkbench } from "@/src/studio/ProductionStudioWorkbench";
 import "./studio.css";
 import "./ui-refinement.css";
+import "./production-studio.css";
 
 export const metadata: Metadata = {
   title: "Forge Studio",
@@ -9,5 +10,5 @@ export const metadata: Metadata = {
 };
 
 export default function StudioPage() {
-  return <StudioWorkbench />;
+  return <ProductionStudioWorkbench />;
 }
