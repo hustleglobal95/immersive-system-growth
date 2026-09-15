@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070808">
+  <meta name="description" content="Tic Toc No. 01 Obsidian Tourbillon. Time, engineered as architecture.">
+  <title>Tic Toc | No. 01 Obsidian Tourbillon</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="scroll-meter" aria-hidden="true"><span id="scrollMeter"></span></div>
+
+  <header class="site-header" id="siteHeader">
+    <a class="brand" href="#top" aria-label="Tic Toc home"><span>TIC</span><i></i><span>TOC</span></a>
+    <nav aria-label="Primary navigation">
+      <a href="#calibre">Calibre</a>
+      <a href="#materials">Materials</a>
+      <a href="#edition">Edition</a>
+    </nav>
+    <button class="bag-button" id="bagButton" type="button" aria-label="Open private checkout">Reserve <span id="bagCount">01</span></button>
+  </header>
+
+  <main>
+    <section class="hero" id="top" aria-labelledby="heroTitle">
+      <div class="hero-orbit orbit-one" aria-hidden="true"></div>
+      <div class="hero-orbit orbit-two" aria-hidden="true"></div>
+      <p class="eyebrow hero-kicker">GENEVA / CHAPTER 01</p>
+      <h1 id="heroTitle"><span>TIC</span><span>TOC</span></h1>
+      <div class="watch-stage" id="watchStage">
+        <div class="watch-shadow"></div>
+        <img src="assets/watch-hero.webp" width="1122" height="1402" alt="Tic Toc No. 01 Obsidian Tourbillon in black titanium and champagne gold" fetchpriority="high">
+      </div>
+      <div class="hero-copy">
+        <p>NO. 01<br>OBSIDIAN TOURBILLON</p>
+        <p>TIME, ENGINEERED<br>AS ARCHITECTURE.</p>
+      </div>
+      <button class="scroll-cue" id="scrollCue" type="button" aria-label="Explore the calibre"><span>Scroll to wind</span><i></i></button>
+      <div class="hero-index" aria-hidden="true">01 <span>/</span> 05</div>
+    </section>
+
+    <section class="statement" aria-label="Brand statement">
+      <p class="eyebrow reveal">THE FIRST CHAPTER</p>
+      <p class="statement-copy reveal">Not made to count time.<br><em>Made to expose it.</em></p>
+      <p class="statement-note reveal">A mechanical study in tension, negative space, and 188 hand-finished components.</p>
+    </section>
+
+    <section class="calibre" id="calibre" aria-labelledby="calibreTitle">
+      <div class="calibre-image" aria-hidden="true"></div>
+      <div class="calibre-shade" aria-hidden="true"></div>
+      <div class="calibre-content">
+        <p class="eyebrow reveal">CALIBRE TT-01</p>
+        <h2 id="calibreTitle" class="reveal">A heartbeat<br>with no cage.</h2>
+        <p class="calibre-lede reveal">The flying tourbillon rotates once every sixty seconds, suspended above a movement built entirely around the view.</p>
+        <div class="spec-grid reveal" aria-label="Movement specifications">
+          <div><strong>72</strong><span>Hours reserve</span></div>
+          <div><strong>28,800</strong><span>Vibrations per hour</span></div>
+          <div><strong>188</strong><span>Components</span></div>
+        </div>
+      </div>
+      <div class="calibre-callout" aria-hidden="true"><span></span>Hand-bevelled bridge</div>
+    </section>
+
+    <section class="materials" id="materials" aria-labelledby="materialsTitle">
+      <header class="section-heading reveal">
+        <p class="eyebrow">FORM / MATTER</p>
+        <h2 id="materialsTitle">Three materials.<br>One point of view.</h2>
+      </header>
+      <div class="material-selector reveal" role="group" aria-label="Explore watch materials">
+        <button class="material-card active" type="button" data-material="Black DLC Titanium" data-detail="Aerospace titanium reduced to its most severe expression. Feather-light, satin-dark, and exceptionally resilient.">
+          <span class="material-number">01</span><span class="swatch obsidian"></span><strong>Black DLC</strong><small>CASE</small>
+        </button>
+        <button class="material-card" type="button" data-material="Champagne Gold" data-detail="Warm gold is reserved for the movement, hands, and crown. A controlled flash of light inside the black architecture.">
+          <span class="material-number">02</span><span class="swatch gold"></span><strong>Champagne Gold</strong><small>MECHANICS</small>
+        </button>
+        <button class="material-card" type="button" data-material="Hand-cut Alligator" data-detail="A matte black strap shaped and stitched by hand, finished with a titanium deployant clasp.">
+          <span class="material-number">03</span><span class="swatch leather"></span><strong>Alligator</strong><small>STRAP</small>
+        </button>
+      </div>
+      <div class="material-detail reveal" aria-live="polite"><span id="materialName">Black DLC Titanium</span><p id="materialDetail">Aerospace titanium reduced to its most severe expression. Feather-light, satin-dark, and exceptionally resilient.</p></div>
+    </section>
+
+    <section class="wrist" aria-labelledby="wristTitle">
+      <img src="assets/watch-lifestyle.webp" width="1672" height="941" alt="Tic Toc Obsidian Tourbillon worn with a black suit in a midnight penthouse" loading="lazy">
+      <div class="wrist-overlay"></div>
+      <div class="wrist-copy reveal">
+        <p class="eyebrow">42 MM / 5 ATM</p>
+        <h2 id="wristTitle">Presence,<br>without noise.</h2>
+        <p>A case that disappears on the wrist until the light finds it.</p>
+      </div>
+      <div class="time-readout" aria-label="Current time"><span id="liveTime">10:10:00</span><small>LOCAL TIME</small></div>
+    </section>
+
+    <section class="edition" id="edition" aria-labelledby="editionTitle">
+      <div class="edition-copy reveal">
+        <p class="eyebrow">EDITION OF 88</p>
+        <h2 id="editionTitle">The object.<br>The ritual.</h2>
+        <p>Every No. 01 arrives in a black lacquer presentation case with an individually numbered archive card and hand-finished travel roll.</p>
+        <ul>
+          <li><span>01</span> Complimentary insured delivery</li>
+          <li><span>02</span> Five-year international warranty</li>
+          <li><span>03</span> Personal presentation in select cities</li>
+        </ul>
+      </div>
+      <div class="edition-image reveal"><img src="assets/presentation-set.webp" width="1536" height="1024" alt="Tic Toc watch, lacquer presentation case, travel roll, and certificate" loading="lazy"></div>
+    </section>
+
+    <section class="acquire" aria-labelledby="acquireTitle">
+      <p class="eyebrow reveal">PRIVATE RESERVATION</p>
+      <h2 id="acquireTitle" class="reveal">Own the first<br><em>chapter.</em></h2>
+      <div class="acquire-meta reveal"><span>NO. 01 OBSIDIAN TOURBILLON</span><span>$18,800 USD</span></div>
+      <button class="primary-cta reveal" id="acquireButton" type="button"><span>Begin private checkout</span><i aria-hidden="true">↗</i></button>
+      <p class="availability reveal">Limited to 88 numbered pieces. Allocation subject to confirmation.</p>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="#top"><span>TIC</span><i></i><span>TOC</span></a>
+    <p>GENEVA / NEW YORK / TOKYO</p>
+    <p>© 2026 TIC TOC MANUFACTURE</p>
+  </footer>
+
+  <dialog class="checkout" id="checkoutDialog" aria-labelledby="checkoutTitle">
+    <div class="checkout-shell">
+      <header class="checkout-header">
+        <a class="brand" href="#" tabindex="-1"><span>TIC</span><i></i><span>TOC</span></a>
+        <div class="checkout-progress" aria-label="Checkout progress"><span id="checkoutProgress"></span></div>
+        <button class="icon-button" id="closeCheckout" type="button" aria-label="Close checkout">×</button>
+      </header>
+
+      <div class="checkout-body">
+        <aside class="checkout-product">
+          <p class="eyebrow">YOUR NO. 01</p>
+          <img src="assets/watch-hero.webp" width="1122" height="1402" alt="Configured Tic Toc No. 01 Obsidian Tourbillon">
+          <div><span>NO. 01 OBSIDIAN TOURBILLON</span><strong>$18,800</strong></div>
+        </aside>
+
+        <form id="checkoutForm" novalidate>
+          <section class="checkout-step active" data-step="1">
+            <p class="step-count">01 / 04</p>
+            <h2 id="checkoutTitle">Make it yours.</h2>
+            <fieldset>
+              <legend>Movement accent</legend>
+              <div class="choice-grid accent-grid">
+                <label><input type="radio" name="accent" value="Champagne" checked><span><i class="choice-dot champagne"></i>Champagne</span></label>
+                <label><input type="radio" name="accent" value="Rhodium"><span><i class="choice-dot rhodium"></i>Rhodium</span></label>
+                <label><input type="radio" name="accent" value="Cobalt"><span><i class="choice-dot cobalt"></i>Cobalt</span></label>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Strap</legend>
+              <div class="choice-grid">
+                <label><input type="radio" name="strap" value="Black alligator" checked><span>Black alligator</span></label>
+                <label><input type="radio" name="strap" value="Graphite calfskin"><span>Graphite calfskin</span></label>
+              </div>
+            </fieldset>
+          </section>
+
+          <section class="checkout-step" data-step="2">
+            <p class="step-count">02 / 04</p>
+            <h2>A private mark.</h2>
+            <label class="field"><span>Caseback engraving <small>Optional, 18 characters</small></span><input id="engraving" name="engraving" maxlength="18" autocomplete="off" placeholder="Your inscription"><b id="engravingCount">0 / 18</b></label>
+            <label class="toggle-row"><span><strong>Presentation service</strong><small>A handwritten card and personal reveal by a Tic Toc specialist.</small></span><input type="checkbox" name="presentation"><i></i></label>
+            <p class="checkout-note">Engraving is reviewed by our atelier before final allocation.</p>
+          </section>
+
+          <section class="checkout-step" data-step="3">
+            <p class="step-count">03 / 04</p>
+            <h2>Delivery, precisely.</h2>
+            <div class="form-grid">
+              <label class="field"><span>Full name</span><input required name="name" autocomplete="name"></label>
+              <label class="field"><span>Email</span><input required type="email" name="email" autocomplete="email"></label>
+              <label class="field full"><span>Address</span><input required name="address" autocomplete="street-address"></label>
+              <label class="field"><span>City</span><input required name="city" autocomplete="address-level2"></label>
+              <label class="field"><span>Country</span><select required name="country" autocomplete="country-name"><option value="">Select</option><option>United States</option><option>United Kingdom</option><option>France</option><option>Switzerland</option><option>Japan</option><option>United Arab Emirates</option><option>Other</option></select></label>
+            </div>
+            <div class="delivery-card"><span>COMPLIMENTARY</span><strong>Insured atelier delivery</strong><small>Estimated 4 to 6 weeks after allocation</small></div>
+          </section>
+
+          <section class="checkout-step" data-step="4">
+            <p class="step-count">04 / 04</p>
+            <h2>Confirm your intent.</h2>
+            <div class="review-lines" id="reviewLines"></div>
+            <fieldset>
+              <legend>Preferred settlement</legend>
+              <div class="choice-grid">
+                <label><input type="radio" name="payment" value="Secure card" checked><span>Secure card</span></label>
+                <label><input type="radio" name="payment" value="Private bank transfer"><span>Private bank transfer</span></label>
+              </div>
+            </fieldset>
+            <p class="checkout-note">This concept checkout creates a private reservation request. No payment is processed.</p>
+          </section>
+
+          <section class="checkout-success" id="checkoutSuccess" aria-live="polite">
+            <p class="eyebrow">RESERVATION RECEIVED</p>
+            <h2>Your time<br>starts now.</h2>
+            <p>A private client advisor will contact you to confirm allocation, engraving, and settlement.</p>
+            <div class="reservation-code"><span>REFERENCE</span><strong id="reservationCode">TT-01-0000</strong></div>
+            <button class="secondary-cta" id="finishCheckout" type="button">Return to the atelier</button>
+          </section>
+
+          <div class="checkout-actions" id="checkoutActions">
+            <button class="back-button" id="backStep" type="button">Back</button>
+            <button class="next-button" id="nextStep" type="button">Continue <span>→</span></button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
