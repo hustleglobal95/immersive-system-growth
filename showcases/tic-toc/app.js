@@ -246,6 +246,9 @@
     const explodedProgress = stagedProgress(explodedScene, .06, .74);
     const wristProgress = stagedProgress(wristScene, .06, .79);
     const montageProgress = stagedProgress(atelierStudio, .05, .82);
+    const atelierProgress = sectionProgress(atelierStudio);
+    const atelierTravel = Math.max(1, atelierStudio.offsetHeight - innerHeight);
+    const atelierTitleExit = range(atelierProgress, .78, .94);
 
     const set = (element, property, value) => element.style.setProperty(property, value);
 
@@ -294,6 +297,9 @@
     set(atelierStudio, '--montage-x', `${(montageProgress * -145).toFixed(4)}vw`);
     set(atelierStudio, '--montage-mobile-x', `${(montageProgress * -264).toFixed(4)}vw`);
     set(atelierStudio, '--montage-scale', (1.07 - montageProgress * .03).toFixed(5));
+    set(atelierStudio, '--atelier-title-y', `${(Math.min(atelierProgress, .92) * atelierTravel).toFixed(2)}px`);
+    set(atelierStudio, '--atelier-title-opacity', (1 - atelierTitleExit).toFixed(5));
+    set(atelierStudio, '--atelier-title-blur', `${(atelierTitleExit * 10).toFixed(3)}px`);
     renderCalibreMotion(calibreProgress);
   };
 
