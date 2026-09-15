@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { StudioWorkbench } from "@/src/studio/StudioWorkbench";
 import "./studio.css";
+import "./ui-refinement.css";
 
 export const metadata: Metadata = {
   title: "Forge Studio",
