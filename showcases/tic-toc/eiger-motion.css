@@ -208,6 +208,10 @@
   max-width: 14ch;
   mix-blend-mode: difference;
   color: #fff;
+  opacity: var(--atelier-title-opacity, 1);
+  filter: blur(var(--atelier-title-blur, 0px));
+  transform: translate3d(0, var(--atelier-title-y, 0px), 0);
+  will-change: transform, opacity, filter;
   pointer-events: none;
 }
 
