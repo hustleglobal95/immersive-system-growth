@@ -14,6 +14,10 @@
   const calibreScene = $('#calibre');
   const calibreImage = $('.calibre-image', calibreScene);
   const cinematicTransitions = $$('.cinematic-transition');
+  const editorialProjects = $$('.atelier-feature');
+  const wristScene = $('.wrist');
+  const atelierStudio = $('.atelier-studio');
+  const lightHeaderSections = $$('[data-header-theme="light"]');
   const dialog = $('#checkoutDialog');
   const checkoutShowcase = $('#checkoutShowcase');
   const checkoutWatch = $('#checkoutWatch');
@@ -172,14 +176,44 @@
     });
   };
 
+  const renderEditorialProjects = () => {
+    editorialProjects.forEach((project) => {
+      const rect = project.getBoundingClientRect();
+      const travel = innerHeight + rect.height;
+      const progress = Math.max(0, Math.min(1, (innerHeight - rect.top) / travel));
+      const offset = (progress - .5) * -52;
+      const scale = 1.065 - Math.sin(progress * Math.PI) * .025;
+      project.style.setProperty('--project-y', `${offset.toFixed(2)}px`);
+      project.style.setProperty('--project-scale', scale.toFixed(4));
+    });
+  };
+
+  const sectionProgress = (section) => {
+    const rect = section.getBoundingClientRect();
+    const distance = Math.max(1, rect.height - innerHeight);
+    return Math.max(0, Math.min(1, -rect.top / distance));
+  };
+
+  const renderExpeditionMotion = () => {
+    calibreScene.style.setProperty('--scene-progress', sectionProgress(calibreScene).toFixed(4));
+    wristScene.style.setProperty('--wrist-progress', sectionProgress(wristScene).toFixed(4));
+    atelierStudio.style.setProperty('--montage-progress', sectionProgress(atelierStudio).toFixed(4));
+  };
+
   const onScroll = () => {
     const y = window.scrollY;
     const max = document.documentElement.scrollHeight - innerHeight;
     meter.style.width = `${max ? (y / max) * 100 : 0}%`;
     header.classList.toggle('scrolled', y > 50);
+    header.classList.toggle('light-mode', lightHeaderSections.some((section) => {
+      const rect = section.getBoundingClientRect();
+      return rect.top <= 68 && rect.bottom >= 68;
+    }));
     if (!reducedMotion) renderHeroProgress(Math.max(0, Math.min(y / (innerHeight * .92), 1)));
     queueCalibreMotion();
     if (!reducedMotion) renderCinematicTransitions();
+    if (!reducedMotion) renderEditorialProjects();
+    if (!reducedMotion) renderExpeditionMotion();
   };
 
   let scrollTick = false;
@@ -250,6 +284,7 @@
 
   $('#acquireButton').addEventListener('click', () => openCheckout(1));
   $('#bagButton').addEventListener('click', () => openCheckout(1));
+  $('#footerReserve').addEventListener('click', () => openCheckout(1));
   $('#closeCheckout').addEventListener('click', closeCheckout);
   $('#finishCheckout').addEventListener('click', closeCheckout);
   dialog.addEventListener('cancel', (event) => { event.preventDefault(); closeCheckout(); });
