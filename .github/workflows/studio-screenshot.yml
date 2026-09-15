@@ -1,0 +1,34 @@
+name: Studio Screenshot
+on:
+  push:
+    branches: [feat/studio-zero-to-production]
+  workflow_dispatch:
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: |
+          npm run dev > /tmp/forge.log 2>&1 &
+          npx wait-on http://127.0.0.1:3000/studio --timeout 120000
+      - run: |
+          node - <<'NODE'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch({headless:true});
+            const page = await browser.newPage({viewport:{width:1600,height:1000}, deviceScaleFactor:1});
+            await page.goto('http://127.0.0.1:3000/studio', {waitUntil:'networkidle', timeout:120000});
+            await page.screenshot({path:'forge-studio-real.png', fullPage:true});
+            await browser.close();
+          })();
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: forge-studio-real-screenshot
+          path: forge-studio-real.png
