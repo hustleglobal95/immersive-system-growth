@@ -62,7 +62,7 @@
   const renderWatchSpin = () => {
     const delta = targetSpin - currentSpin;
     const wordDelta = targetWordShift - currentWordShift;
-    currentSpin += delta * .105;
+    currentSpin += delta * .075;
     currentWordShift += wordDelta * .065;
     if (Math.abs(delta) < .025) currentSpin = targetSpin;
     if (Math.abs(wordDelta) < .015) currentWordShift = targetWordShift;
@@ -89,7 +89,7 @@
   const queueWatchSpin = (progress) => {
     if (reducedMotion) return;
     const eased = progress * progress * (3 - 2 * progress);
-    targetSpin = eased * 720;
+    targetSpin = eased * 180;
     targetWordShift = eased * 58;
     if (!spinFrame) spinFrame = requestAnimationFrame(renderWatchSpin);
   };
@@ -128,7 +128,6 @@
     header.classList.toggle('scrolled', y > 50);
     if (!reducedMotion && y < innerHeight * 1.25) {
       const p = Math.min(y / (innerHeight * .92), 1);
-      watchStage.style.transform = `translate3d(0, ${p * 15}vh, 0) scale(${1 - p * .13})`;
       queueWatchSpin(p);
     }
     queueCalibreMotion();
