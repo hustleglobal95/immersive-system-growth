@@ -200,19 +200,46 @@
   overflow: visible;
 }
 
-.atelier-studio h3 {
+.atelier-prompter {
   position: absolute;
   z-index: 3;
-  top: 13vh;
+  top: 18vh;
   left: 0;
-  max-width: 14ch;
+  width: 100%;
+  height: 64vh;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(transparent, #000 28%, #000 72%, transparent);
+  mask-image: linear-gradient(transparent, #000 28%, #000 72%, transparent);
   mix-blend-mode: difference;
   color: #fff;
   opacity: var(--atelier-title-opacity, 1);
-  filter: blur(var(--atelier-title-blur, 0px));
   transform: translate3d(0, var(--atelier-title-y, 0px), 0);
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
   pointer-events: none;
+}
+
+.atelier-studio h3 {
+  position: relative;
+  top: auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  color: inherit;
+  font-size: clamp(2.4rem, 6vw, 7.2rem);
+  line-height: 1.05;
+  transform: translate3d(0, var(--prompter-track-y, 64vh), 0);
+  will-change: transform;
+}
+
+.atelier-studio h3 > span {
+  display: flex;
+  align-items: center;
+  min-height: 32vh;
+  max-width: 19ch;
+  padding: .12em 0;
+  clip-path: none;
+  transform: none;
+  transition: none;
 }
 
 .atelier-montage {
@@ -270,7 +297,8 @@
   .wrist .scene-sticky > img { clip-path: inset(var(--wrist-mobile-inset-y, 0vh) var(--wrist-mobile-inset-x, 0vw) var(--wrist-mobile-inset-b, 0vh) var(--wrist-mobile-inset-x, 0vw)); }
   .wrist-copy { padding: 0 7vw 12vh; justify-content: flex-end; }
   .atelier-studio { min-height: 285vh; }
-  .atelier-studio h3 { top: 10vh; }
+  .atelier-prompter { top: 18vh; }
+  .atelier-studio h3 { font-size: clamp(2rem, 9vw, 4.5rem); }
   .atelier-montage { width: 360vw; gap: 4vw; padding: 27vh 6vw 7vh 64vw; transform: translate3d(var(--montage-mobile-x, 0vw), 0, 0); }
   .atelier-montage figure, .atelier-montage figure:nth-child(n) { display: block; flex-basis: 62vw; height: 58vh; }
   .montage-progress { width: 68vw; margin-left: 4vw; }
@@ -294,7 +322,9 @@
   .calibre-image, .calibre-shade, .calibre-content, .wrist .scene-sticky > img, .wrist-overlay, .wrist-copy, .atelier-montage { position: absolute; transform: none; clip-path: none; opacity: 1; }
   .exploded-dial, .exploded-calibre, .exploded-crystal, .exploded-labels { display: none; }
   .atelier-studio { min-height: auto; padding: 10vh 0; }
-  .atelier-studio h3 { position: relative; top: auto; }
+  .atelier-prompter { position: relative; top: auto; height: auto; overflow: visible; mask-image: none; -webkit-mask-image: none; opacity: 1; transform: none; mix-blend-mode: normal; color: #171919; }
+  .atelier-studio h3 { position: relative; top: auto; transform: none; }
+  .atelier-studio h3 > span { min-height: 0; margin-bottom: .25em; }
   .atelier-montage { position: relative; width: 100%; height: 44vh; padding: 0; display: grid; transform: none; }
   .motion-chapter, .montage-progress { display: none; }
 }

@@ -22,6 +22,8 @@
   const wristScene = $('.wrist');
   const explodedScene = $('.exploded');
   const atelierStudio = $('.atelier-studio');
+  const atelierPrompter = $('.atelier-prompter', atelierStudio);
+  const atelierLines = $$('#atelierStudioTitle > span');
   const lightHeaderSections = $$('[data-header-theme="light"]');
   const dialog = $('#checkoutDialog');
   const checkoutShowcase = $('#checkoutShowcase');
@@ -248,7 +250,13 @@
     const montageProgress = stagedProgress(atelierStudio, .05, .82);
     const atelierProgress = sectionProgress(atelierStudio);
     const atelierTravel = Math.max(1, atelierStudio.offsetHeight - innerHeight);
-    const atelierTitleExit = range(atelierProgress, .78, .94);
+    // Advance each phrase through the same reading window, with scroll-distance holds.
+    const windowHeight = atelierPrompter.clientHeight;
+    const stops = atelierLines.map((line) => windowHeight / 2 - line.offsetTop - line.offsetHeight / 2);
+    let prompterY = windowHeight + (stops[0] - windowHeight) * range(atelierProgress, .02, .16);
+    prompterY += (stops[1] - stops[0]) * range(atelierProgress, .30, .42);
+    prompterY += (stops[2] - stops[1]) * range(atelierProgress, .58, .70);
+    prompterY -= windowHeight * range(atelierProgress, .86, .99);
 
     const set = (element, property, value) => element.style.setProperty(property, value);
 
@@ -297,9 +305,9 @@
     set(atelierStudio, '--montage-x', `${(montageProgress * -145).toFixed(4)}vw`);
     set(atelierStudio, '--montage-mobile-x', `${(montageProgress * -264).toFixed(4)}vw`);
     set(atelierStudio, '--montage-scale', (1.07 - montageProgress * .03).toFixed(5));
-    set(atelierStudio, '--atelier-title-y', `${(Math.min(atelierProgress, .92) * atelierTravel).toFixed(2)}px`);
-    set(atelierStudio, '--atelier-title-opacity', (1 - atelierTitleExit).toFixed(5));
-    set(atelierStudio, '--atelier-title-blur', `${(atelierTitleExit * 10).toFixed(3)}px`);
+    set(atelierStudio, '--atelier-title-y', `${(atelierProgress * atelierTravel).toFixed(2)}px`);
+    set(atelierStudio, '--prompter-track-y', `${prompterY.toFixed(2)}px`);
+    set(atelierStudio, '--atelier-title-opacity', (1 - range(atelierProgress, .88, .99)).toFixed(5));
     renderCalibreMotion(calibreProgress);
   };
 
