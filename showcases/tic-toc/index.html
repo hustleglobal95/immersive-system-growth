@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="transitions.css">
   <link rel="stylesheet" href="pollen-direction.css">
   <link rel="stylesheet" href="eiger-motion.css">
+  <link rel="stylesheet" href="cinematic-type.css">
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
@@ -52,7 +53,7 @@
 
     <section class="statement" aria-label="Brand statement">
       <p class="eyebrow reveal">THE FIRST CHAPTER</p>
-      <p class="statement-copy reveal">Not made to count time.<br><em>Made to expose it.</em></p>
+      <p class="statement-copy cinematic-title"><span><b>Not made to count time.</b></span><span><b><em>Made to expose it.</em></b></span></p>
       <p class="statement-note reveal">A mechanical study in tension, negative space, and 188 hand-finished components.</p>
     </section>
 
@@ -72,7 +73,7 @@
       <div class="calibre-shade" aria-hidden="true"></div>
       <div class="calibre-content">
         <p class="eyebrow reveal">CALIBRE TT-01</p>
-        <h2 id="calibreTitle" class="reveal">A heartbeat<br>with no cage.</h2>
+        <h2 id="calibreTitle" class="cinematic-title"><span><b>A heartbeat</b></span><span><b>with no cage.</b></span></h2>
         <p class="calibre-lede reveal">The flying tourbillon rotates once every sixty seconds, suspended above a movement built entirely around the view.</p>
         <div class="spec-grid reveal" aria-label="Movement specifications">
           <div><strong>72</strong><span>Hours reserve</span></div>
@@ -89,7 +90,7 @@
         <div class="motion-chapter" aria-hidden="true"><span>03</span><i></i><b>ARCHITECTURE</b></div>
         <header class="exploded-heading">
           <p class="eyebrow">EXPLODED ARCHITECTURE</p>
-          <h2 id="explodedTitle">Every layer<br><em>earns its place.</em></h2>
+          <h2 id="explodedTitle" class="cinematic-title"><span><b>Every layer</b></span><span><b><em>earns its place.</em></b></span></h2>
         </header>
         <div class="exploded-watch" aria-hidden="true">
           <div class="exploded-layer exploded-shell"><img src="assets/watch-hero.webp" alt=""></div>
@@ -114,7 +115,7 @@
       </header>
       <div class="manifesto-split">
         <div class="manifesto-primary reveal">
-          <h2 id="manifestoTitle"><span>Precision is not a detail.</span><span><em>It is the entire language.</em></span></h2>
+          <h2 id="manifestoTitle" class="cinematic-title"><span><b>Precision is not a detail.</b></span><span><b><em>It is the entire language.</em></b></span></h2>
           <a class="manifesto-link" href="#materials">Explore the construction <i>↘</i></a>
         </div>
         <div class="manifesto-aside reveal">
@@ -130,22 +131,35 @@
     </section>
 
     <section class="materials" id="materials" aria-labelledby="materialsTitle">
-      <header class="section-heading reveal">
-        <p class="eyebrow">FORM / MATTER</p>
-        <h2 id="materialsTitle">Three materials.<br>One point of view.</h2>
+      <header class="section-heading">
+        <p class="eyebrow">MATERIAL STUDY / 01–03</p>
+        <h2 id="materialsTitle" class="cinematic-title"><span><b>Three materials.</b></span><span><b><em>One point of view.</em></b></span></h2>
       </header>
-      <div class="material-selector reveal" role="group" aria-label="Explore watch materials">
-        <button class="material-card active" type="button" data-material="Black DLC Titanium" data-detail="Aerospace titanium reduced to its most severe expression. Feather-light, satin-dark, and exceptionally resilient.">
-          <span class="material-number">01</span><span class="swatch obsidian"></span><strong>Black DLC</strong><small>CASE</small>
+      <div class="material-vault" data-active="obsidian">
+        <div class="material-selector" role="group" aria-label="Explore watch materials">
+        <button class="material-card active" type="button" data-key="obsidian" data-material="Black DLC Titanium" data-detail="Aerospace titanium reduced to its most severe expression. Feather-light, satin-dark, and exceptionally resilient.">
+          <span class="material-number">01</span><span class="swatch obsidian"></span><strong>Black DLC Titanium</strong><small>CASE ARCHITECTURE</small>
         </button>
-        <button class="material-card" type="button" data-material="Champagne Gold" data-detail="Warm gold is reserved for the movement, hands, and crown. A controlled flash of light inside the black architecture.">
-          <span class="material-number">02</span><span class="swatch gold"></span><strong>Champagne Gold</strong><small>MECHANICS</small>
+        <button class="material-card" type="button" data-key="gold" data-material="Champagne Gold" data-detail="Warm gold is reserved for the movement, hands, and crown. A controlled flash of light inside the black architecture.">
+          <span class="material-number">02</span><span class="swatch gold"></span><strong>Champagne Gold</strong><small>MOVEMENT ACCENTS</small>
         </button>
-        <button class="material-card" type="button" data-material="Hand-cut Alligator" data-detail="A matte black strap shaped and stitched by hand, finished with a titanium deployant clasp.">
-          <span class="material-number">03</span><span class="swatch leather"></span><strong>Alligator</strong><small>STRAP</small>
+        <button class="material-card" type="button" data-key="leather" data-material="Hand-cut Alligator" data-detail="A matte black strap shaped and stitched by hand, finished with a titanium deployant clasp.">
+          <span class="material-number">03</span><span class="swatch leather"></span><strong>Hand-cut Alligator</strong><small>STRAP AND CLASP</small>
         </button>
+        </div>
+        <div class="material-object" aria-hidden="true">
+          <div class="material-halo"></div>
+          <div class="material-rings"><i></i><i></i><i></i></div>
+          <img src="assets/watch-hero.webp" width="1122" height="1402" alt="">
+          <span class="material-axis axis-x"></span><span class="material-axis axis-y"></span>
+          <div class="material-object-index"><span>TT / 01</span><b>OBSIDIAN</b></div>
+        </div>
+        <aside class="material-detail" aria-live="polite">
+          <span id="materialName">Black DLC Titanium</span>
+          <p id="materialDetail">Aerospace titanium reduced to its most severe expression. Feather-light, satin-dark, and exceptionally resilient.</p>
+          <dl><div><dt>Finish</dt><dd id="materialFinish">Satin black</dd></div><div><dt>Purpose</dt><dd id="materialPurpose">Structural lightness</dd></div></dl>
+        </aside>
       </div>
-      <div class="material-detail reveal" aria-live="polite"><span id="materialName">Black DLC Titanium</span><p id="materialDetail">Aerospace titanium reduced to its most severe expression. Feather-light, satin-dark, and exceptionally resilient.</p></div>
     </section>
 
     <section class="cinematic-transition transition-domino" style="--transition-image:url('assets/watch-lifestyle.webp')" aria-hidden="true">
@@ -165,7 +179,7 @@
       <div class="wrist-overlay"></div>
       <div class="wrist-copy reveal">
         <p class="eyebrow">42 MM / 5 ATM</p>
-        <h2 id="wristTitle">Presence,<br>without noise.</h2>
+        <h2 id="wristTitle" class="cinematic-title"><span><b>Presence,</b></span><span><b>without noise.</b></span></h2>
         <p>A case that disappears on the wrist until the light finds it.</p>
       </div>
       <div class="time-readout" aria-label="Current time"><span id="liveTime">10:10:00</span><small>LOCAL TIME</small></div>
@@ -175,7 +189,7 @@
     <section class="edition" id="edition" aria-labelledby="editionTitle">
       <div class="edition-copy reveal">
         <p class="eyebrow">EDITION OF 88</p>
-        <h2 id="editionTitle">The object.<br>The ritual.</h2>
+        <h2 id="editionTitle" class="cinematic-title"><span><b>The object.</b></span><span><b><em>The ritual.</em></b></span></h2>
         <p>Every No. 01 arrives in a black lacquer presentation case with an individually numbered archive card and hand-finished travel roll.</p>
         <ul>
           <li><span>01</span> Complimentary insured delivery</li>
@@ -200,7 +214,7 @@
       <header class="atelier-editorial-heading reveal">
         <div>
           <p class="eyebrow">THE TIC TOC ATELIER</p>
-          <h2 id="atelierEditorialTitle"><span>Crafted for the</span><span><em>next moment.</em></span></h2>
+          <h2 id="atelierEditorialTitle" class="cinematic-title"><span><b>Crafted for the</b></span><span><b><em>next moment.</em></b></span></h2>
         </div>
         <div class="atelier-heading-aside">
           <p>Explore No. 01 through the architecture, gestures, and finishing that give the piece its presence.</p>
@@ -233,7 +247,7 @@
       </div>
 
       <section class="atelier-interlude" aria-label="Tic Toc design philosophy">
-        <h3 class="reveal"><span>Every surface is engineered</span><span>to catch light only once.</span></h3>
+        <h3 class="cinematic-title"><span><b>Every surface is engineered</b></span><span><b>to catch light only once.</b></span></h3>
         <div class="atelier-interlude-lower reveal">
           <figure><img src="assets/watch-hero.webp" width="1122" height="1402" alt="Profile of the Tic Toc No. 01 case" loading="lazy"></figure>
           <div>
@@ -260,7 +274,7 @@
       </div>
 
       <section class="atelier-studio" aria-labelledby="atelierStudioTitle">
-        <h3 id="atelierStudioTitle" class="reveal"><span>From Geneva workshops to</span><span>eighty-eight numbered wrists,</span><span>every piece remains personal.</span></h3>
+        <h3 id="atelierStudioTitle" class="cinematic-title"><span><b>From Geneva workshops to</b></span><span><b>eighty-eight numbered wrists,</b></span><span><b>every piece remains personal.</b></span></h3>
         <div class="atelier-montage reveal" aria-hidden="true">
           <figure><img src="assets/movement-macro.webp" alt=""></figure>
           <figure><img src="assets/presentation-set.webp" alt=""></figure>
@@ -281,7 +295,7 @@
 
     <section class="acquire" aria-labelledby="acquireTitle">
       <p class="eyebrow reveal">PRIVATE RESERVATION</p>
-      <h2 id="acquireTitle" class="reveal">Own the first<br><em>chapter.</em></h2>
+      <h2 id="acquireTitle" class="cinematic-title"><span><b>Own the first</b></span><span><b><em>chapter.</em></b></span></h2>
       <div class="acquire-meta reveal"><span>NO. 01 OBSIDIAN TOURBILLON</span><span>$18,800 USD</span></div>
       <button class="primary-cta reveal" id="acquireButton" type="button"><span>Begin private checkout</span><i aria-hidden="true">↗</i></button>
       <p class="availability reveal">Limited to 88 numbered pieces. Allocation subject to confirmation.</p>
