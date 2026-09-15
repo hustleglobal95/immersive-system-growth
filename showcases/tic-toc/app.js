@@ -12,14 +12,6 @@
   const heroToc = $('#heroTitle span:last-child');
   const calibreScene = $('#calibre');
   const calibreImage = $('.calibre-image', calibreScene);
-  const wristScene = $('.wrist');
-  const wristImage = $('img', wristScene);
-  const wristProduct = $('.wrist-product', wristScene);
-  const wristProductWhole = $('.wrist-product-whole', wristScene);
-  const wristProductParts = $$('.wrist-product-part', wristScene);
-  const wristSpecSize = $('.wrist-spec-size', wristScene);
-  const wristSpecDepth = $('.wrist-spec-depth', wristScene);
-  const wristSpecLine = $('.wrist-spec i', wristScene);
   const dialog = $('#checkoutDialog');
   const form = $('#checkoutForm');
   const steps = $$('.checkout-step');
@@ -32,9 +24,6 @@
   let currentCalibreMotion = 0;
   let targetCalibreMotion = 0;
   let calibreFrame = 0;
-  let currentWristMotion = 0;
-  let targetWristMotion = 0;
-  let wristFrame = 0;
 
   const getConfig = () => {
     const data = new FormData(form);
@@ -132,64 +121,6 @@
     if (!calibreFrame) calibreFrame = requestAnimationFrame(renderCalibreMotion);
   };
 
-  const renderWristMotion = () => {
-    const delta = targetWristMotion - currentWristMotion;
-    currentWristMotion += delta * .072;
-    if (Math.abs(delta) < .0005) currentWristMotion = targetWristMotion;
-
-    const p = currentWristMotion;
-    const revealRaw = Math.max(0, Math.min(1, (p - .08) / .28));
-    const reveal = revealRaw * revealRaw * (3 - 2 * revealRaw);
-    const emergeRaw = Math.max(0, Math.min(1, (p - .12) / .38));
-    const emerge = emergeRaw * emergeRaw * (3 - 2 * emergeRaw);
-    const explodeRaw = Math.max(0, Math.min(1, (p - .5) / .32));
-    const explode = explodeRaw * explodeRaw * (3 - 2 * explodeRaw);
-    const imageScale = 1.08 + p * .055;
-    const imageX = (p - .5) * -4.2;
-    const imageY = (p - .5) * -2.4;
-    const mobile = innerWidth < 900;
-    const productX = -19 + emerge * (mobile ? 25 : 31);
-    const productY = -13 + emerge * 13;
-    const productScale = .19 + emerge * (mobile ? .51 : .57);
-    const productRotation = -52 + emerge * 52;
-    const productDepth = emerge * 120;
-
-    wristImage.style.transform = `translate3d(${imageX}%, ${imageY}%, 0) scale(${imageScale})`;
-    wristImage.style.filter = `brightness(${.84 - emerge * .38}) contrast(${1.04 + p * .04}) blur(${emerge * 2.2}px)`;
-    wristProduct.style.opacity = Math.min(1, emerge * 2.8);
-    wristProduct.style.transform = `translate3d(calc(-50% + ${productX}vw), calc(-50% + ${productY}vh), ${productDepth}px) scale(${productScale}) rotateZ(${productRotation}deg) rotateY(${emerge * -8}deg)`;
-    wristProductWhole.style.opacity = 1 - explode;
-
-    const partDistance = mobile ? .72 : 1;
-    const partTransforms = [
-      `translate3d(${-34 * explode * partDistance}px, ${-112 * explode * partDistance}px, ${80 * explode}px) rotateX(${-14 * explode}deg) rotateZ(${-5 * explode}deg)`,
-      `translate3d(${-24 * explode * partDistance}px, 0, ${155 * explode}px) rotateY(${12 * explode}deg) scale(${1 + explode * .05})`,
-      `translate3d(${48 * explode * partDistance}px, ${8 * explode}px, ${290 * explode}px) rotateZ(${28 * explode}deg) scale(${1 + explode * .13})`,
-      `translate3d(${38 * explode * partDistance}px, ${118 * explode * partDistance}px, ${30 * explode}px) rotateX(${13 * explode}deg) rotateZ(${6 * explode}deg)`
-    ];
-    wristProductParts.forEach((part, index) => {
-      part.style.opacity = explode;
-      part.style.transform = partTransforms[index];
-    });
-    wristSpecSize.style.transform = `translate3d(${(1 - reveal) * -52}px, 0, 0)`;
-    wristSpecDepth.style.transform = `translate3d(${(1 - reveal) * 52}px, 0, 0)`;
-    wristSpecSize.style.opacity = reveal;
-    wristSpecDepth.style.opacity = reveal;
-    wristSpecLine.style.transform = `scaleX(${reveal})`;
-    wristSpecLine.style.opacity = reveal;
-
-    if (currentWristMotion !== targetWristMotion) wristFrame = requestAnimationFrame(renderWristMotion);
-    else wristFrame = 0;
-  };
-
-  const queueWristMotion = () => {
-    if (reducedMotion) return;
-    const rect = wristScene.getBoundingClientRect();
-    const travel = innerHeight + rect.height;
-    targetWristMotion = Math.max(0, Math.min(1, (innerHeight - rect.top) / travel));
-    if (!wristFrame) wristFrame = requestAnimationFrame(renderWristMotion);
-  };
-
   const onScroll = () => {
     const y = window.scrollY;
     const max = document.documentElement.scrollHeight - innerHeight;
@@ -201,7 +132,6 @@
       queueWatchSpin(p);
     }
     queueCalibreMotion();
-    queueWristMotion();
   };
 
   let scrollTick = false;

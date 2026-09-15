@@ -33,82 +33,6 @@
   to { transform: translate3d(38%, 0, 0); }
 }
 
-.wrist img {
-  transform-origin: 42% 50%;
-  will-change: transform, filter;
-}
-
-.wrist-product {
-  position: absolute;
-  z-index: 3;
-  left: 50%;
-  top: 50%;
-  width: min(42vw, 520px);
-  height: 82vh;
-  opacity: 0;
-  perspective: 1500px;
-  transform-style: preserve-3d;
-  transform-origin: center;
-  pointer-events: none;
-  will-change: transform, opacity;
-}
-
-.wrist-product img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 42px 42px rgba(0, 0, 0, .72));
-  transform-origin: center;
-  will-change: transform, opacity;
-}
-
-.wrist-product-part {
-  opacity: 0;
-  transform-style: preserve-3d;
-}
-
-.wrist-product-strap-top {
-  clip-path: polygon(0 0, 100% 0, 100% 27%, 0 27%);
-}
-
-.wrist-product-case {
-  clip-path: circle(37% at 50% 47%);
-}
-
-.wrist-product-movement {
-  clip-path: circle(24% at 50% 47%);
-  filter: brightness(1.2) saturate(1.08) drop-shadow(0 28px 36px rgba(201, 168, 106, .28));
-}
-
-.wrist-product-strap-bottom {
-  clip-path: polygon(0 69%, 100% 69%, 100% 100%, 0 100%);
-}
-
-.wrist-spec {
-  display: flex;
-  align-items: center;
-  width: min(330px, 72vw);
-  gap: 16px;
-  overflow: hidden;
-}
-
-.wrist-spec span {
-  display: block;
-  white-space: nowrap;
-  will-change: transform, opacity;
-}
-
-.wrist-spec i {
-  display: block;
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, var(--gold), rgba(201, 168, 106, .18));
-  transform-origin: center;
-  will-change: transform, opacity;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .watch-stage img {
     filter: drop-shadow(0 35px 35px rgba(0, 0, 0, .65)) !important;
@@ -116,22 +40,5 @@
 
   .calibre-image::after {
     animation: none;
-  }
-
-  .wrist-spec span,
-  .wrist-spec i {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-
-  .wrist-product {
-    display: none;
-  }
-}
-
-@media (max-width: 900px) {
-  .wrist-product {
-    width: 82vw;
-    height: 68vh;
   }
 }
