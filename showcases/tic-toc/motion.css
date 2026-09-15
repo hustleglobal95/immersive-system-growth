@@ -9,6 +9,10 @@
   will-change: transform, filter, translate;
 }
 
+.hero h1 span {
+  will-change: transform, opacity;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .watch-stage img {
     filter: drop-shadow(0 35px 35px rgba(0, 0, 0, .65)) !important;
