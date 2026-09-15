@@ -10,6 +10,8 @@
   const watchImage = $('img', watchStage);
   const heroTic = $('#heroTitle span:first-child');
   const heroToc = $('#heroTitle span:last-child');
+  const calibreScene = $('#calibre');
+  const calibreImage = $('.calibre-image', calibreScene);
   const dialog = $('#checkoutDialog');
   const form = $('#checkoutForm');
   const steps = $$('.checkout-step');
@@ -19,6 +21,9 @@
   let spinFrame = 0;
   let currentWordShift = 0;
   let targetWordShift = 0;
+  let currentCalibreMotion = 0;
+  let targetCalibreMotion = 0;
+  let calibreFrame = 0;
 
   const getConfig = () => {
     const data = new FormData(form);
@@ -89,6 +94,33 @@
     if (!spinFrame) spinFrame = requestAnimationFrame(renderWatchSpin);
   };
 
+  const renderCalibreMotion = () => {
+    const delta = targetCalibreMotion - currentCalibreMotion;
+    currentCalibreMotion += delta * .075;
+    if (Math.abs(delta) < .0005) currentCalibreMotion = targetCalibreMotion;
+
+    const p = currentCalibreMotion;
+    const scale = 1.12 + p * .075;
+    const x = (p - .5) * -4.5;
+    const y = (p - .5) * -3;
+    const rotation = (p - .5) * 2.2;
+    const light = .92 + Math.sin(p * Math.PI) * .16;
+
+    calibreImage.style.transform = `translate3d(${x}%, ${y}%, 0) scale(${scale}) rotate(${rotation}deg)`;
+    calibreImage.style.filter = `brightness(${light}) contrast(${1.04 + p * .05})`;
+
+    if (currentCalibreMotion !== targetCalibreMotion) calibreFrame = requestAnimationFrame(renderCalibreMotion);
+    else calibreFrame = 0;
+  };
+
+  const queueCalibreMotion = () => {
+    if (reducedMotion) return;
+    const rect = calibreScene.getBoundingClientRect();
+    const travel = innerHeight + rect.height;
+    targetCalibreMotion = Math.max(0, Math.min(1, (innerHeight - rect.top) / travel));
+    if (!calibreFrame) calibreFrame = requestAnimationFrame(renderCalibreMotion);
+  };
+
   const onScroll = () => {
     const y = window.scrollY;
     const max = document.documentElement.scrollHeight - innerHeight;
@@ -99,6 +131,7 @@
       watchStage.style.transform = `translate3d(0, ${p * 15}vh, 0) scale(${1 - p * .13})`;
       queueWatchSpin(p);
     }
+    queueCalibreMotion();
   };
 
   let scrollTick = false;
