@@ -15,7 +15,7 @@ export function DesignWorkbench() {
   const fonts = searchFonts(query, category, mood);
   return <div className="ds-root" style={directionStyles(direction)} data-direction={direction}>
     <a className="ds-skip" href="#design-content">Skip to design preview</a>
-    <header className="ds-toolbar"><Link href="/" className="ds-brand">FORGE <span>/ Design atelier</span></Link><nav aria-label="Workbench"><a href="#font-library">Type Vault</a><Link href="/lab">Scene lab ↗</Link></nav></header>
+    <header className="ds-toolbar"><Link href="/" className="ds-brand">FORGE <span>/ Design atelier</span></Link><nav aria-label="Workbench"><Link href="/type-vault">Open full Type Vault ↗</Link><Link href="/lab">Scene lab ↗</Link></nav></header>
     <div className="ds-controls">
       <fieldset><legend>Art direction</legend><div className="ds-directions">{(Object.keys(directions) as DesignDirection[]).map(id => <button key={id} type="button" aria-pressed={direction === id} onClick={() => setDirection(id)}>{directions[id].name}</button>)}</div></fieldset>
       <p>{directions[direction].description}</p>
@@ -75,6 +75,7 @@ export function DesignWorkbench() {
         <p role="status" className="ds-result-count">{fonts.length} matching font references</p>
         <ul className="ds-font-list">{fonts.map(f => <li key={f.id}><div><a href={f.source} target="_blank" rel="noreferrer">{f.name} <span aria-hidden="true">↗</span></a><span className="ds-font-badge">{f.category} / {f.bundled ? "Bundled" : "Reference"}</span></div><p>{f.use}</p><p className="ds-font-meta">{f.moods.join(" · ")} — {f.roles.join(" · ")}{f.tags.length ? ` — ${f.tags.join(" · ")}` : ""}</p></li>)}</ul>
         {!fonts.length && <p>No matches. Try another project type, mood or category.</p>}
+        <p><Link href="/type-vault">Browse the full live Type Vault →</Link></p>
         <details className="ds-export"><summary>Production rule</summary><p>The Type Vault is intentionally metadata-first. Do not load the whole vault into client bundles. Pick the final pairing, self-host or install only those licensed families, and keep fallbacks in the project typography tokens.</p><textarea aria-label="Design direction JSON" readOnly value={exportDirection(direction)} rows={12} /></details>
       </div></section>
     </main>
