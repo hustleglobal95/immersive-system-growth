@@ -4,77 +4,143 @@
   "concept": "A continuous architectural light observatory turns landscape, threshold, descent, optical study and personal artifact into one reversible spatial journey.",
   "audience": "Design-literate founders, creative directors, architects, collectors and premium-brand teams evaluating whether immersive web can create genuine spatial memory rather than decorative motion.",
   "promise": "You do not inspect HELIOT from outside. You cross it, descend through it, manipulate light inside it, and leave with a record of how you chose to see.",
-  "emotionalArc": [
-    "Curiosity",
-    "Anticipation",
-    "Awe",
-    "Fascination",
-    "Understanding",
-    "Agency",
-    "Intimacy",
-    "Release",
-    "Admiration",
-    "Ownership"
-  ],
+  "emotionalArc": ["Curiosity", "Anticipation", "Awe", "Fascination", "Understanding", "Agency", "Intimacy", "Release", "Admiration", "Ownership"],
   "cta": "Save field study",
   "visual": {
-    "palette": [
-      "#151719",
-      "#f2eee3",
-      "#d4b27b",
-      "#987347",
-      "#ea6748"
+    "palette": ["#151719", "#f2eee3", "#d4b27b", "#987347", "#ea6748"],
+    "typography": ["Manrope / field notation, controls and structural clarity", "Cormorant Garamond / restrained emotional emphasis only"],
+    "materials": ["Patinated bronze", "Volcanic basalt", "Controlled optical glass", "Dark reflection water"],
+    "motion": ["Patient exterior approach", "Physical threshold alignment", "Continuous curved descent", "Measured component separation", "Progressive optical transmission", "Bounded manual inspection", "Reversible return flight", "Calm aerial resolution"],
+    "sound": ["Optional local synthesized atmosphere", "No autoplay", "Sparse during threshold and descent"]
+  },
+  "artDirection": {
+    "northStar": "Light becomes architecture only when the visitor physically crosses its threshold.",
+    "hierarchy": [
+      "The threshold/descent is the only 10/10 moment.",
+      "Architecture outranks interface; interface outranks annotation only when a task requires it.",
+      "Explanatory detail rises after the primary spatial peak, not before it.",
+      "The field artifact is the end-state action, not a generic sales CTA."
     ],
-    "typography": [
-      "Manrope / field notation, controls and structural clarity",
-      "Cormorant Garamond / restrained emotional emphasis only"
+    "compositionRules": [
+      "Frame the annular opening as negative space before entry.",
+      "Use basin reflection and horizon to establish scale before bronze fills the frame.",
+      "Inside the gallery, alternate depth compositions with centered optical alignment.",
+      "Keep copy in protected negative space and away from dense radial fins or ray fields."
     ],
-    "materials": [
-      "Patinated bronze",
-      "Volcanic basalt",
-      "Controlled optical glass",
-      "Dark reflection water"
+    "cameraLanguage": [
+      "Camera behaves like a visitor moving through architecture, never a detached product turntable.",
+      "Exterior movement keeps a stable horizon and patient acceleration.",
+      "Passage banking is bounded to the existing path-curvature response only.",
+      "Manual orbit exists only in the inspection chapter and resets before authored travel resumes.",
+      "Mobile preserves the same physical route with wider framing."
     ],
-    "motion": [
-      "Patient exterior approach",
-      "Physical threshold alignment",
-      "Continuous curved descent",
-      "Measured component separation",
-      "Progressive optical transmission",
-      "Bounded manual inspection",
-      "Reversible return flight",
-      "Calm aerial resolution"
+    "lightingLanguage": [
+      "Exterior light reveals bronze silhouette and terrain without flattening the night field.",
+      "Threshold lighting pulls the eye through the physical opening.",
+      "Gallery light becomes warmer and more controlled as architecture gives way to optical study.",
+      "Ray light is explanatory and localized rather than a full-scene glow treatment."
     ],
-    "sound": [
-      "Optional local synthesized atmosphere",
-      "No autoplay",
-      "Sparse during threshold and descent"
+    "materialLanguage": [
+      "Patinated bronze is the primary owned material signal.",
+      "Basalt stays heavy, low-gloss and quiet.",
+      "Optical glass is cool, precise and controlled.",
+      "Reflection water supports orientation and scale rather than decorative spectacle."
+    ],
+    "motionLanguage": [
+      "Use stillness before and after high-intensity travel.",
+      "Component separation is explanatory and secondary.",
+      "Optical rays draw progressively only when transmission is being explained.",
+      "Reverse scroll reconstructs camera and component state exactly.",
+      "Micro-motion in interface chrome never competes with spatial motion."
+    ],
+    "transitionLanguage": [
+      "Use physical thresholds, foreground occlusion, depth and continuity instead of generic fades.",
+      "Exterior-to-gallery transition must happen through real modeled space.",
+      "Gallery-to-exterior return uses the same route.",
+      "UI becomes quieter during the signature threshold/descent and returns during study/utility chapters."
+    ],
+    "interactionLanguage": [
+      "Scroll directs the authored reversible journey.",
+      "Aperture changes geometry, ray width, semantic readout and exported field data together.",
+      "Finish/orbit inspection is deliberately bounded to one chapter.",
+      "Sound begins only from explicit visitor action.",
+      "Saving the field study is the conceptually relevant completion action."
+    ],
+    "soundLanguage": [
+      "Optional synthesized atmosphere provides environmental depth only.",
+      "No autoplay.",
+      "The threshold/descent remains sonically sparse enough that architecture stays primary."
+    ],
+    "spatialRules": [
+      "One persistent world contains terrain, basin, gateway, passage, gallery and exhibit.",
+      "The gallery never scales, moves or teleports to fake entry.",
+      "Passage, doorway, floor and ceiling clearance remain testable spatial constraints.",
+      "The smaller exhibit may animate independently while architecture stays fixed."
+    ],
+    "continuityRules": [
+      "The same camera state machine owns approach, descent, inspection handoff, return and aerial resolution.",
+      "Manual orbit must reset before authored travel resumes.",
+      "Reverse scroll must restore every named-node offset and camera pose without residual state.",
+      "No chapter may replace the persistent world with an unrelated visual scene."
+    ],
+    "realismRules": [
+      "All traversed foreground space is real geometry.",
+      "Distant mountain matte is background set extension only.",
+      "Do not claim construction engineering, physical-device FPS or unverified optical prescription accuracy.",
+      "Use surface response, occlusion and scale cues before post-processing to create realism."
+    ],
+    "assetRules": [
+      "Use the existing original high/low HELIOT GLBs before commissioning new geometry.",
+      "All core media remains local and original.",
+      "Campaign/fallback plates never impersonate traversable foreground space.",
+      "No new asset is justified unless it materially strengthens threshold, light causality or the field artifact."
+    ],
+    "typographyRules": [
+      "Manrope carries field notation, controls, navigation and body copy.",
+      "Cormorant Garamond appears only at emotional/editorial inflection points.",
+      "Labels stay small, measured and functional.",
+      "Avoid oversized typography during the signature descent."
+    ],
+    "colorRules": [
+      "Charcoal, warm paper and bronze dominate.",
+      "Orange-red is a calibration/index accent, not a broad decorative color.",
+      "No neon cyan, purple gradients or unrelated sci-fi coding.",
+      "Interior warmth may rise without changing the core palette."
+    ],
+    "mobileRules": [
+      "Preserve all ten chapters and the same route.",
+      "Widen lens and simplify chrome before cutting meaning.",
+      "Keep aperture, finish, save and navigation targets touch-safe.",
+      "Reduced motion becomes a complete linear interpretation, not a disabled experience."
+    ],
+    "performanceRules": [
+      "Keep demand-frame rendering authoritative.",
+      "Respect adaptive quality and matching high/low named-node GLBs.",
+      "Do not add continuous animation loops for decorative motion.",
+      "Treat render-ledger counts as cost observations, never physical-device FPS claims."
+    ],
+    "accessibilityRules": [
+      "Semantic chapter content remains available without WebGL.",
+      "Keyboard inspection and chapter navigation remain functional.",
+      "Any visual quieting of fixed chrome must restore fully on focus.",
+      "All critical light-lab information must exist as readable semantic text, not only graphics."
+    ],
+    "forbiddenPatterns": [
+      "Generic hero orbit",
+      "Neon/purple sci-fi grading",
+      "Floating UI debris",
+      "Random particles",
+      "Prerecorded flythrough standing in for space",
+      "Automatic audio",
+      "Forced scroll",
+      "Second climax competing with threshold descent",
+      "Gallery teleport or scale trick",
+      "Remote runtime media dependency"
     ]
   },
   "constraints": {
-    "approved": [
-      "One persistent spatial world",
-      "Real traversed gateway and passage geometry",
-      "Deterministic named-node ProductRig",
-      "Current Forge CameraRig with bounded path-curvature banking",
-      "Local original assets only",
-      "Semantic controls and fallback",
-      "Separate mobile camera framing over the same route",
-      "Demand-frame rendering and adaptive quality",
-      "Purposeful interaction that changes geometry or output"
-    ],
-    "prohibited": [
-      "Generic hero orbit",
-      "Neon or purple sci-fi grading",
-      "Floating UI debris",
-      "Random particles",
-      "Prerecorded flythrough standing in for traversable space",
-      "Automatic audio",
-      "Forced scroll",
-      "Second climax that competes with the threshold descent",
-      "Gallery teleport or scale trick",
-      "Remote media dependencies"
-    ]
+    "approved": ["One persistent spatial world", "Real traversed gateway and passage geometry", "Deterministic named-node ProductRig", "Current Forge CameraRig with bounded path-curvature banking", "Local original assets only", "Semantic controls and fallback", "Separate mobile framing over the same route", "Demand-frame rendering and adaptive quality", "Purposeful interaction that changes geometry or output"],
+    "prohibited": ["Generic hero orbit", "Neon or purple sci-fi grading", "Floating UI debris", "Random particles", "Prerecorded flythrough standing in for traversable space", "Automatic audio", "Forced scroll", "Second climax that competes with the threshold descent", "Gallery teleport or scale trick", "Remote media dependencies"]
   },
   "scenes": [
     {
@@ -84,7 +150,23 @@
       "copy": "Observatory for the unseen.",
       "interaction": "Begin the spatial study",
       "transitionIn": "Arrive already inside the field",
-      "transitionOut": "Lower toward the annular opening"
+      "transitionOut": "Lower toward the annular opening",
+      "direction": {
+        "objective": "Make HELIOT feel like a destination before it feels like an interface.",
+        "spatialStory": "The visitor begins outside at landscape scale with the observatory held at a distance across the basin.",
+        "composition": ["Protect negative space for the title.", "Keep basin reflection and distant gateway readable together."],
+        "camera": {"framing": ["Aerial oblique with stable horizon."], "lens": ["Moderately compressed architectural perspective."], "path": ["Patient curved dolly across the basin."], "speed": ["Slow acceleration; no abrupt speed ramp."], "focus": ["Gateway remains the destination while terrain carries parallax."]},
+        "lighting": {"timeOfDay": ["Dark field / pre-dawn ambiguity."], "key": ["Warm bronze edge light."], "fill": ["Low cool environmental fill."], "practicals": ["No bright practicals in foreground."], "atmosphere": ["Restrained depth; keep terrain readable."]},
+        "materials": ["Bronze must not read polished or showroom-clean.", "Basalt remains matte and heavy."],
+        "motion": {"subject": ["Observatory remains physically fixed."], "environment": ["Only camera/parallax establishes motion."], "assembly": [], "easing": ["Cinematic but restrained."], "continuity": ["No intro animation before spatial arrival."]},
+        "sound": ["Atmosphere optional; no autoplay."],
+        "interactionNotes": ["Primary instruction is scroll to enter."],
+        "transitionNotes": ["Lower camera and align with the opening rather than cutting closer."],
+        "assetRequirements": ["Terrain, basin, gateway and distant landscape must all be ready before field readiness is announced."],
+        "implementationNotes": ["Demand rendering remains active; no decorative continuous loop."],
+        "mobileNotes": ["Wider lens keeps gateway visible without reducing landscape context."],
+        "negativeDirectives": ["No logo pre-roll.", "No orbit around the observatory."]
+      }
     },
     {
       "id": "form",
@@ -93,7 +175,23 @@
       "copy": "Space begins with an opening.",
       "interaction": "Scroll to cross the threshold",
       "transitionIn": "Landscape compresses into architecture",
-      "transitionOut": "Cross physical bronze fins without a cut"
+      "transitionOut": "Cross physical bronze fins without a cut",
+      "direction": {
+        "objective": "Make the opening feel physically traversable before the camera crosses it.",
+        "spatialStory": "Exterior scale tightens until the annular void becomes the dominant compositional fact.",
+        "composition": ["Center the opening as negative space.", "Let bronze occupy more frame without losing the path through it."],
+        "camera": {"framing": ["Axial architectural alignment."], "lens": ["Controlled wide-normal lens."], "path": ["Descend and aim through the opening."], "speed": ["Build anticipation with steady approach."], "focus": ["The void, not the bronze shell, is the visual target."]},
+        "lighting": {"timeOfDay": ["Exterior night field."], "key": ["Use rim/key to articulate the opening edge."], "fill": ["Keep interior beyond the opening darker but legible."], "practicals": ["Gallery light may tease from depth."], "atmosphere": ["Do not fog over the opening."]},
+        "materials": ["Bronze radial fins provide parallax and scale."],
+        "motion": {"subject": ["Architecture remains fixed."], "environment": ["Interface chrome begins to quiet."], "assembly": [], "easing": ["No snap into axial alignment."], "continuity": ["Maintain same world and same camera ownership."]},
+        "sound": ["Keep sparse; no cue should announce the threshold before the image does."],
+        "interactionNotes": ["Scroll remains authoritative; navigation stays accessible even while visually quiet."],
+        "transitionNotes": ["Physical fin occlusion replaces a conventional transition."],
+        "assetRequirements": ["Annular opening and passage must be fully loaded and clear."],
+        "implementationNotes": ["Final-cut CSS lowers header/footer prominence but restores it on focus/hover."],
+        "mobileNotes": ["Preserve opening center and touch-safe navigation."],
+        "negativeDirectives": ["No explanatory overlay across the opening.", "No heroic spin before entry."]
+      }
     },
     {
       "id": "surface",
@@ -102,7 +200,23 @@
       "copy": "Matter. Made luminous.",
       "interaction": "Keep moving through the architecture",
       "transitionIn": "Exterior disappears behind real geometry",
-      "transitionOut": "Gallery light resolves and motion settles"
+      "transitionOut": "Gallery light resolves and motion settles",
+      "direction": {
+        "objective": "Deliver HELIOT's defining memory: real continuous entry into architecture.",
+        "spatialStory": "Bronze closes around the camera, the path curves downward, and gallery light gradually replaces the exterior field.",
+        "composition": ["Let ribs cross foreground edges to prove depth.", "Keep centerline readable enough that the flight feels intentional, not chaotic."],
+        "camera": {"framing": ["Human-scale passage framing."], "lens": ["Wide enough for immersion without theme-park distortion."], "path": ["Follow validated centerline through the curved descent."], "speed": ["Continuous, unhurried, no speed-ramp trick."], "focus": ["Gallery light ahead acts as visual destination."]},
+        "lighting": {"timeOfDay": ["Transition from exterior dark to interior controlled warmth."], "key": ["Bronze edge light should move naturally through camera parallax."], "fill": ["Preserve shadow depth between ribs."], "practicals": ["Passage slots and gallery glow guide direction."], "atmosphere": ["Keep air clean enough for geometry to stay architectural."]},
+        "materials": ["Bronze and stone do the realism work; avoid extra glowing surfaces."],
+        "motion": {"subject": ["No subject animation during the peak."], "environment": ["Architecture stays fixed; only camera moves through it."], "assembly": [], "easing": ["Smooth arc-length travel."], "continuity": ["One uninterrupted shot from exterior to gallery."]},
+        "sound": ["Sparse optional atmosphere; no dramatic impact cue required."],
+        "interactionNotes": ["Do not introduce new controls during the descent."],
+        "transitionNotes": ["The transition is the space itself."],
+        "assetRequirements": ["Passage, gallery, portal culling and camera clearance must remain correct."],
+        "implementationNotes": ["Keep bounded camera bank tied only to path curvature."],
+        "mobileNotes": ["Same centerline; wider lens; keep visual clarity around passage walls."],
+        "negativeDirectives": ["No dense copy.", "No particles.", "No bloom escalation.", "No cut or teleport."]
+      }
     },
     {
       "id": "separation",
@@ -111,7 +225,23 @@
       "copy": "An architecture of relationships.",
       "interaction": "Reverse to reassemble",
       "transitionIn": "Stillness after the descent",
-      "transitionOut": "Separated components align to the optical axis"
+      "transitionOut": "Separated components align to the optical axis",
+      "direction": {
+        "objective": "Trade spectacle for understanding after the primary peak.",
+        "spatialStory": "The visitor is now inside the gallery; a smaller instrument becomes the object of study while architecture stays stable around it.",
+        "composition": ["Keep gallery depth visible behind the exhibit."],
+        "camera": {"framing": ["Three-quarter study view."], "lens": ["Neutral study lens."], "path": ["Controlled arc around the exhibit only."], "speed": ["Slow enough to read component spacing."], "focus": ["Named component groups and their relationships."]},
+        "lighting": {"timeOfDay": ["Interior only."], "key": ["Shape bronze/glass component edges."], "fill": ["Keep gallery readable but subordinate."], "practicals": ["Use existing gallery illumination."], "atmosphere": ["Minimal."]},
+        "materials": ["Differentiate bronze shell from optical glass without introducing new palette."],
+        "motion": {"subject": ["Measured axial named-node separation."], "environment": ["Gallery remains still."], "assembly": ["Exact reversible offsets only."], "easing": ["Cinematic interpolation without bounce."], "continuity": ["All offsets return to zero before light lab."]},
+        "sound": ["No mechanical sound required unless subtle and optional."],
+        "interactionNotes": ["Reverse scroll must visibly reassemble without residue."],
+        "transitionNotes": ["Separated geometry becomes the basis for optical-axis explanation."],
+        "assetRequirements": ["High/low GLBs must preserve identical node names."],
+        "implementationNotes": ["ProductRig remains deterministic and secondary to architecture."],
+        "mobileNotes": ["Keep the full exhibit readable; reduce explanatory density before cutting the assembly."],
+        "negativeDirectives": ["Do not turn the exploded view into the project's hero moment."]
+      }
     },
     {
       "id": "optical-path",
@@ -120,7 +250,23 @@
       "copy": "Follow the invisible.",
       "interaction": "Inspect the schematic",
       "transitionIn": "Anatomy becomes transmission",
-      "transitionOut": "Resolve toward the physical aperture"
+      "transitionOut": "Resolve toward the physical aperture",
+      "direction": {
+        "objective": "Make an invisible optical relationship legible without decorative sci-fi language.",
+        "spatialStory": "Separated anatomy gives way to a controlled axis connecting instrument and rear wall while the gallery remains a real place.",
+        "composition": ["Center the optical axis but retain gallery context."],
+        "camera": {"framing": ["Frontal technical alignment."], "lens": ["Precise neutral lens."], "path": ["Gentle descent/centering only."], "speed": ["Slow and didactic."], "focus": ["Axis and ray convergence."]},
+        "lighting": {"timeOfDay": ["Interior."], "key": ["Maintain material edge readability."], "fill": ["Low enough that rays remain legible."], "practicals": ["Existing gallery light only."], "atmosphere": ["No added volumetric spectacle."]},
+        "materials": ["Rays remain visually distinct from bronze/glass without neon styling."],
+        "motion": {"subject": ["Optical rays draw progressively."], "environment": ["Architecture stays fixed."], "assembly": ["No new component explosion."], "easing": ["Linear/controlled reveal."], "continuity": ["Rays stop under reduced motion and respect reverse scroll."]},
+        "sound": ["Optional subtle atmosphere only."],
+        "interactionNotes": ["Schematic provides semantic explanation in parallel with real-time rays."],
+        "transitionNotes": ["Axis resolves into aperture chapter."],
+        "assetRequirements": ["No new asset required; use procedural/local optical field."],
+        "implementationNotes": ["Keep GPU ray width synchronized with aperture state."],
+        "mobileNotes": ["Keep schematic readable and avoid excessive overlay density."],
+        "negativeDirectives": ["No particle field.", "No glowing sphere.", "No fake scientific claim."]
+      }
     },
     {
       "id": "aperture",
@@ -129,7 +275,23 @@
       "copy": "Less opening. More intention.",
       "interaction": "Change aperture and watch the system respond",
       "transitionIn": "Technical alignment becomes agency",
-      "transitionOut": "Return to a stable inspection portrait"
+      "transitionOut": "Return to a stable inspection portrait",
+      "direction": {
+        "objective": "Prove purposeful interaction by synchronizing physical, visual, semantic and exported consequences.",
+        "spatialStory": "The camera settles so visitor action, not camera spectacle, becomes the chapter's motion source.",
+        "composition": ["Leave clear space for aperture controls and optical diagram."],
+        "camera": {"framing": ["Stable frontal instrument portrait."], "lens": ["Inspection lens."], "path": ["Near-static hold / gentle withdrawal."], "speed": ["Almost still."], "focus": ["Physical diaphragm and its consequences."]},
+        "lighting": {"timeOfDay": ["Interior."], "key": ["Maintain clear diaphragm edge."], "fill": ["Enough for controls/background separation."], "practicals": ["Existing gallery light."], "atmosphere": ["Quiet."]},
+        "materials": ["Diaphragm metal remains physical and non-emissive."],
+        "motion": {"subject": ["Aperture radius and ray field respond to control."], "environment": ["No competing movement."], "assembly": ["Instrument is reassembled before interaction."], "easing": ["State changes feel immediate but controlled."], "continuity": ["Same aperture state flows to readout and exports."]},
+        "sound": ["No required sound feedback."],
+        "interactionNotes": ["Keyboard/touch/pointer all reach the same aperture state."],
+        "transitionNotes": ["Agency ends by returning the object to an authored portrait."],
+        "assetRequirements": ["No new assets; interaction uses existing geometry and generated artifact."],
+        "implementationNotes": ["Keep semantic relative-light readout synchronized with geometry."],
+        "mobileNotes": ["Range control and outputs remain touch-safe and legible."],
+        "negativeDirectives": ["Do not make the control visual-only.", "Do not add gamified scoring."]
+      }
     },
     {
       "id": "perspective",
@@ -138,7 +300,23 @@
       "copy": "A different point of view.",
       "interaction": "Choose finish and rotate",
       "transitionIn": "Authored camera settles before control handoff",
-      "transitionOut": "Manual orbit resets before authored travel resumes"
+      "transitionOut": "Manual orbit resets before authored travel resumes",
+      "direction": {
+        "objective": "Provide tactile agency without converting the entire experience into a model viewer.",
+        "spatialStory": "The visitor receives a temporary inspection window inside the gallery before the route resumes.",
+        "composition": ["Keep enough gallery visible to preserve location."],
+        "camera": {"framing": ["Stable portrait around the exhibit."], "lens": ["Longer portrait lens."], "path": ["Authored camera holds while hero orbit offsets change."], "speed": ["Visitor-controlled only."], "focus": ["Bronze/glass surface behavior."]},
+        "lighting": {"timeOfDay": ["Interior."], "key": ["Use highlights to reveal finish differences."], "fill": ["Maintain gallery depth."], "practicals": ["Existing gallery lighting."], "atmosphere": ["No new effect layer."]},
+        "materials": ["Finish choices modify controlled tint/strength only."],
+        "motion": {"subject": ["Bounded orbit offsets."], "environment": ["Architecture fixed."], "assembly": [], "easing": ["Direct interaction response."], "continuity": ["Orbit resets immediately on chapter change."]},
+        "sound": ["No automatic interaction sound."],
+        "interactionNotes": ["Pointer drag and keyboard controls are equivalent and scoped."],
+        "transitionNotes": ["Reset control state before return flight begins."],
+        "assetRequirements": ["Existing GLB/material response is sufficient."],
+        "implementationNotes": ["Do not mutate architectural world orientation."],
+        "mobileNotes": ["Touch drag remains bounded and does not block vertical scrolling outside the interaction area."],
+        "negativeDirectives": ["No unrestricted free-camera orbit.", "No separate product-view mode takeover."]
+      }
     },
     {
       "id": "convergence",
@@ -147,7 +325,23 @@
       "copy": "Nothing exists in isolation.",
       "interaction": "Scroll in either direction",
       "transitionIn": "Authored camera resumes",
-      "transitionOut": "Real passage opens back into landscape"
+      "transitionOut": "Real passage opens back into landscape",
+      "direction": {
+        "objective": "Use the return route as proof that the world was continuous all along.",
+        "spatialStory": "The camera leaves the gallery through the same descending passage in reverse, with architecture occluding and releasing the exterior naturally.",
+        "composition": ["Make depth to the exterior horizon readable through the passage."],
+        "camera": {"framing": ["Reverse-facing architectural travel."], "lens": ["Match the descent language."], "path": ["Follow the same validated route back out."], "speed": ["Controlled release rather than rush."], "focus": ["Exterior opening becomes destination."]},
+        "lighting": {"timeOfDay": ["Interior-to-exterior transition."], "key": ["Bronze ribs retain edge definition on exit."], "fill": ["Exterior increases gradually."], "practicals": ["Gallery practicals recede behind camera."], "atmosphere": ["No transition fog effect required."]},
+        "materials": ["Same physical material continuity as entry."],
+        "motion": {"subject": ["Exhibit remains assembled and fixed relative to architecture."], "environment": ["Only camera travels."], "assembly": [], "easing": ["Continuous route."], "continuity": ["Reverse scroll works identically in the opposite direction."]},
+        "sound": ["Optional atmosphere can open back toward exterior ambience."],
+        "interactionNotes": ["Manual orbit is already reset."],
+        "transitionNotes": ["The architecture itself occludes/reveals each space."],
+        "assetRequirements": ["No new assets."],
+        "implementationNotes": ["Preserve portal culling and clearance on return path."],
+        "mobileNotes": ["Same route, wider frame."],
+        "negativeDirectives": ["No dissolve from interior to exterior.", "No teleport to aerial view."]
+      }
     },
     {
       "id": "signature",
@@ -156,7 +350,23 @@
       "copy": "Between light & shadow.",
       "interaction": "Continue to the field artifact",
       "transitionIn": "Exterior scale expands after the return",
-      "transitionOut": "Camera settles rather than escalating again"
+      "transitionOut": "Camera settles rather than escalating again",
+      "direction": {
+        "objective": "Help the visitor understand the whole place after experiencing it from inside.",
+        "spatialStory": "The camera rises to reveal roof, basin and field relationships in plan-like context.",
+        "composition": ["Favor architectural relationship over dramatic hero spin."],
+        "camera": {"framing": ["Plan-oblique aerial resolution."], "lens": ["Calm wide architectural lens."], "path": ["Measured crane and lateral arc."], "speed": ["Slower than the threshold peak."], "focus": ["Whole observatory in landscape context."]},
+        "lighting": {"timeOfDay": ["Same exterior field."], "key": ["Reveal roof/radial geometry."], "fill": ["Keep terrain readable."], "practicals": ["No new hero lights."], "atmosphere": ["Maintain distant-set depth."]},
+        "materials": ["Bronze and water remain restrained."],
+        "motion": {"subject": ["Architecture fixed."], "environment": ["Camera only."], "assembly": [], "easing": ["Resolved, not escalating."], "continuity": ["Aerial emerges from the same exterior return."]},
+        "sound": ["Atmosphere may broaden slightly but should not become a climax cue."],
+        "interactionNotes": ["No new interaction introduced here."],
+        "transitionNotes": ["Settle fully before the field artifact becomes dominant."],
+        "assetRequirements": ["Existing world geometry is sufficient."],
+        "implementationNotes": ["Do not increase bloom or orbit amplitude to manufacture a second peak."],
+        "mobileNotes": ["Preserve contextual read even if plan relationship is less expansive."],
+        "negativeDirectives": ["Do not outdo the threshold descent.", "No speed ramp or excessive orbit."]
+      }
     },
     {
       "id": "keep-light",
@@ -165,7 +375,23 @@
       "copy": "Take a little light with you.",
       "interaction": "Download field sheet / JSON or replay",
       "transitionIn": "Stable hold",
-      "transitionOut": "Replay reconstructs the journey to first light"
+      "transitionOut": "Replay reconstructs the journey to first light",
+      "direction": {
+        "objective": "Resolve exploration as ownership of a personal record rather than a conventional marketing CTA.",
+        "spatialStory": "The world rests; the visitor's choices become the final active content.",
+        "composition": ["Stable landscape-backed portrait with clear utility space."],
+        "camera": {"framing": ["Quiet exterior portrait."], "lens": ["Neutral final frame."], "path": ["No further travel."], "speed": ["Still."], "focus": ["Field artifact actions and final exterior context."]},
+        "lighting": {"timeOfDay": ["Same exterior world."], "key": ["Maintain final bronze legibility."], "fill": ["No dramatic change."], "practicals": ["None added."], "atmosphere": ["Rest state."]},
+        "materials": ["No new finish language introduced."],
+        "motion": {"subject": ["No new hero animation."], "environment": ["Stable hold."], "assembly": [], "easing": ["None needed."], "continuity": ["Replay cleanly returns to first light."]},
+        "sound": ["Visitor-controlled atmosphere remains optional."],
+        "interactionNotes": ["Save SVG/JSON and replay are dominant actions."],
+        "transitionNotes": ["End in rest; do not add celebratory animation."],
+        "assetRequirements": ["Generated field sheet uses local browser output only."],
+        "implementationNotes": ["Preserve fictional/concept-study disclaimer and semantic status feedback."],
+        "mobileNotes": ["Save/replay remain fully reachable and touch-safe."],
+        "negativeDirectives": ["No generic contact/sales modal.", "No confetti or success spectacle."]
+      }
     }
   ],
   "successEvent": "edition-download"
