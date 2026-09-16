@@ -1,0 +1,53 @@
+{
+  "projectName": "Aster House",
+  "projectType": "property",
+  "tier": "signature",
+  "client": "Aster Development",
+  "audience": "Affluent design-conscious buyers comparing premium urban residences.",
+  "objective": "Create emotional preference for the property and convert qualified interest into private inquiries.",
+  "primaryAction": "Request availability",
+  "brandTruth": "Quiet architectural confidence, elevated living and a strong relationship to the city skyline.",
+  "differentiators": [
+    "Distinctive architecture",
+    "Panoramic views",
+    "Material restraint",
+    "Private hospitality-level service"
+  ],
+  "constraints": [
+    "Avoid generic luxury gold",
+    "Mobile must preserve the core idea",
+    "Use supplied architectural assets before creating unnecessary replacements"
+  ],
+  "existingAssets": [
+    {
+      "id": "tower-glb",
+      "label": "Tower master GLB",
+      "type": "model",
+      "notes": "Hero-quality architectural model"
+    },
+    {
+      "id": "drone",
+      "label": "4K city drone footage",
+      "type": "video",
+      "notes": "Strong establishing material"
+    },
+    {
+      "id": "residence-renders",
+      "label": "Residence render set",
+      "type": "image",
+      "notes": "High-resolution interiors"
+    },
+    {
+      "id": "pool",
+      "label": "Pool marketing render",
+      "type": "image",
+      "notes": "Generic early marketing render"
+    }
+  ],
+  "references": [
+    {
+      "label": "Architectural editorial pacing",
+      "lesson": "Use quiet composition and spatial thresholds instead of constant high-intensity motion."
+    }
+  ]
+}
