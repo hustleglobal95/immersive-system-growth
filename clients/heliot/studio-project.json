@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "id": "heliot-optical-study",
+  "name": "HELIOT / Observatory for the unseen",
+  "experiencePath": "src/experiences/heliot/experience.json",
+  "directorTreatmentPath": "config/director-treatment.json",
+  "directorEvidencePath": "clients/heliot/director/evidence.json",
+  "directorDecisionsPath": "clients/heliot/director/decisions.json",
+  "directorFingerprintPath": "clients/heliot/director/fingerprint.json",
+  "directorCritiquePath": "clients/heliot/director/critique.json",
+  "directorReviewHistoryPath": "clients/heliot/director/review-history.json",
+  "creativeDirectionPath": "clients/heliot/creative-direction.json",
+  "visualSystemsPath": "clients/heliot/visual-systems.json",
+  "experienceModesPath": "clients/heliot/experience-modes.json",
+  "contentSources": [],
+  "deployment": {
+    "provider": "vercel",
+    "projectName": "heliot-optical-study",
+    "productionBranch": "main"
+  },
+  "telemetry": {
+    "enabled": false,
+    "endpoint": "/api/telemetry",
+    "sampleRate": 0,
+    "consent": "analytics",
+    "respectDnt": true
+  }
+}
