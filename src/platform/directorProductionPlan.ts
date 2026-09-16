@@ -1,7 +1,7 @@
 import { directProject } from "@/src/platform/directorEngine";
 import { compileDirectorTreatment } from "@/src/platform/directorCompiler";
 import { auditStructure, createStructurePlan, type SiteArchetypeId, type StructurePlan } from "@/src/platform/siteStructure";
-import type { DirectorBrief, DirectorTreatment } from "@/src/platform/directorSchema";
+import { parseDirectorTreatment, type DirectorBrief, type DirectorTreatment } from "@/src/platform/directorSchema";
 import type { CreativePlan } from "@/src/platform/creativePlanSchema";
 
 const structureMap: Record<DirectorBrief["projectType"], SiteArchetypeId> = {
@@ -40,7 +40,11 @@ export interface DirectorProductionPlan {
 }
 
 export function createDirectorProductionPlan(input: unknown): DirectorProductionPlan {
-  const treatment = directProject(input);
+  return createProductionPlanFromTreatment(directProject(input));
+}
+
+export function createProductionPlanFromTreatment(input: unknown): DirectorProductionPlan {
+  const treatment = parseDirectorTreatment(input);
   const compilation = compileDirectorTreatment(treatment);
   const structure = createStructurePlan(structureMap[treatment.projectType], treatment.tier);
   const structureAudit = auditStructure(structure);
