@@ -1,6 +1,80 @@
 {
   "version": 1,
-  "reviews": [],
-  "clientFeedback": [],
-  "postmortem": []
+  "reviews": [
+    {
+      "stage": 25,
+      "driftScore": 1.2,
+      "decisionViolations": [],
+      "cuts": ["Remove any redundant hero orbit language inherited from earlier product-study direction."],
+      "blockers": [],
+      "recommendation": "continue",
+      "summary": "Core thesis is visible: landscape and gateway already behave as one spatial place rather than a detached model."
+    },
+    {
+      "stage": 50,
+      "driftScore": 1.8,
+      "decisionViolations": [],
+      "cuts": ["Keep anatomy separation explanatory; do not increase its intensity beyond the threshold descent."],
+      "blockers": [],
+      "recommendation": "continue",
+      "summary": "Camera, architecture, instrument and light-lab logic are coherent; the remaining risk is competing spectacle in the middle chapters."
+    },
+    {
+      "stage": 75,
+      "driftScore": 1.4,
+      "decisionViolations": [],
+      "cuts": ["Do not add decorative particles or more post effects to the gallery."],
+      "blockers": [],
+      "recommendation": "continue",
+      "summary": "The experience is unmistakably HELIOT through radial bronze geometry, field notation, optical causality and the same-world return."
+    },
+    {
+      "stage": 90,
+      "driftScore": 1,
+      "decisionViolations": [],
+      "cuts": ["Quiet fixed chrome in chapters 01–02 around the signature threshold/descent.", "Keep the late aerial reveal as resolution, not escalation."],
+      "blockers": [],
+      "recommendation": "final-cut",
+      "summary": "The final remaining creative work is subtraction and hierarchy, not feature expansion."
+    },
+    {
+      "stage": 100,
+      "driftScore": 0.6,
+      "decisionViolations": [],
+      "cuts": ["No further visual systems are required unless future testing reveals a functional gap."],
+      "blockers": [],
+      "recommendation": "continue",
+      "summary": "Final-cut direction is locked. HELIOT's primary memory is the real threshold descent, supported by causal light interaction, reverse continuity and the saved field artifact."
+    }
+  ],
+  "clientFeedback": [
+    {
+      "id": "feedback-001",
+      "text": "Use the full capabilities of the repo to finish the latest HELIOT project.",
+      "classification": "scope-change",
+      "evidenceWeight": 1,
+      "affects": ["director-intelligence", "project-maturity", "final-cut"],
+      "createdAt": "2026-09-16T20:05:00.000Z"
+    }
+  ],
+  "postmortem": [
+    {
+      "id": "lesson-001",
+      "observation": "HELIOT became stronger when the primary creative hierarchy shifted from product-style orbit/explosion language to a single architectural threshold/descent signature.",
+      "sampleSize": 1,
+      "confidence": "low",
+      "evidenceIds": ["decision-001", "decision-005"],
+      "action": "Treat this as a project-specific lesson, not a rule for future architectural work. Future Director runs should retrieve the reasoning but penalize direct repetition of the same threshold mechanism.",
+      "createdAt": "2026-09-16T20:15:00.000Z"
+    },
+    {
+      "id": "lesson-002",
+      "observation": "The strongest HELIOT interactions are causal: aperture changes multiple synchronized representations and the saved artifact, while unrestricted interaction would weaken authored direction.",
+      "sampleSize": 1,
+      "confidence": "low",
+      "evidenceIds": ["decision-003", "decision-004"],
+      "action": "Future projects should ask whether interaction changes meaning or outcome before adding controls; do not copy HELIOT's aperture UI by default.",
+      "createdAt": "2026-09-16T20:16:00.000Z"
+    }
+  ]
 }
