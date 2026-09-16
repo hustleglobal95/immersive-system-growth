@@ -1,151 +1,171 @@
 {
   "version": 1,
   "conceptId": "heliot-optical-study",
-  "concept": "An imagined bronze light observatory connects landscape, material, architecture and an interactive light study.",
-  "audience": "Architecture, culture and design audiences exploring an original cinematic flagship.",
-  "promise": "Move from environmental scale to the intimate shape of light.",
+  "concept": "A continuous architectural light observatory turns landscape, threshold, descent, optical study and personal artifact into one reversible spatial journey.",
+  "audience": "Design-literate founders, creative directors, architects, collectors and premium-brand teams evaluating whether immersive web can create genuine spatial memory rather than decorative motion.",
+  "promise": "You do not inspect HELIOT from outside. You cross it, descend through it, manipulate light inside it, and leave with a record of how you chose to see.",
   "emotionalArc": [
     "Curiosity",
-    "Tactility",
-    "Discovery",
+    "Anticipation",
+    "Awe",
+    "Fascination",
     "Understanding",
     "Agency",
-    "Resolution"
+    "Intimacy",
+    "Release",
+    "Admiration",
+    "Ownership"
   ],
-  "cta": "Download field sheet",
+  "cta": "Save field study",
   "visual": {
     "palette": [
       "#151719",
       "#f2eee3",
       "#d4b27b",
-      "#987347"
+      "#987347",
+      "#ea6748"
     ],
     "typography": [
-      "Manrope",
-      "Cormorant Garamond"
+      "Manrope / field notation, controls and structural clarity",
+      "Cormorant Garamond / restrained emotional emphasis only"
     ],
     "materials": [
       "Patinated bronze",
-      "Machined radial fins",
-      "Volcanic stone"
+      "Volcanic basalt",
+      "Controlled optical glass",
+      "Dark reflection water"
     ],
     "motion": [
-      "Dolly",
-      "Subject orbit",
-      "Lateral study",
-      "Exploded assembly",
-      "Reassembly"
+      "Patient exterior approach",
+      "Physical threshold alignment",
+      "Continuous curved descent",
+      "Measured component separation",
+      "Progressive optical transmission",
+      "Bounded manual inspection",
+      "Reversible return flight",
+      "Calm aerial resolution"
     ],
     "sound": [
-      "Optional local synthesized atmosphere"
+      "Optional local synthesized atmosphere",
+      "No autoplay",
+      "Sparse during threshold and descent"
     ]
   },
   "constraints": {
     "approved": [
-      "One persistent canvas",
+      "One persistent spatial world",
+      "Real traversed gateway and passage geometry",
       "Deterministic named-node ProductRig",
-      "Local assets",
-      "Semantic controls",
-      "Separate mobile cameras"
+      "Current Forge CameraRig with bounded path-curvature banking",
+      "Local original assets only",
+      "Semantic controls and fallback",
+      "Separate mobile camera framing over the same route",
+      "Demand-frame rendering and adaptive quality",
+      "Purposeful interaction that changes geometry or output"
     ],
     "prohibited": [
-      "Remote imagery",
-      "Fake sales claims",
+      "Generic hero orbit",
+      "Neon or purple sci-fi grading",
+      "Floating UI debris",
       "Random particles",
+      "Prerecorded flythrough standing in for traversable space",
       "Automatic audio",
-      "Forced scroll"
+      "Forced scroll",
+      "Second climax that competes with the threshold descent",
+      "Gallery teleport or scale trick",
+      "Remote media dependencies"
     ]
   },
   "scenes": [
     {
       "id": "first-light",
-      "purpose": "The observatory",
-      "subject": "Light observatory",
+      "purpose": "Field arrival",
+      "subject": "Landscape, basin and distant observatory",
       "copy": "Observatory for the unseen.",
-      "interaction": "Begin the study",
-      "transitionIn": "Opening portrait",
-      "transitionOut": "Motivated orbit"
+      "interaction": "Begin the spatial study",
+      "transitionIn": "Arrive already inside the field",
+      "transitionOut": "Lower toward the annular opening"
     },
     {
       "id": "form",
-      "purpose": "Cross the threshold",
-      "subject": "Light observatory",
+      "purpose": "Threshold alignment",
+      "subject": "Hollow bronze gateway",
       "copy": "Space begins with an opening.",
-      "interaction": "Scroll to orbit",
-      "transitionIn": "Subject continuity",
-      "transitionOut": "Material approach"
+      "interaction": "Scroll to cross the threshold",
+      "transitionIn": "Landscape compresses into architecture",
+      "transitionOut": "Cross physical bronze fins without a cut"
     },
     {
       "id": "surface",
-      "purpose": "The matter of light",
-      "subject": "Light observatory",
+      "purpose": "Threshold descent / primary signature",
+      "subject": "Radial passage and underground light gallery",
       "copy": "Matter. Made luminous.",
-      "interaction": "Read materials",
-      "transitionIn": "Close approach",
-      "transitionOut": "Component separation"
+      "interaction": "Keep moving through the architecture",
+      "transitionIn": "Exterior disappears behind real geometry",
+      "transitionOut": "Gallery light resolves and motion settles"
     },
     {
       "id": "separation",
-      "purpose": "Under the surface",
-      "subject": "Light observatory",
+      "purpose": "Gallery anatomy",
+      "subject": "Smaller HELIOT exhibit inside fixed architecture",
       "copy": "An architecture of relationships.",
       "interaction": "Reverse to reassemble",
-      "transitionIn": "Axial separation",
-      "transitionOut": "Light path tracing"
+      "transitionIn": "Stillness after the descent",
+      "transitionOut": "Separated components align to the optical axis"
     },
     {
       "id": "optical-path",
-      "purpose": "Trace the invisible",
-      "subject": "Light observatory",
+      "purpose": "Transmission proof",
+      "subject": "Optical groups and ray field",
       "copy": "Follow the invisible.",
       "interaction": "Inspect the schematic",
-      "transitionIn": "Progressive rays",
-      "transitionOut": "Frontal aperture view"
+      "transitionIn": "Anatomy becomes transmission",
+      "transitionOut": "Resolve toward the physical aperture"
     },
     {
       "id": "aperture",
       "purpose": "The light laboratory",
-      "subject": "Light observatory",
+      "subject": "Diaphragm geometry, ray width, readout and field sheet",
       "copy": "Less opening. More intention.",
-      "interaction": "Change aperture",
-      "transitionIn": "Frontal orbit",
-      "transitionOut": "Instrument reassembly"
+      "interaction": "Change aperture and watch the system respond",
+      "transitionIn": "Technical alignment becomes agency",
+      "transitionOut": "Return to a stable inspection portrait"
     },
     {
       "id": "perspective",
-      "purpose": "Material / perspective",
-      "subject": "Light observatory",
+      "purpose": "Bounded material inspection",
+      "subject": "HELIOT exhibit",
       "copy": "A different point of view.",
       "interaction": "Choose finish and rotate",
-      "transitionIn": "Stable portrait",
-      "transitionOut": "Reset manual orbit"
+      "transitionIn": "Authored camera settles before control handoff",
+      "transitionOut": "Manual orbit resets before authored travel resumes"
     },
     {
       "id": "convergence",
-      "purpose": "Return to the field",
-      "subject": "Light observatory",
+      "purpose": "Return through the same world",
+      "subject": "Gallery, passage and exterior horizon",
       "copy": "Nothing exists in isolation.",
       "interaction": "Scroll in either direction",
       "transitionIn": "Authored camera resumes",
-      "transitionOut": "Signature portrait"
+      "transitionOut": "Real passage opens back into landscape"
     },
     {
       "id": "signature",
-      "purpose": "The eclipse",
-      "subject": "Light observatory",
+      "purpose": "Aerial resolution",
+      "subject": "Observatory, basin and terrain in context",
       "copy": "Between light & shadow.",
-      "interaction": "Continue to save",
-      "transitionIn": "Crane",
-      "transitionOut": "Camera settles"
+      "interaction": "Continue to the field artifact",
+      "transitionIn": "Exterior scale expands after the return",
+      "transitionOut": "Camera settles rather than escalating again"
     },
     {
       "id": "keep-light",
-      "purpose": "Your field study",
-      "subject": "Light observatory",
+      "purpose": "Personal field artifact",
+      "subject": "Final exterior portrait and saved study",
       "copy": "Take a little light with you.",
-      "interaction": "Download JSON or replay",
+      "interaction": "Download field sheet / JSON or replay",
       "transitionIn": "Stable hold",
-      "transitionOut": "Replay to first light"
+      "transitionOut": "Replay reconstructs the journey to first light"
     }
   ],
   "successEvent": "edition-download"
