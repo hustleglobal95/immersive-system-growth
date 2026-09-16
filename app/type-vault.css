@@ -1,0 +1,14 @@
+.ds-font-controls--vault { grid-template-columns:minmax(14rem,1.4fr) minmax(9rem,.55fr) minmax(9rem,.7fr) minmax(14rem,1.35fr); }
+.ds-pairing-section { padding-block:clamp(3rem,6vw,6rem) 2rem; border-top:1px solid var(--ds-border); margin-top:3rem; }
+.ds-pairing-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem; }
+.ds-pairing-card { display:grid; align-content:start; gap:.75rem; padding:1.25rem; border:1px solid var(--ds-border); border-radius:var(--ds-radius); background:var(--ds-bg); min-height:15rem; }
+.ds-pairing-card h3 { font-size:clamp(1.2rem,1rem + .6vw,1.65rem); }
+.ds-pairing-card p { color:var(--ds-muted); }
+.ds-pairing-card .ds-pairing-fonts { color:var(--ds-ink); font-size:.95rem; }
+.ds-pairing-card small { margin-top:auto; color:var(--ds-muted); font-size:.68rem; line-height:1.5; text-transform:uppercase; letter-spacing:.08em; }
+.ds-font-meta { margin-top:.45rem!important; font-size:.72rem!important; line-height:1.55; letter-spacing:.025em; }
+.ds-font-list li { min-height:9.5rem; }
+.ds-font-list a { font-size:1.05rem; }
+.ds-font-badge { padding:.2rem .45rem; border:1px solid var(--ds-border); border-radius:999px; white-space:nowrap; }
+@media(max-width:1100px) { .ds-font-controls--vault { grid-template-columns:1fr 1fr; } .ds-pairing-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:760px) { .ds-font-controls--vault,.ds-pairing-grid { grid-template-columns:1fr; } .ds-pairing-card { min-height:0; } }

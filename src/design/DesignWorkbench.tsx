@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { directions, directionStyles, defaultDirection, exportDirection, type DesignDirection } from "./directions";
-import { fontCatalog, searchFonts, type FontCategory } from "./catalog";
+import { fontCatalog, fontCategories, fontMoods, fontPairings, searchFonts, type FontCategory, type FontMood } from "./catalog";
 import { InquiryForm } from "./InquiryForm";
 import { ArchitecturalStudy, CollectionGrid, DisclosureGroup, EditorialHero, EditorialQuote, InquirySection, SectionHeading, SpecificationList } from "./sections";
 
@@ -10,11 +10,12 @@ export function DesignWorkbench() {
   const [direction, setDirection] = useState<DesignDirection>(defaultDirection);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<FontCategory | "All">("All");
+  const [mood, setMood] = useState<FontMood | "All">("All");
   const [specimen, setSpecimen] = useState("Spaces for a slower kind of living.");
-  const fonts = searchFonts(query, category);
+  const fonts = searchFonts(query, category, mood);
   return <div className="ds-root" style={directionStyles(direction)} data-direction={direction}>
     <a className="ds-skip" href="#design-content">Skip to design preview</a>
-    <header className="ds-toolbar"><Link href="/" className="ds-brand">FORGE <span>/ Design atelier</span></Link><nav aria-label="Workbench"><a href="#font-library">Font library</a><Link href="/lab">Scene lab ↗</Link></nav></header>
+    <header className="ds-toolbar"><Link href="/" className="ds-brand">FORGE <span>/ Design atelier</span></Link><nav aria-label="Workbench"><Link href="/type-vault">Open full Type Vault ↗</Link><Link href="/lab">Scene lab ↗</Link></nav></header>
     <div className="ds-controls">
       <fieldset><legend>Art direction</legend><div className="ds-directions">{(Object.keys(directions) as DesignDirection[]).map(id => <button key={id} type="button" aria-pressed={direction === id} onClick={() => setDirection(id)}>{directions[id].name}</button>)}</div></fieldset>
       <p>{directions[direction].description}</p>
@@ -53,17 +54,29 @@ export function DesignWorkbench() {
         <section className="ds-section ds-split"><SectionHeading index="04" eyebrow="Interaction specimen" title="A clear path to inquiry."><p>Try the required fields and email validation. This form is a demonstration; nothing is transmitted or stored.</p></SectionHeading><InquiryForm onSubmit={async () => ({ ok: false, message: "Preview complete. Nothing was sent. Connect your delivery handler when using this component in a project." })} /></section>
       </div>
       <section className="ds-library" id="font-library"><div className="ds-container">
-        <SectionHeading index="05" eyebrow="Type resources" title="A library with a point of view."><p>{fontCatalog.length} curated references. Three locally bundled families. References open their source; they do not silently load extra fonts.</p></SectionHeading>
-        <div className="ds-font-controls"><label>Search fonts<input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Name, use or style" /></label><label>Category<select value={category} onChange={e => setCategory(e.target.value as FontCategory | "All")}>{["All", "Serif", "Sans", "Mono"].map(c => <option key={c}>{c}</option>)}</select></label><label>Try your own headline<input maxLength={180} value={specimen} onChange={e => setSpecimen(e.target.value)} /></label></div>
+        <SectionHeading index="05" eyebrow="Type Vault" title="A much wider typographic vocabulary."><p>{fontCatalog.length} curated font references across serif, sans, display, mono and script. Three families remain locally bundled by default so the catalog stays large without bloating production builds.</p></SectionHeading>
+        <div className="ds-font-controls ds-font-controls--vault">
+          <label>Search fonts<input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Luxury real estate, automotive, editorial…" /></label>
+          <label>Category<select value={category} onChange={e => setCategory(e.target.value as FontCategory | "All")}>{fontCategories.map(c => <option key={c}>{c}</option>)}</select></label>
+          <label>Mood<select value={mood} onChange={e => setMood(e.target.value as FontMood | "All")}>{fontMoods.map(m => <option key={m}>{m}</option>)}</select></label>
+          <label>Try your own headline<input maxLength={180} value={specimen} onChange={e => setSpecimen(e.target.value)} /></label>
+        </div>
         <div className="ds-type-specimens" aria-label="Bundled font specimens">{[
           { name: "Cormorant Garamond", family: "var(--font-cormorant), Georgia, serif", detail: "Display / weights 300–700" },
           { name: "DM Sans", family: "var(--font-dm-sans), Arial, sans-serif", detail: "Body & UI / weights 100–1000" },
           { name: "Manrope", family: "var(--font-manrope), Arial, sans-serif", detail: "Display & UI / weights 200–800" },
         ].map(f => <article key={f.name}><p className="ds-label">{f.name} · {f.detail}</p><p className="ds-font-sample" style={{ fontFamily: f.family }}>{specimen || "Try a headline above."}</p><p>ABCDEFGHIJKLMNOPQRSTUVWXYZ<br />abcdefghijklmnopqrstuvwxyz · 0123456789</p></article>)}</div>
-        <p role="status" className="ds-result-count">{fonts.length} font references</p>
-        <ul className="ds-font-list">{fonts.map(f => <li key={f.id}><div><a href={f.source} target="_blank" rel="noreferrer">{f.name} <span aria-hidden="true">↗</span></a><span className="ds-font-badge">{f.category} / {f.bundled ? "Bundled · OFL-1.1" : "Reference"}</span></div><p>{f.use}</p></li>)}</ul>
-        {!fonts.length && <p>No matches. Try another name or choose All categories.</p>}
-        <details className="ds-export"><summary>Export this direction</summary><p>Use these tokens with <code>directionStyles</code>. The font variables require the bundled font setup. This preview does not change the saved project default.</p><textarea aria-label="Design direction JSON" readOnly value={exportDirection(direction)} rows={12} /></details>
+
+        <section className="ds-pairing-section" aria-labelledby="pairing-title">
+          <div className="ds-section-heading"><p className="ds-label">Curated starting points</p><h2 id="pairing-title">Pairings by project type.</h2><p className="ds-prose">Use these as art-direction starting points, then activate only the families the final project actually needs.</p></div>
+          <div className="ds-pairing-grid">{fontPairings.map(pairing => <article key={pairing.id} className="ds-pairing-card"><p className="ds-label">{pairing.moods.join(" · ")}</p><h3>{pairing.name}</h3><p className="ds-pairing-fonts"><strong>{pairing.display}</strong> / {pairing.body}{pairing.accent ? ` / ${pairing.accent}` : ""}</p><p>{pairing.use}</p><small>{pairing.industries.join(" · ")}</small></article>)}</div>
+        </section>
+
+        <p role="status" className="ds-result-count">{fonts.length} matching font references</p>
+        <ul className="ds-font-list">{fonts.map(f => <li key={f.id}><div><a href={f.source} target="_blank" rel="noreferrer">{f.name} <span aria-hidden="true">↗</span></a><span className="ds-font-badge">{f.category} / {f.bundled ? "Bundled" : "Reference"}</span></div><p>{f.use}</p><p className="ds-font-meta">{f.moods.join(" · ")} — {f.roles.join(" · ")}{f.tags.length ? ` — ${f.tags.join(" · ")}` : ""}</p></li>)}</ul>
+        {!fonts.length && <p>No matches. Try another project type, mood or category.</p>}
+        <p><Link href="/type-vault">Browse the full live Type Vault →</Link></p>
+        <details className="ds-export"><summary>Production rule</summary><p>The Type Vault is intentionally metadata-first. Do not load the whole vault into client bundles. Pick the final pairing, self-host or install only those licensed families, and keep fallbacks in the project typography tokens.</p><textarea aria-label="Design direction JSON" readOnly value={exportDirection(direction)} rows={12} /></details>
       </div></section>
     </main>
     <footer className="ds-footer ds-container"><p>FORGE / Design foundations</p><p>Concept content and original illustrations. Replace with verified project evidence.</p><a href="#design-content">Back to top ↑</a></footer>
