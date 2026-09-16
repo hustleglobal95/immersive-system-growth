@@ -11,11 +11,13 @@ import { calibrationCases } from "../src/platform/director-intelligence/calibrat
 import { buildResearchBrief } from "../src/platform/director-intelligence/research.ts";
 
 const mode = process.argv[2];
-const inputPath = process.argv[3] && !process.argv[3].startsWith("--") ? process.argv[3] : "config/director-brief.example.json";
 if (!mode) {
   console.error("Usage: node --import tsx scripts/director-tool.mjs <discover|precedents|diverge|debate|critique|kill|stress|similarity|ceiling|assets|production|review|final-cut|postmortem|calibrate> [brief.json] [args]");
   process.exit(1);
 }
+const positional = process.argv.slice(3).filter((arg) => !arg.startsWith("--"));
+const briefArg = positional.find((arg) => !/^\d+$/.test(arg));
+const inputPath = briefArg || "config/director-brief.example.json";
 const brief = parseDirectorBrief(JSON.parse(await fs.readFile(inputPath, "utf8")));
 const run = runDirectorIntelligence({ brief });
 const report = run.report;
@@ -33,7 +35,7 @@ switch (mode) {
   case "assets": output = report.assetGap; break;
   case "production": output = { leverage: report.leverage, productionPlan: run.productionPlan }; break;
   case "review": {
-    const stageArg = process.argv.find((arg) => arg.startsWith("--stage="))?.split("=")[1] ?? process.argv[4] ?? "50";
+    const stageArg = process.argv.find((arg) => arg.startsWith("--stage="))?.split("=")[1] ?? positional.find((arg) => /^\d+$/.test(arg)) ?? "50";
     const stage = Number(stageArg);
     if (![25, 50, 75, 90, 100].includes(stage)) throw new Error("Review stage must be 25, 50, 75, 90 or 100.");
     output = reviewProduction(report.treatment, stage, report.decisions ?? createDecisionLedger(), { signatureStrength: report.selectedEvaluation.scores.memorability, portfolioCollision: report.collisions[0]?.dimensions.overall ?? 0, mobileEquivalent: report.selectedEvaluation.scores.mobileIntegrity >= 7.5, implementedSystems: ["structure", "camera", "motion", "interaction"] });
