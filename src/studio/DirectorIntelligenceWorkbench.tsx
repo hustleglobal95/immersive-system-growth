@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import type { DirectorBrief } from "@/src/platform/directorSchema";
 import { runDirectorIntelligence } from "@/src/platform/director-intelligence/orchestrator";
 
@@ -71,6 +71,6 @@ export function DirectorIntelligenceWorkbench() {
   </section>;
 }
 
-function Panel({ title, children }: { title: string; children: React.ReactNode }) { return <section className="director-panel"><div className="director-section-heading"><span>V2</span><div><h3>{title}</h3><p>Judgment before production.</p></div></div>{children}</section>; }
+function Panel({ title, children }: { title: string; children: ReactNode }) { return <section className="director-panel"><div className="director-section-heading"><span>V2</span><div><h3>{title}</h3><p>Judgment before production.</p></div></div>{children}</section>; }
 function MetricGrid({ items }: { items: Array<[string, number]> }) { return <div className="director-dimensions">{items.map(([key,value]) => <div key={key}><span>{key}</span><strong>{Number(value).toFixed(1)}</strong></div>)}</div>; }
 function List({ title, items }: { title: string; items: string[] }) { return <section className="director-critique-list"><h4>{title}</h4>{items.length ? items.map((item) => <p key={item}>{item}</p>) : <p>None.</p>}</section>; }
