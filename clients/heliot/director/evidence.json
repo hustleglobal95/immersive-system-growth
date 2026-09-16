@@ -1,8 +1,112 @@
 {
   "version": 1,
-  "evidence": [],
-  "unknowns": [],
-  "assumptions": [],
+  "evidence": [
+    {
+      "id": "heliot-brand-truth",
+      "claim": "HELIOT is about revealing the unseen by turning light into architecture, material and interaction.",
+      "evidenceClass": "client-brief",
+      "sourceIds": ["clients/heliot/director-brief.json"],
+      "confidence": 1,
+      "verified": true,
+      "affects": ["thesis", "signature", "motion", "interaction"]
+    },
+    {
+      "id": "heliot-continuous-world",
+      "claim": "The active experience uses one persistent real-time world containing terrain, reflection basin, gateway, descending passage, underground gallery and exhibit.",
+      "evidenceClass": "forge-history",
+      "sourceIds": ["src/experiences/heliot/ObservatoryWorld.tsx", "docs/HELIOT_FLIGHT_PLAN.md"],
+      "confidence": 1,
+      "verified": true,
+      "affects": ["signature", "camera", "spatial", "production"]
+    },
+    {
+      "id": "heliot-real-threshold",
+      "claim": "The camera crosses the modeled gateway and descends through physical passage geometry rather than using a prerecorded flythrough, image zoom or teleport.",
+      "evidenceClass": "forge-history",
+      "sourceIds": ["src/experiences/heliot/experience.json", "docs/HELIOT_FLIGHT_PLAN.md", "tests/heliot-spatial-flight.test.ts"],
+      "confidence": 1,
+      "verified": true,
+      "affects": ["signature", "originality", "camera", "stress"]
+    },
+    {
+      "id": "heliot-aperture-causality",
+      "claim": "Aperture interaction changes physical diaphragm geometry, optical ray width, semantic readout and exported field-study data.",
+      "evidenceClass": "forge-history",
+      "sourceIds": ["src/experiences/heliot/HeliotExperience.tsx", "src/experiences/heliot/HeliotStage.tsx", "src/experiences/heliot/lightLab.ts"],
+      "confidence": 1,
+      "verified": true,
+      "affects": ["interaction", "proof", "artifact", "conversion"]
+    },
+    {
+      "id": "heliot-reversible",
+      "claim": "Reverse scroll reconstructs authored camera and named-node ProductRig states rather than leaving one-way animation residue.",
+      "evidenceClass": "forge-history",
+      "sourceIds": ["src/experiences/heliot/experience.json", "tests/browser/heliot.spec.ts"],
+      "confidence": 0.98,
+      "verified": true,
+      "affects": ["motion", "interaction", "quality"]
+    },
+    {
+      "id": "heliot-local-assets",
+      "claim": "Core HELIOT models and visual media are local/original and the experience has no runtime dependency on remote HDR, photography, AI API, font service, analytics or payment credentials.",
+      "evidenceClass": "client-asset",
+      "sourceIds": ["public/models/heliot/LICENSE.md", "docs/HELIOT.md", "docs/HELIOT_ART_DIRECTION.md"],
+      "confidence": 1,
+      "verified": true,
+      "affects": ["assets", "feasibility", "fallback", "release"]
+    },
+    {
+      "id": "heliot-mobile-route",
+      "claim": "Mobile uses the same navigable spatial story with dedicated wider camera framing and preserves chapter access, controls and reduced-motion meaning.",
+      "evidenceClass": "forge-history",
+      "sourceIds": ["src/experiences/heliot/experience.json", "tests/browser/heliot.spec.ts", "docs/HELIOT.md"],
+      "confidence": 0.96,
+      "verified": true,
+      "affects": ["mobile", "accessibility", "stress"]
+    },
+    {
+      "id": "heliot-render-budget",
+      "claim": "The current HELIOT release uses demand-frame rendering, adaptive quality and a render-cost ledger rather than an unconditional animation loop.",
+      "evidenceClass": "forge-history",
+      "sourceIds": ["src/experiences/heliot/HeliotStage.tsx", "src/experiences/heliot/demandFrame.ts", "docs/HELIOT.md"],
+      "confidence": 1,
+      "verified": true,
+      "affects": ["production", "performance", "mobile"]
+    },
+    {
+      "id": "heliot-field-artifact",
+      "claim": "The final field sheet and JSON export preserve visitor-selected finish/aperture state and provide a designed end-state artifact.",
+      "evidenceClass": "forge-history",
+      "sourceIds": ["src/experiences/heliot/HeliotExperience.tsx", "tests/browser/heliot.spec.ts"],
+      "confidence": 0.98,
+      "verified": true,
+      "affects": ["conversion", "memory", "artifact"]
+    },
+    {
+      "id": "heliot-director-request",
+      "claim": "The project owner explicitly requested that the latest HELIOT project be completed using the full capabilities of the Forge repository.",
+      "evidenceClass": "client-brief",
+      "sourceIds": ["project-owner-request-2026-09-16"],
+      "confidence": 1,
+      "verified": true,
+      "affects": ["scope", "final-cut", "director-lock"]
+    }
+  ],
+  "unknowns": [
+    "Safari/WebKit rendering has not been independently verified on a physical Apple device in the current environment.",
+    "Physical-device GPU frame-rate performance remains unmeasured; existing render-ledger values are cost observations, not FPS claims."
+  ],
+  "assumptions": [
+    {
+      "id": "heliot-memory-hypothesis",
+      "claim": "The physical threshold/descent is likely to be more memorable than a later isolated aerial hero pose because it uniquely proves spatial entry and continuity.",
+      "evidenceClass": "director-inference",
+      "sourceIds": ["docs/HELIOT_FLIGHT_PLAN.md", "clients/heliot/director-brief.json"],
+      "confidence": 0.9,
+      "verified": false,
+      "affects": ["signature", "pacing", "final-cut"]
+    }
+  ],
   "unsupportedClaims": [],
-  "confidence": 0
+  "confidence": 0.98
 }
