@@ -20,18 +20,50 @@ export function createExperienceEngine(initialState: ExperienceConfig, options: 
   commands.register("experience.replace", (input) => {
     const value = input as { experience?: unknown; reason?: string };
     return new ReplaceExperienceCommand({ experience: value.experience, reason: value.reason });
+  }, {
+    label: "Replace experience",
+    description: "Replace the complete ExperienceConfig after full schema and invariant validation.",
+    category: "project",
+    impact: "destructive",
+    approval: "required",
+    reversible: true,
+    agentVisible: true,
   });
   commands.register("motion.applyArchetype", (input) => {
     const value = input as { sceneId?: string; archetype?: string };
     return new ApplyMotionArchetypeCommand({ sceneId: String(value.sceneId ?? ""), archetype: String(value.archetype ?? "") as MotionArchetypeName });
+  }, {
+    label: "Apply motion archetype",
+    description: "Apply coordinated cinematic motion to unoccupied scene targets while preserving authored tracks.",
+    category: "motion",
+    impact: "local",
+    approval: "auto",
+    reversible: true,
+    agentVisible: true,
   });
   commands.register("motion.resetScene", (input) => {
     const value = input as { sceneId?: string };
     return new ResetSceneMotionCommand({ sceneId: String(value.sceneId ?? "") });
+  }, {
+    label: "Reset scene motion",
+    description: "Remove all motion tracks from one scene.",
+    category: "motion",
+    impact: "destructive",
+    approval: "review",
+    reversible: true,
+    agentVisible: true,
   });
   commands.register("camera.applyChoreography", (input) => {
     const value = input as { sceneId?: string; choreography?: string };
     return new ApplyCameraChoreographyCommand({ sceneId: String(value.sceneId ?? ""), choreography: String(value.choreography ?? "") as CameraChoreographyName });
+  }, {
+    label: "Apply camera choreography",
+    description: "Apply deterministic camera position, target and lens choreography to one scene.",
+    category: "camera",
+    impact: "local",
+    approval: "auto",
+    reversible: true,
+    agentVisible: true,
   });
   return new ForgeEngine(initialState, {
     commandRegistry: commands,
