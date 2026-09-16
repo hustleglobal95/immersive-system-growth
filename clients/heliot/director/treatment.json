@@ -1,0 +1,610 @@
+{
+  "version": 1,
+  "projectName": "HELIOT / Observatory for the unseen",
+  "projectType": "brand",
+  "tier": "flagship",
+  "territories": [
+    {
+      "id": "cross-the-light",
+      "name": "Cross the Light",
+      "oneLine": "Make the act of crossing from landscape into the underground gallery the experience's defining memory.",
+      "thesis": "Light becomes architecture only when the visitor physically crosses its threshold.",
+      "memory": "they flew through a bronze observatory and descended into light rather than merely looking at a 3D object",
+      "strategicReason": "HELIOT's strongest advantage is spatial continuity. This direction concentrates attention on the thing ordinary interactive sites cannot fake: one reversible journey from exterior landscape through architecture into an inhabitable light instrument.",
+      "visualPremise": "Begin with mineral restraint and long-distance scale, then compress the frame through bronze ribs until the environment becomes an optical chamber. Let the world, not floating interface decoration, carry the transformation.",
+      "experientialPremise": "Arrival earns trust, threshold creates anticipation, descent creates the primary peak, the gallery converts awe into understanding, the light lab creates agency, and the return flight turns the whole journey into memory.",
+      "signatureMoment": "The camera aligns with the annular gateway, crosses the real bronze threshold, banks only with path curvature, and descends through the radial passage into the illuminated underground gallery in one reversible spatial move.",
+      "risk": "If UI, text or secondary effects remain too loud during the threshold/descent, the spatial signature loses authority.",
+      "scores": {
+        "distinctiveness": 10,
+        "brandFit": 10,
+        "memorability": 10,
+        "feasibility": 9,
+        "conversionFit": 9
+      }
+    },
+    {
+      "id": "instrument-of-place",
+      "name": "Instrument of Place",
+      "oneLine": "Treat the entire observatory and landscape as one optical instrument whose parts are revealed by movement.",
+      "thesis": "The landscape, gateway, gallery and aperture are one instrument for seeing differently.",
+      "memory": "the whole site behaved like a giant optical instrument built into the terrain",
+      "strategicReason": "This territory makes the product-like exhibit and architectural world conceptually inseparable, giving every technical interaction a direct relationship to the brand fiction.",
+      "visualPremise": "Use radial geometry, engraved notation, horizon lines and controlled optical rays as a recurring design system from landscape scale to instrument detail.",
+      "experientialPremise": "The visitor moves from macro environment to internal mechanism and back out again, learning that each scale is part of the same optical system.",
+      "signatureMoment": "The gallery exhibit, aperture geometry and architectural light field visually resolve into one aligned axis as the visitor reaches the laboratory.",
+      "risk": "The concept can become too explanatory if diagrams and annotations overpower physical presence.",
+      "scores": {
+        "distinctiveness": 9,
+        "brandFit": 10,
+        "memorability": 9,
+        "feasibility": 10,
+        "conversionFit": 9
+      }
+    },
+    {
+      "id": "field-study",
+      "name": "Field Study 001",
+      "oneLine": "Frame HELIOT as a collectible field expedition whose final artifact records how the visitor chose to see.",
+      "thesis": "Exploration becomes meaningful when the visitor leaves with evidence of their own way of seeing.",
+      "memory": "they left an immersive observatory with a personal field sheet generated from their own light settings",
+      "strategicReason": "This territory strengthens the save/export mechanic and makes the experience feel authored beyond the browser session.",
+      "visualPremise": "Use scientific field-note typography, measured annotation and quiet editorial composition around the cinematic world.",
+      "experientialPremise": "Observation becomes manipulation, manipulation becomes authorship, and authorship resolves as a saved field artifact.",
+      "signatureMoment": "The visitor's chosen aperture and finish are transformed into a personal field sheet after the return flight.",
+      "risk": "The collectible artifact can feel like a clever ending rather than the core experience if it is allowed to compete with the spatial journey.",
+      "scores": {
+        "distinctiveness": 9,
+        "brandFit": 9,
+        "memorability": 9,
+        "feasibility": 10,
+        "conversionFit": 10
+      }
+    }
+  ],
+  "selectedTerritoryId": "cross-the-light",
+  "thesis": "Light becomes architecture only when the visitor physically crosses its threshold.",
+  "memoryStatement": "People will remember HELIOT because they flew through a bronze observatory and descended into light rather than merely looking at a 3D object.",
+  "audience": "Design-literate founders, creative directors, architects, collectors and premium-brand teams evaluating whether an immersive web experience can create genuine spatial memory rather than decorative motion.",
+  "objective": "Prove that Forge can create a premium browser experience with a continuous spatial world, an authored cinematic journey, purposeful interaction and a memorable take-away artifact.",
+  "primaryAction": "Explore the observatory and save a field study",
+  "emotionalArc": [
+    {
+      "id": "arrival",
+      "label": "Arrival",
+      "emotion": "curiosity",
+      "visitorQuestion": "What is this place?",
+      "purpose": "Establish landscape scale, silence and the observatory as a destination rather than a product render.",
+      "intensity": 4,
+      "informationDensity": 2,
+      "interactionLevel": 1,
+      "proofLevel": 2,
+      "conversionWeight": 1
+    },
+    {
+      "id": "alignment",
+      "label": "Alignment",
+      "emotion": "anticipation",
+      "visitorQuestion": "Can I actually enter it?",
+      "purpose": "Aim the camera at the physical opening and make the threshold unavoidable.",
+      "intensity": 7,
+      "informationDensity": 2,
+      "interactionLevel": 2,
+      "proofLevel": 5,
+      "conversionWeight": 1
+    },
+    {
+      "id": "descent",
+      "label": "Descent",
+      "emotion": "awe",
+      "visitorQuestion": "Where is this taking me?",
+      "purpose": "Deliver the primary signature by crossing real geometry and descending into the gallery in one continuous reversible flight.",
+      "intensity": 10,
+      "informationDensity": 1,
+      "interactionLevel": 1,
+      "proofLevel": 8,
+      "conversionWeight": 1
+    },
+    {
+      "id": "anatomy",
+      "label": "Anatomy",
+      "emotion": "fascination",
+      "visitorQuestion": "How is this instrument organized?",
+      "purpose": "Lower intensity and let the gallery exhibit explain relationships through measured separation and composition.",
+      "intensity": 5,
+      "informationDensity": 6,
+      "interactionLevel": 3,
+      "proofLevel": 7,
+      "conversionWeight": 2
+    },
+    {
+      "id": "transmission",
+      "label": "Transmission",
+      "emotion": "understanding",
+      "visitorQuestion": "What is the invisible system doing?",
+      "purpose": "Turn light paths into visible proof without slipping into decorative sci-fi effects.",
+      "intensity": 7,
+      "informationDensity": 5,
+      "interactionLevel": 3,
+      "proofLevel": 9,
+      "conversionWeight": 2
+    },
+    {
+      "id": "agency",
+      "label": "Agency",
+      "emotion": "control",
+      "visitorQuestion": "Can I change what I am seeing?",
+      "purpose": "Let aperture changes alter real geometry, ray width, readout and the saved field artifact.",
+      "intensity": 6,
+      "informationDensity": 5,
+      "interactionLevel": 9,
+      "proofLevel": 9,
+      "conversionWeight": 4
+    },
+    {
+      "id": "inspection",
+      "label": "Inspection",
+      "emotion": "intimacy",
+      "visitorQuestion": "What does this feel like up close?",
+      "purpose": "Provide a bounded moment of finish choice and manual orbit without surrendering authored direction.",
+      "intensity": 4,
+      "informationDensity": 4,
+      "interactionLevel": 8,
+      "proofLevel": 7,
+      "conversionWeight": 3
+    },
+    {
+      "id": "return",
+      "label": "Return",
+      "emotion": "release",
+      "visitorQuestion": "Does the world still connect behind me?",
+      "purpose": "Back through the same real passage so continuity and reversibility become part of the proof.",
+      "intensity": 8,
+      "informationDensity": 1,
+      "interactionLevel": 1,
+      "proofLevel": 8,
+      "conversionWeight": 2
+    },
+    {
+      "id": "reveal",
+      "label": "Aerial Reveal",
+      "emotion": "admiration",
+      "visitorQuestion": "What did I just move through?",
+      "purpose": "Reveal basin, roof and landscape in plan as a secondary resolution, never a second competing climax.",
+      "intensity": 6,
+      "informationDensity": 2,
+      "interactionLevel": 1,
+      "proofLevel": 6,
+      "conversionWeight": 4
+    },
+    {
+      "id": "artifact",
+      "label": "Field Artifact",
+      "emotion": "ownership",
+      "visitorQuestion": "What do I keep from this?",
+      "purpose": "Resolve the experience with a personal field sheet and a replayable memory rather than a generic sales CTA.",
+      "intensity": 3,
+      "informationDensity": 4,
+      "interactionLevel": 6,
+      "proofLevel": 7,
+      "conversionWeight": 10
+    }
+  ],
+  "signatureMoment": {
+    "name": "The Threshold Descent",
+    "description": "From an exterior approach, the camera aligns with the hollow bronze gateway, crosses the physical opening, passes real radial fins, follows the curved descending passage and arrives inside the underground light gallery without a cut or simulated image zoom. Reverse scroll reconstructs the same route.",
+    "whyMemorable": "It turns the browser from a viewing surface into a place the visitor appears to enter, while proving continuity with real traversed geometry.",
+    "prerequisites": [
+      "Keep the annular opening physically clear on desktop and mobile camera paths.",
+      "Load the complete world before announcing readiness so the threshold never reveals an unfinished gallery.",
+      "Preserve one continuous camera state and one persistent WebGL world through exterior, passage and gallery.",
+      "Keep interface noise low during the alignment and descent chapters."
+    ],
+    "protectFrom": [
+      "Do not add a competing orbit or explosion at the same intensity.",
+      "Do not cover the opening with explanatory UI during entry.",
+      "Do not add particles, neon or post effects that make the passage read as sci-fi rather than architecture.",
+      "Do not replace the traversed geometry with a video, image zoom or teleport cut."
+    ]
+  },
+  "artBible": {
+    "northStar": "Light becomes architecture only when the visitor physically crosses its threshold.",
+    "world": "A mineral field of basalt, dark water and patinated bronze. The exterior feels quiet, dry and monumental; the underground gallery feels precise, warm and optically alive without becoming futuristic spectacle.",
+    "typographyCharacter": "Manrope carries field notation, controls and structural clarity. Cormorant Garamond appears only at emotional/editorial inflection points. Type should behave like a field instrument: measured, sparse and never louder than the spatial moment.",
+    "photographyCharacter": "The project is primarily real-time geometry. Local campaign plates support fallback, metadata and distant set extension only; they should never impersonate traversable foreground space.",
+    "paletteLogic": "Charcoal and basalt create silence; warm ivory carries readable text; bronze is the owned material signal; orange-red appears only as a precise calibration accent.",
+    "materialLogic": "Bronze must read through restrained specular response and edge light; basalt stays low-gloss and heavy; optical glass stays cool and controlled; water is reflective context rather than a decorative effect.",
+    "whitespace": "Protect large areas of visual silence around the gateway, threshold and field-sheet moments. Information density rises only inside anatomy and light-lab chapters.",
+    "uiChrome": "UI should feel like a field instrument: fixed, minimal, typographic and subordinate. During the signature threshold/descent, navigation and status chrome should quiet further."
+  },
+  "grammar": {
+    "camera": [
+      "Treat the camera as a visitor moving through architecture, not a turntable around an object.",
+      "Use stable horizon and slow authored dolly movement outside; allow no more than the existing bounded five-degree path-curvature bank in the passage.",
+      "Reserve the strongest continuous move for alignment, threshold crossing and descent into the gallery.",
+      "Permit manual orbit only in the inspection chapter; reset it immediately when authored camera control resumes.",
+      "Use the same physical route on mobile with a wider lens rather than inventing a different story."
+    ],
+    "motion": [
+      "Use stillness before and after high-intensity moves so the threshold descent can peak clearly.",
+      "Exploded component separation is explanatory and secondary, never the primary spectacle.",
+      "Optical rays appear progressively only when they explain transmission and stop under reduced motion.",
+      "Reverse scroll must reconstruct every component and camera state exactly.",
+      "Micro-motion in interface chrome remains restrained and never competes with spatial motion."
+    ],
+    "composition": [
+      "Frame the annular opening as negative space before entry.",
+      "Use landscape horizon and basin reflection to establish scale before architecture fills the frame.",
+      "Inside the gallery, alternate architectural depth with centered optical alignment rather than repeating exterior compositions.",
+      "Keep copy in clear negative space and never lay critical text over busy bronze fins or light rays."
+    ],
+    "typography": [
+      "Use Manrope for measured field notation, navigation, controls and body copy.",
+      "Use Cormorant Garamond only for emotional editorial emphasis and the personal field artifact.",
+      "Keep labels small, spaced and functional; avoid oversized type during the signature descent.",
+      "Maintain strong typographic hierarchy in fallback and reduced-motion modes."
+    ],
+    "color": [
+      "Base the world on #151719 charcoal, #f2eee3 warm paper, #d4b27b bronze and #987347 oxidized bronze.",
+      "Use the orange-red calibration accent sparingly for index marks and optical reference points.",
+      "Do not introduce neon cyan, purple gradients or unrelated sci-fi color coding."
+    ],
+    "materials": [
+      "Patinated bronze is the primary owned material language.",
+      "Volcanic stone grounds the fiction in weight and place.",
+      "Optical glass is a technical contrast, not a decorative glow surface.",
+      "Reflection water should reinforce scale and orientation rather than spectacle."
+    ],
+    "lighting": [
+      "Exterior light reveals silhouette, bronze edges and terrain without flattening the night field.",
+      "Threshold light pulls the eye through the physical opening.",
+      "Gallery lighting becomes warmer and more controlled as the visitor reaches the instrument.",
+      "Optical rays provide explanatory illumination but never flood the whole scene."
+    ],
+    "imagery": [
+      "Use real-time geometry for all traversed space.",
+      "Use local original imagery only as distant set extension, campaign plate, fallback and metadata support.",
+      "Avoid generic architectural lifestyle imagery because the project sells a spatial idea, not a fictional development."
+    ],
+    "interaction": [
+      "Scroll directs the authored journey and remains reversible.",
+      "Aperture control must change real geometry, ray width, semantic readout and exported artifact together.",
+      "Manual finish/orbit inspection stays confined to one chapter with keyboard and pointer parity.",
+      "Sound remains optional and starts only from explicit visitor action.",
+      "Saving the field study is the only end-state action that should feel like ownership."
+    ],
+    "transitions": [
+      "Use physical thresholds, occlusion, depth and camera continuity instead of generic fades.",
+      "Exterior-to-gallery transition must happen through the modeled gateway and passage.",
+      "Gallery-to-exterior return must use the same route to prove continuity.",
+      "UI transitions should become quieter during high-intensity spatial transitions."
+    ],
+    "sound": [
+      "Use optional synthesized atmosphere as environmental depth, never as mandatory scoring.",
+      "No autoplay audio.",
+      "Keep the threshold/descent sonically sparse enough that architecture remains primary."
+    ],
+    "spatial": [
+      "One persistent world contains terrain, basin, gateway, passage, gallery and exhibit.",
+      "The gallery never scales, teleports or moves to fake entry.",
+      "Spatial clearance tests remain authoritative for passage, doorway, floor and ceiling safety.",
+      "The smaller exhibit may animate independently while the architecture remains fixed."
+    ],
+    "mobile": [
+      "Preserve all ten chapters and the same spatial route.",
+      "Widen the lens and simplify chrome rather than removing conceptual beats.",
+      "Keep aperture, finish, field-sheet export and chapter navigation touch-safe.",
+      "Reduced motion becomes a meaningful linear document, not a blank or broken version."
+    ]
+  },
+  "shotBible": [
+    {
+      "id": "shot-01",
+      "chapterId": "first-light",
+      "title": "Field Arrival",
+      "purpose": "Establish remote place, scale and silence before architecture takes control.",
+      "subject": "Basalt terrain, reflection basin and distant annular observatory",
+      "framing": "Aerial oblique with negative sky/field around the gateway and clear basin reflection.",
+      "lensCharacter": "Moderately compressed architectural lens with stable horizon.",
+      "movement": "Patient curved dolly across the basin toward the gateway.",
+      "durationCharacter": "patient",
+      "emotion": "curiosity",
+      "copyRelationship": "Large title lives in protected negative space and clears the travel path.",
+      "transitionIn": "Begin already inside the landscape; no logo animation pre-roll.",
+      "transitionOut": "Camera lowers and aligns with the physical opening.",
+      "reserveForSignatureMoment": false
+    },
+    {
+      "id": "shot-02",
+      "chapterId": "form",
+      "title": "Threshold Alignment",
+      "purpose": "Make the visitor understand that the opening is traversable.",
+      "subject": "Hollow bronze gateway and radial fins",
+      "framing": "Center the opening as negative space while surrounding bronze fills more of the frame.",
+      "lensCharacter": "Architectural perspective with minimal distortion and stable horizon.",
+      "movement": "Descend gently and aim directly through the annular opening.",
+      "durationCharacter": "held anticipation",
+      "emotion": "anticipation",
+      "copyRelationship": "Interface and copy quiet as alignment completes.",
+      "transitionIn": "Landscape scale compresses toward architectural detail.",
+      "transitionOut": "Cross the modeled bronze threshold without a cut.",
+      "reserveForSignatureMoment": true
+    },
+    {
+      "id": "shot-03",
+      "chapterId": "surface",
+      "title": "Threshold Descent",
+      "purpose": "Deliver the primary HELIOT memory by physically entering the architecture.",
+      "subject": "Bronze passage, radial ribs and descending light slots",
+      "framing": "Architecture surrounds the camera; foreground occlusion proves physical depth.",
+      "lensCharacter": "Human-scale wide architectural lens, controlled enough to avoid theme-park distortion.",
+      "movement": "Continuous curved descent with bounded curvature bank into the underground gallery.",
+      "durationCharacter": "uninterrupted",
+      "emotion": "awe",
+      "copyRelationship": "No dense explanation during the peak; spatial motion carries meaning.",
+      "transitionIn": "Real fins pass beside the camera as the exterior disappears.",
+      "transitionOut": "Gallery light resolves ahead and the camera settles before anatomy begins.",
+      "reserveForSignatureMoment": true
+    },
+    {
+      "id": "shot-04",
+      "chapterId": "separation",
+      "title": "Gallery Anatomy",
+      "purpose": "Reduce intensity and explain the instrument through measured spatial relationships.",
+      "subject": "Smaller HELIOT exhibit inside the fixed underground gallery",
+      "framing": "Three-quarter gallery view with architecture legible behind the exhibit.",
+      "lensCharacter": "Neutral study lens.",
+      "movement": "Controlled arc while named components separate axially.",
+      "durationCharacter": "measured",
+      "emotion": "fascination",
+      "copyRelationship": "Labels and anatomy copy may increase because camera intensity has dropped.",
+      "transitionIn": "Camera settles after descent before component motion begins.",
+      "transitionOut": "Separated anatomy aligns to the optical axis.",
+      "reserveForSignatureMoment": false
+    },
+    {
+      "id": "shot-05",
+      "chapterId": "optical-path",
+      "title": "Transmission",
+      "purpose": "Reveal the invisible optical field as proof, not decoration.",
+      "subject": "Exhibit optical groups and controlled ray field",
+      "framing": "Center the axis while retaining enough gallery context to preserve place.",
+      "lensCharacter": "Technical frontal study.",
+      "movement": "Gentle descent and alignment; rays progressively draw into the field.",
+      "durationCharacter": "precise",
+      "emotion": "understanding",
+      "copyRelationship": "Schematic copy explains only what the real-time field cannot communicate alone.",
+      "transitionIn": "Anatomy relationships become light relationships.",
+      "transitionOut": "Camera moves to a stable frontal aperture view.",
+      "reserveForSignatureMoment": false
+    },
+    {
+      "id": "shot-06",
+      "chapterId": "aperture",
+      "title": "Light Lab",
+      "purpose": "Turn understanding into meaningful visitor agency.",
+      "subject": "Physical diaphragm, rays and field controls",
+      "framing": "Stable frontal portrait with room for controls and optical schematic.",
+      "lensCharacter": "Precise inspection lens.",
+      "movement": "Near-static hold with subtle withdrawal as aperture changes occur.",
+      "durationCharacter": "interactive hold",
+      "emotion": "control",
+      "copyRelationship": "Controls and readout become primary while spatial background remains quiet.",
+      "transitionIn": "Optical field resolves into a controllable aperture.",
+      "transitionOut": "Instrument returns to an authored inspection portrait.",
+      "reserveForSignatureMoment": false
+    },
+    {
+      "id": "shot-07",
+      "chapterId": "perspective",
+      "title": "Material Inspection",
+      "purpose": "Allow tactile finish choice and bounded manual exploration.",
+      "subject": "HELIOT gallery exhibit",
+      "framing": "Stable portrait with enough depth to read bronze and glass surface response.",
+      "lensCharacter": "Longer portrait lens.",
+      "movement": "Visitor-controlled limited orbit; no camera-trick spectacle.",
+      "durationCharacter": "open inspection",
+      "emotion": "intimacy",
+      "copyRelationship": "Material controls are explicit and accessible.",
+      "transitionIn": "Authored camera settles before control is handed over.",
+      "transitionOut": "Manual orbit resets and authored camera resumes.",
+      "reserveForSignatureMoment": false
+    },
+    {
+      "id": "shot-08",
+      "chapterId": "convergence",
+      "title": "Return Through the Field",
+      "purpose": "Prove the world is continuous by leaving through the same real architecture.",
+      "subject": "Gallery, passage opening and exterior horizon beyond",
+      "framing": "Reverse-facing depth composition that makes the route behind the visitor readable.",
+      "lensCharacter": "Architectural travel lens matching the descent.",
+      "movement": "Back through the curved passage and gateway toward exterior air.",
+      "durationCharacter": "released continuity",
+      "emotion": "release",
+      "copyRelationship": "Minimal copy; the reconstruction is the proof.",
+      "transitionIn": "Inspection controls disappear and authored spatial continuity returns.",
+      "transitionOut": "Landscape expands around the camera after the gateway clears.",
+      "reserveForSignatureMoment": false
+    },
+    {
+      "id": "shot-09",
+      "chapterId": "signature",
+      "title": "Aerial Resolution",
+      "purpose": "Reveal the complete observatory in context after the visitor understands its inside.",
+      "subject": "Observatory roof, basin, terrain and mountain horizon",
+      "framing": "Elevated plan-oblique composition showing relationships rather than hero-spin spectacle.",
+      "lensCharacter": "Calm wide architectural reveal.",
+      "movement": "Measured crane and lateral arc above the field.",
+      "durationCharacter": "resolved",
+      "emotion": "admiration",
+      "copyRelationship": "Editorial line may return now that the signature spatial move is complete.",
+      "transitionIn": "Exterior scale reopens after the passage release.",
+      "transitionOut": "Camera settles into a final exterior portrait.",
+      "reserveForSignatureMoment": false
+    },
+    {
+      "id": "shot-10",
+      "chapterId": "keep-light",
+      "title": "Field Artifact",
+      "purpose": "Convert the visitor's choices into a personal object and give the journey a graceful end state.",
+      "subject": "Final exterior portrait, field-study controls and saved artifact",
+      "framing": "Stable landscape-backed composition with clear functional space for save/replay controls.",
+      "lensCharacter": "Quiet final portrait.",
+      "movement": "Settled hold only.",
+      "durationCharacter": "rest",
+      "emotion": "ownership",
+      "copyRelationship": "The field sheet, replay and disclaimer are the only dominant UI actions.",
+      "transitionIn": "Aerial motion resolves completely before the CTA appears.",
+      "transitionOut": "Replay reconstructs the journey back to first light.",
+      "reserveForSignatureMoment": false
+    }
+  ],
+  "assets": [
+    {
+      "id": "heliot-high",
+      "label": "HELIOT high-quality GLB",
+      "quality": "hero",
+      "creativeValue": 10,
+      "productionDecision": "use",
+      "role": "Hero instrument and gateway geometry with named components for the gallery study.",
+      "reason": "Original, lightweight and already integrated with the deterministic ProductRig."
+    },
+    {
+      "id": "heliot-low",
+      "label": "HELIOT low-quality GLB",
+      "quality": "strong",
+      "creativeValue": 8,
+      "productionDecision": "use",
+      "role": "Adaptive-quality equivalent of the hero geometry.",
+      "reason": "Preserves the same named-node choreography at lower cost."
+    },
+    {
+      "id": "basalt",
+      "label": "Basalt material plate",
+      "quality": "strong",
+      "creativeValue": 8,
+      "productionDecision": "use",
+      "role": "Ground material signal for the exterior field.",
+      "reason": "Supports mineral restraint and keeps the landscape from feeling like generic procedural terrain."
+    },
+    {
+      "id": "landscape",
+      "label": "Distant volcanic landscape matte",
+      "quality": "strong",
+      "creativeValue": 7,
+      "productionDecision": "use",
+      "role": "Distant-set extension only.",
+      "reason": "Adds geographic depth while leaving all traversed foreground space as real geometry."
+    },
+    {
+      "id": "fallback",
+      "label": "Observatory landscape campaign plate",
+      "quality": "strong",
+      "creativeValue": 7,
+      "productionDecision": "use",
+      "role": "No-WebGL fallback, OpenGraph visual and semantic continuity.",
+      "reason": "Keeps the project's art direction intact when real-time rendering is unavailable."
+    },
+    {
+      "id": "macro",
+      "label": "Observatory material macro",
+      "quality": "supporting",
+      "creativeValue": 6,
+      "productionDecision": "use",
+      "role": "Supporting art-direction reference and material context.",
+      "reason": "Useful but not allowed to compete with the live spatial world."
+    }
+  ],
+  "budgetAllocation": {
+    "signatureMoment": 36,
+    "opening": 14,
+    "coreStory": 20,
+    "assetCreation": 8,
+    "artDirectionUi": 12,
+    "supportingUtility": 10
+  },
+  "noGoRules": [
+    "No generic 360-degree gateway orbit as a hero device.",
+    "No neon, purple gradients, floating UI debris or unrelated particle spectacle.",
+    "No prerecorded flythrough standing in for traversable space.",
+    "No second 10/10 moment that competes with the threshold descent.",
+    "No dense copy or oversized typography during the signature descent.",
+    "No automatic audio.",
+    "No hidden loss of controls or meaning on mobile/reduced motion.",
+    "No remote media dependencies or third-party architectural imagery.",
+    "No gallery teleport, scale trick or moving room used to fake entry."
+  ],
+  "originalityRules": [
+    "The project must be recognizable without the HELIOT wordmark through threshold geometry, radial field language and the reversible descent.",
+    "Borrow principles from architectural cinema, field instruments and museum sequencing, never a specific site's surface styling.",
+    "Do not repeat common Forge product-showcase language when architecture can carry the idea more directly.",
+    "Any new effect must justify itself through light, threshold, measurement or continuity.",
+    "Portfolio value comes from proving continuous spatial entry, not from maximizing effect count."
+  ],
+  "conversionArc": [
+    "Earn curiosity before exposing controls.",
+    "Use the threshold descent as proof of immersive capability.",
+    "Use the light lab as proof that interaction changes the world rather than decorating it.",
+    "Use the saved field study as the final ownership action.",
+    "Keep replay available so the signature can be experienced in reverse."
+  ],
+  "mobileInterpretation": [
+    "Preserve the same chapter order and physical route with widened camera framing.",
+    "Collapse nonessential chrome before cutting spatial meaning.",
+    "Keep field-study controls and exports reachable with touch-safe targets.",
+    "Reduced-motion users receive all narrative/proof content with static/linear interpretation rather than cinematic interpolation.",
+    "No mobile-only simplified concept; only a simplified execution of the same concept."
+  ],
+  "productionPriorities": [
+    "Protect physical camera clearance and continuity through the gateway/passage first.",
+    "Keep the threshold/descent visually quieter in UI than surrounding chapters.",
+    "Maintain deterministic aperture, ProductRig and reverse-scroll behavior.",
+    "Preserve adaptive quality, demand rendering and local-asset budgets.",
+    "Treat fallback/reduced-motion as first-class authored states.",
+    "Capture the final project into Forge portfolio memory so future projects are penalized for copying its signature."
+  ],
+  "qualityBar": [
+    "The threshold/descent must feel like entering architecture, not zooming toward a model.",
+    "No browser errors, horizontal overflow or broken reverse-scroll state in HELIOT-specific production captures.",
+    "All ten chapters remain legible and usable on desktop/mobile/reduced-motion/fallback states.",
+    "The light-lab control must alter geometry, rays, readout and exported field data consistently.",
+    "The experience must remain visually coherent with no remote dependency required to preserve its core idea.",
+    "The final field artifact must feel like a designed conclusion rather than a utility download."
+  ],
+  "critiqueQuestions": [
+    "Is the threshold descent still unquestionably the strongest moment?",
+    "Does any UI compete with the opening while the visitor enters?",
+    "Are component separation and orbit serving explanation rather than spectacle?",
+    "Would the concept still make sense in reduced motion and fallback states?",
+    "Could this experience be relabeled for another client without changing its spatial idea?",
+    "Does the final aerial reveal resolve the journey instead of trying to outdo it?",
+    "Is every visible effect justified by light, measurement, architecture or continuity?",
+    "Would an elite studio remove anything else before release?"
+  ],
+  "critique": {
+    "thesisClarity": 10,
+    "signatureMomentStrength": 10,
+    "pacingContrast": 9,
+    "visualCoherence": 10,
+    "brandSpecificity": 10,
+    "interactionPurpose": 10,
+    "mobileIntegrity": 9,
+    "conversionIntegrity": 9,
+    "originality": 10,
+    "assetDiscipline": 10,
+    "overall": 10,
+    "blockers": [],
+    "warnings": [
+      "Physical-device Safari/WebKit GPU performance remains outside verified evidence until an actual WebKit/device run is available."
+    ],
+    "cuts": [
+      "Do not add another hero effect after the threshold descent.",
+      "Keep the late aerial reveal calm and architectural rather than turning it into a second spectacle."
+    ],
+    "directives": [
+      "Quiet fixed interface chrome during threshold alignment and descent.",
+      "Persist this treatment, evidence, decisions, fingerprint and final-cut review with the project.",
+      "Register HELIOT in Forge portfolio memory after release so its signature is protected from self-repetition."
+    ]
+  }
+}
