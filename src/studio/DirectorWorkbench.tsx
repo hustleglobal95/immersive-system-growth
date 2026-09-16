@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { critiqueTreatment, directProject } from "@/src/platform/directorEngine";
 import { compileDirectorTreatment } from "@/src/platform/directorCompiler";
+import { createProductionPlanFromTreatment } from "@/src/platform/directorProductionPlan";
 import type { DirectorBrief, DirectorTreatment } from "@/src/platform/directorSchema";
 
 const projectTypes: Array<{ id: DirectorBrief["projectType"]; label: string }> = [
@@ -39,11 +40,14 @@ const starterBrief: DirectorBrief = {
   references: [],
 };
 
+type DirectorTab = "territories" | "arc" | "bible" | "assets" | "critique" | "handoff";
+
 export function DirectorWorkbench() {
   const [brief, setBrief] = useState<DirectorBrief>(starterBrief);
   const [treatment, setTreatment] = useState<DirectorTreatment>(() => directProject(starterBrief));
-  const [active, setActive] = useState<"territories" | "arc" | "bible" | "assets" | "critique">("territories");
+  const [active, setActive] = useState<DirectorTab>("territories");
   const compilation = useMemo(() => compileDirectorTreatment(treatment), [treatment]);
+  const productionPlan = useMemo(() => createProductionPlanFromTreatment(treatment), [treatment]);
   const selected = treatment.territories.find((territory) => territory.id === treatment.selectedTerritoryId)!;
 
   const generate = () => setTreatment(directProject(brief));
@@ -104,6 +108,8 @@ export function DirectorWorkbench() {
 
         <div className="director-status">
           <span>Creative score</span><strong>{treatment.critique.overall}/10</strong>
+          <span>Structure score</span><strong>{productionPlan.readiness.structureScore}/100</strong>
+          <span>Production</span><strong>{productionPlan.readiness.readyForProduction ? "READY" : "REVIEW"}</strong>
           <span>Creative plan</span><strong>{compilation.creativePlan.scenes.length} beats</strong>
         </div>
       </aside>
@@ -123,7 +129,7 @@ export function DirectorWorkbench() {
         </header>
 
         <nav className="director-tabs">
-          {(["territories", "arc", "bible", "assets", "critique"] as const).map((tab) => (
+          {(["territories", "arc", "bible", "assets", "critique", "handoff"] as const).map((tab) => (
             <button key={tab} className={active === tab ? "is-active" : ""} onClick={() => setActive(tab)}>{tab}</button>
           ))}
         </nav>
@@ -200,6 +206,28 @@ export function DirectorWorkbench() {
           <CritiqueList title="Director directives" items={treatment.critique.directives} severity="directive" />
           <div className="director-memory-test"><span>PORTFOLIO / MEMORY TEST</span><h4>{treatment.memoryStatement}</h4><p>If this sentence is not convincing at final cut, the project is not creatively finished.</p></div>
         </div>}
+
+        {active === "handoff" && <div className="director-panel">
+          <div className="director-section-heading"><span>06</span><div><h3>Production handoff</h3><p>Director has finished deciding. Forge now receives an executable plan.</p></div></div>
+          <div className={productionPlan.readiness.readyForProduction ? "director-readiness is-ready" : "director-readiness is-review"}>
+            <div><span>CREATIVE</span><strong>{productionPlan.readiness.creativeScore}/10</strong></div>
+            <div><span>STRUCTURE</span><strong>{productionPlan.readiness.structureScore}/100</strong></div>
+            <div><span>STATUS</span><strong>{productionPlan.readiness.readyForProduction ? "READY" : "REVIEW"}</strong></div>
+          </div>
+          {productionPlan.readiness.blockers.length > 0 && <CritiqueList title="Handoff blockers" items={productionPlan.readiness.blockers} severity="blocker" />}
+          <div className="director-handoff-actions">
+            <button onClick={() => downloadJson(`${slug(treatment.projectName)}-director-treatment.json`, treatment)}>Export treatment</button>
+            <button onClick={() => downloadJson(`${slug(treatment.projectName)}-structure-plan.json`, productionPlan.structure)}>Export structure</button>
+            <button onClick={() => downloadJson(`${slug(treatment.projectName)}-creative-plan.json`, productionPlan.creativePlan)}>Export creative plan</button>
+            <button onClick={() => downloadJson(`${slug(treatment.projectName)}-forge-production-plan.json`, productionPlan)}>Export full handoff</button>
+          </div>
+          <div className="director-alignment">
+            {productionPlan.alignment.map((item) => <article key={item.sectionId}>
+              <div><strong>{item.sectionLabel}</strong><span>{item.emotionalBeatLabel} · {item.intensity}/10</span></div>
+              <p>{item.rationale}</p>
+            </article>)}
+          </div>
+        </div>}
       </div>
     </section>
   );
@@ -211,4 +239,18 @@ function Bible({ title, items, danger = false }: { title: string; items: string[
 
 function CritiqueList({ title, items, severity }: { title: string; items: string[]; severity: string }) {
   return <section className={`director-critique-list is-${severity}`}><h4>{title}</h4>{items.length ? items.map((item) => <p key={item}>{item}</p>) : <p>None.</p>}</section>;
+}
+
+function downloadJson(name: string, value: unknown) {
+  const blob = new Blob([`${JSON.stringify(value, null, 2)}\n`], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = name;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+function slug(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 72) || "director";
 }
