@@ -1,0 +1,20 @@
+{
+  "captures": 20,
+  "renderer": "Chromium software WebGL",
+  "viewports": [
+    {
+      "name": "desktop",
+      "errors": [],
+      "overflow": false,
+      "renderBudget": "{\"frames\":235,\"maxCalls\":129,\"maxTriangles\":195690,\"maxLines\":36}"
+    },
+    {
+      "name": "mobile",
+      "errors": [],
+      "overflow": false,
+      "renderBudget": "{\"frames\":256,\"maxCalls\":196,\"maxTriangles\":381612,\"maxLines\":36}"
+    }
+  ],
+  "hardwareFpsVerified": false,
+  "safariVerified": false
+}
