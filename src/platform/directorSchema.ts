@@ -1,10 +1,14 @@
 import { z } from "zod";
 
 const short = z.string().min(1).max(180);
+const subjectText = z.string().min(1).max(160);
+const transitionText = z.string().min(1).max(240);
+const directiveText = z.string().min(1).max(300);
+const concise = z.string().min(1).max(500);
 const medium = z.string().min(1).max(600);
 const long = z.string().min(1).max(1600);
-const directives = z.array(z.string().min(1).max(300)).max(64).default([]);
-const briefDirectives = z.array(z.string().min(1).max(300)).max(48).default([]);
+const directives = z.array(directiveText).max(64).default([]);
+const briefDirectives = z.array(directiveText).max(48).default([]);
 const score = z.number().int().min(0).max(10);
 
 export const DirectorProjectTypeSchema = z.enum([
@@ -48,7 +52,7 @@ export const DirectorTerritorySchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   name: short,
   oneLine: medium,
-  thesis: medium,
+  thesis: concise,
   memory: medium,
   strategicReason: long,
   visualPremise: long,
@@ -69,7 +73,7 @@ export const DirectorEmotionalBeatSchema = z.object({
   label: short,
   emotion: short,
   visitorQuestion: medium,
-  purpose: medium,
+  purpose: concise,
   intensity: score,
   informationDensity: score,
   interactionLevel: score,
@@ -97,16 +101,16 @@ export const DirectorShotSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   chapterId: z.string().min(1).max(120),
   title: short,
-  purpose: medium,
-  subject: short,
-  framing: medium,
-  lensCharacter: medium,
-  movement: medium,
+  purpose: concise,
+  subject: subjectText,
+  framing: directiveText,
+  lensCharacter: directiveText,
+  movement: directiveText,
   durationCharacter: short,
   emotion: short,
-  copyRelationship: medium,
-  transitionIn: medium,
-  transitionOut: medium,
+  copyRelationship: directiveText,
+  transitionIn: transitionText,
+  transitionOut: transitionText,
   reserveForSignatureMoment: z.boolean().default(false),
 }).strict();
 
@@ -155,7 +159,7 @@ export const DirectorTreatmentSchema = z.object({
   tier: DirectorTierSchema,
   territories: z.array(DirectorTerritorySchema).min(3).max(3),
   selectedTerritoryId: z.string().min(1),
-  thesis: medium,
+  thesis: concise,
   memoryStatement: medium,
   audience: medium,
   objective: medium,
@@ -169,7 +173,7 @@ export const DirectorTreatmentSchema = z.object({
     protectFrom: directives,
   }).strict(),
   artBible: z.object({
-    northStar: medium,
+    northStar: concise,
     world: long,
     typographyCharacter: long,
     photographyCharacter: long,
