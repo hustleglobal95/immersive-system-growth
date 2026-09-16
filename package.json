@@ -50,6 +50,7 @@
     "bank:import": "node --import tsx scripts/asset-bank.mjs import",
     "bank:prepare": "node --import tsx scripts/asset-bank.mjs prepare",
     "forge:validate": "node --import tsx scripts/validate-projects.mjs",
+    "forge:catalog": "node --import tsx scripts/forge-command-catalog.mjs",
     "forge:command": "node --import tsx scripts/forge-command.mjs",
     "forge:replay": "node --import tsx scripts/forge-replay.mjs",
     "preset:list": "node --import tsx scripts/preset-list.mjs",
