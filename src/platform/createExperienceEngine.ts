@@ -1,5 +1,5 @@
 import type { ExperienceConfig } from "@/src/types/experience";
-import { ForgeEngine } from "@/src/core/engine/forgeEngine";
+import { ForgeEngine, type ForgeEngineOptions } from "@/src/core/engine/forgeEngine";
 import { CommandRegistry } from "@/src/core/commands/commandRegistry";
 import { sceneInvariants } from "@/src/domain/scene/invariants";
 import { registerSceneCommands } from "@/src/domain/scene/registerSceneCommands";
@@ -10,7 +10,12 @@ import type { MotionArchetypeName } from "@/src/platform/motionArchetypes";
 import type { CameraChoreographyName } from "@/src/platform/cameraChoreography";
 import { createDefaultCapabilityRegistry } from "@/src/platform/defaultCapabilities";
 
-export function createExperienceEngine(initialState: ExperienceConfig) {
+type ExperienceEngineOptions = Pick<
+  ForgeEngineOptions<ExperienceConfig>,
+  "eventBus" | "historyLimit" | "journalLimit" | "initialJournal" | "initialRevision"
+>;
+
+export function createExperienceEngine(initialState: ExperienceConfig, options: ExperienceEngineOptions = {}) {
   const commands = registerSceneCommands(new CommandRegistry<ExperienceConfig>());
   commands.register("experience.replace", (input) => {
     const value = input as { experience?: unknown; reason?: string };
@@ -32,6 +37,10 @@ export function createExperienceEngine(initialState: ExperienceConfig) {
     commandRegistry: commands,
     capabilityRegistry: createDefaultCapabilityRegistry(),
     invariants: sceneInvariants,
-    historyLimit: 120,
+    eventBus: options.eventBus,
+    historyLimit: options.historyLimit ?? 120,
+    journalLimit: options.journalLimit,
+    initialJournal: options.initialJournal,
+    initialRevision: options.initialRevision,
   });
 }
