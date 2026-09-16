@@ -15,6 +15,7 @@ import {
   fingerprintPayload,
   migrateLegacyStudioDraft,
   parseStudioDraftEnvelope,
+  recoverStudioDraftRecords,
   studioDraftRecoveryMeta,
 } from "../src/studio/studioDraftStorage";
 
@@ -24,6 +25,7 @@ const payload = {
   assetManifest: rawManifest as AssetManifest,
   interactionGraph: parseInteractionGraph(rawGraph),
 };
+const fallbacks = { assetManifest: payload.assetManifest, interactionGraph: payload.interactionGraph };
 
 test("Studio draft envelope round-trips with deterministic full-draft integrity", () => {
   const envelope = createStudioDraftEnvelope(payload, {
@@ -70,10 +72,7 @@ test("legacy v2 raw draft shape migrates into the v3 recovery envelope", () => {
     assetManifest: rawManifest,
     interactionGraph: rawGraph,
   };
-  const migrated = migrateLegacyStudioDraft(legacy, {
-    assetManifest: payload.assetManifest,
-    interactionGraph: payload.interactionGraph,
-  }, {
+  const migrated = migrateLegacyStudioDraft(legacy, fallbacks, {
     sessionId: "legacy-upgrade",
     savedAt: "2026-09-16T15:30:00.000Z",
   });
@@ -88,13 +87,66 @@ test("legacy v2 raw draft shape migrates into the v3 recovery envelope", () => {
 
 test("legacy drafts can use canonical manifest and interaction fallbacks", () => {
   const legacy = { experience: rawExperience, project: rawProject };
-  const migrated = migrateLegacyStudioDraft(legacy, {
-    assetManifest: payload.assetManifest,
-    interactionGraph: payload.interactionGraph,
-  }, { sessionId: "legacy-fallback" });
+  const migrated = migrateLegacyStudioDraft(legacy, fallbacks, { sessionId: "legacy-fallback" });
 
   assert.deepEqual(migrated.payload.assetManifest, payload.assetManifest);
   assert.deepEqual(migrated.payload.interactionGraph, payload.interactionGraph);
+});
+
+test("recovery selector prefers a valid primary record", () => {
+  const primary = createStudioDraftEnvelope(payload, { sessionId: "primary", autosaveSequence: 5, experienceRevision: 3 });
+  const backup = createStudioDraftEnvelope(payload, { sessionId: "backup", autosaveSequence: 4, experienceRevision: 2 });
+  const selected = recoverStudioDraftRecords({
+    primary: JSON.stringify(primary),
+    backup: JSON.stringify(backup),
+  }, fallbacks, { legacySessionId: "legacy" });
+
+  assert.equal(selected.source, "primary");
+  assert.equal(selected.envelope?.sessionId, "primary");
+  assert.deepEqual(selected.invalidSlots, []);
+});
+
+test("recovery selector rejects a tampered primary and restores the valid backup", () => {
+  const primary = createStudioDraftEnvelope(payload, { sessionId: "primary", autosaveSequence: 5, experienceRevision: 3 });
+  primary.payload.experience.scenes[0].label = "Corrupt without fingerprint update";
+  const backup = createStudioDraftEnvelope(payload, { sessionId: "backup", autosaveSequence: 4, experienceRevision: 2 });
+
+  const selected = recoverStudioDraftRecords({
+    primary: JSON.stringify(primary),
+    backup: JSON.stringify(backup),
+  }, fallbacks, { legacySessionId: "legacy" });
+
+  assert.equal(selected.source, "backup");
+  assert.equal(selected.envelope?.sessionId, "backup");
+  assert.deepEqual(selected.invalidSlots, ["primary"]);
+});
+
+test("recovery selector falls through invalid v3 slots and migrates the legacy draft", () => {
+  const legacy = JSON.stringify({ experience: rawExperience, project: rawProject });
+  const selected = recoverStudioDraftRecords({
+    primary: "{not-json",
+    backup: JSON.stringify({ version: 3, broken: true }),
+    legacy,
+  }, fallbacks, {
+    legacySessionId: "legacy-recovered",
+    migratedAt: "2026-09-16T16:30:00.000Z",
+  });
+
+  assert.equal(selected.source, "legacy");
+  assert.equal(selected.envelope?.sessionId, "legacy-recovered");
+  assert.deepEqual(selected.invalidSlots, ["primary", "backup"]);
+});
+
+test("recovery selector returns fresh when every stored slot is unusable", () => {
+  const selected = recoverStudioDraftRecords({
+    primary: "bad",
+    backup: "bad",
+    legacy: "bad",
+  }, fallbacks, { legacySessionId: "new" });
+
+  assert.equal(selected.source, "fresh");
+  assert.equal(selected.envelope, null);
+  assert.deepEqual(selected.invalidSlots, ["primary", "backup", "legacy"]);
 });
 
 test("recovery metadata retains the origin that restored the session", () => {
