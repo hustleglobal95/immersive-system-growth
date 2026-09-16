@@ -3,7 +3,8 @@ import { z } from "zod";
 const short = z.string().min(1).max(180);
 const medium = z.string().min(1).max(600);
 const long = z.string().min(1).max(1600);
-const directives = z.array(z.string().min(1).max(360)).max(64).default([]);
+const directives = z.array(z.string().min(1).max(300)).max(64).default([]);
+const briefDirectives = z.array(z.string().min(1).max(300)).max(48).default([]);
 const score = z.number().int().min(0).max(10);
 
 export const DirectorProjectTypeSchema = z.enum([
@@ -32,8 +33,8 @@ export const DirectorBriefSchema = z.object({
   objective: medium,
   primaryAction: short,
   brandTruth: medium,
-  differentiators: directives,
-  constraints: directives,
+  differentiators: briefDirectives,
+  constraints: briefDirectives,
   existingAssets: z.array(z.object({
     id: z.string().min(1).max(120),
     label: short,
