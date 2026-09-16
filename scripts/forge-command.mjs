@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { parseExperience } from "../src/lib/configSchema.ts";
 import { createExperienceEngine } from "../src/platform/createExperienceEngine.ts";
+import { validateForgeCheckpoint } from "../src/core/checkpoints/checkpoint.ts";
 
 function args(argv) {
   const out = {};
@@ -23,29 +24,43 @@ async function writeJson(file, value) {
 
 const options = args(process.argv.slice(2));
 const inputPath = String(options.input || "config/experience.json");
+const checkpointPath = options.checkpoint ? String(options.checkpoint) : null;
 const commandsPath = options.commands ? String(options.commands) : null;
 const outputPath = options.output ? String(options.output) : null;
 const journalOutput = options["journal-output"] ? String(options["journal-output"]) : null;
 const checkpointOutput = options["checkpoint-output"] ? String(options["checkpoint-output"]) : null;
 const dryRun = Boolean(options["dry-run"]);
-const expectedRevision = options["expected-revision"] === undefined ? undefined : Number(options["expected-revision"]);
 const actor = options.actor ? String(options.actor) : undefined;
 const source = options.source ? String(options.source) : "cli";
 
 if (!commandsPath) {
-  console.error("Usage: npm run forge:command -- --commands <commands.json> [--input config/experience.json] [--output experience.json] [--expected-revision 0] [--actor name] [--source cli|ai|studio] [--journal-output journal.json] [--checkpoint-output checkpoint.json] [--dry-run]");
-  process.exit(2);
-}
-if (expectedRevision !== undefined && (!Number.isInteger(expectedRevision) || expectedRevision < 0)) {
-  console.error("--expected-revision must be a non-negative integer.");
+  console.error("Usage: npm run forge:command -- --commands <commands.json> [--input config/experience.json | --checkpoint checkpoint.json] [--initial-revision 0] [--expected-revision 0] [--output experience.json] [--actor name] [--source cli|ai|studio] [--journal-output journal.json] [--checkpoint-output checkpoint.json] [--dry-run]");
   process.exit(2);
 }
 
-const experience = parseExperience(JSON.parse(await fs.readFile(inputPath, "utf8")));
+let experience;
+let initialRevision;
+if (checkpointPath) {
+  const checkpoint = validateForgeCheckpoint(JSON.parse(await fs.readFile(checkpointPath, "utf8")));
+  experience = parseExperience(checkpoint.state);
+  initialRevision = checkpoint.revision;
+} else {
+  experience = parseExperience(JSON.parse(await fs.readFile(inputPath, "utf8")));
+  initialRevision = options["initial-revision"] === undefined ? 0 : Number(options["initial-revision"]);
+}
+
+const expectedRevision = options["expected-revision"] === undefined ? initialRevision : Number(options["expected-revision"]);
+for (const [name, value] of [["initial-revision", initialRevision], ["expected-revision", expectedRevision]]) {
+  if (!Number.isInteger(value) || value < 0) {
+    console.error(`--${name} must be a non-negative integer.`);
+    process.exit(2);
+  }
+}
+
 const commands = JSON.parse(await fs.readFile(commandsPath, "utf8"));
 if (!Array.isArray(commands)) throw new Error("Command file must contain an array of { type, input } records.");
 
-const engine = createExperienceEngine(experience);
+const engine = createExperienceEngine(experience, { initialRevision });
 const unknown = commands.filter((item) => !item || typeof item.type !== "string" || !engine.commands.has(item.type));
 if (unknown.length) {
   console.error("Unknown or malformed commands:", JSON.stringify(unknown, null, 2));
