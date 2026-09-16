@@ -12,12 +12,10 @@ import {
   STUDIO_DRAFT_STORAGE_KEY,
   createStudioDraftEnvelope,
   freshStudioDraftRecoveryMeta,
-  migrateLegacyStudioDraft,
   parseStudioDraftEnvelope,
+  recoverStudioDraftRecords,
   studioDraftRecoveryMeta,
-  type StudioDraftEnvelope,
   type StudioDraftRecoveryMeta,
-  type StudioDraftRecoverySource,
 } from "@/src/studio/studioDraftStorage";
 
 export function useStudioDraft(
@@ -50,50 +48,26 @@ export function useStudioDraft(
   const [recovery, setRecovery] = useState<StudioDraftRecoveryMeta>(() => freshStudioDraftRecoveryMeta(initialPayload, sessionIdRef.current));
 
   useEffect(() => {
-    let loaded: { envelope: StudioDraftEnvelope; source: StudioDraftRecoverySource } | null = null;
-    let primaryCorrupt = false;
-
     try {
-      const primary = localStorage.getItem(STUDIO_DRAFT_STORAGE_KEY);
-      if (primary) {
-        try {
-          loaded = { envelope: parseStudioDraftEnvelope(JSON.parse(primary)), source: "primary" };
-        } catch {
-          primaryCorrupt = true;
-        }
+      const selection = recoverStudioDraftRecords({
+        primary: localStorage.getItem(STUDIO_DRAFT_STORAGE_KEY),
+        backup: localStorage.getItem(STUDIO_DRAFT_BACKUP_KEY),
+        legacy: localStorage.getItem(LEGACY_STUDIO_DRAFT_STORAGE_KEY),
+      }, {
+        assetManifest: initialAssetManifest,
+        interactionGraph: initialInteractionGraph,
+      }, {
+        legacySessionId: sessionIdRef.current,
+      });
+
+      for (const slot of selection.invalidSlots) {
+        if (slot === "primary") localStorage.removeItem(STUDIO_DRAFT_STORAGE_KEY);
+        else if (slot === "backup") localStorage.removeItem(STUDIO_DRAFT_BACKUP_KEY);
+        else localStorage.removeItem(LEGACY_STUDIO_DRAFT_STORAGE_KEY);
       }
 
-      if (!loaded) {
-        const backup = localStorage.getItem(STUDIO_DRAFT_BACKUP_KEY);
-        if (backup) {
-          try {
-            loaded = { envelope: parseStudioDraftEnvelope(JSON.parse(backup)), source: "backup" };
-          } catch {
-            localStorage.removeItem(STUDIO_DRAFT_BACKUP_KEY);
-          }
-        }
-      }
-
-      if (!loaded) {
-        const legacy = localStorage.getItem(LEGACY_STUDIO_DRAFT_STORAGE_KEY);
-        if (legacy) {
-          try {
-            loaded = {
-              envelope: migrateLegacyStudioDraft(JSON.parse(legacy), {
-                assetManifest: initialAssetManifest,
-                interactionGraph: initialInteractionGraph,
-              }, { sessionId: sessionIdRef.current }),
-              source: "legacy",
-            };
-          } catch {
-            localStorage.removeItem(LEGACY_STUDIO_DRAFT_STORAGE_KEY);
-          }
-        }
-      }
-
-      if (primaryCorrupt) localStorage.removeItem(STUDIO_DRAFT_STORAGE_KEY);
-      if (loaded) {
-        const { envelope, source } = loaded;
+      if (selection.envelope) {
+        const { envelope, source } = selection;
         sessionIdRef.current = envelope.sessionId;
         autosaveSequenceRef.current = envelope.autosaveSequence;
         experienceRevisionRef.current = envelope.experienceRevision;
