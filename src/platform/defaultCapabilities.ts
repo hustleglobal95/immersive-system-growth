@@ -2,6 +2,7 @@ import { CapabilityRegistry } from "@/src/core/registry/capabilityRegistry";
 
 export function createDefaultCapabilityRegistry() {
   const registry = new CapabilityRegistry();
+  registry.register({ id: "director", version: 1, validators: ["director:audit"], studioAdapters: ["DirectorWorkbench"] });
   registry.register({ id: "motion", version: 1, commands: ["motion.applyArchetype", "motion.resetScene"], validators: ["motion:systems:audit"], runtimeSystems: ["motion"] });
   registry.register({ id: "camera", version: 1, commands: ["camera.update", "camera.applyChoreography"], validators: ["camera:audit", "camera:spatial:audit"], runtimeSystems: ["camera"] });
   registry.register({ id: "structure", version: 1, commands: ["structure.applyPlan"], validators: ["site-structure.test"], studioAdapters: ["StructurePlanner"] });

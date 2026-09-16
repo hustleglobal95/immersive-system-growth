@@ -59,6 +59,7 @@ export const studioProjectSchema = z
     id: slug,
     name: z.string().min(1).max(100),
     experiencePath: relativeJsonPath,
+    directorTreatmentPath: relativeJsonPath.default("config/director-treatment.json"),
     creativeDirectionPath: relativeJsonPath.default("config/creative-direction.json"),
     visualSystemsPath: relativeJsonPath.default("config/visual-systems.json"),
     experienceModesPath: relativeJsonPath.default("config/experience-modes.json"),
