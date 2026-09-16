@@ -8,8 +8,13 @@ const initial = parseExperience(raw);
 
 test("ForgeEngine exposes registered commands and capability metadata", () => {
   const engine = createExperienceEngine(initial);
-  assert.ok(engine.commands.list().includes("scene.duplicate"));
+  const commands = engine.commands.list();
+  assert.ok(commands.includes("scene.duplicate"));
+  assert.ok(commands.includes("motion.applyArchetype"));
+  assert.ok(commands.includes("motion.resetScene"));
+  assert.ok(commands.includes("camera.applyChoreography"));
   assert.ok(engine.capabilities.has("motion"));
+  assert.ok(engine.capabilities.has("camera"));
   assert.ok(engine.capabilities.has("structure"));
 });
 
@@ -63,4 +68,58 @@ test("ForgeEngine transaction is one history operation and rolls back invalid co
   ], { transactionId: "bad" });
   assert.equal(failed.ok, false);
   assert.deepEqual(engine.getState(), before);
+});
+
+test("motion archetypes execute through ForgeEngine and undo restores the authored tracks", () => {
+  const engine = createExperienceEngine(initial);
+  const first = initial.scenes[0];
+  const previousTracks = structuredClone(first.motionTracks);
+  const events: string[] = [];
+  engine.events.onAny((event) => events.push(event.type));
+
+  const result = engine.dispatchRegistered("motion.applyArchetype", {
+    sceneId: first.id,
+    archetype: "editorial-reveal",
+  });
+  assert.equal(result.ok, true);
+  assert.ok(engine.getState().scenes[0].motionTracks.length >= previousTracks.length);
+  assert.ok(events.includes("motion.applied"));
+
+  assert.equal(engine.undo(), true);
+  assert.deepEqual(engine.getState().scenes[0].motionTracks, previousTracks);
+});
+
+test("camera choreography executes through ForgeEngine and remains one undoable state change", () => {
+  const engine = createExperienceEngine(initial);
+  const first = initial.scenes[0];
+  const previousTracks = structuredClone(first.motionTracks);
+  const result = engine.dispatchRegistered("camera.applyChoreography", {
+    sceneId: first.id,
+    choreography: "director-precision-push",
+  });
+  assert.equal(result.ok, true);
+  const cameraTracks = engine.getState().scenes[0].motionTracks.filter((track) => track.id.startsWith("engine-camera-"));
+  assert.ok(cameraTracks.length >= 3);
+  assert.equal(result.events[0]?.type, "camera.choreographyApplied");
+  assert.equal(engine.undo(), true);
+  assert.deepEqual(engine.getState().scenes[0].motionTracks, previousTracks);
+});
+
+test("scene, motion and camera can commit atomically and undo as one operation", () => {
+  const engine = createExperienceEngine(initial);
+  const first = initial.scenes[0];
+  const result = engine.transactionRegistered([
+    { type: "scene.rename", input: { sceneId: first.id, label: "Directed Sequence" } },
+    { type: "motion.applyArchetype", input: { sceneId: first.id, archetype: "product-hero" } },
+    { type: "camera.applyChoreography", input: { sceneId: first.id, choreography: "director-hero-orbit" } },
+  ], { transactionId: "directed-sequence" });
+
+  assert.equal(result.ok, true);
+  const committed = engine.getState().scenes[0];
+  assert.equal(committed.label, "Directed Sequence");
+  assert.ok(committed.motionTracks.some((track) => track.id.startsWith("engine-camera-")));
+  assert.equal(engine.validate().filter((issue) => issue.level === "error").length, 0);
+
+  assert.equal(engine.undo(), true);
+  assert.deepEqual(engine.getState(), initial);
 });
