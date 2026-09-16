@@ -1,11 +1,10 @@
-import { directProject } from "../src/platform/directorEngine.ts";
-import { compileDirectorTreatment } from "../src/platform/directorCompiler.ts";
+import { createDirectorProductionPlan } from "../src/platform/directorProductionPlan.ts";
 
 const projectTypes = ["brand", "product", "property", "hospitality", "portfolio", "saas", "commerce", "campaign", "automotive", "fashion"];
 const tiers = ["cinematic", "immersive", "signature", "flagship"];
 const failures = [];
 let treatments = 0;
-let plans = 0;
+let productionPlans = 0;
 
 for (const projectType of projectTypes) {
   for (const tier of tiers) {
@@ -23,8 +22,10 @@ for (const projectType of projectTypes) {
       references: [],
     };
     try {
-      const treatment = directProject(brief);
+      const plan = createDirectorProductionPlan(brief);
+      const treatment = plan.treatment;
       treatments++;
+      productionPlans++;
       if (treatment.territories.length !== 3) failures.push(`${projectType}/${tier}: expected exactly three territories`);
       if (!treatment.territories.some((territory) => territory.id === treatment.selectedTerritoryId)) failures.push(`${projectType}/${tier}: selected territory missing`);
       if (!treatment.memoryStatement.startsWith("People will remember")) failures.push(`${projectType}/${tier}: memory statement missing`);
@@ -34,9 +35,10 @@ for (const projectType of projectTypes) {
       if (Math.abs(allocation - 100) > 0.001) failures.push(`${projectType}/${tier}: budget allocation ${allocation}`);
       if (treatment.critique.blockers.length) failures.push(`${projectType}/${tier}: treatment has critique blockers: ${treatment.critique.blockers.join(" | ")}`);
       if (treatment.critique.overall < 8) failures.push(`${projectType}/${tier}: critique score ${treatment.critique.overall}`);
-      const compiled = compileDirectorTreatment(treatment);
-      plans++;
-      if (compiled.creativePlan.scenes.length !== treatment.emotionalArc.length) failures.push(`${projectType}/${tier}: compiled beat mismatch`);
+      if (plan.creativePlan.scenes.length !== treatment.emotionalArc.length) failures.push(`${projectType}/${tier}: compiled beat mismatch`);
+      if (!plan.alignment.length) failures.push(`${projectType}/${tier}: missing structure/emotion alignment`);
+      if (plan.readiness.structureScore < 80) failures.push(`${projectType}/${tier}: structure score ${plan.readiness.structureScore}`);
+      if (plan.readiness.blockers.length) failures.push(`${projectType}/${tier}: handoff blockers: ${plan.readiness.blockers.join(" | ")}`);
     } catch (error) {
       failures.push(`${projectType}/${tier}: ${error instanceof Error ? error.message : String(error)}`);
     }
@@ -49,4 +51,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`Forge Director audit passed: ${treatments} treatments, ${plans} executable creative plans, ${projectTypes.length} project types × ${tiers.length} tiers.`);
+console.log(`Forge Director audit passed: ${treatments} treatments and ${productionPlans} full production handoffs across ${projectTypes.length} project types × ${tiers.length} tiers.`);
