@@ -1,3 +1,4 @@
+import type { DirectorTerritory, DirectorTreatment } from "@/src/platform/directorSchema";
 import type { TasteDimension, TastePreference, TasteProfile } from "@/src/platform/director-intelligence/types";
 
 const dimensions: TasteDimension[] = ["restraintVsSpectacle", "literalVsAbstract", "cinematicVsEditorial", "continuousVsChaptered", "typographyVsImage", "darkVsLight", "denseVsSparse", "directedVsExploratory", "realismVsStylization", "emotionalVsRational", "familiarVsNovel"];
@@ -19,17 +20,44 @@ export function recordPreference(profile: TasteProfile, preference: TastePrefere
   return next;
 }
 
+export function inferTasteTraits(treatment: DirectorTreatment, territory: DirectorTerritory): Partial<Record<TasteDimension, number>> {
+  const text = `${territory.thesis} ${territory.visualPremise} ${territory.experientialPremise} ${territory.signatureMoment} ${treatment.grammar.motion.join(" ")} ${treatment.grammar.camera.join(" ")} ${treatment.grammar.typography.join(" ")}`.toLowerCase();
+  const signal = (positive: RegExp, negative: RegExp) => positive.test(text) ? 1 : negative.test(text) ? -1 : 0;
+  return {
+    restraintVsSpectacle: signal(/restraint|quiet|still|withhold|minimal/, /spectacle|explosive|dramatic|maximal|intense/),
+    literalVsAbstract: signal(/literal|real|product|architecture|interface|proof/, /abstract|metaphor|symbolic|surreal/),
+    cinematicVsEditorial: signal(/camera|shot|lens|sequence|cinematic|spatial/, /editorial|grid|typography|page|layout/),
+    continuousVsChaptered: signal(/continuous|uninterrupted|threshold|flow/, /chapter|cut|sequence|card|section/),
+    typographyVsImage: signal(/typography|type-led|copy-led/, /image|photography|visual|render|film/),
+    darkVsLight: signal(/dark|shadow|black|night/, /light|white|bright|day/),
+    denseVsSparse: signal(/dense|layered|information-rich/, /sparse|quiet|whitespace|minimal/),
+    directedVsExploratory: signal(/directed|guided|controlled|cinematic/, /explore|inspection|open|自由|choose/),
+    realismVsStylization: signal(/realism|physical|believable|actual|material/, /stylized|surreal|abstract|impossible/),
+    emotionalVsRational: signal(/emotion|desire|awe|wonder|intimacy/, /proof|clarity|technical|rational|utility/),
+    familiarVsNovel: signal(/novel|unexpected|anti-category|counterfactual|distinctive/, /familiar|conventional|expected|category/),
+  };
+}
+
 export function tasteAdjustment(profile: TasteProfile | undefined, traits: Partial<Record<TasteDimension, number>>) {
   if (!profile || profile.confidence < 0.15) return { adjustment: 0, reasons: ["Taste profile confidence is too low to influence judgment."] };
   let total = 0; let weight = 0; const reasons: string[] = [];
   for (const [dimension, trait] of Object.entries(traits) as Array<[TasteDimension, number | undefined]>) {
-    if (trait === undefined) continue;
+    if (trait === undefined || trait === 0) continue;
     total += profile.dimensions[dimension] * trait; weight += Math.abs(trait);
     if (Math.abs(profile.dimensions[dimension]) >= 0.35) reasons.push(`${dimension}: calibrated studio tendency ${profile.dimensions[dimension].toFixed(2)}.`);
   }
   const raw = weight ? total / weight : 0;
   const capped = Math.max(-0.5, Math.min(0.5, raw * profile.confidence - profile.antiCollapsePenalty * 0.15));
   return { adjustment: Number(capped.toFixed(2)), reasons };
+}
+
+export function applyTasteCalibration<T extends Record<string, number>>(scores: T, adjustment: number): T {
+  if (!adjustment) return scores;
+  const next = { ...scores };
+  for (const key of ["aestheticCoherence", "emotionalResonance"] as const) {
+    if (typeof next[key] === "number") next[key] = Math.max(0, Math.min(10, Number((next[key] + adjustment).toFixed(1)))) as T[typeof key];
+  }
+  return next;
 }
 
 export function comparePairwiseScores(a: Record<string, number>, b: Record<string, number>, priority: string[]) {
