@@ -17,6 +17,7 @@
     "architecture:audit": "node scripts/architecture-audit.mjs",
     "command:catalog:audit": "node --import tsx scripts/command-catalog-audit.mjs",
     "director:audit": "node --import tsx scripts/director-audit.mjs",
+    "director:generate": "node --import tsx scripts/director-generate.mjs",
     "experience:validate": "node --import tsx scripts/validate-experience.mjs",
     "interaction:validate": "node --import tsx scripts/validate-interactions.mjs",
     "cinematic:systems:audit": "node --import tsx scripts/cinematic-systems-audit.mjs",
