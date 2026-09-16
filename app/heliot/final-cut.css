@@ -1,0 +1,61 @@
+/* Director final cut: protect the threshold/descent as HELIOT's primary spatial signature. */
+.heliot .heliot-header,
+.heliot .heliot-footer,
+.heliot .heliot-side-note {
+  transition: opacity 520ms cubic-bezier(.22,.61,.36,1), filter 520ms cubic-bezier(.22,.61,.36,1);
+}
+
+.heliot[data-chapter="1"] .heliot-header,
+.heliot[data-chapter="2"] .heliot-header {
+  opacity: .24;
+  filter: saturate(.72);
+}
+
+.heliot[data-chapter="1"] .heliot-footer,
+.heliot[data-chapter="2"] .heliot-footer {
+  opacity: .34;
+}
+
+.heliot[data-chapter="1"] .heliot-side-note,
+.heliot[data-chapter="2"] .heliot-side-note {
+  opacity: 0;
+}
+
+/* Never make the quieter cinematic state an accessibility trap. */
+.heliot[data-chapter="1"] .heliot-header:focus-within,
+.heliot[data-chapter="2"] .heliot-header:focus-within,
+.heliot[data-chapter="1"] .heliot-footer:focus-within,
+.heliot[data-chapter="2"] .heliot-footer:focus-within,
+.heliot[data-chapter="1"] .heliot-header:hover,
+.heliot[data-chapter="2"] .heliot-header:hover {
+  opacity: 1;
+  filter: none;
+}
+
+/* The primary peak is spatial. Keep copy restrained while the passage takes over. */
+.heliot[data-chapter="2"] .heliot-act-2 .heliot-body,
+.heliot[data-chapter="2"] .heliot-act-2 .heliot-eyebrow {
+  opacity: .68;
+  transition: opacity 420ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heliot .heliot-header,
+  .heliot .heliot-footer,
+  .heliot .heliot-side-note,
+  .heliot[data-chapter="2"] .heliot-act-2 .heliot-body,
+  .heliot[data-chapter="2"] .heliot-act-2 .heliot-eyebrow {
+    transition: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .heliot[data-chapter="1"] .heliot-header,
+  .heliot[data-chapter="2"] .heliot-header {
+    opacity: .38;
+  }
+  .heliot[data-chapter="1"] .heliot-footer,
+  .heliot[data-chapter="2"] .heliot-footer {
+    opacity: .46;
+  }
+}
