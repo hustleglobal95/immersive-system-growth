@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "dimensions": {
+    "restraintVsSpectacle": 0,
+    "literalVsAbstract": 0,
+    "cinematicVsEditorial": 0,
+    "continuousVsChaptered": 0,
+    "typographyVsImage": 0,
+    "darkVsLight": 0,
+    "denseVsSparse": 0,
+    "directedVsExploratory": 0,
+    "realismVsStylization": 0,
+    "emotionalVsRational": 0,
+    "familiarVsNovel": 0
+  },
+  "preferences": [],
+  "confidence": 0,
+  "antiCollapsePenalty": 0
+}
