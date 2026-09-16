@@ -3,7 +3,7 @@ import { z } from "zod";
 const short = z.string().min(1).max(180);
 const medium = z.string().min(1).max(600);
 const long = z.string().min(1).max(1600);
-const directives = z.array(z.string().min(1).max(360)).max(32).default([]);
+const directives = z.array(z.string().min(1).max(360)).max(64).default([]);
 const score = z.number().int().min(0).max(10);
 
 export const DirectorProjectTypeSchema = z.enum([
