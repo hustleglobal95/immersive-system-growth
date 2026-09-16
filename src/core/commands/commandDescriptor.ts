@@ -1,3 +1,5 @@
+import type { ForgeCommandInputSchema } from "@/src/core/commands/inputSchema";
+
 export type ForgeCommandImpact = "local" | "project" | "destructive" | "external";
 export type ForgeCommandApproval = "auto" | "review" | "required";
 
@@ -10,6 +12,7 @@ export interface ForgeCommandDescriptor {
   approval: ForgeCommandApproval;
   reversible: boolean;
   agentVisible: boolean;
+  inputSchema?: ForgeCommandInputSchema;
 }
 
 export type ForgeCommandDescriptorInput = Omit<ForgeCommandDescriptor, "type">;
