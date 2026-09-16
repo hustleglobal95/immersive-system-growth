@@ -2,6 +2,7 @@ import { parseDirectorBrief, parseDirectorTreatment, type DirectorTreatment } fr
 import { directProject } from "@/src/platform/directorEngine";
 import { createProductionPlanFromTreatment } from "@/src/platform/directorProductionPlan";
 import type { DirectorIntelligenceInput, DirectorIntelligenceReport, EvaluationReport } from "@/src/platform/director-intelligence/types";
+import type { DirectorHumanApprovals } from "@/src/platform/director-intelligence/humanGates";
 import { buildEvidenceReport, requireEvidenceForLock } from "@/src/platform/director-intelligence/evidence";
 import { retrievePrecedents, deconstructReference } from "@/src/platform/director-intelligence/precedents";
 import { divergeTreatment } from "@/src/platform/director-intelligence/divergence";
@@ -21,8 +22,9 @@ import { buildDefensePacket } from "@/src/platform/director-intelligence/clientR
 import { simulateAudienceLenses } from "@/src/platform/director-intelligence/audience";
 import { brandAssetBlockers, identifyDistinctiveBrandAssets } from "@/src/platform/director-intelligence/brandAssets";
 import { detectCouncilInflation } from "@/src/platform/director-intelligence/calibration";
+import { evaluateHumanGates } from "@/src/platform/director-intelligence/humanGates";
 
-export function runDirectorIntelligence(input: DirectorIntelligenceInput) {
+export function runDirectorIntelligence(input: DirectorIntelligenceInput & { approvals?: DirectorHumanApprovals; finalCutRequested?: boolean }) {
   const brief = parseDirectorBrief(input.brief);
   const baseline = directProject(brief);
   const diverged = divergeTreatment(brief, baseline);
@@ -93,8 +95,18 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput) {
   if (blockers.length && verdict === "LOCK") verdict = evidenceBlockers.length ? "RESEARCH REQUIRED" : assetGap.blockers.length ? "ASSET BLOCKED" : "REVISE";
 
   const report: DirectorIntelligenceReport = { brief, treatment, evidence, precedents, fingerprint: fingerprintTreatment(treatment), collisions, evaluations, selectedEvaluation, originality, cliches, stress, ceiling, assetGap, leverage, whyLadders, decisions, defense, verdict, blockers: unique(blockers), generatedAt: new Date().toISOString() };
-  const productionPlan = createProductionPlanFromTreatment(treatment);
-  return { report, productionPlan, debate, audience, brandAssets, referenceDeconstructions, divergence: diverged.diversity, councilCalibration: inflation };
+  const humanGates = evaluateHumanGates({ brief, treatment, evidence, selectedEvaluation, assetGap, decisions, approvals: input.approvals, finalCutRequested: input.finalCutRequested });
+  const baseProductionPlan = createProductionPlanFromTreatment(treatment);
+  const gateBlockers = humanGates.pending.map((gate) => `Human gate: ${gate.label} — ${gate.reason}`);
+  const productionPlan = {
+    ...baseProductionPlan,
+    readiness: {
+      ...baseProductionPlan.readiness,
+      blockers: unique([...baseProductionPlan.readiness.blockers, ...report.blockers, ...gateBlockers]),
+      readyForProduction: baseProductionPlan.readiness.readyForProduction && report.verdict === "LOCK" && humanGates.authorizedForProduction,
+    },
+  };
+  return { report, productionPlan, debate, audience, brandAssets, referenceDeconstructions, divergence: diverged.diversity, councilCalibration: inflation, humanGates };
 }
 
 function selectTerritory(treatment: DirectorTreatment, territoryId: string) {
