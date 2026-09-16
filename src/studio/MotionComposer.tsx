@@ -1,10 +1,11 @@
 "use client";
 
 import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
-import { createMotionArchetype, motionArchetypeCatalog, type MotionArchetypeName } from "@/src/platform/motionArchetypes";
+import { motionArchetypeCatalog, type MotionArchetypeName } from "@/src/platform/motionArchetypes";
+import { createExperienceEngine } from "@/src/platform/createExperienceEngine";
 import { SequencerEditor } from "@/src/studio/SequencerEditor";
 import { StudioLivePreview } from "@/src/studio/StudioLivePreview";
-import type { ExperienceConfig, MotionTrack } from "@/src/types/experience";
+import type { ExperienceConfig } from "@/src/types/experience";
 
 export function MotionComposer({
   experience,
@@ -60,17 +61,26 @@ export function MotionComposer({
   }
 
   const applyArchetype = () => {
-    const generated = createMotionArchetype(archetype, experience, active);
-    const existing = new Set(scene.motionTracks.map((track) => `${track.viewport}:${track.target}`));
-    const additions = generated.filter((track) => !existing.has(`${track.viewport}:${track.target}`));
-    if (!additions.length) {
+    const engine = createExperienceEngine(experience);
+    const result = engine.dispatchRegistered("motion.applyArchetype", {
+      sceneId: scene.id,
+      archetype,
+    }, { transactionId: `studio-motion-${scene.id}-${archetype}` });
+    if (!result.ok) {
+      setNotice(result.errors.map((error) => error.message).join("; "));
+      return;
+    }
+    const before = scene.motionTracks.length;
+    const after = result.state.scenes[active]?.motionTracks.length ?? before;
+    const additions = Math.max(0, after - before);
+    if (!additions && result.state.scenes[active]?.motionTracks.length === before) {
       setNotice("This scene already has authored motion on those targets.");
       return;
     }
     beginGroup();
-    setExperience((current) => replaceSceneTracks(current, active, [...current.scenes[active].motionTracks, ...namespaceTracks(additions, archetype)]));
+    setExperience(result.state);
     endGroup();
-    setNotice(`${motionArchetypeCatalog.find((item) => item.id === archetype)?.label ?? archetype} added · ${additions.length} tracks`);
+    setNotice(`${motionArchetypeCatalog.find((item) => item.id === archetype)?.label ?? archetype} applied · ${additions} net tracks`);
   };
 
   return (
@@ -118,19 +128,4 @@ export function MotionComposer({
       <StudioLivePreview experience={experience} active={active} setActive={setActive} />
     </div>
   );
-}
-
-function namespaceTracks(tracks: MotionTrack[], prefix: string): MotionTrack[] {
-  return tracks.map((track) => ({
-    ...track,
-    id: `${prefix}-${track.id}`,
-    keyframes: track.keyframes.map((key) => ({ ...key, id: `${prefix}-${key.id}` })),
-  })) as MotionTrack[];
-}
-
-function replaceSceneTracks(config: ExperienceConfig, sceneIndex: number, motionTracks: MotionTrack[]): ExperienceConfig {
-  return {
-    ...config,
-    scenes: config.scenes.map((scene, index) => index === sceneIndex ? { ...scene, motionTracks } : scene),
-  };
 }
