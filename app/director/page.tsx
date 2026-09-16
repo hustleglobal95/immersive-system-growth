@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DirectorWorkbench } from "@/src/studio/DirectorWorkbench";
 import "./director.css";
+import "./handoff.css";
 
 export const metadata: Metadata = {
   title: "Forge Director",
