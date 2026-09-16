@@ -1,0 +1,78 @@
+{
+  "projectId": "heliot-optical-study",
+  "thesisTerms": ["light", "becomes", "architecture", "visitor", "physically", "crosses", "threshold"],
+  "narrativePattern": ["arrival", "alignment", "descent", "anatomy", "transmission", "agency", "inspection", "return", "aerial reveal", "field artifact"],
+  "emotionalCurve": [4, 7, 10, 5, 7, 6, 4, 8, 6, 3],
+  "structureRoles": [
+    "establish place and scale",
+    "aim toward the physical opening",
+    "cross and descend through architecture",
+    "explain relationships through anatomy",
+    "reveal optical transmission",
+    "give causal light control",
+    "allow bounded material inspection",
+    "prove continuity by returning through the same route",
+    "resolve the observatory in landscape context",
+    "convert choices into a personal field artifact"
+  ],
+  "cameraDevices": [
+    "architectural visitor camera rather than object turntable",
+    "stable exterior horizon",
+    "bounded path-curvature bank in passage",
+    "continuous threshold descent",
+    "scoped inspection orbit",
+    "same physical route on mobile with wider lens"
+  ],
+  "motionDevices": [
+    "stillness around peaks",
+    "secondary measured component separation",
+    "progressive explanatory optical rays",
+    "exact reverse-scroll reconstruction",
+    "restrained interface micro-motion"
+  ],
+  "interactionDevices": [
+    "reversible scroll direction",
+    "causal aperture control",
+    "bounded finish and orbit inspection",
+    "explicit optional sound",
+    "field-study save and replay"
+  ],
+  "transitionDevices": [
+    "physical threshold crossing",
+    "foreground occlusion through bronze ribs",
+    "continuous spatial descent",
+    "same-route gallery return",
+    "quiet ui during signature transition"
+  ],
+  "typographyBehavior": [
+    "manrope field notation and controls",
+    "cormorant garamond emotional emphasis only",
+    "small measured labels",
+    "no oversized type during signature descent"
+  ],
+  "compositionPatterns": [
+    "annular opening as negative space",
+    "landscape horizon and basin reflection for scale",
+    "architectural depth alternating with centered optical alignment",
+    "copy protected in negative space"
+  ],
+  "distinctiveAssets": [
+    "heliot high-quality glb",
+    "heliot low-quality glb",
+    "basalt material plate",
+    "distant volcanic landscape matte",
+    "observatory landscape campaign plate"
+  ],
+  "signatureMechanism": "the camera aligns with the hollow bronze gateway, crosses real radial fins, follows the curved descending passage and arrives in the underground light gallery in one reversible spatial move",
+  "colorMaterialDescriptors": [
+    "charcoal field",
+    "warm paper",
+    "patinated bronze",
+    "oxidized bronze",
+    "orange-red calibration accent",
+    "volcanic stone",
+    "controlled optical glass",
+    "dark reflection water"
+  ],
+  "soundDescriptors": ["optional synthesized atmosphere", "no autoplay", "sparse threshold and descent sound"]
+}
