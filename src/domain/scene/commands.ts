@@ -1,4 +1,4 @@
-import type { ForgeCommand, CommandContext, CommandResult } from "@/src/core/commands/command";
+import type { ForgeCommand, CommandContext, CommandError, CommandResult } from "@/src/core/commands/command";
 import { commandFailure } from "@/src/core/commands/command";
 import { forgeEvent } from "@/src/core/events/eventBus";
 import type { ExperienceConfig, SceneDefinition } from "@/src/types/experience";
@@ -25,11 +25,52 @@ function success<T>(state: ExperienceConfig, output: T, events: ReturnType<typeo
   return { ok: true, state, output, events, inverse, affectedIds };
 }
 
+export class AddSceneCommand implements ForgeCommand<ExperienceConfig, { sourceSceneId?: string; afterSceneId?: string; label?: string }, { sceneId: string; index: number }> {
+  readonly type = "scene.add";
+  constructor(readonly input: { sourceSceneId?: string; afterSceneId?: string; label?: string } = {}) {}
+  validate({ state }: CommandContext<ExperienceConfig>): CommandError[] {
+    const errors: CommandError[] = [];
+    if (!state.scenes.length) errors.push({ code: "scene.source.missing", message: "A source scene is required to create a new scene." });
+    if (this.input.sourceSceneId && !state.scenes.some((scene) => scene.id === this.input.sourceSceneId)) errors.push({ code: "scene.source.notFound", message: `Source scene ${this.input.sourceSceneId} was not found.` });
+    if (this.input.afterSceneId && !state.scenes.some((scene) => scene.id === this.input.afterSceneId)) errors.push({ code: "scene.anchor.notFound", message: `Anchor scene ${this.input.afterSceneId} was not found.` });
+    return errors;
+  }
+  execute({ state, transactionId }: CommandContext<ExperienceConfig>): CommandResult<ExperienceConfig, { sceneId: string; index: number }> {
+    if (!state.scenes.length) return commandFailure(state, "scene.source.missing", "A source scene is required to create a new scene.");
+    const source = this.input.sourceSceneId
+      ? state.scenes.find((scene) => scene.id === this.input.sourceSceneId)
+      : state.scenes.at(-1);
+    if (!source) return commandFailure(state, "scene.source.notFound", `Source scene ${this.input.sourceSceneId ?? ""} was not found.`);
+    const afterIndex = this.input.afterSceneId
+      ? state.scenes.findIndex((scene) => scene.id === this.input.afterSceneId)
+      : state.scenes.length - 1;
+    if (afterIndex < 0) return commandFailure(state, "scene.anchor.notFound", `Anchor scene ${this.input.afterSceneId ?? ""} was not found.`);
+
+    const created = structuredClone(source);
+    const nextOrdinal = state.scenes.length + 1;
+    created.id = uniqueSceneId(state, `scene-${nextOrdinal}`);
+    created.label = this.input.label?.trim() || `Scene ${nextOrdinal}`;
+    created.copy = {
+      ...created.copy,
+      eyebrow: `${String(nextOrdinal).padStart(2, "0")} / NEW SCENE`,
+      headline: "Direct this moment.",
+      body: "Define the purpose, camera, motion and interaction for this scene.",
+    };
+    created.motionTracks = [];
+    created.blocks = [];
+    const scenes = [...structuredClone(state.scenes)];
+    const index = afterIndex + 1;
+    scenes.splice(index, 0, created);
+    const next = { ...structuredClone(state), scenes: normalizeRanges(scenes) };
+    return success(next, { sceneId: created.id, index }, [forgeEvent("scene.created", { sceneId: created.id, index, sourceSceneId: source.id }, transactionId)], new DeleteSceneCommand({ sceneId: created.id }) as ForgeCommand<ExperienceConfig, unknown, unknown>, [created.id]);
+  }
+}
+
 export class RenameSceneCommand implements ForgeCommand<ExperienceConfig, { sceneId: string; label: string }, { sceneId: string }> {
   readonly type = "scene.rename";
   constructor(readonly input: { sceneId: string; label: string }) {}
-  validate({ state }: CommandContext<ExperienceConfig>) {
-    const errors = [];
+  validate({ state }: CommandContext<ExperienceConfig>): CommandError[] {
+    const errors: CommandError[] = [];
     if (!state.scenes.some((scene) => scene.id === this.input.sceneId)) errors.push({ code: "scene.notFound", message: `Scene ${this.input.sceneId} was not found.` });
     if (!this.input.label.trim()) errors.push({ code: "scene.label.empty", message: "Scene label cannot be empty." });
     return errors;
@@ -47,9 +88,9 @@ export class RenameSceneCommand implements ForgeCommand<ExperienceConfig, { scen
 export class MoveSceneCommand implements ForgeCommand<ExperienceConfig, { sceneId: string; toIndex: number }, { sceneId: string; fromIndex: number; toIndex: number }> {
   readonly type = "scene.move";
   constructor(readonly input: { sceneId: string; toIndex: number }) {}
-  validate({ state }: CommandContext<ExperienceConfig>) {
+  validate({ state }: CommandContext<ExperienceConfig>): CommandError[] {
     const fromIndex = state.scenes.findIndex((scene) => scene.id === this.input.sceneId);
-    const errors = [];
+    const errors: CommandError[] = [];
     if (fromIndex < 0) errors.push({ code: "scene.notFound", message: `Scene ${this.input.sceneId} was not found.` });
     if (!Number.isInteger(this.input.toIndex) || this.input.toIndex < 0 || this.input.toIndex >= state.scenes.length) errors.push({ code: "scene.index.invalid", message: `Scene target index ${this.input.toIndex} is invalid.` });
     return errors;
@@ -69,8 +110,8 @@ export class MoveSceneCommand implements ForgeCommand<ExperienceConfig, { sceneI
 class DeleteSceneCommand implements ForgeCommand<ExperienceConfig, { sceneId: string; allowLast?: boolean }, { sceneId: string }> {
   readonly type = "scene.delete";
   constructor(readonly input: { sceneId: string; allowLast?: boolean }) {}
-  validate({ state }: CommandContext<ExperienceConfig>) {
-    const errors = [];
+  validate({ state }: CommandContext<ExperienceConfig>): CommandError[] {
+    const errors: CommandError[] = [];
     if (!state.scenes.some((scene) => scene.id === this.input.sceneId)) errors.push({ code: "scene.notFound", message: `Scene ${this.input.sceneId} was not found.` });
     if (!this.input.allowLast && state.scenes.length <= 1) errors.push({ code: "scene.minimum", message: "A Forge experience must keep at least one scene." });
     return errors;
@@ -89,7 +130,7 @@ class DeleteSceneCommand implements ForgeCommand<ExperienceConfig, { sceneId: st
 class RestoreSceneCommand implements ForgeCommand<ExperienceConfig, { scene: SceneDefinition; index: number }, { sceneId: string }> {
   readonly type = "scene.restore";
   constructor(readonly input: { scene: SceneDefinition; index: number }) {}
-  validate({ state }: CommandContext<ExperienceConfig>) {
+  validate({ state }: CommandContext<ExperienceConfig>): CommandError[] {
     if (state.scenes.some((scene) => scene.id === this.input.scene.id)) return [{ code: "scene.id.duplicate", message: `Scene ${this.input.scene.id} already exists.` }];
     return [];
   }
@@ -105,7 +146,7 @@ class RestoreSceneCommand implements ForgeCommand<ExperienceConfig, { scene: Sce
 export class DuplicateSceneCommand implements ForgeCommand<ExperienceConfig, { sceneId: string }, { sceneId: string }> {
   readonly type = "scene.duplicate";
   constructor(readonly input: { sceneId: string }) {}
-  validate({ state }: CommandContext<ExperienceConfig>) {
+  validate({ state }: CommandContext<ExperienceConfig>): CommandError[] {
     return state.scenes.some((scene) => scene.id === this.input.sceneId) ? [] : [{ code: "scene.notFound", message: `Scene ${this.input.sceneId} was not found.` }];
   }
   execute({ state, transactionId }: CommandContext<ExperienceConfig>) {
