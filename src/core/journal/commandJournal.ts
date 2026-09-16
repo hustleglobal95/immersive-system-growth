@@ -1,7 +1,7 @@
 import type { CommandError } from "@/src/core/commands/command";
 import type { ForgeEvent } from "@/src/core/events/eventBus";
 
-export type ForgeMutationSource = "studio" | "cli" | "ai" | "system" | "replay" | (string & {});
+export type ForgeMutationSource = "studio" | "cli" | "ai" | "system" | "replay" | `custom:${string}`;
 
 export interface ForgeJournalCommand {
   type: string;
