@@ -1,4 +1,153 @@
 {
   "version": 1,
-  "decisions": []
+  "decisions": [
+    {
+      "id": "decision-001",
+      "status": "locked",
+      "decision": "Make the threshold crossing and descent into the underground gallery HELIOT's primary signature moment.",
+      "whyLadder": [
+        "Creative: the threshold is the only moment that transforms the browser from a viewing surface into an entered place.",
+        "Brand: HELIOT's truth is that light becomes architecture and interaction rather than decorative image-making.",
+        "Audience: design-literate visitors need proof that the immersive claim is spatial, not merely visual.",
+        "Emotional: anticipation becomes awe when the exterior disappears behind physical architecture.",
+        "Medium: scroll naturally maps to continuous authored travel and reverse reconstruction.",
+        "Production: the current world, passage and camera path already support the move with validated physical clearance."
+      ],
+      "evidenceIds": ["heliot-brand-truth", "heliot-continuous-world", "heliot-real-threshold", "heliot-director-request"],
+      "affectedSystems": ["camera", "structure", "motion", "ui", "sound"],
+      "rejectedAlternatives": [
+        {
+          "decision": "Use the late aerial orbit as the main signature.",
+          "reason": "It is visually strong but less ownable and less conceptually tied to physical entry than the threshold descent."
+        },
+        {
+          "decision": "Use an exploded instrument assembly as the main signature.",
+          "reason": "It would collapse HELIOT back into familiar product-visualization language and compete with the architectural idea."
+        }
+      ],
+      "author": "forge-director",
+      "approvedBy": "project-owner-direction",
+      "createdAt": "2026-09-16T20:05:00.000Z"
+    },
+    {
+      "id": "decision-002",
+      "status": "locked",
+      "decision": "Quiet fixed UI chrome during threshold alignment and descent, then restore it as the experience shifts back toward explanation and utility.",
+      "whyLadder": [
+        "Creative: silence creates contrast and gives the primary spatial move visual authority.",
+        "Brand: HELIOT should feel architectural and measured rather than interface-heavy.",
+        "Audience: fewer simultaneous signals make the physical transition easier to understand.",
+        "Emotional: reduced interface noise increases anticipation and release.",
+        "Medium: CSS state can respond directly to the active chapter without changing the semantic document.",
+        "Production: the root already exposes chapter state, so the final-cut treatment is low-risk and reversible."
+      ],
+      "evidenceIds": ["heliot-real-threshold", "heliot-mobile-route"],
+      "affectedSystems": ["ui", "typography", "motion"],
+      "rejectedAlternatives": [
+        {
+          "decision": "Hide all interface for the entire experience.",
+          "reason": "That would weaken chapter orientation, accessibility and the field-instrument character outside the signature moment."
+        }
+      ],
+      "author": "forge-director",
+      "approvedBy": "project-owner-direction",
+      "createdAt": "2026-09-16T20:06:00.000Z"
+    },
+    {
+      "id": "decision-003",
+      "status": "locked",
+      "decision": "Keep manual orbit confined to the inspection chapter and reset it before authored travel resumes.",
+      "whyLadder": [
+        "Creative: directed cinematography and exploratory inspection serve different jobs and should not blur together.",
+        "Brand: HELIOT is an authored observatory journey, not an unrestricted model viewer.",
+        "Audience: visitors receive agency exactly where close inspection has value.",
+        "Emotional: agency arrives after understanding and before the return flight.",
+        "Medium: the existing orbit store already supports scoped control and reset.",
+        "Production: confining manual state protects deterministic reverse scroll and camera continuity."
+      ],
+      "evidenceIds": ["heliot-reversible", "heliot-aperture-causality"],
+      "affectedSystems": ["camera", "interaction", "motion"],
+      "rejectedAlternatives": [
+        {
+          "decision": "Allow free orbit throughout all ten chapters.",
+          "reason": "It would undermine authored framing, spatial safety and the meaning of the threshold route."
+        }
+      ],
+      "author": "forge-director",
+      "approvedBy": "project-owner-direction",
+      "createdAt": "2026-09-16T20:07:00.000Z"
+    },
+    {
+      "id": "decision-004",
+      "status": "locked",
+      "decision": "Treat the light laboratory as causal interaction: aperture must change geometry, rays, readout and saved artifact together.",
+      "whyLadder": [
+        "Creative: interaction is meaningful only when it changes the actual world or what the visitor takes away.",
+        "Brand: revealing the unseen requires demonstrating the consequences of changing light.",
+        "Audience: technical and design-literate visitors can distinguish real system behavior from decorative controls.",
+        "Emotional: understanding becomes agency when the visitor sees several representations respond together.",
+        "Medium: browser state can synchronize WebGL, semantic UI and downloadable output in real time.",
+        "Production: the shared light-lab store already connects these surfaces deterministically."
+      ],
+      "evidenceIds": ["heliot-aperture-causality", "heliot-field-artifact"],
+      "affectedSystems": ["interaction", "webgl", "ui", "exports"],
+      "rejectedAlternatives": [
+        {
+          "decision": "Make the aperture slider visual-only.",
+          "reason": "That would convert a proof point into a cosmetic gimmick."
+        }
+      ],
+      "author": "forge-director",
+      "approvedBy": "project-owner-direction",
+      "createdAt": "2026-09-16T20:08:00.000Z"
+    },
+    {
+      "id": "decision-005",
+      "status": "locked",
+      "decision": "Keep the late aerial reveal as a secondary resolution rather than a second climax.",
+      "whyLadder": [
+        "Creative: one unmistakable peak makes the overall experience more memorable than multiple competing peaks.",
+        "Brand: the aerial should reveal how the observatory belongs to the field, not advertise spectacle for its own sake.",
+        "Audience: after moving through the interior, visitors benefit from seeing the whole spatial relationship in context.",
+        "Emotional: awe has already peaked; the aerial delivers admiration and cognitive resolution.",
+        "Medium: a calmer camera crane can reinterpret previously experienced geometry without introducing a new interaction language.",
+        "Production: the existing path already provides the shot, so restraint is primarily a direction and pacing decision."
+      ],
+      "evidenceIds": ["heliot-continuous-world", "heliot-real-threshold"],
+      "affectedSystems": ["camera", "motion", "pacing"],
+      "rejectedAlternatives": [
+        {
+          "decision": "Escalate the aerial reveal beyond the threshold descent with stronger orbit, bloom or speed.",
+          "reason": "That would flatten the intensity curve and make the primary signature less unique."
+        }
+      ],
+      "author": "forge-director",
+      "approvedBy": "project-owner-direction",
+      "createdAt": "2026-09-16T20:09:00.000Z"
+    },
+    {
+      "id": "decision-006",
+      "status": "locked",
+      "decision": "Preserve mobile, reduced-motion and no-WebGL states as the same idea expressed with less spectacle, not as lesser concepts.",
+      "whyLadder": [
+        "Creative: the concept is threshold, light and evidence—not desktop-only movement.",
+        "Brand: a disciplined flagship should remain coherent when the rendering mode changes.",
+        "Audience: visitors on constrained devices still deserve narrative and functional completeness.",
+        "Emotional: the sequence can retain curiosity, understanding and ownership even when motion is reduced.",
+        "Medium: semantic document structure, static fallback imagery and wider mobile camera framing provide alternate expressions of the same story.",
+        "Production: existing fallback, reduced-motion and mobile code paths already make this achievable without separate content architecture."
+      ],
+      "evidenceIds": ["heliot-mobile-route", "heliot-local-assets", "heliot-render-budget"],
+      "affectedSystems": ["mobile", "accessibility", "fallback", "performance"],
+      "rejectedAlternatives": [
+        {
+          "decision": "Serve a simplified marketing page on mobile or fallback.",
+          "reason": "That would abandon the core concept instead of translating it."
+        }
+      ],
+      "author": "forge-director",
+      "approvedBy": "project-owner-direction",
+      "createdAt": "2026-09-16T20:10:00.000Z"
+    }
+  ]
 }
