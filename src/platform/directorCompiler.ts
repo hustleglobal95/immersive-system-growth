@@ -55,7 +55,7 @@ export function compileDirectorTreatment(input: unknown): DirectorCompilation {
       direction: {
         objective: beat.purpose,
         spatialStory: treatment.grammar.spatial.join(" ").slice(0, 500),
-        composition: treatment.grammar.composition,
+        composition: treatment.grammar.composition.slice(0, 32),
         camera: {
           framing: [shot.framing],
           lens: [shot.lensCharacter],
@@ -68,31 +68,31 @@ export function compileDirectorTreatment(input: unknown): DirectorCompilation {
           key: treatment.grammar.lighting.slice(0, 2),
           fill: treatment.grammar.lighting.slice(1, 3),
           practicals: [],
-          atmosphere: treatment.grammar.lighting,
+          atmosphere: treatment.grammar.lighting.slice(0, 32),
         },
-        materials: treatment.grammar.materials,
+        materials: treatment.grammar.materials.slice(0, 32),
         motion: {
-          subject: treatment.grammar.motion,
-          environment: treatment.grammar.spatial,
-          assembly: signature ? [treatment.signatureMoment.description] : [],
+          subject: treatment.grammar.motion.slice(0, 32),
+          environment: treatment.grammar.spatial.slice(0, 32),
+          assembly: signature ? [treatment.signatureMoment.description.slice(0, 300)] : [],
           easing: [beat.intensity >= 8 ? "Use deliberate timing with a clear acceleration/deceleration story." : "Keep timing measured and subordinate to comprehension."],
-          continuity: treatment.grammar.transitions,
+          continuity: treatment.grammar.transitions.slice(0, 32),
         },
-        sound: treatment.grammar.sound,
-        interactionNotes: treatment.grammar.interaction,
-        transitionNotes: treatment.grammar.transitions,
+        sound: treatment.grammar.sound.slice(0, 32),
+        interactionNotes: treatment.grammar.interaction.slice(0, 32),
+        transitionNotes: treatment.grammar.transitions.slice(0, 32),
         assetRequirements: treatment.assets
           .filter((asset) => asset.productionDecision === "use" || asset.productionDecision === "upgrade" || asset.productionDecision === "create")
           .slice(0, 12)
-          .map((asset) => `${asset.label}: ${asset.productionDecision} — ${asset.role}`),
+          .map((asset) => `${asset.label}: ${asset.productionDecision} — ${asset.role}`.slice(0, 300)),
         implementationNotes: [
           `Intensity target: ${beat.intensity}/10.`,
           `Information density: ${beat.informationDensity}/10.`,
           `Interaction level: ${beat.interactionLevel}/10.`,
           ...(signature ? [`Protected signature moment: ${treatment.signatureMoment.name}.`] : []),
         ],
-        mobileNotes: treatment.mobileInterpretation,
-        negativeDirectives: treatment.noGoRules,
+        mobileNotes: treatment.mobileInterpretation.slice(0, 32),
+        negativeDirectives: treatment.noGoRules.slice(0, 32),
       },
       runtime: {
         motionPreset: runtimePreset,
@@ -124,15 +124,15 @@ export function compileDirectorTreatment(input: unknown): DirectorCompilation {
         "One primary subject per frame.",
         `Protect ${treatment.signatureMoment.name} as the highest-intensity moment.`,
       ],
-      compositionRules: treatment.grammar.composition,
-      cameraLanguage: treatment.grammar.camera,
-      lightingLanguage: treatment.grammar.lighting,
-      materialLanguage: treatment.grammar.materials,
-      motionLanguage: treatment.grammar.motion,
-      transitionLanguage: treatment.grammar.transitions,
-      interactionLanguage: treatment.grammar.interaction,
-      soundLanguage: treatment.grammar.sound,
-      spatialRules: treatment.grammar.spatial,
+      compositionRules: treatment.grammar.composition.slice(0, 32),
+      cameraLanguage: treatment.grammar.camera.slice(0, 32),
+      lightingLanguage: treatment.grammar.lighting.slice(0, 32),
+      materialLanguage: treatment.grammar.materials.slice(0, 32),
+      motionLanguage: treatment.grammar.motion.slice(0, 32),
+      transitionLanguage: treatment.grammar.transitions.slice(0, 32),
+      interactionLanguage: treatment.grammar.interaction.slice(0, 32),
+      soundLanguage: treatment.grammar.sound.slice(0, 32),
+      spatialRules: treatment.grammar.spatial.slice(0, 32),
       continuityRules: [
         "Carry a meaningful visual or spatial anchor across major transitions.",
         "Do not introduce a new motion grammar without an emotional-state reason.",
@@ -141,10 +141,10 @@ export function compileDirectorTreatment(input: unknown): DirectorCompilation {
         "Physical subjects should preserve believable scale, light response and camera behavior.",
         "Stylization must be consistent with the locked thesis rather than arbitrary spectacle.",
       ],
-      assetRules: treatment.assets.map((asset) => `${asset.label}: ${asset.productionDecision} (${asset.quality})`),
-      typographyRules: treatment.grammar.typography,
-      colorRules: treatment.grammar.color,
-      mobileRules: treatment.mobileInterpretation,
+      assetRules: treatment.assets.slice(0, 32).map((asset) => `${asset.label}: ${asset.productionDecision} (${asset.quality})`.slice(0, 300)),
+      typographyRules: treatment.grammar.typography.slice(0, 32),
+      colorRules: treatment.grammar.color.slice(0, 32),
+      mobileRules: treatment.mobileInterpretation.slice(0, 32),
       performanceRules: [
         "Spend performance budget on the signature moment and hero assets before decorative effects.",
         "Use progressive enhancement for optional immersive systems.",
@@ -153,7 +153,7 @@ export function compileDirectorTreatment(input: unknown): DirectorCompilation {
         "Narrative meaning must remain available with reduced motion.",
         "Primary navigation and conversion controls must remain keyboard-operable and legible.",
       ],
-      forbiddenPatterns: treatment.noGoRules,
+      forbiddenPatterns: treatment.noGoRules.slice(0, 32),
     },
     constraints: {
       approved: [
@@ -178,14 +178,14 @@ function presetForIntensity(intensity: number): CreativeMotionPreset {
 }
 
 function copyForBeat(treatment: DirectorTreatment, beat: DirectorTreatment["emotionalArc"][number], index: number) {
-  if (index === 0) return treatment.thesis;
-  if (beat.intensity >= 9) return treatment.signatureMoment.name;
-  if (index === treatment.emotionalArc.length - 1) return treatment.primaryAction;
-  return beat.label;
+  if (index === 0) return treatment.thesis.slice(0, 120);
+  if (beat.intensity >= 9) return treatment.signatureMoment.name.slice(0, 120);
+  if (index === treatment.emotionalArc.length - 1) return treatment.primaryAction.slice(0, 120);
+  return beat.label.slice(0, 120);
 }
 
 function interactionForBeat(treatment: DirectorTreatment, beat: DirectorTreatment["emotionalArc"][number]) {
-  if (beat.intensity >= 9) return `Directed signature sequence. Visitor control is secondary to ${treatment.signatureMoment.name}.`;
+  if (beat.intensity >= 9) return `Directed signature sequence. Visitor control is secondary to ${treatment.signatureMoment.name}.`.slice(0, 240);
   if (beat.interactionLevel >= 5) return "Allow purposeful visitor exploration without losing narrative position.";
   return "Primarily directed presentation; keep interaction lightweight and optional.";
 }
