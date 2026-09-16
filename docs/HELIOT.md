@@ -13,8 +13,11 @@ Use Node 22.13 or later, run `npm ci`, then `npm run dev` and open `/heliot`.
 - `src/experiences/heliot/HeliotStage.tsx`: environment lighting, crown markings and progressive optical rays, using Forge's persistent CinematicFrame.
 - `src/experiences/heliot/HeliotExperience.tsx`: accessible chapter document, aperture diagram, inspection and configuration export.
 - `app/heliot/observatory.css`: the rebuilt desktop and mobile art direction, layered over the semantic base styles.
+- `app/heliot/final-cut.css`: Director final-cut hierarchy that quiets fixed chrome around the primary threshold/descent without hiding focused controls.
 - `ObservatoryWorld.tsx`: textured basalt terrain, instanced rocks, gateway, radial passage, lit gallery, basin and reflection geometry. The earlier `ObservatoryPlate.tsx` and `TerrainField.tsx` studies are no longer mounted.
 - `lightLab.ts`: the shared aperture state for geometry, ray width, readout and exports.
+- `clients/heliot/director/treatment.json`: locked Flagship Director treatment and shot bible.
+- `clients/heliot/director/`: persisted evidence, decisions, fingerprint, critique and continuous-review history.
 - `docs/HELIOT_FLIGHT_PLAN.md`: current spatial shot list. Earlier scene plans record superseded concepts.
 - `docs/HELIOT_ART_DIRECTION.md`: original image provenance, prompts and implementation rationale.
 
@@ -28,7 +31,7 @@ The custom optical diagram is necessary because it shows a changing aperture con
 
 ## Validation and static distribution
 
-`npm run check` runs all Forge audits, unit tests, TypeScript and lint. `npm run build` creates the production application. `npx playwright test tests/browser/heliot.spec.ts --project=chromium` checks interaction, reverse scroll, mobile, reduced motion, and fallback. `CHROMIUM_EXECUTABLE` can point to an installed browser when managed browser downloads are unavailable.
+`npm run check` runs all Forge audits, HELIOT Director final-cut audit, unit tests, TypeScript and lint. `npm run heliot:director:audit` validates the locked treatment, evidence, decision ledger, portfolio fingerprint, final-cut critique/reviews, full Creative Direction contract and production handoff. `npm run build` creates the production application. `npx playwright test tests/browser/heliot.spec.ts --project=chromium` checks interaction, reverse scroll, mobile, reduced motion, and fallback. `CHROMIUM_EXECUTABLE` can point to an installed browser when managed browser downloads are unavailable.
 
 `node scripts/export-heliot.mjs` packages the prerendered route and hashed client assets into `out`. The root redirects to `/heliot`; only this microsite is exported, without Studio or server routes. Rebuild and re-export whenever source changes. Verify the exact output with `HELIOT_STATIC=1 npx playwright test tests/browser/heliot.spec.ts --project=chromium`. This distribution is suitable only while HELIOT remains client-interactive and has no Next server actions or server navigation. `node scripts/capture-heliot.mjs` captures production desktop/mobile screenshots in `generated/heliot`.
 
@@ -60,3 +63,22 @@ Camera banking uses the same smoothed frame as position and target. The renderer
 The 126-test unit suite and Forge audits pass, including 2,001 samples per viewport checking the actual passage centerline, doorway clearance, gallery floor/ceiling and exterior/exhibit framing. Production build, TypeScript and lint pass (eight existing lint warnings, no errors). The original model tiers remain under 1 MB each; all four local visual textures total approximately 1.2 MB. No claim of physical-device FPS or a verified Safari run is made.
 
 Final delivery: all four HELIOT Chromium end-to-end tests pass against the exported production distribution, including actual camera entry into the underground gallery and return outside, persistent-canvas navigation, sound, keyboard inspection, both downloads, mobile/reduced motion and no-JavaScript/no-WebGL fallback. All 20 chapter captures completed with no page errors or horizontal overflow. The observed render ledger peaked at 129 calls / 195,690 triangles on desktop and 196 calls / 381,612 triangles on phone, including initialization and multiple rendering passes; these are cost observations, not physical-device performance claims. See `heliot-review/report.json`.
+
+## Director Intelligence final cut — 2026-09-16
+
+The final Director pass makes the **threshold descent** the canonical HELIOT signature: the camera aligns with the hollow bronze gateway, crosses real radial fins, follows the curved descending passage and arrives inside the underground light gallery in one continuous reversible move. The later aerial chapter is retained as spatial resolution, deliberately below the signature in intensity.
+
+This release closes the project-intelligence gaps left after the spatial-flight port:
+
+- the Studio project now points to a real locked Flagship treatment at `clients/heliot/director/treatment.json`;
+- evidence is persisted with provenance and confidence instead of leaving the Director evidence store empty;
+- six high-value creative decisions are locked with Why Ladders, evidence IDs and rejected alternatives;
+- a real HELIOT creative fingerprint is stored both with the project and in `forge-intelligence/projects/`, allowing future Director runs to detect and penalize direct self-repetition;
+- the 12-role Council critique, originality review, stress lab, creative ceiling and 25/50/75/90/final-cut history are persisted with the project;
+- the old shallow Creative Direction contract is replaced with a full art-direction constitution and scene-by-scene camera, lighting, material, motion, interaction, transition, mobile, performance, accessibility and negative directives;
+- `app/heliot/final-cut.css` lowers fixed chrome prominence during threshold alignment/descent while restoring full visibility on focus/hover and preserving reduced-motion behavior;
+- `heliot:director:audit` and `tests/heliot-director-final-cut.test.ts` guard the locked creative hierarchy in normal Forge validation.
+
+The deliberate final-cut decision is **not** to add another particle system, hero model, post-processing layer or interaction mode merely because Forge can. HELIOT already has a bespoke world, optical field, deterministic ProductRig, causal light laboratory, optional atmosphere, adaptive quality, demand rendering, semantic fallback and reversible camera choreography. Additional spectacle would reduce hierarchy rather than increase capability.
+
+Current verification caveat for this final-cut branch: earlier HELIOT release evidence remains recorded above, but the 2026-09-16 Director-final-cut changes require a fresh executed CI/build/browser/capture run before those earlier results can be restated as verification of the new branch. GitHub Actions has repeatedly produced zero-step failures in this repository; such a run is an infrastructure failure and must not be reported as green. Physical-device Safari/WebKit/GPU performance also remains unverified until actually measured.
