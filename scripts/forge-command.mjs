@@ -32,9 +32,18 @@ const checkpointOutput = options["checkpoint-output"] ? String(options["checkpoi
 const dryRun = Boolean(options["dry-run"]);
 const actor = options.actor ? String(options.actor) : undefined;
 const source = options.source ? String(options.source) : "cli";
+const approvedCommandTypes = options.approve
+  ? String(options.approve).split(",").map((value) => value.trim()).filter(Boolean)
+  : [];
+const approvedBy = options["approved-by"] ? String(options["approved-by"]) : actor;
+const approvalReason = options["approval-reason"] ? String(options["approval-reason"]) : undefined;
 
 if (!commandsPath) {
-  console.error("Usage: npm run forge:command -- --commands <commands.json> [--input config/experience.json | --checkpoint checkpoint.json] [--initial-revision 0] [--expected-revision 0] [--output experience.json] [--actor name] [--source cli|ai|studio] [--journal-output journal.json] [--checkpoint-output checkpoint.json] [--dry-run]");
+  console.error("Usage: npm run forge:command -- --commands <commands.json> [--input config/experience.json | --checkpoint checkpoint.json] [--initial-revision 0] [--expected-revision 0] [--output experience.json] [--actor name] [--source cli|ai|studio] [--approve scene.delete,experience.replace --approved-by name --approval-reason text] [--journal-output journal.json] [--checkpoint-output checkpoint.json] [--dry-run]");
+  process.exit(2);
+}
+if (approvedCommandTypes.length && !approvedBy?.trim()) {
+  console.error("Protected command approval requires --approved-by or --actor.");
   process.exit(2);
 }
 
@@ -68,12 +77,19 @@ if (unknown.length) {
   process.exit(2);
 }
 
+const approval = approvedCommandTypes.length ? {
+  by: approvedBy,
+  commandTypes: approvedCommandTypes,
+  reason: approvalReason,
+} : undefined;
+
 const result = engine.transactionRegistered(commands, {
   transactionId: `cli-${Date.now()}`,
   dryRun,
   expectedRevision,
   actor,
   source,
+  approval,
 });
 
 if (!result.ok) {
