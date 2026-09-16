@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { directProject } from "@/src/platform/directorEngine";
+import { critiqueTreatment, directProject } from "@/src/platform/directorEngine";
 import { compileDirectorTreatment } from "@/src/platform/directorCompiler";
 import type { DirectorBrief, DirectorTreatment } from "@/src/platform/directorSchema";
 
@@ -48,12 +48,10 @@ export function DirectorWorkbench() {
 
   const generate = () => setTreatment(directProject(brief));
   const chooseTerritory = (id: string) => {
-    const territory = treatment.territories.find((item) => item.id === id);
-    if (!territory) return;
-    const nextBrief = { ...brief };
-    const regenerated = directProject(nextBrief);
-    const replacement = regenerated.territories.find((item) => item.id === id) ?? territory;
-    setTreatment({
+    const regenerated = directProject(brief);
+    const replacement = regenerated.territories.find((item) => item.id === id);
+    if (!replacement) return;
+    const next: DirectorTreatment = {
       ...regenerated,
       selectedTerritoryId: id,
       thesis: replacement.thesis,
@@ -64,7 +62,8 @@ export function DirectorWorkbench() {
         whyMemorable: replacement.memory,
       },
       artBible: { ...regenerated.artBible, northStar: replacement.thesis },
-    });
+    };
+    setTreatment({ ...next, critique: critiqueTreatment(next) });
   };
 
   return (
