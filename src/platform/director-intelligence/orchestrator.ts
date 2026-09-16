@@ -23,6 +23,7 @@ import { simulateAudienceLenses } from "@/src/platform/director-intelligence/aud
 import { brandAssetBlockers, identifyDistinctiveBrandAssets } from "@/src/platform/director-intelligence/brandAssets";
 import { detectCouncilInflation } from "@/src/platform/director-intelligence/calibration";
 import { evaluateHumanGates } from "@/src/platform/director-intelligence/humanGates";
+import { applyTasteCalibration, inferTasteTraits, tasteAdjustment } from "@/src/platform/director-intelligence/taste";
 
 export function runDirectorIntelligence(input: DirectorIntelligenceInput & { approvals?: DirectorHumanApprovals; finalCutRequested?: boolean }) {
   const brief = parseDirectorBrief(input.brief);
@@ -45,11 +46,13 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
   const fingerprintsByTerritory = new Map<string, ReturnType<typeof buildOriginalityFingerprint>>();
   const stressByTerritory = new Map<string, ReturnType<typeof runStressLab>>();
   const clicheByTerritory = new Map<string, ReturnType<typeof scanCategoryCliches>>();
+  const tasteByTerritory = new Map<string, ReturnType<typeof tasteAdjustment>>();
 
   for (const territory of treatment.territories) {
     const cliches = scanCategoryCliches(brief, treatment, territory);
     const stress = runStressLab(brief, treatment, territory);
-    const scores = createEvaluationScores(brief, treatment, territory, collisions, stress);
+    const taste = tasteAdjustment(input.taste, inferTasteTraits(treatment, territory));
+    const scores = applyTasteCalibration(createEvaluationScores(brief, treatment, territory, collisions, stress), taste.adjustment);
     const council = runDirectorCouncil(brief, treatment, territory, scores, { cliches, collisions, stress });
     const originality = buildOriginalityFingerprint(brief, treatment, territory, collisions, cliches);
     const blockers = [...evidenceBlockers, ...brandBlockers, ...stress.blockers, ...originalityBlockers(originality)];
@@ -57,6 +60,7 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
     fingerprintsByTerritory.set(territory.id, originality);
     stressByTerritory.set(territory.id, stress);
     clicheByTerritory.set(territory.id, cliches);
+    tasteByTerritory.set(territory.id, taste);
   }
 
   const debate = runCreativeDebate(treatment.territories, evaluations);
@@ -69,6 +73,7 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
   const originality = fingerprintsByTerritory.get(selectedTerritory.id)!;
   const stress = stressByTerritory.get(selectedTerritory.id)!;
   const cliches = clicheByTerritory.get(selectedTerritory.id)!;
+  const selectedTaste = tasteByTerritory.get(selectedTerritory.id)!;
   const assetGap = analyzeAssetGap(brief, treatment);
   const ceiling = estimateCreativeCeiling(brief, treatment, selectedEvaluation, assetGap, stress);
   const leverage = rankProductionLeverage(treatment, selectedEvaluation, assetGap);
@@ -106,7 +111,7 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
       readyForProduction: baseProductionPlan.readiness.readyForProduction && report.verdict === "LOCK" && humanGates.authorizedForProduction,
     },
   };
-  return { report, productionPlan, debate, audience, brandAssets, referenceDeconstructions, divergence: diverged.diversity, councilCalibration: inflation, humanGates };
+  return { report, productionPlan, debate, audience, brandAssets, referenceDeconstructions, divergence: diverged.diversity, councilCalibration: inflation, humanGates, tasteCalibration: selectedTaste };
 }
 
 function selectTerritory(treatment: DirectorTreatment, territoryId: string) {
