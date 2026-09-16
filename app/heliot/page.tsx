@@ -3,6 +3,7 @@ import { HeliotExperience } from '@/src/experiences/heliot/HeliotExperience';
 import { architecturalFont, editorialFont } from '@/src/design/fonts';
 import './heliot.css';
 import './observatory.css';
+import './final-cut.css';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
