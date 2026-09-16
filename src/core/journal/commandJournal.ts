@@ -1,4 +1,5 @@
 import type { CommandError } from "@/src/core/commands/command";
+import type { ForgeApprovalRecord } from "@/src/core/commands/commandPolicy";
 import type { ForgeEvent } from "@/src/core/events/eventBus";
 
 export type ForgeMutationSource = "studio" | "cli" | "ai" | "system" | "replay" | `custom:${string}`;
@@ -21,6 +22,7 @@ export interface ForgeJournalEntry<TState = unknown> {
   transactionId?: string;
   actor?: string;
   source?: ForgeMutationSource;
+  approval?: ForgeApprovalRecord;
   commands?: ForgeJournalCommand[];
   snapshot?: TState;
   events: Array<Pick<ForgeEvent, "type" | "payload">>;
@@ -38,6 +40,7 @@ export interface ForgeMutationReceipt {
   transactionId?: string;
   actor?: string;
   source?: ForgeMutationSource;
+  approval?: ForgeApprovalRecord;
   affectedIds: string[];
   eventTypes: string[];
   errors: CommandError[];

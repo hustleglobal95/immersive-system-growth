@@ -1,5 +1,7 @@
 import type { ForgeCommand, CommandError } from "@/src/core/commands/command";
 import { CommandRegistry } from "@/src/core/commands/commandRegistry";
+import type { ForgeApprovalRecord } from "@/src/core/commands/commandPolicy";
+import { evaluateCommandPolicy } from "@/src/core/commands/commandPolicy";
 import { ForgeEventBus, type ForgeEvent } from "@/src/core/events/eventBus";
 import { CapabilityRegistry } from "@/src/core/registry/capabilityRegistry";
 import type { ForgeInvariant } from "@/src/core/invariants/invariants";
@@ -28,6 +30,7 @@ export interface ForgeExecutionOptions {
   expectedRevision?: number;
   actor?: string;
   source?: ForgeMutationSource;
+  approval?: ForgeApprovalRecord;
 }
 
 export interface ForgeEngineResult<TState> {
@@ -74,7 +77,7 @@ export class ForgeEngine<TState> {
     this.events = options.eventBus ?? new ForgeEventBus();
     this.invariants = options.invariants ?? [];
     this.historyLimit = Math.max(1, options.historyLimit ?? 100);
-    this.journalLimit = Math.max(1, options.journalLimit ?? 500);
+    this.journalLimit = Math.max(1, options.journalLimit ?? 5000);
     this.journal = cloneJournal(options.initialJournal ?? []);
     const lastEntry = this.journal.at(-1);
     this.revision = Math.max(0, options.initialRevision ?? lastEntry?.revisionAfter ?? 0);
@@ -272,6 +275,13 @@ export class ForgeEngine<TState> {
       return this.failureResult(before, errors, options, revisionBefore, fingerprintBefore);
     }
 
+    const policy = evaluateCommandPolicy(this.commands, commands, {
+      source: options.source,
+      dryRun: options.dryRun,
+      approval: options.approval,
+    });
+    if (!policy.allowed) return this.failureResult(before, policy.errors, options, revisionBefore, fingerprintBefore);
+
     const result = runTransaction(this.state, commands, {
       transactionId: options.transactionId,
       validateState: (state) => validateInvariants(state, this.invariants)
@@ -281,6 +291,7 @@ export class ForgeEngine<TState> {
     if (!result.ok) return this.failureResult(before, result.errors, options, revisionBefore, fingerprintBefore);
 
     const fingerprintAfter = stateFingerprint(result.state);
+    const approval = normalizeApproval(options.approval);
     if (options.dryRun) {
       const receipt = this.receipt({
         accepted: true,
@@ -292,6 +303,7 @@ export class ForgeEngine<TState> {
         transactionId: options.transactionId,
         actor: options.actor,
         source: options.source,
+        approval,
         affectedIds: result.affectedIds,
         eventTypes: result.events.map((event) => event.type),
         errors: [],
@@ -325,6 +337,7 @@ export class ForgeEngine<TState> {
       transactionId: options.transactionId,
       actor: options.actor,
       source: options.source,
+      approval,
       commands: commands.map((command) => ({ type: command.type, input: structuredClone(command.input) })),
       events: result.events.map((event) => ({ type: event.type, payload: structuredClone(event.payload) })),
     });
@@ -341,6 +354,7 @@ export class ForgeEngine<TState> {
       transactionId: options.transactionId ?? journalEntry.transactionId,
       actor: options.actor,
       source: options.source,
+      approval,
       affectedIds: result.affectedIds,
       eventTypes: result.events.map((event) => event.type),
       errors: [],
@@ -375,6 +389,7 @@ export class ForgeEngine<TState> {
       transactionId: options.transactionId,
       actor: options.actor,
       source: options.source,
+      approval: normalizeApproval(options.approval),
       affectedIds: [],
       eventTypes: [],
       errors: structuredClone(errors),
@@ -419,4 +434,13 @@ export class ForgeEngine<TState> {
     const snapshot = this.snapshot();
     for (const listener of this.listeners) listener(snapshot);
   }
+}
+
+function normalizeApproval(approval?: ForgeApprovalRecord): ForgeApprovalRecord | undefined {
+  if (!approval) return undefined;
+  return {
+    ...structuredClone(approval),
+    commandTypes: [...new Set(approval.commandTypes)].sort(),
+    at: approval.at ?? new Date().toISOString(),
+  };
 }
