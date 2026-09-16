@@ -24,4 +24,5 @@ export * from "@/src/platform/director-intelligence/learning";
 export * from "@/src/platform/director-intelligence/calibration";
 export * from "@/src/platform/director-intelligence/research";
 export * from "@/src/platform/director-intelligence/trends";
+export * from "@/src/platform/director-intelligence/humanGates";
 export * from "@/src/platform/director-intelligence/orchestrator";
