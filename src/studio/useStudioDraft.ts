@@ -6,15 +6,19 @@ import { parseInteractionGraph, type InteractionGraph } from "@/src/lib/interact
 import { parseStudioProject, type StudioProject } from "@/src/platform/studioSchema";
 import type { ExperienceConfig } from "@/src/types/experience";
 import type { AssetManifest } from "@/src/types/assets";
-
-const STORAGE_KEY = "forge-studio-v2";
-
-interface StoredDraft {
-  experience: unknown;
-  project: unknown;
-  assetManifest?: unknown;
-  interactionGraph?: unknown;
-}
+import {
+  LEGACY_STUDIO_DRAFT_STORAGE_KEY,
+  STUDIO_DRAFT_BACKUP_KEY,
+  STUDIO_DRAFT_STORAGE_KEY,
+  createStudioDraftEnvelope,
+  freshStudioDraftRecoveryMeta,
+  migrateLegacyStudioDraft,
+  parseStudioDraftEnvelope,
+  studioDraftRecoveryMeta,
+  type StudioDraftEnvelope,
+  type StudioDraftRecoveryMeta,
+  type StudioDraftRecoverySource,
+} from "@/src/studio/studioDraftStorage";
 
 export function useStudioDraft(
   initialExperience: ExperienceConfig,
@@ -22,8 +26,18 @@ export function useStudioDraft(
   initialAssetManifest: AssetManifest,
   initialInteractionGraph: InteractionGraph,
 ) {
+  const initialPayload = useMemo(() => ({
+    experience: initialExperience,
+    project: initialProject,
+    assetManifest: initialAssetManifest,
+    interactionGraph: initialInteractionGraph,
+  }), [initialAssetManifest, initialExperience, initialInteractionGraph, initialProject]);
+
   const [experience, setExperienceState] = useState(initialExperience);
   const experienceRef = useRef(initialExperience);
+  const experienceRevisionRef = useRef(0);
+  const autosaveSequenceRef = useRef(0);
+  const sessionIdRef = useRef(makeSessionId());
   const undoStack = useRef<ExperienceConfig[]>([]);
   const redoStack = useRef<ExperienceConfig[]>([]);
   const groupBase = useRef<ExperienceConfig | null>(null);
@@ -32,28 +46,68 @@ export function useStudioDraft(
   const [assetManifest, setAssetManifest] = useState(initialAssetManifest);
   const [interactionGraph, setInteractionGraph] = useState(initialInteractionGraph);
   const [hydrated, setHydrated] = useState(false);
+  const [persistenceError, setPersistenceError] = useState("");
+  const [recovery, setRecovery] = useState<StudioDraftRecoveryMeta>(() => freshStudioDraftRecoveryMeta(initialPayload, sessionIdRef.current));
 
   useEffect(() => {
+    let loaded: { envelope: StudioDraftEnvelope; source: StudioDraftRecoverySource } | null = null;
+    let primaryCorrupt = false;
+
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const draft = JSON.parse(stored) as StoredDraft;
-        const nextExperience = parseExperience(draft.experience);
-        const nextProject = parseStudioProject(draft.project);
-        const nextManifest = isAssetManifest(draft.assetManifest) ? draft.assetManifest : initialAssetManifest;
-        const nextInteractionGraph = draft.interactionGraph
-          ? parseInteractionGraph(draft.interactionGraph)
-          : initialInteractionGraph;
+      const primary = localStorage.getItem(STUDIO_DRAFT_STORAGE_KEY);
+      if (primary) {
+        try {
+          loaded = { envelope: parseStudioDraftEnvelope(JSON.parse(primary)), source: "primary" };
+        } catch {
+          primaryCorrupt = true;
+        }
+      }
+
+      if (!loaded) {
+        const backup = localStorage.getItem(STUDIO_DRAFT_BACKUP_KEY);
+        if (backup) {
+          try {
+            loaded = { envelope: parseStudioDraftEnvelope(JSON.parse(backup)), source: "backup" };
+          } catch {
+            localStorage.removeItem(STUDIO_DRAFT_BACKUP_KEY);
+          }
+        }
+      }
+
+      if (!loaded) {
+        const legacy = localStorage.getItem(LEGACY_STUDIO_DRAFT_STORAGE_KEY);
+        if (legacy) {
+          try {
+            loaded = {
+              envelope: migrateLegacyStudioDraft(JSON.parse(legacy), {
+                assetManifest: initialAssetManifest,
+                interactionGraph: initialInteractionGraph,
+              }, { sessionId: sessionIdRef.current }),
+              source: "legacy",
+            };
+          } catch {
+            localStorage.removeItem(LEGACY_STUDIO_DRAFT_STORAGE_KEY);
+          }
+        }
+      }
+
+      if (primaryCorrupt) localStorage.removeItem(STUDIO_DRAFT_STORAGE_KEY);
+      if (loaded) {
+        const { envelope, source } = loaded;
+        sessionIdRef.current = envelope.sessionId;
+        autosaveSequenceRef.current = envelope.autosaveSequence;
+        experienceRevisionRef.current = envelope.experienceRevision;
         queueMicrotask(() => {
-          experienceRef.current = nextExperience;
-          setExperienceState(nextExperience);
-          setProject(nextProject);
-          setAssetManifest(nextManifest);
-          setInteractionGraph(nextInteractionGraph);
+          experienceRef.current = envelope.payload.experience;
+          setExperienceState(envelope.payload.experience);
+          setProject(envelope.payload.project);
+          setAssetManifest(envelope.payload.assetManifest);
+          setInteractionGraph(envelope.payload.interactionGraph);
+          setRecovery(studioDraftRecoveryMeta(envelope, source));
         });
       }
-    } catch {
-      localStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+      queueMicrotask(() => setPersistenceError(error instanceof Error ? error.message : "Studio draft recovery failed."));
     } finally {
       queueMicrotask(() => setHydrated(true));
     }
@@ -61,7 +115,28 @@ export function useStudioDraft(
 
   useEffect(() => {
     if (!hydrated) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ experience, project, assetManifest, interactionGraph }));
+    try {
+      const envelope = createStudioDraftEnvelope({ experience, project, assetManifest, interactionGraph }, {
+        sessionId: sessionIdRef.current,
+        autosaveSequence: ++autosaveSequenceRef.current,
+        experienceRevision: experienceRevisionRef.current,
+      });
+      const prior = localStorage.getItem(STUDIO_DRAFT_STORAGE_KEY);
+      if (prior) {
+        try {
+          parseStudioDraftEnvelope(JSON.parse(prior));
+          localStorage.setItem(STUDIO_DRAFT_BACKUP_KEY, prior);
+        } catch {
+          // Never replace a known-good backup with a corrupt primary record.
+        }
+      }
+      localStorage.setItem(STUDIO_DRAFT_STORAGE_KEY, JSON.stringify(envelope));
+      localStorage.removeItem(LEGACY_STUDIO_DRAFT_STORAGE_KEY);
+      setPersistenceError("");
+      setRecovery((current) => ({ ...studioDraftRecoveryMeta(envelope, current.source), source: current.source }));
+    } catch (error) {
+      setPersistenceError(error instanceof Error ? error.message : "Studio autosave failed.");
+    }
   }, [assetManifest, experience, hydrated, interactionGraph, project]);
 
   const setExperience = useCallback<Dispatch<SetStateAction<ExperienceConfig>>>((update) => {
@@ -72,6 +147,7 @@ export function useStudioDraft(
       undoStack.current = [...undoStack.current.slice(-79), current];
       redoStack.current = [];
     }
+    experienceRevisionRef.current++;
     experienceRef.current = next;
     setExperienceState(next);
     setHistory({ undo: undoStack.current.length, redo: 0 });
@@ -95,6 +171,7 @@ export function useStudioDraft(
     const prior = undoStack.current.pop();
     if (!prior) return;
     redoStack.current.push(experienceRef.current);
+    experienceRevisionRef.current++;
     experienceRef.current = prior;
     setExperienceState(prior);
     setHistory({ undo: undoStack.current.length, redo: redoStack.current.length });
@@ -104,6 +181,7 @@ export function useStudioDraft(
     const next = redoStack.current.pop();
     if (!next) return;
     undoStack.current.push(experienceRef.current);
+    experienceRevisionRef.current++;
     experienceRef.current = next;
     setExperienceState(next);
     setHistory({ undo: undoStack.current.length, redo: redoStack.current.length });
@@ -121,6 +199,9 @@ export function useStudioDraft(
   }, [experience, interactionGraph, project]);
 
   const reset = useCallback(() => {
+    sessionIdRef.current = makeSessionId();
+    experienceRevisionRef.current = 0;
+    autosaveSequenceRef.current = 0;
     experienceRef.current = initialExperience;
     setExperienceState(initialExperience);
     setProject(initialProject);
@@ -130,8 +211,12 @@ export function useStudioDraft(
     redoStack.current = [];
     groupBase.current = null;
     setHistory({ undo: 0, redo: 0 });
-    localStorage.removeItem(STORAGE_KEY);
-  }, [initialAssetManifest, initialExperience, initialInteractionGraph, initialProject]);
+    setPersistenceError("");
+    setRecovery(freshStudioDraftRecoveryMeta(initialPayload, sessionIdRef.current));
+    localStorage.removeItem(STUDIO_DRAFT_STORAGE_KEY);
+    localStorage.removeItem(STUDIO_DRAFT_BACKUP_KEY);
+    localStorage.removeItem(LEGACY_STUDIO_DRAFT_STORAGE_KEY);
+  }, [initialAssetManifest, initialExperience, initialInteractionGraph, initialPayload, initialProject]);
 
   return {
     experience,
@@ -150,14 +235,10 @@ export function useStudioDraft(
     setInteractionGraph,
     validation,
     hydrated,
+    recovery,
+    persistenceError,
     reset,
   };
-}
-
-function isAssetManifest(value: unknown): value is AssetManifest {
-  if (!value || typeof value !== "object") return false;
-  const record = value as Record<string, unknown>;
-  return ["models", "textures", "hdr", "video"].every((key) => Array.isArray(record[key])) && Boolean(record.budgets);
 }
 
 function parseSafe(action: () => unknown) {
@@ -171,6 +252,11 @@ function parseSafe(action: () => unknown) {
     }
     return error instanceof Error ? error.message : "Unknown validation error";
   }
+}
+
+function makeSessionId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+  return `studio-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 export function downloadJson(name: string, value: unknown) {
