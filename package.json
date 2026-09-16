@@ -53,6 +53,8 @@
     "forge:command": "node --import tsx scripts/forge-command.mjs",
     "preset:list": "node --import tsx scripts/preset-list.mjs",
     "visual:audit": "node --import tsx scripts/visual-system-audit.mjs",
+    "visual:regression": "node scripts/visual-regression.mjs",
+    "visual:baseline:update": "node scripts/visual-regression.mjs --update",
     "performance:audit": "node --import tsx scripts/performance-audit.mjs",
     "release:report": "node --import tsx scripts/release-report.mjs",
     "experience:modes:audit": "node --import tsx scripts/experience-mode-audit.mjs"
