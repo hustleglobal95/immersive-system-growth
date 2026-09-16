@@ -3,7 +3,7 @@
   "id": "heliot-optical-study",
   "name": "HELIOT / Observatory for the unseen",
   "experiencePath": "src/experiences/heliot/experience.json",
-  "directorTreatmentPath": "config/director-treatment.json",
+  "directorTreatmentPath": "clients/heliot/director/treatment.json",
   "directorEvidencePath": "clients/heliot/director/evidence.json",
   "directorDecisionsPath": "clients/heliot/director/decisions.json",
   "directorFingerprintPath": "clients/heliot/director/fingerprint.json",
