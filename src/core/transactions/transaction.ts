@@ -7,6 +7,7 @@ export interface TransactionResult<TState> {
   events: ForgeEvent[];
   errors: CommandError[];
   inverseCommands: ForgeCommand<TState, unknown, unknown>[];
+  affectedIds: string[];
 }
 
 export interface TransactionOptions<TState> {
@@ -22,22 +23,24 @@ export function runTransaction<TState>(
   let state = structuredClone(initialState);
   const events: ForgeEvent[] = [];
   const inverseCommands: ForgeCommand<TState, unknown, unknown>[] = [];
+  const affectedIds = new Set<string>();
 
   for (const command of commands) {
     const validation = command.validate({ state, transactionId: options.transactionId });
-    if (validation.length) return { ok: false, state: structuredClone(initialState), events: [], errors: validation, inverseCommands: [] };
+    if (validation.length) return { ok: false, state: structuredClone(initialState), events: [], errors: validation, inverseCommands: [], affectedIds: [] };
 
     const result = command.execute({ state, transactionId: options.transactionId });
-    if (!result.ok) return { ok: false, state: structuredClone(initialState), events: [], errors: result.errors, inverseCommands: [] };
+    if (!result.ok) return { ok: false, state: structuredClone(initialState), events: [], errors: result.errors, inverseCommands: [], affectedIds: [] };
 
     state = result.state;
     events.push(...result.events);
+    for (const id of result.affectedIds ?? []) affectedIds.add(id);
     if (result.inverse) inverseCommands.unshift(result.inverse);
   }
 
   const invariantErrors = options.validateState?.(state) ?? [];
   if (invariantErrors.length)
-    return { ok: false, state: structuredClone(initialState), events: [], errors: invariantErrors, inverseCommands: [] };
+    return { ok: false, state: structuredClone(initialState), events: [], errors: invariantErrors, inverseCommands: [], affectedIds: [] };
 
-  return { ok: true, state, events, errors: [], inverseCommands };
+  return { ok: true, state, events, errors: [], inverseCommands, affectedIds: [...affectedIds] };
 }
