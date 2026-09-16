@@ -1,0 +1,43 @@
+import { runDirectorIntelligence } from "../src/platform/director-intelligence/orchestrator.ts";
+
+const projectTypes = ["brand", "product", "property", "hospitality", "portfolio", "saas", "commerce", "campaign", "automotive", "fashion"];
+const tiers = ["cinematic", "immersive", "signature", "flagship"];
+const failures = [];
+let runs = 0;
+for (const projectType of projectTypes) {
+  for (const tier of tiers) {
+    const brief = {
+      projectName: `intelligence-${projectType}-${tier}`,
+      projectType,
+      tier,
+      client: `Audit ${projectType}`,
+      audience: "A defined premium audience comparing options and seeking credible proof before acting.",
+      objective: "Create preference, prove a specific differentiated value, and move qualified visitors toward action.",
+      primaryAction: "Start a conversation",
+      brandTruth: `This ${projectType} project earns attention through one specific client truth rather than category spectacle.`,
+      differentiators: ["A distinctive client-specific product or brand truth", "A credible proof point unavailable to generic competitors"],
+      constraints: ["Avoid category clichés", "Preserve mobile meaning", "Keep one protected signature moment"],
+      existingAssets: [{ id: "hero", label: "Hero master asset", type: projectType === "saas" ? "image" : "model", notes: "Hero-quality asset with enough fidelity for the primary reveal." }, { id: "brand", label: "Distinctive brand symbol", type: "brand", notes: "Recognizable client-owned visual asset." }],
+      references: [{ label: "Cross-medium precedent", lesson: "Use pacing and controlled revelation; do not copy surface style." }],
+    };
+    try {
+      const result = runDirectorIntelligence({ brief });
+      runs++;
+      if (result.report.evaluations.length !== 3) failures.push(`${projectType}/${tier}: expected three evaluations`);
+      if (result.report.selectedEvaluation.critiques.length !== 12) failures.push(`${projectType}/${tier}: expected 12 Council critics`);
+      if (result.report.stress.results.length < 12) failures.push(`${projectType}/${tier}: stress lab incomplete`);
+      if (result.report.whyLadders.some((ladder) => !ladder.valid)) failures.push(`${projectType}/${tier}: invalid why ladder`);
+      if (result.report.precedents.length < 2) failures.push(`${projectType}/${tier}: precedent retrieval too thin`);
+      if (!result.productionPlan.creativePlan?.scenes?.length) failures.push(`${projectType}/${tier}: production plan did not compile`);
+      if (result.debate.pairwise.length !== 3) failures.push(`${projectType}/${tier}: pairwise tournament incomplete`);
+    } catch (error) {
+      failures.push(`${projectType}/${tier}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+}
+if (failures.length) {
+  console.error(`Director Intelligence audit failed with ${failures.length} issue(s):`);
+  failures.forEach((failure) => console.error(`- ${failure}`));
+  process.exit(1);
+}
+console.log(`Director Intelligence audit passed: ${runs} full runs across ${projectTypes.length} project types × ${tiers.length} tiers.`);

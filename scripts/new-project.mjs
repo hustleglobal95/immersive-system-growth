@@ -22,11 +22,18 @@ if (fs.existsSync(directory)) {
 const experience = parseExperience(JSON.parse(fs.readFileSync(sourcePath, "utf8")));
 const visualSystems = JSON.parse(fs.readFileSync("config/visual-systems.json", "utf8"));
 const experienceModes = JSON.parse(fs.readFileSync("config/experience-modes.json", "utf8"));
+const directorDirectory = path.join(directory, "director");
 const project = parseStudioProject({
   version: 2,
   id: slug,
   name: slug.split("-").map((part) => part[0].toUpperCase() + part.slice(1)).join(" "),
   experiencePath: `clients/${slug}/experience.json`,
+  directorTreatmentPath: "config/director-treatment.json",
+  directorEvidencePath: `clients/${slug}/director/evidence.json`,
+  directorDecisionsPath: `clients/${slug}/director/decisions.json`,
+  directorFingerprintPath: `clients/${slug}/director/fingerprint.json`,
+  directorCritiquePath: `clients/${slug}/director/critique.json`,
+  directorReviewHistoryPath: `clients/${slug}/director/review-history.json`,
   creativeDirectionPath: "config/creative-direction.json",
   visualSystemsPath: `clients/${slug}/visual-systems.json`,
   experienceModesPath: `clients/${slug}/experience-modes.json`,
@@ -36,9 +43,15 @@ const project = parseStudioProject({
 });
 fs.mkdirSync("clients", { recursive: true });
 fs.mkdirSync(directory, { recursive: false });
+fs.mkdirSync(directorDirectory, { recursive: false });
 fs.writeFileSync(path.join(directory, "experience.json"), JSON.stringify(experience, null, 2) + "\n");
 fs.writeFileSync(path.join(directory, "studio-project.json"), JSON.stringify(project, null, 2) + "\n");
 fs.writeFileSync(path.join(directory, "visual-systems.json"), JSON.stringify(visualSystems, null, 2) + "\n");
 fs.writeFileSync(path.join(directory, "experience-modes.json"), JSON.stringify(experienceModes, null, 2) + "\n");
-fs.writeFileSync(path.join(directory, "README.md"), `# ${project.name}\n\nCreated from the ${recipe} recipe.\n\n- Edit in /studio and export the project JSON files.\n- Validate with npm run project:validate.\n- Activate with npm run project:activate -- ${slug}.\n`);
-console.log(`Created ${directory} from ${recipe}.`);
+fs.writeFileSync(path.join(directorDirectory, "evidence.json"), JSON.stringify({ version: 1, evidence: [], unknowns: [], assumptions: [], unsupportedClaims: [], confidence: 0 }, null, 2) + "\n");
+fs.writeFileSync(path.join(directorDirectory, "decisions.json"), JSON.stringify({ version: 1, decisions: [] }, null, 2) + "\n");
+fs.writeFileSync(path.join(directorDirectory, "fingerprint.json"), JSON.stringify({ version: 1, projectId: slug, status: "pending" }, null, 2) + "\n");
+fs.writeFileSync(path.join(directorDirectory, "critique.json"), JSON.stringify({ version: 1, status: "pending", evaluations: [] }, null, 2) + "\n");
+fs.writeFileSync(path.join(directorDirectory, "review-history.json"), JSON.stringify({ version: 1, reviews: [], clientFeedback: [], postmortem: [] }, null, 2) + "\n");
+fs.writeFileSync(path.join(directory, "README.md"), `# ${project.name}\n\nCreated from the ${recipe} recipe.\n\n- Start creative direction in /director/intelligence.\n- Edit production in /studio and export project JSON files.\n- Validate with npm run project:validate.\n- Activate with npm run project:activate -- ${slug}.\n`);
+console.log(`Created ${directory} from ${recipe} with Director Intelligence state.`);
