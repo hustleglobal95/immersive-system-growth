@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "established": false,
+  "generatedAt": null,
+  "signature": {
+    "width": 32,
+    "height": 32,
+    "mode": "grayscale-mean-absolute-error"
+  },
+  "thresholds": {
+    "warn": 0.025,
+    "fail": 0.06
+  },
+  "shots": {}
+}

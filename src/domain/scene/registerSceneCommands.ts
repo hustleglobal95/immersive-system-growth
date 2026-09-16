@@ -1,9 +1,13 @@
 import type { ExperienceConfig } from "@/src/types/experience";
 import { CommandRegistry } from "@/src/core/commands/commandRegistry";
-import { DuplicateSceneCommand, MoveSceneCommand, RenameSceneCommand, deleteSceneCommand } from "@/src/domain/scene/commands";
+import { AddSceneCommand, DuplicateSceneCommand, MoveSceneCommand, RenameSceneCommand, deleteSceneCommand } from "@/src/domain/scene/commands";
 
 export function registerSceneCommands(registry: CommandRegistry<ExperienceConfig>) {
   registry
+    .register("scene.add", (input) => {
+      const value = input as { sourceSceneId?: string; afterSceneId?: string; label?: string };
+      return new AddSceneCommand({ sourceSceneId: value.sourceSceneId, afterSceneId: value.afterSceneId, label: value.label });
+    })
     .register("scene.rename", (input) => {
       const value = input as { sceneId?: string; label?: string };
       return new RenameSceneCommand({ sceneId: String(value.sceneId ?? ""), label: String(value.label ?? "") });
