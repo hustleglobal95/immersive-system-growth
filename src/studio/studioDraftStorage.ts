@@ -28,6 +28,7 @@ export interface StudioDraftEnvelope {
 }
 
 export type StudioDraftRecoverySource = "fresh" | "primary" | "backup" | "legacy";
+export type StudioDraftStorageSlot = "primary" | "backup" | "legacy";
 
 export interface StudioDraftRecoveryMeta {
   source: StudioDraftRecoverySource;
@@ -41,6 +42,18 @@ export interface StudioDraftRecoveryMeta {
 export interface StudioDraftFallbacks {
   assetManifest: AssetManifest;
   interactionGraph: InteractionGraph;
+}
+
+export interface StudioDraftStoredRecords {
+  primary?: string | null;
+  backup?: string | null;
+  legacy?: string | null;
+}
+
+export interface StudioDraftRecoverySelection {
+  envelope: StudioDraftEnvelope | null;
+  source: StudioDraftRecoverySource;
+  invalidSlots: StudioDraftStorageSlot[];
 }
 
 export class StudioDraftIntegrityError extends Error {
@@ -113,6 +126,34 @@ export function migrateLegacyStudioDraft(
   });
 }
 
+export function recoverStudioDraftRecords(
+  records: StudioDraftStoredRecords,
+  fallbacks: StudioDraftFallbacks,
+  options: { legacySessionId: string; migratedAt?: string },
+): StudioDraftRecoverySelection {
+  const invalidSlots: StudioDraftStorageSlot[] = [];
+  const primary = parseStoredEnvelope(records.primary, "primary", invalidSlots);
+  if (primary) return { envelope: primary, source: "primary", invalidSlots };
+
+  const backup = parseStoredEnvelope(records.backup, "backup", invalidSlots);
+  if (backup) return { envelope: backup, source: "backup", invalidSlots };
+
+  if (records.legacy) {
+    try {
+      const parsed = JSON.parse(records.legacy);
+      const envelope = migrateLegacyStudioDraft(parsed, fallbacks, {
+        sessionId: options.legacySessionId,
+        savedAt: options.migratedAt,
+      });
+      return { envelope, source: "legacy", invalidSlots };
+    } catch {
+      invalidSlots.push("legacy");
+    }
+  }
+
+  return { envelope: null, source: "fresh", invalidSlots };
+}
+
 export function studioDraftRecoveryMeta(envelope: StudioDraftEnvelope, source: StudioDraftRecoverySource): StudioDraftRecoveryMeta {
   return {
     source,
@@ -146,6 +187,16 @@ export function fingerprintPayload(payload: StudioDraftPayload) {
 export function isAssetManifest(value: unknown): value is AssetManifest {
   if (!isRecord(value)) return false;
   return ["models", "textures", "hdr", "video"].every((key) => Array.isArray(value[key])) && isRecord(value.budgets);
+}
+
+function parseStoredEnvelope(raw: string | null | undefined, slot: "primary" | "backup", invalid: StudioDraftStorageSlot[]) {
+  if (!raw) return null;
+  try {
+    return parseStudioDraftEnvelope(JSON.parse(raw));
+  } catch {
+    invalid.push(slot);
+    return null;
+  }
 }
 
 function parsePayload(record: Record<string, unknown>, fallbacks?: StudioDraftFallbacks): StudioDraftPayload {
