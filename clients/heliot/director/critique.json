@@ -1,5 +1,161 @@
 {
   "version": 1,
-  "status": "pending",
-  "evaluations": []
+  "status": "final-cut",
+  "selectedTerritoryId": "cross-the-light",
+  "verdict": "LOCK",
+  "scores": {
+    "novelty": 9.7,
+    "value": 9.3,
+    "brandAdherence": 10,
+    "emotionalResonance": 9.6,
+    "aestheticCoherence": 9.7,
+    "conceptualClarity": 9.8,
+    "memorability": 9.8,
+    "distinctiveness": 9.8,
+    "audienceRelevance": 9.2,
+    "structuralExpression": 10,
+    "motionCameraJustification": 10,
+    "interactionPurpose": 9.8,
+    "productionFeasibility": 9.3,
+    "mobileIntegrity": 8.9,
+    "commercialAlignment": 9.1,
+    "portfolioNovelty": 9.8,
+    "assetRealism": 9.8
+  },
+  "hardGates": {
+    "conceptualClarity": "pass",
+    "brandAdherence": "pass",
+    "distinctiveness": "pass",
+    "portfolioNovelty": "pass",
+    "productionFeasibility": "pass",
+    "mobileIntegrity": "pass",
+    "unresolvedBlockers": "pass"
+  },
+  "council": [
+    {
+      "role": "executive-creative",
+      "recommendation": "lock",
+      "strength": "The project now has one clear idea: entering light through architecture rather than accumulating unrelated interactive effects.",
+      "concern": "Do not allow the late aerial shot or exhibit separation to become louder than the threshold descent."
+    },
+    {
+      "role": "brand",
+      "recommendation": "lock",
+      "strength": "Threshold, radial geometry, bronze, field notation and causal light interaction create an ownable HELIOT language.",
+      "concern": "Protect the field-study framing so the experience does not drift toward generic luxury architecture."
+    },
+    {
+      "role": "art",
+      "recommendation": "lock",
+      "strength": "The mineral palette, limited type system and restrained calibration accent support the thesis without visual trend-chasing.",
+      "concern": "Keep small notation readable on narrow screens and do not introduce additional decorative systems."
+    },
+    {
+      "role": "film",
+      "recommendation": "lock",
+      "strength": "The camera has a motivated spatial arc with a real threshold, continuous descent, calm inspection, return and resolution.",
+      "concern": "The signature only works if interface chrome recedes during alignment/descent and the bank stays bounded."
+    },
+    {
+      "role": "experience",
+      "recommendation": "lock",
+      "strength": "The ten chapters move from orientation to awe, explanation, agency, return and ownership without losing navigability.",
+      "concern": "Do not let the anatomy and transmission chapters become information-heavy enough to stall the journey."
+    },
+    {
+      "role": "interaction",
+      "recommendation": "lock",
+      "strength": "Aperture changes the world and export; orbit is scoped; sound is explicit; reverse scroll remains meaningful.",
+      "concern": "Keep manual orbit confined to inspection so authored camera continuity remains authoritative."
+    },
+    {
+      "role": "conversion",
+      "recommendation": "lock",
+      "strength": "The save-field-study action is a conceptually relevant completion event rather than a generic CTA grafted onto the experience.",
+      "concern": "The artifact must remain easy to discover after a long cinematic journey."
+    },
+    {
+      "role": "production",
+      "recommendation": "lock",
+      "strength": "The strongest idea is already supported by original local assets, adaptive quality, demand rendering and validated camera clearance.",
+      "concern": "No new high-cost asset production is justified before physical-device WebKit/GPU validation."
+    },
+    {
+      "role": "mobile-accessibility",
+      "recommendation": "lock",
+      "strength": "The same conceptual route, semantic chapter document, touch controls and reduced-motion path are preserved.",
+      "concern": "Continue treating narrow-screen notation density as a review item; never remove meaning to save space."
+    },
+    {
+      "role": "cultural-context",
+      "recommendation": "lock",
+      "strength": "The project uses fictional architecture, original assets and generic field-instrument language without borrowing a specific cultural monument or commissioned building.",
+      "concern": "Maintain the explicit fictional/concept-study framing in documentation and fallback copy."
+    },
+    {
+      "role": "client-advocate",
+      "recommendation": "lock",
+      "strength": "The idea can be explained in one sentence: you physically enter an observatory built from light, manipulate it, and leave with your own field study.",
+      "concern": "When presenting the project commercially, separate observed render costs from claims about physical-device FPS."
+    },
+    {
+      "role": "skeptic",
+      "recommendation": "lock",
+      "strength": "The experience survives the effect-removal test because threshold, geometry, interaction causality and artifact still carry the idea without particles, autoplay audio or a generic orbit.",
+      "concern": "The easiest way to make HELIOT worse now is to keep adding impressive things. Final cut should prioritize subtraction."
+    }
+  ],
+  "originality": {
+    "conceptual": 10,
+    "narrative": 9.5,
+    "spatial": 10,
+    "interaction": 9.5,
+    "motion": 9.5,
+    "camera": 10,
+    "composition": 9.4,
+    "typographyBehavior": 9,
+    "signatureMechanism": 10,
+    "portfolio": 10,
+    "category": 9.5,
+    "source": "Originality comes from reversible physical entry through the architecture, not from surface styling or a novel shader alone."
+  },
+  "stress": {
+    "no3D": "PASS WITH DEGRADATION — the semantic/fallback story retains thesis, chapters, light concepts and artifact access, while losing the primary spatial proof.",
+    "mobile": "PASS — same chapter order and physical route with wider framing.",
+    "reducedMotion": "PASS — meaning and controls remain available without continuous cinematic interpolation.",
+    "halfBudget": "PASS — keep threshold/descent, aperture causality and field artifact; cut secondary flourish first.",
+    "doubleContent": "PASS WITH DEGRADATION — content must be redistributed into quieter study chapters, never the signature descent.",
+    "weakAsset": "PASS WITH DEGRADATION — original geometry is core; campaign plates are noncritical.",
+    "brandSwap": "PASS — the threshold/radial/light-instrument language is specifically tied to HELIOT's premise.",
+    "signatureRemoval": "REQUIRES REVISION — the remaining project is strong but loses its most ownable proof.",
+    "skepticalClient": "PASS — the value can be defended as spatial proof, not animation quantity.",
+    "utility": "PASS — index navigation, semantic document and field controls remain accessible.",
+    "time": "PASS WITH DEGRADATION — even partial visitors encounter place, threshold or light proof depending on entry point.",
+    "performance": "PASS — adaptive quality and demand frames are native to the implementation; physical-device performance remains a separate verification item."
+  },
+  "creativeCeiling": {
+    "current": 9.6,
+    "projected": 9.8,
+    "highestLeverageUpgrades": [
+      "Physical-device WebKit/GPU validation and tuning if needed.",
+      "Final visual capture review after interface-quieting is applied to the signature descent."
+    ],
+    "doNotSpendOn": [
+      "Additional hero models",
+      "More particles or post-processing",
+      "A second signature sequence",
+      "Remote cinematic media"
+    ]
+  },
+  "blockers": [],
+  "warnings": [
+    "GitHub Actions has previously failed before executing steps, so repository CI should not be represented as green unless steps actually run.",
+    "Safari/WebKit and physical-device GPU performance remain unverified in the current environment."
+  ],
+  "finalCuts": [
+    "Reduce fixed header/footer/chrome opacity during threshold alignment and descent.",
+    "Keep the late aerial reveal calmer than the threshold descent.",
+    "Remove any future effect that cannot be justified by light, measurement, architecture or continuity.",
+    "Do not add another interactive mode merely to demonstrate Forge capability."
+  ]
 }
