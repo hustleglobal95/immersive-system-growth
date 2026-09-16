@@ -13,7 +13,7 @@ export default function DirectorPage() {
     <header className="director-page__header">
       <a href="/studio">← Forge Studio</a>
       <div><span>FORGE SYSTEMS</span><strong>Director</strong></div>
-      <a href="/structure">Structure Engine →</a>
+      <nav style={{ display: "flex", gap: 18 }}><a href="/director/intelligence">Director Intelligence →</a><a href="/structure">Structure Engine →</a></nav>
     </header>
     <DirectorWorkbench />
   </main>;
