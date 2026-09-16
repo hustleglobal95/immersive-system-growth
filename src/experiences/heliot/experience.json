@@ -1,0 +1,1958 @@
+{
+  "meta": {
+    "name": "HELIOT / Observatory for the unseen",
+    "description": "An imagined light observatory. Move from landscape and bronze to an architectural maquette, a live aperture laboratory, and a personal field study.",
+    "themeColor": "#151719",
+    "backgroundColor": "#151719"
+  },
+  "runtime": {
+    "sceneHeightVh": 125,
+    "cameraDamping": 9,
+    "objectDamping": 9,
+    "pointerInfluence": 0.06,
+    "minDpr": 0.75,
+    "maxDpr": 1.5,
+    "maxPixels": 2200000,
+    "preloadMb": 8
+  },
+  "heroModel": "/models/heliot/heliot-01.glb",
+  "heroLowModel": "/models/heliot/heliot-01-low.glb",
+  "heroVisible": true,
+  "stage": "minimal",
+  "assets": [],
+  "hotspots": [],
+  "productRig": {
+    "nodes": [
+      "Mount",
+      "Housing",
+      "FocusRing",
+      "FrontCrown",
+      "FrontGlass",
+      "Doublet",
+      "RearGlass",
+      "Iris"
+    ],
+    "tracks": [
+      {
+        "node": "Mount",
+        "property": "position",
+        "mode": "offset",
+        "keyframes": [
+          {
+            "at": 0,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.29,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.43,
+            "value": [
+              0,
+              0,
+              -1.9
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.46,
+            "value": [
+              0,
+              0,
+              -1.9
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.5,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 1,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          }
+        ]
+      },
+      {
+        "node": "Housing",
+        "property": "position",
+        "mode": "offset",
+        "keyframes": [
+          {
+            "at": 0,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.29,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.43,
+            "value": [
+              0,
+              0,
+              -1.1
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.46,
+            "value": [
+              0,
+              0,
+              -1.1
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.5,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 1,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          }
+        ]
+      },
+      {
+        "node": "FocusRing",
+        "property": "position",
+        "mode": "offset",
+        "keyframes": [
+          {
+            "at": 0,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.29,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.43,
+            "value": [
+              0,
+              0,
+              -0.5
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.46,
+            "value": [
+              0,
+              0,
+              -0.5
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.5,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 1,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          }
+        ]
+      },
+      {
+        "node": "FrontCrown",
+        "property": "position",
+        "mode": "offset",
+        "keyframes": [
+          {
+            "at": 0,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.29,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.43,
+            "value": [
+              0,
+              0,
+              2
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.46,
+            "value": [
+              0,
+              0,
+              2
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.5,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 1,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          }
+        ]
+      },
+      {
+        "node": "FrontGlass",
+        "property": "position",
+        "mode": "offset",
+        "keyframes": [
+          {
+            "at": 0,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.29,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.43,
+            "value": [
+              0,
+              0,
+              2.5
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.46,
+            "value": [
+              0,
+              0,
+              2.5
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.5,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 1,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          }
+        ]
+      },
+      {
+        "node": "Doublet",
+        "property": "position",
+        "mode": "offset",
+        "keyframes": [
+          {
+            "at": 0,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.29,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.43,
+            "value": [
+              0,
+              0,
+              0.7
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.46,
+            "value": [
+              0,
+              0,
+              0.7
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.5,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 1,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          }
+        ]
+      },
+      {
+        "node": "RearGlass",
+        "property": "position",
+        "mode": "offset",
+        "keyframes": [
+          {
+            "at": 0,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.29,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.43,
+            "value": [
+              0,
+              0,
+              -1.5
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.46,
+            "value": [
+              0,
+              0,
+              -1.5
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.5,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 1,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          }
+        ]
+      },
+      {
+        "node": "Iris",
+        "property": "position",
+        "mode": "offset",
+        "keyframes": [
+          {
+            "at": 0,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.29,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.43,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.46,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 0.5,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          },
+          {
+            "at": 1,
+            "value": [
+              0,
+              0,
+              0
+            ],
+            "easing": "cinematic"
+          }
+        ]
+      }
+    ]
+  },
+  "scenes": [
+    {
+      "id": "first-light",
+      "label": "The observatory",
+      "range": [
+        0,
+        0.1
+      ],
+      "easing": "cinematic",
+      "camera": {
+        "path": "dolly",
+        "from": {
+          "position": [
+            5,
+            2.2,
+            8
+          ],
+          "target": [
+            -1.6,
+            0.7,
+            -1
+          ],
+          "fov": 43
+        },
+        "to": {
+          "position": [
+            -2,
+            1.2,
+            3
+          ],
+          "target": [
+            0,
+            0,
+            -0.5
+          ],
+          "fov": 48
+        },
+        "waypoints": [
+          [
+            2.5,
+            2.5,
+            5
+          ],
+          [
+            -0.2,
+            1.5,
+            3.8
+          ]
+        ]
+      },
+      "mobileCamera": {
+        "path": "dolly",
+        "from": {
+          "position": [
+            5,
+            2.2,
+            8
+          ],
+          "target": [
+            0,
+            -2,
+            -1
+          ],
+          "fov": 61
+        },
+        "to": {
+          "position": [
+            -2,
+            1.2,
+            3
+          ],
+          "target": [
+            0,
+            0,
+            -0.5
+          ],
+          "fov": 66
+        },
+        "waypoints": [
+          [
+            2.5,
+            2.5,
+            5
+          ],
+          [
+            -0.2,
+            1.5,
+            3.8
+          ]
+        ]
+      },
+      "hero": {
+        "motion": "linear",
+        "from": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        },
+        "to": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        }
+      },
+      "world": {
+        "background": "#151719",
+        "fog": "#151719",
+        "fogDensity": 0,
+        "ambient": 0.65,
+        "key": 4,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
+        "exposure": 1.05
+      },
+      "material": {
+        "tint": "#ffffff",
+        "tintStrength": 0,
+        "metalness": null,
+        "roughness": null,
+        "clearcoat": null
+      },
+      "post": {
+        "bloom": 0,
+        "vignette": 0.15
+      },
+      "motionTracks": [],
+      "blocks": [],
+      "copy": {
+        "eyebrow": "A FIELD STUDY IN LIGHT / NO. 001",
+        "headline": "Observatory\nfor the unseen.",
+        "body": "At the edge of the familiar, a place to see differently. An imagined architecture shaped by a single element: light.",
+        "align": "left"
+      }
+    },
+    {
+      "id": "form",
+      "label": "Cross the threshold",
+      "range": [
+        0.1,
+        0.2
+      ],
+      "easing": "cinematic",
+      "camera": {
+        "path": "threshold",
+        "from": {
+          "position": [
+            -2,
+            1.2,
+            3
+          ],
+          "target": [
+            0,
+            0,
+            -0.5
+          ],
+          "fov": 48
+        },
+        "to": {
+          "position": [
+            0,
+            0,
+            -1.4
+          ],
+          "target": [
+            0,
+            -3,
+            -7
+          ],
+          "fov": 58
+        },
+        "waypoints": [
+          [
+            -0.65,
+            0.4,
+            1.6
+          ],
+          [
+            0,
+            0.05,
+            0.55
+          ],
+          [
+            0,
+            0,
+            -0.5
+          ]
+        ]
+      },
+      "mobileCamera": {
+        "path": "threshold",
+        "from": {
+          "position": [
+            -2,
+            1.2,
+            3
+          ],
+          "target": [
+            0,
+            0,
+            -0.5
+          ],
+          "fov": 66
+        },
+        "to": {
+          "position": [
+            0,
+            0,
+            -1.4
+          ],
+          "target": [
+            0,
+            -3,
+            -7
+          ],
+          "fov": 72
+        },
+        "waypoints": [
+          [
+            -0.65,
+            0.4,
+            1.6
+          ],
+          [
+            0,
+            0.05,
+            0.55
+          ],
+          [
+            0,
+            0,
+            -0.5
+          ]
+        ]
+      },
+      "hero": {
+        "motion": "linear",
+        "from": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        },
+        "to": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        }
+      },
+      "world": {
+        "background": "#151719",
+        "fog": "#151719",
+        "fogDensity": 0,
+        "ambient": 0.65,
+        "key": 4,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
+        "exposure": 1.05
+      },
+      "material": {
+        "tint": "#ffffff",
+        "tintStrength": 0,
+        "metalness": null,
+        "roughness": null,
+        "clearcoat": null
+      },
+      "post": {
+        "bloom": 0,
+        "vignette": 0.15
+      },
+      "motionTracks": [],
+      "blocks": [],
+      "copy": {
+        "eyebrow": "01 / THE THRESHOLD",
+        "headline": "Space begins\nwith an opening.",
+        "body": "An annulus in a volcanic landscape. A frame for the horizon. Step through, and the immense becomes intimate.",
+        "align": "left"
+      }
+    },
+    {
+      "id": "surface",
+      "label": "Inside the observatory",
+      "range": [
+        0.2,
+        0.3
+      ],
+      "easing": "cinematic",
+      "camera": {
+        "path": "dolly",
+        "from": {
+          "position": [
+            0,
+            0,
+            -1.4
+          ],
+          "target": [
+            0,
+            -3,
+            -7
+          ],
+          "fov": 58
+        },
+        "to": {
+          "position": [
+            0,
+            -5.2,
+            -12
+          ],
+          "target": [
+            -0.65,
+            -5.05,
+            -16
+          ],
+          "fov": 50
+        },
+        "waypoints": [
+          [
+            0,
+            -1.5,
+            -4
+          ],
+          [
+            0,
+            -3.5,
+            -6
+          ],
+          [
+            0,
+            -5.2,
+            -9.5
+          ]
+        ]
+      },
+      "mobileCamera": {
+        "path": "dolly",
+        "from": {
+          "position": [
+            0,
+            0,
+            -1.4
+          ],
+          "target": [
+            0,
+            -3,
+            -7
+          ],
+          "fov": 72
+        },
+        "to": {
+          "position": [
+            0,
+            -5.2,
+            -12
+          ],
+          "target": [
+            0,
+            -6.3,
+            -16
+          ],
+          "fov": 68
+        },
+        "waypoints": [
+          [
+            0,
+            -1.5,
+            -4
+          ],
+          [
+            0,
+            -3.5,
+            -6
+          ],
+          [
+            0,
+            -5.2,
+            -9.5
+          ]
+        ]
+      },
+      "hero": {
+        "motion": "linear",
+        "from": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        },
+        "to": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        }
+      },
+      "world": {
+        "background": "#151719",
+        "fog": "#151719",
+        "fogDensity": 0,
+        "ambient": 0.28,
+        "key": 1.5,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
+        "exposure": 1.05
+      },
+      "material": {
+        "tint": "#ffffff",
+        "tintStrength": 0,
+        "metalness": null,
+        "roughness": null,
+        "clearcoat": null
+      },
+      "post": {
+        "bloom": 0,
+        "vignette": 0.15
+      },
+      "motionTracks": [],
+      "blocks": [],
+      "copy": {
+        "eyebrow": "02 / THE INNER WORLD",
+        "headline": "You are\ninside the light.",
+        "body": "Beyond the bronze threshold, a vaulted gallery opens beneath the landscape. Follow the floor inlay toward the suspended optical assembly.",
+        "align": "left"
+      }
+    },
+    {
+      "id": "separation",
+      "label": "Under the surface",
+      "range": [
+        0.3,
+        0.4
+      ],
+      "easing": "cinematic",
+      "camera": {
+        "path": "pullback",
+        "from": {
+          "position": [
+            0,
+            -5.2,
+            -12
+          ],
+          "target": [
+            -0.65,
+            -5.05,
+            -16
+          ],
+          "fov": 50
+        },
+        "to": {
+          "position": [
+            5,
+            -3.5,
+            -11
+          ],
+          "target": [
+            -0.65,
+            -5.05,
+            -16
+          ],
+          "fov": 45
+        }
+      },
+      "mobileCamera": {
+        "path": "pullback",
+        "from": {
+          "position": [
+            0,
+            -5.2,
+            -12
+          ],
+          "target": [
+            0,
+            -6.3,
+            -16
+          ],
+          "fov": 68
+        },
+        "to": {
+          "position": [
+            5,
+            -3.5,
+            -11
+          ],
+          "target": [
+            0,
+            -6.3,
+            -16
+          ],
+          "fov": 63
+        }
+      },
+      "hero": {
+        "motion": "linear",
+        "from": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        },
+        "to": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        }
+      },
+      "world": {
+        "background": "#151719",
+        "fog": "#151719",
+        "fogDensity": 0,
+        "ambient": 0.28,
+        "key": 1.5,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
+        "exposure": 1.05
+      },
+      "material": {
+        "tint": "#ffffff",
+        "tintStrength": 0,
+        "metalness": null,
+        "roughness": null,
+        "clearcoat": null
+      },
+      "post": {
+        "bloom": 0,
+        "vignette": 0.15
+      },
+      "motionTracks": [],
+      "blocks": [],
+      "copy": {
+        "eyebrow": "03 / STRUCTURAL ANATOMY",
+        "headline": "An architecture\nof relationships.",
+        "body": "Eight systems. One shared axis. Follow the shell, the radial field and the diaphragm as the observatory opens itself to inspection.",
+        "align": "left"
+      }
+    },
+    {
+      "id": "optical-path",
+      "label": "Trace the invisible",
+      "range": [
+        0.4,
+        0.5
+      ],
+      "easing": "cinematic",
+      "camera": {
+        "path": "arc",
+        "from": {
+          "position": [
+            5,
+            -3.5,
+            -11
+          ],
+          "target": [
+            -0.65,
+            -5.05,
+            -16
+          ],
+          "fov": 45
+        },
+        "to": {
+          "position": [
+            0,
+            -4.9,
+            -11
+          ],
+          "target": [
+            -0.65,
+            -5.05,
+            -16
+          ],
+          "fov": 43
+        }
+      },
+      "mobileCamera": {
+        "path": "arc",
+        "from": {
+          "position": [
+            5,
+            -3.5,
+            -11
+          ],
+          "target": [
+            0,
+            -6.3,
+            -16
+          ],
+          "fov": 63
+        },
+        "to": {
+          "position": [
+            0,
+            -4.9,
+            -11
+          ],
+          "target": [
+            0,
+            -6.3,
+            -16
+          ],
+          "fov": 61
+        }
+      },
+      "hero": {
+        "motion": "linear",
+        "from": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        },
+        "to": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        }
+      },
+      "world": {
+        "background": "#151719",
+        "fog": "#151719",
+        "fogDensity": 0,
+        "ambient": 0.28,
+        "key": 1.5,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
+        "exposure": 1.05
+      },
+      "material": {
+        "tint": "#ffffff",
+        "tintStrength": 0,
+        "metalness": null,
+        "roughness": null,
+        "clearcoat": null
+      },
+      "post": {
+        "bloom": 0,
+        "vignette": 0.15
+      },
+      "motionTracks": [],
+      "blocks": [],
+      "copy": {
+        "eyebrow": "04 / THE OPTICAL SECTION",
+        "headline": "Follow\nthe invisible.",
+        "body": "Incident light crosses the radial field and meets a controlled opening. The section turns a spatial idea into a readable path.",
+        "align": "left"
+      }
+    },
+    {
+      "id": "aperture",
+      "label": "The light laboratory",
+      "range": [
+        0.5,
+        0.6
+      ],
+      "easing": "cinematic",
+      "camera": {
+        "path": "subject-orbit",
+        "from": {
+          "position": [
+            0,
+            -4.9,
+            -11
+          ],
+          "target": [
+            -0.65,
+            -5.05,
+            -16
+          ],
+          "fov": 43
+        },
+        "to": {
+          "position": [
+            0,
+            -4.9,
+            -10
+          ],
+          "target": [
+            -0.65,
+            -5.05,
+            -16
+          ],
+          "fov": 43
+        }
+      },
+      "mobileCamera": {
+        "path": "subject-orbit",
+        "from": {
+          "position": [
+            0,
+            -4.9,
+            -11
+          ],
+          "target": [
+            0,
+            -6.3,
+            -16
+          ],
+          "fov": 61
+        },
+        "to": {
+          "position": [
+            0,
+            -4.9,
+            -10
+          ],
+          "target": [
+            0,
+            -6.3,
+            -16
+          ],
+          "fov": 61
+        }
+      },
+      "hero": {
+        "motion": "linear",
+        "from": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        },
+        "to": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        }
+      },
+      "world": {
+        "background": "#151719",
+        "fog": "#151719",
+        "fogDensity": 0,
+        "ambient": 0.28,
+        "key": 1.5,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
+        "exposure": 1.05
+      },
+      "material": {
+        "tint": "#ffffff",
+        "tintStrength": 0,
+        "metalness": null,
+        "roughness": null,
+        "clearcoat": null
+      },
+      "post": {
+        "bloom": 0,
+        "vignette": 0.15
+      },
+      "motionTracks": [],
+      "blocks": [],
+      "copy": {
+        "eyebrow": "05 / INTERACTIVE LIGHT LAB",
+        "headline": "Less opening.\nMore intention.",
+        "body": "Move the aperture. Watch the diaphragm and beam respond. The area of the opening determines the relative light admitted.",
+        "align": "left"
+      }
+    },
+    {
+      "id": "perspective",
+      "label": "Material / perspective",
+      "range": [
+        0.6,
+        0.7
+      ],
+      "easing": "cinematic",
+      "camera": {
+        "path": "arc",
+        "from": {
+          "position": [
+            0,
+            -4.9,
+            -10
+          ],
+          "target": [
+            -0.65,
+            -5.05,
+            -16
+          ],
+          "fov": 43
+        },
+        "to": {
+          "position": [
+            3,
+            -4.5,
+            -11
+          ],
+          "target": [
+            -0.65,
+            -5.05,
+            -16
+          ],
+          "fov": 46
+        }
+      },
+      "mobileCamera": {
+        "path": "arc",
+        "from": {
+          "position": [
+            0,
+            -4.9,
+            -10
+          ],
+          "target": [
+            0,
+            -6.3,
+            -16
+          ],
+          "fov": 61
+        },
+        "to": {
+          "position": [
+            3,
+            -4.5,
+            -11
+          ],
+          "target": [
+            0,
+            -6.3,
+            -16
+          ],
+          "fov": 64
+        }
+      },
+      "hero": {
+        "motion": "linear",
+        "from": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        },
+        "to": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        }
+      },
+      "world": {
+        "background": "#151719",
+        "fog": "#151719",
+        "fogDensity": 0,
+        "ambient": 0.28,
+        "key": 1.5,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
+        "exposure": 1.05
+      },
+      "material": {
+        "tint": "#ffffff",
+        "tintStrength": 0,
+        "metalness": null,
+        "roughness": null,
+        "clearcoat": null
+      },
+      "post": {
+        "bloom": 0,
+        "vignette": 0.15
+      },
+      "motionTracks": [],
+      "blocks": [],
+      "copy": {
+        "eyebrow": "06 / YOUR OBSERVATORY",
+        "headline": "A different\npoint of view.",
+        "body": "Turn the architectural maquette. Compare its two material studies. The structure stays constant; its response to light changes.",
+        "align": "left"
+      }
+    },
+    {
+      "id": "convergence",
+      "label": "Return to the field",
+      "range": [
+        0.7,
+        0.8
+      ],
+      "easing": "cinematic",
+      "camera": {
+        "path": "subject-orbit",
+        "from": {
+          "position": [
+            3,
+            -4.5,
+            -11
+          ],
+          "target": [
+            -0.65,
+            -5.05,
+            -16
+          ],
+          "fov": 46
+        },
+        "to": {
+          "position": [
+            0,
+            0.3,
+            3
+          ],
+          "target": [
+            0,
+            0,
+            -2
+          ],
+          "fov": 52
+        },
+        "waypoints": [
+          [
+            0,
+            -5.2,
+            -10
+          ],
+          [
+            0,
+            -3.5,
+            -6
+          ],
+          [
+            0,
+            -1.5,
+            -4
+          ],
+          [
+            0,
+            0,
+            -1.4
+          ],
+          [
+            0,
+            0.05,
+            0.6
+          ]
+        ]
+      },
+      "mobileCamera": {
+        "path": "subject-orbit",
+        "from": {
+          "position": [
+            3,
+            -4.5,
+            -11
+          ],
+          "target": [
+            0,
+            -6.3,
+            -16
+          ],
+          "fov": 64
+        },
+        "to": {
+          "position": [
+            0,
+            0.3,
+            3
+          ],
+          "target": [
+            0,
+            -1.8,
+            -2
+          ],
+          "fov": 70
+        },
+        "waypoints": [
+          [
+            0,
+            -5.2,
+            -10
+          ],
+          [
+            0,
+            -3.5,
+            -6
+          ],
+          [
+            0,
+            -1.5,
+            -4
+          ],
+          [
+            0,
+            0,
+            -1.4
+          ],
+          [
+            0,
+            0.05,
+            0.6
+          ]
+        ]
+      },
+      "hero": {
+        "motion": "linear",
+        "from": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        },
+        "to": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        }
+      },
+      "world": {
+        "background": "#151719",
+        "fog": "#151719",
+        "fogDensity": 0,
+        "ambient": 0.28,
+        "key": 1.5,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
+        "exposure": 1.05
+      },
+      "material": {
+        "tint": "#ffffff",
+        "tintStrength": 0,
+        "metalness": null,
+        "roughness": null,
+        "clearcoat": null
+      },
+      "post": {
+        "bloom": 0,
+        "vignette": 0.15
+      },
+      "motionTracks": [],
+      "blocks": [],
+      "copy": {
+        "eyebrow": "07 / FROM OBJECT TO LANDSCAPE",
+        "headline": "Nothing exists\nin isolation.",
+        "body": "The parts return to their original positions. The observatory belongs to a larger field: terrain, horizon, and the movement of a distant sun.",
+        "align": "left"
+      }
+    },
+    {
+      "id": "signature",
+      "label": "The eclipse",
+      "range": [
+        0.8,
+        0.9
+      ],
+      "easing": "cinematic",
+      "camera": {
+        "path": "crane",
+        "from": {
+          "position": [
+            0,
+            0.3,
+            3
+          ],
+          "target": [
+            0,
+            0,
+            -2
+          ],
+          "fov": 52
+        },
+        "to": {
+          "position": [
+            -5,
+            4,
+            7
+          ],
+          "target": [
+            0,
+            0,
+            -1
+          ],
+          "fov": 46
+        },
+        "waypoints": [
+          [
+            -1,
+            1.2,
+            4
+          ],
+          [
+            -3,
+            3,
+            5
+          ]
+        ]
+      },
+      "mobileCamera": {
+        "path": "crane",
+        "from": {
+          "position": [
+            0,
+            0.3,
+            3
+          ],
+          "target": [
+            0,
+            -1.8,
+            -2
+          ],
+          "fov": 70
+        },
+        "to": {
+          "position": [
+            -5,
+            4,
+            7
+          ],
+          "target": [
+            0,
+            -1.8,
+            -1
+          ],
+          "fov": 64
+        },
+        "waypoints": [
+          [
+            -1,
+            1.2,
+            4
+          ],
+          [
+            -3,
+            3,
+            5
+          ]
+        ]
+      },
+      "hero": {
+        "motion": "linear",
+        "from": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        },
+        "to": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        }
+      },
+      "world": {
+        "background": "#151719",
+        "fog": "#151719",
+        "fogDensity": 0,
+        "ambient": 0.65,
+        "key": 4,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
+        "exposure": 1.05
+      },
+      "material": {
+        "tint": "#ffffff",
+        "tintStrength": 0,
+        "metalness": null,
+        "roughness": null,
+        "clearcoat": null
+      },
+      "post": {
+        "bloom": 0,
+        "vignette": 0.15
+      },
+      "motionTracks": [],
+      "blocks": [],
+      "copy": {
+        "eyebrow": "08 / AN INTERVAL OF STILLNESS",
+        "headline": "Between\nlight & shadow.",
+        "body": "For a moment, the frame becomes the subject. Then the world beyond it returns.",
+        "align": "left"
+      }
+    },
+    {
+      "id": "keep-light",
+      "label": "Your field study",
+      "range": [
+        0.9,
+        1
+      ],
+      "easing": "cinematic",
+      "camera": {
+        "path": "linear",
+        "from": {
+          "position": [
+            -5,
+            4,
+            7
+          ],
+          "target": [
+            0,
+            0,
+            -1
+          ],
+          "fov": 46
+        },
+        "to": {
+          "position": [
+            4,
+            2.6,
+            6
+          ],
+          "target": [
+            0,
+            -0.2,
+            0
+          ],
+          "fov": 43
+        }
+      },
+      "mobileCamera": {
+        "path": "linear",
+        "from": {
+          "position": [
+            -5,
+            4,
+            7
+          ],
+          "target": [
+            0,
+            -1.8,
+            -1
+          ],
+          "fov": 64
+        },
+        "to": {
+          "position": [
+            4,
+            2.6,
+            6
+          ],
+          "target": [
+            0,
+            -1.8,
+            0
+          ],
+          "fov": 61
+        }
+      },
+      "hero": {
+        "motion": "linear",
+        "from": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        },
+        "to": {
+          "position": [
+            0,
+            -5.05,
+            -16
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1
+        }
+      },
+      "world": {
+        "background": "#151719",
+        "fog": "#151719",
+        "fogDensity": 0,
+        "ambient": 0.65,
+        "key": 4,
+        "rim": 6,
+        "keyColor": "#ffe1a2",
+        "rimColor": "#d4a16a",
+        "exposure": 1.05
+      },
+      "material": {
+        "tint": "#ffffff",
+        "tintStrength": 0,
+        "metalness": null,
+        "roughness": null,
+        "clearcoat": null
+      },
+      "post": {
+        "bloom": 0,
+        "vignette": 0.15
+      },
+      "motionTracks": [],
+      "blocks": [],
+      "copy": {
+        "eyebrow": "09 / THE FIELD ARCHIVE",
+        "headline": "Take a little\nlight with you.",
+        "body": "Keep your material and aperture study as a designed field sheet. A record of the way you chose to see.",
+        "align": "left"
+      }
+    }
+  ]
+}

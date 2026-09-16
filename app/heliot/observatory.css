@@ -1,0 +1,131 @@
+/* Observatory art direction. Each hold has its own composition; the timeline
+   remains in Forge and the document keeps a useful non-WebGL reading order. */
+.heliot { --paper:#f2eee3; --muted:#c0b8a5; --accent:#d4b27b; background:#151719; }
+.heliot[data-enhanced=true] .heliot-terrain{display:none}
+.heliot[data-enhanced=true] .heliot-act-1 .heliot-panel,.heliot[data-enhanced=true] .heliot-act-2 .heliot-panel{top:64svh;left:4.5vw!important;width:42%;text-align:left}
+.heliot[data-enhanced=true] .heliot-act-1 .heliot-panel h2,.heliot[data-enhanced=true] .heliot-act-2 .heliot-panel h2{font-size:3.6vw}
+.heliot[data-enhanced=true] .heliot-act-1 .heliot-eyebrow{justify-content:flex-start}
+.heliot[data-enhanced=true] .heliot-act-1 .heliot-body{margin:0}
+.heliot[data-enhanced=true] .heliot-act-2 .heliot-materials,.heliot[data-enhanced=true] .heliot-threshold-note{display:none}
+.heliot-viewport { background:#151719 url('/models/heliot/observatory-landscape.webp') 68% center/cover no-repeat; }
+.heliot-static-lens { display:none; }
+.heliot[data-fallback=true] .heliot-static-lens { display:block; width:110px; right:28px; top:100px; opacity:.4; }
+.heliot-vignette { background:linear-gradient(90deg,#14130f70,transparent 75%),linear-gradient(0deg,#080b0bdc,transparent 60%,#11130f30); }
+.heliot-grain { position:fixed; inset:0; pointer-events:none; z-index:6; opacity:.045; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23fff' filter='url(%23n)' opacity='.8' d='M0 0h180v180H0z'/%3E%3C/svg%3E"); }
+.heliot-header { height:115px; padding:0 4.5vw; gap:38px; background:linear-gradient(180deg,#101715b8,transparent); }
+.heliot-wordmark { font-size:30px; letter-spacing:.26em; font-weight:500; }
+.heliot-wordmark>span { display:none; }
+.heliot-header-caption { font-size:8px; line-height:1.8; letter-spacing:.17em; padding-left:28px; border-left:1px solid #e9dfc74a; color:#f1e8d2; }
+.heliot-header-actions { gap:34px; font-size:10px; }
+.heliot-inspect-link { border-color:#e8ddc17a; }
+.heliot-sound { border:0; background:none; display:flex; gap:10px; align-items:center; font-size:9px!important; padding:12px 0; }
+.heliot-sound>span:first-child { letter-spacing:2px; font-size:14px; color:#dfc398; }
+.heliot-menu { background:#171a16fa; backdrop-filter:blur(25px); width:min(650px,100%); }
+.heliot-menu a { font-size:20px; padding:19px 0; }
+.heliot-side-note { color:#e3dac7; right:24px; font-size:7px; letter-spacing:.25em; }
+.heliot .story-section.heliot-act { min-height:155svh; }
+.heliot .story-section.heliot-act:last-child { min-height:200svh; }
+.heliot-panel { top:25svh; width:40%; max-width:680px; padding-bottom:50px; opacity:calc(1 - var(--exit,0)*.96); transform:translateY(calc(var(--exit,0)*-60px)) scale(calc(1 - var(--exit,0)*.08)); }
+.heliot .heliot-panel h1 { font-size:clamp(70px,7.8vw,142px); line-height:.92; letter-spacing:-.065em; margin:22px 0 28px; }
+.heliot .heliot-panel h1 em { display:block; font-size:1.14em; line-height:1; letter-spacing:-.05em; }
+.heliot .heliot-panel h2 { font-size:clamp(42px,5.2vw,94px); line-height:1.02; letter-spacing:-.055em; margin:25px 0; }
+.heliot-title-secondary { color:#c9c0ab; font-family:var(--font-cormorant),Georgia,serif; font-style:italic; font-size:1.18em; line-height:1; letter-spacing:-.04em; }
+.heliot-eyebrow { font-size:8px; letter-spacing:.23em; }
+.heliot-index-mark { width:20px; height:1px; }
+.heliot-body { font-size:12px; line-height:1.85; color:#d2cbbd; max-width:315px; }
+.heliot-act-0 .heliot-panel { top:39svh; width:70%; max-width:1000px; }
+.heliot-act-0 .heliot-body { max-width:320px; margin-left:5px; }
+.heliot-start { margin-top:34px; letter-spacing:.18em; font-size:8px; }
+.heliot-start>span:first-child { width:54px; height:54px; border-color:#e3d7be8c; font-size:18px; }
+.heliot-start-duration { margin-left:28px; color:#bdb39f; font-size:7px; }
+.heliot-hero-spec { top:76svh; right:6vw; gap:20px; border-top:1px solid #e4d4b86b; padding-top:18px; }
+.heliot-hero-spec>span { font-size:49px; font-family:var(--font-cormorant),Georgia,serif; color:#e7d8b9; }
+.heliot-hero-spec p { font-size:7px; color:#e4d8c4; letter-spacing:.17em; }
+.heliot-act-1 .heliot-panel { top:34svh; left:20vw!important; width:60%; max-width:none; text-align:center; }
+.heliot-act-1 .heliot-eyebrow { justify-content:center; }
+.heliot-act-1 .heliot-body { margin:auto; max-width:330px; }
+.heliot-threshold-note { margin-top:55px; font-size:8px; letter-spacing:.25em; color:#d0bd99; }
+.heliot-act-2 .heliot-panel { top:22svh; }
+.heliot-act-2 .heliot-panel h2 { font-size:clamp(68px,7.5vw,130px); }
+.heliot-materials { margin-top:35px; max-width:315px; }
+.heliot-materials>div { border-color:#aa926c66; padding:14px 0; }
+.heliot-materials dt { color:#d6b579; }
+.heliot-act-3 .heliot-panel,.heliot-act-4 .heliot-panel { top:22svh; }
+.heliot-act-3 .heliot-panel h2,.heliot-act-4 .heliot-panel h2 { font-size:4.5vw; }
+.heliot-anatomy-label { line-height:2; border-color:#b59d7366; color:#e4c899; }
+.heliot-diagram { margin-top:32px; padding-top:20px; border-top:1px solid #b49d733d; }
+.heliot-act-5 .heliot-panel { top:19svh; width:36%; }
+.heliot-act-5 .heliot-panel h2 { font-size:4.3vw; }
+.heliot-act-5 .heliot-diagram { display:none; }
+.heliot-controls { margin-top:28px; padding-top:22px; border-top:1px solid #c6aa764f; max-width:350px; }
+.heliot-controls input[type=range] { height:42px; accent-color:#d8b57d; }
+.heliot-aperture-value { margin-top:20px; gap:25px; }
+.heliot-aperture-value>span { font-family:var(--font-cormorant),Georgia,serif; font-size:100px; color:#d8be90; line-height:1; }
+.heliot-aperture-value small { font-family:var(--font-manrope),Arial,sans-serif; font-size:24px; }
+.heliot-aperture-value p { font-size:10px; line-height:1.8; }
+.heliot-act-6 .heliot-panel { top:18svh; }
+.heliot-act-6 .heliot-panel h2 { font-size:4.6vw; }
+.heliot-finishes button { min-width:120px; border-color:#a397796b; padding:14px; }
+.heliot-finishes button[aria-pressed=true] { background:#c2a97b1c; border-color:#d5c092; }
+.heliot-drag { border:1px solid #a08c6455; border-radius:0; background:#b49a6909; padding:18px; }
+.heliot-act-7 .heliot-panel { top:17svh; left:14vw!important; width:72%; text-align:center; max-width:none; }
+.heliot-act-7 .heliot-panel h2 { font-size:7vw; }
+.heliot-act-7 .heliot-eyebrow { justify-content:center; }
+.heliot-act-7 .heliot-body { margin:30px 0; max-width:310px; text-align:left; }
+.heliot-act-8 .heliot-panel { top:32svh; width:60%; }
+.heliot-act-8 .heliot-panel h2 { font-size:7vw; }
+.heliot-signature { font-size:45px; display:flex; gap:14px; align-items:center; margin:30px 0; }
+.heliot-signature span { font-size:7px; letter-spacing:.2em; }
+.heliot-act-9 .heliot-panel { top:20svh; }
+.heliot-act-9 .heliot-panel h2 { font-size:5vw; }
+.heliot-save { background:#e3d7bc; padding:20px 22px; margin-top:22px; }
+.heliot-export-data { background:none; border:0; border-bottom:1px solid #b8a78266; padding:16px 0; font-size:10px!important; display:flex; justify-content:space-between; width:100%; max-width:340px; }
+.heliot-disclaimer { margin-top:24px; color:#c7bca5; }
+.heliot-footer { height:70px; padding:0 4.5vw; background:linear-gradient(0deg,#090e0ebf,transparent); }
+.heliot-readiness { color:#d0c7b3; font-size:7px; letter-spacing:.15em; }
+.heliot-progress { color:#e0d3b8; }
+.heliot-progress i { width:180px; background:#d2be925e; }
+.heliot-progress b { background:#e2c28a; }
+.heliot-terrain { position:fixed; inset:12% -6% -10%; z-index:-1; color:#b79c65; pointer-events:none; opacity:0; }
+.heliot-terrain svg { width:100%; height:100%; transform:perspective(700px) rotateX(40deg) rotateZ(-14deg); }
+.heliot-terrain path { stroke-dasharray:1; stroke-dashoffset:calc(1 - var(--chapter-progress,0)); }
+.heliot-terrain>span { position:absolute; bottom:17%; right:12%; font:8px monospace; letter-spacing:2px; }
+.heliot[data-chapter="7"] .heliot-terrain { opacity:.4; }
+.heliot-crosshair { position:fixed; z-index:0; top:21%; right:10%; width:42%; height:61%; pointer-events:none; opacity:0; border:1px solid #ab986c20; border-radius:50%; }
+.heliot-crosshair i { position:absolute; width:18px; height:18px; border-color:#bca16b77; border-style:solid; }
+.heliot-crosshair i:nth-child(1){top:0;left:0;border-width:1px 0 0 1px}.heliot-crosshair i:nth-child(2){top:0;right:0;border-width:1px 1px 0 0}.heliot-crosshair i:nth-child(3){bottom:0;left:0;border-width:0 0 1px 1px}.heliot-crosshair i:nth-child(4){bottom:0;right:0;border-width:0 1px 1px 0}
+.heliot-crosshair>span { position:absolute; bottom:-28px; left:0; font-size:7px; letter-spacing:.2em; color:#bba87d; }
+.heliot[data-chapter="3"] .heliot-crosshair,.heliot[data-chapter="4"] .heliot-crosshair,.heliot[data-chapter="5"] .heliot-crosshair,.heliot[data-chapter="6"] .heliot-crosshair { opacity:1; }
+.heliot[data-chapter="3"] .heliot-vignette,.heliot[data-chapter="4"] .heliot-vignette,.heliot[data-chapter="5"] .heliot-vignette,.heliot[data-chapter="6"] .heliot-vignette { background:linear-gradient(90deg,#151719 3%,#151719b8 30%,transparent 64%); }
+.heliot[data-motion=reduced] .heliot-vignette,.heliot[data-fallback=true] .heliot-vignette { background:#0e1514c9; }
+.heliot[data-motion=reduced] .heliot-terrain,.heliot[data-fallback=true] .heliot-terrain { display:none; }
+@media(max-width:760px){
+  .heliot[data-enhanced=true] .heliot-act-1 .heliot-panel,.heliot[data-enhanced=true] .heliot-act-2 .heliot-panel{top:61svh;left:22px!important;width:calc(100% - 44px)}
+  .heliot[data-enhanced=true] .heliot-act-1 .heliot-panel h2,.heliot[data-enhanced=true] .heliot-act-2 .heliot-panel h2{font-size:38px}
+  .heliot-header{height:80px;padding:0 22px}.heliot-wordmark{font-size:23px}.heliot-header-actions{gap:20px}.heliot-sound>span:last-child{display:none}.heliot-menu a{font-size:16px;padding:15px 0}
+  .heliot-hero-spec{display:none}
+  .heliot .story-section.heliot-act{min-height:155svh;padding:0 22px}.heliot .story-section.heliot-act:last-child{min-height:220svh}
+  .heliot[data-enhanced=true] .heliot-panel{left:22px!important;width:calc(100% - 44px);max-width:none}
+  .heliot-panel{top:47svh;width:100%;padding-bottom:35px}.heliot .heliot-panel h2{font-size:43px;margin:18px 0}.heliot .heliot-panel h1{font-size:51px;line-height:1;margin:18px 0 22px;letter-spacing:-.06em}.heliot .heliot-panel h1 em{font-size:1.13em}
+  .heliot-act-0 .heliot-panel{top:47svh;width:100%}.heliot-body{font-size:11px;line-height:1.8;max-width:295px}.heliot-eyebrow{font-size:6px;letter-spacing:.18em}.heliot-start{margin-top:23px;font-size:7px;gap:12px}.heliot-start>span:first-child{width:40px;height:40px}.heliot-start-duration{max-width:80px;line-height:1.7;margin-left:auto;font-size:6px}.heliot-hero-spec{top:32svh;right:24px;padding-top:12px;gap:12px}.heliot-hero-spec>span{font-size:33px}.heliot-hero-spec p{font-size:5px}
+  .heliot-act-1 .heliot-panel{top:43svh;left:22px!important;width:calc(100% - 44px);text-align:left}.heliot-act-1 .heliot-eyebrow{justify-content:flex-start}.heliot-act-1 .heliot-body{margin:0}.heliot-threshold-note{margin-top:28px;font-size:6px}
+  .heliot-act-2 .heliot-panel{top:39svh}.heliot-act-2 .heliot-panel h2{font-size:55px}.heliot-materials{margin-top:20px}.heliot-materials>div{padding:10px 0;font-size:10px}
+  .heliot-act-3 .heliot-panel,.heliot-act-4 .heliot-panel{top:45svh}.heliot-act-3 .heliot-panel h2,.heliot-act-4 .heliot-panel h2{font-size:39px}.heliot-diagram{margin-top:20px;padding-top:12px;max-width:290px}.heliot-anatomy-label{margin-top:22px;font-size:7px}
+  .heliot-act-5 .heliot-panel,.heliot-act-6 .heliot-panel{top:43svh;width:100%}.heliot-act-5 .heliot-panel h2,.heliot-act-6 .heliot-panel h2{font-size:38px;margin:16px 0}.heliot-act-5 .heliot-body,.heliot-act-6 .heliot-body{font-size:10px;line-height:1.7}.heliot-controls{margin-top:16px;padding-top:14px;max-width:100%}.heliot-controls>label{font-size:10px}.heliot-controls input[type=range]{height:30px;margin:4px 0}.heliot-aperture-value{margin-top:7px;gap:18px}.heliot-aperture-value>span{font-size:62px}.heliot-aperture-value p{font-size:8px}.heliot-aperture-value small{font-size:19px}
+  .heliot-finishes legend{font-size:8px;margin-bottom:9px}.heliot-finishes button{padding:10px 12px;min-width:115px;margin-bottom:7px}.heliot-orbit button{min-height:40px;padding:7px 12px}.heliot-drag{padding:10px 12px;margin-top:10px;font-size:9px}.heliot-drag span{font-size:7px}
+  .heliot-act-7 .heliot-panel{top:44svh;left:22px!important;width:calc(100% - 44px)}.heliot-act-7 .heliot-panel h2{font-size:48px}.heliot-act-7 .heliot-body{margin:22px auto;text-align:center}.heliot-terrain{inset:12% -70% 0}.heliot-terrain>span{font-size:6px;right:35%}
+  .heliot-act-8 .heliot-panel{top:43svh;width:100%}.heliot-act-8 .heliot-panel h2{font-size:52px}.heliot-signature{margin:24px 0}.heliot-signature span{font-size:6px}
+  .heliot-act-9 .heliot-panel{top:31svh;width:100%}.heliot-act-9 .heliot-panel h2{font-size:43px}.heliot-act-9 .heliot-body{font-size:10px}.heliot-edition{margin-top:20px;font-size:7px}.heliot-save{margin-top:17px;padding:16px 18px;min-height:48px}.heliot-export-data{padding:13px 0;font-size:9px!important}.heliot-save-status{margin:10px 0 18px;font-size:8px}.heliot-disclaimer{margin-top:18px;font-size:7px;max-width:270px}
+  .heliot-crosshair{top:12%;right:23%;width:54%;height:26%;border-radius:50%}.heliot-crosshair>span{font-size:5px;bottom:-17px}.heliot-crosshair i{width:10px;height:10px}
+  .heliot-vignette{background:linear-gradient(0deg,#0c1111f0 0%,#111713b8 32%,transparent 70%)}
+  .heliot[data-chapter="3"] .heliot-vignette,.heliot[data-chapter="4"] .heliot-vignette,.heliot[data-chapter="5"] .heliot-vignette,.heliot[data-chapter="6"] .heliot-vignette{background:linear-gradient(0deg,#151719 15%,#151719f7 51%,transparent 66%)}
+  .heliot-footer{height:48px;padding:0 22px}.heliot-readiness{font-size:5px}.heliot-progress i{width:60px}.heliot-motion{font-size:6px!important}
+}
+@media(max-height:700px) and (min-width:761px){.heliot-header{height:80px}.heliot-act-0 .heliot-panel{top:30svh}.heliot .heliot-panel h1{font-size:75px}.heliot .heliot-panel h2{font-size:42px}.heliot-panel,.heliot-act-5 .heliot-panel,.heliot-act-6 .heliot-panel,.heliot-act-9 .heliot-panel{top:17svh}.heliot-act-9 .heliot-panel h2{font-size:43px}.heliot-aperture-value>span{font-size:70px}.heliot-controls{margin-top:16px;padding-top:12px}.heliot-footer{height:45px}.heliot-disclaimer{margin-top:15px}}
+@media(max-height:600px){
+  .heliot[data-enhanced=true] .heliot-panel,.heliot .heliot-panel { position:relative;top:auto;left:auto!important;width:min(540px,90%);max-width:100%;padding:100px 0 80px;visibility:visible!important;pointer-events:auto!important;opacity:1;transform:none; }
+  .heliot .story-section.heliot-act { min-height:120svh; }
+  .heliot .heliot-panel h1{font-size:60px}.heliot .heliot-panel h2{font-size:44px}
+  .heliot-act-1 .heliot-panel,.heliot-act-7 .heliot-panel{text-align:left}.heliot-act-1 .heliot-eyebrow,.heliot-act-7 .heliot-eyebrow{justify-content:flex-start}.heliot-act-1 .heliot-body,.heliot-act-7 .heliot-body{margin-left:0}
+  .heliot-hero-spec{display:none}.heliot-vignette{background:linear-gradient(90deg,#0c1111ed,transparent)}
+}
