@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "cases": [
+    { "id": "exceptional-specific", "label": "Exceptional, specific, feasible", "expectedDisposition": "LOCK" },
+    { "id": "beautiful-generic", "label": "Beautiful but generic", "expectedDisposition": "REJECT" },
+    { "id": "original-impossible", "label": "Original but impossible", "expectedDisposition": "REVISE" },
+    { "id": "feasible-boring", "label": "Feasible but boring", "expectedDisposition": "REVISE" },
+    { "id": "branded-unusable", "label": "Highly branded but unusable", "expectedDisposition": "REVISE" }
+  ]
+}
