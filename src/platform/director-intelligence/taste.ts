@@ -1,5 +1,5 @@
 import type { DirectorTerritory, DirectorTreatment } from "@/src/platform/directorSchema";
-import type { TasteDimension, TastePreference, TasteProfile } from "@/src/platform/director-intelligence/types";
+import type { EvaluationScores, TasteDimension, TastePreference, TasteProfile } from "@/src/platform/director-intelligence/types";
 
 const dimensions: TasteDimension[] = ["restraintVsSpectacle", "literalVsAbstract", "cinematicVsEditorial", "continuousVsChaptered", "typographyVsImage", "darkVsLight", "denseVsSparse", "directedVsExploratory", "realismVsStylization", "emotionalVsRational", "familiarVsNovel"];
 
@@ -31,7 +31,7 @@ export function inferTasteTraits(treatment: DirectorTreatment, territory: Direct
     typographyVsImage: signal(/typography|type-led|copy-led/, /image|photography|visual|render|film/),
     darkVsLight: signal(/dark|shadow|black|night/, /light|white|bright|day/),
     denseVsSparse: signal(/dense|layered|information-rich/, /sparse|quiet|whitespace|minimal/),
-    directedVsExploratory: signal(/directed|guided|controlled|cinematic/, /explore|inspection|open|自由|choose/),
+    directedVsExploratory: signal(/directed|guided|controlled|cinematic/, /explore|inspection|open|choose/),
     realismVsStylization: signal(/realism|physical|believable|actual|material/, /stylized|surreal|abstract|impossible/),
     emotionalVsRational: signal(/emotion|desire|awe|wonder|intimacy/, /proof|clarity|technical|rational|utility/),
     familiarVsNovel: signal(/novel|unexpected|anti-category|counterfactual|distinctive/, /familiar|conventional|expected|category/),
@@ -51,13 +51,13 @@ export function tasteAdjustment(profile: TasteProfile | undefined, traits: Parti
   return { adjustment: Number(capped.toFixed(2)), reasons };
 }
 
-export function applyTasteCalibration<T extends Record<string, number>>(scores: T, adjustment: number): T {
+export function applyTasteCalibration(scores: EvaluationScores, adjustment: number): EvaluationScores {
   if (!adjustment) return scores;
-  const next = { ...scores };
-  for (const key of ["aestheticCoherence", "emotionalResonance"] as const) {
-    if (typeof next[key] === "number") next[key] = Math.max(0, Math.min(10, Number((next[key] + adjustment).toFixed(1)))) as T[typeof key];
-  }
-  return next;
+  return {
+    ...scores,
+    aestheticCoherence: Math.max(0, Math.min(10, Number((scores.aestheticCoherence + adjustment).toFixed(1)))),
+    emotionalResonance: Math.max(0, Math.min(10, Number((scores.emotionalResonance + adjustment * 0.5).toFixed(1)))),
+  };
 }
 
 export function comparePairwiseScores(a: Record<string, number>, b: Record<string, number>, priority: string[]) {
