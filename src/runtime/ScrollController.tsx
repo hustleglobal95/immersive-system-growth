@@ -60,7 +60,7 @@ export function ScrollController() {
     const lenis =
       reducedMotion || freeCamera
         ? null
-        : new Lenis({ lerp: 0.085, smoothWheel: true, wheelMultiplier: 0.9 });
+        : new Lenis({ lerp: 0.055, smoothWheel: true, wheelMultiplier: 0.82, syncTouch: true });
     const update = () => {
       sync();
       ScrollTrigger.update();

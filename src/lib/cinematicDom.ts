@@ -1,7 +1,15 @@
 import gsap from "gsap";
 import { cueProgress } from "./cinematicProgress";
 
-export type CinematicPreset = "text-settle" | "curtain" | "image-depth" | "gallery-settle";
+export type CinematicPreset =
+  | "text-settle"
+  | "headline-reveal"
+  | "copy-drift"
+  | "curtain"
+  | "image-depth"
+  | "gallery-settle";
+/** Presets that carry primary copy, so they are allowed to animate accessible content. */
+const COPY_PRESETS = new Set<CinematicPreset>(["text-settle", "headline-reveal", "copy-drift"]);
 export interface CinematicCue {
   /** Selector scoped to the supplied root. Use a wrapper when CSS owns transforms. */
   selector: string;
@@ -16,7 +24,7 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
   for (const cue of cues) {
     cueProgress(0, cue.range);
     const targets = Array.from(root.querySelectorAll<HTMLElement>(cue.selector));
-    if (cue.preset !== "text-settle" && targets.some((el) =>
+    if (!COPY_PRESETS.has(cue.preset) && targets.some((el) =>
       el.getAttribute("aria-hidden") !== "true" ||
       el.matches("a,button,input,select,textarea,[tabindex],summary") ||
       el.querySelector("a,button,input,select,textarea,[tabindex],summary"))) {
@@ -32,6 +40,28 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
       if (cue.preset === "text-settle") {
         timeline.fromTo(targets, { y: distance }, {
           y: 0, duration: 1, stagger: { amount: .18 }, ease: "power2.out", immediateRender: true,
+        });
+      } else if (cue.preset === "headline-reveal") {
+        // A masked rise: the headline wipes up out of its own box and settles from a slight
+        // over-scale, which reads as one continuous move rather than a fade-in.
+        timeline.fromTo(targets, {
+          clipPath: "inset(0% 0% 108% 0%)",
+          y: compact ? 28 : 62,
+          scale: compact ? 1.014 : 1.035,
+          transformOrigin: "0% 100%",
+        }, {
+          clipPath: "inset(0% 0% 0% 0%)",
+          y: 0,
+          scale: 1,
+          duration: 1,
+          stagger: { amount: compact ? .06 : .12 },
+          ease: "expo.out",
+          immediateRender: true,
+        });
+      } else if (cue.preset === "copy-drift") {
+        timeline.fromTo(targets, { y: compact ? 14 : 34, filter: "blur(7px)" }, {
+          y: 0, filter: "blur(0px)", duration: 1, stagger: { amount: compact ? .1 : .22 },
+          ease: "power3.out", immediateRender: true,
         });
       } else if (cue.preset === "curtain") {
         timeline.fromTo(targets, { clipPath: "inset(0 0 100% 0)" }, {

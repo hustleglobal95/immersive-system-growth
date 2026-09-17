@@ -1,8 +1,8 @@
 {
   "version": 1,
   "defaults": {
-    "spring": {"mass": 1, "stiffness": 180, "damping": 24, "precision": 0.001, "maxStep": 0.0333333333},
-    "pointer": {"trailLength": 24, "smoothing": 0.18, "velocityClamp": 4, "dwellMs": 350},
+    "spring": {"mass": 1, "stiffness": 104, "damping": 23, "precision": 0.001, "maxStep": 0.0333333333},
+    "pointer": {"trailLength": 24, "smoothing": 0.1, "velocityClamp": 4, "dwellMs": 350},
     "reducedMotion": "minimal"
   },
   "scenes": [
@@ -16,7 +16,6 @@
     },
     {
       "id": "parti",
-      "reveal": {"effect": "wireframe", "direction": "right", "softness": 0.2, "intensity": 1, "pointerInfluence": 0.12, "trailInfluence": 0.1, "edgeColor": "#d7c2a3", "edgeWidth": 0.012, "seed": 88, "range": [0, 0.32]},
       "procedural": [
         {"id": "parti-halftone", "kind": "halftone", "opacity": 0.12, "color": "#ffffff", "range": [0.08, 0.92], "blendMode": "screen", "interactive": true, "seed": 102, "count": 8004, "radius": 1.1, "response": 1.15}
       ],
@@ -25,7 +24,6 @@
     {
       "id": "threshold",
       "stack": {"enabled": false, "scaleTo": 0.96, "darkenTo": 0.12, "depth": 96, "overlap": 0.3, "pin": true},
-      "reveal": {"effect": "directional", "direction": "right", "softness": 0.2, "intensity": 1, "pointerInfluence": 0.12, "trailInfluence": 0.1, "edgeColor": "#f5e8d4", "edgeWidth": 0.008, "seed": 47, "range": [0, 0.32]},
       "procedural": [],
       "occlusion": [
         {"id": "threshold-shadow", "kind": "shadow", "range": [0.62, 0.96], "axis": "x", "from": 110, "to": -110, "blur": 20, "opacity": 0.55, "depth": 1}
@@ -41,7 +39,6 @@
     },
     {
       "id": "material",
-      "reveal": {"effect": "radial", "direction": "right", "softness": 0.2, "intensity": 0.9, "pointerInfluence": 0.12, "trailInfluence": 0.1, "edgeColor": "#eadbc5", "edgeWidth": 0.007, "seed": 204, "range": [0, 0.32]},
       "procedural": [
         {"id": "material-grid", "kind": "grid", "opacity": 0.12, "color": "#eadbc5", "range": [0.05, 0.95], "blendMode": "screen", "interactive": true, "seed": 9, "columns": 16, "rows": 10, "distortion": 0.18}
       ],
@@ -49,7 +46,6 @@
     },
     {
       "id": "wellness",
-      "reveal": {"effect": "burn", "direction": "up", "softness": 0.2, "intensity": 1, "pointerInfluence": 0.12, "trailInfluence": 0.1, "edgeColor": "#d7c2a3", "edgeWidth": 0.015, "seed": 412, "range": [0, 0.32]},
       "procedural": [],
       "occlusion": [
         {"id": "wellness-blur", "kind": "blur", "range": [0.58, 0.9], "axis": "y", "from": 100, "to": -100, "blur": 32, "opacity": 0.45, "depth": 2}
@@ -112,7 +108,6 @@
     {
       "id": "inquiry",
       "stack": {"enabled": false, "scaleTo": 0.96, "darkenTo": 0.12, "depth": 100, "overlap": 0.28, "pin": true},
-      "reveal": {"effect": "contour", "direction": "up", "softness": 0.2, "intensity": 0.8, "pointerInfluence": 0.12, "trailInfluence": 0.1, "edgeColor": "#d7c2a3", "edgeWidth": 0.01, "seed": 775, "range": [0, 0.32]},
       "procedural": [],
       "occlusion": []
     }

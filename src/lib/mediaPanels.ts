@@ -34,7 +34,7 @@ export function sampleMediaPanel(p: number, w: PanelWindow, compact = false) {
       ? 1 + (Math.min(w.zoom, compact ? 1.06 : 1.18) - 1) * (1 - phase)
       : 1 + (Math.min(w.zoom,compact?1.04:1.18)-1)*(1-clamp((p-w.enterStart)/Math.max(.000001,w.end-w.enterStart))),
     opacity: transition === "dissolve" || transition === "zoom" ? phase : 1,
-    blur: transition === "dissolve" ? (1 - phase) * (compact ? 5 : 10) : 0,
+    blur: transition === "dissolve" ? (1 - phase) * (compact ? 3 : 5.5) : 0,
     clip: transition === "curtain" || transition === "wipe" ? (1 - phase) * 100 : 0,
     reveal: phase,
     transition,

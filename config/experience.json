@@ -155,31 +155,31 @@
             {
               "id": "maris-approach-copy-opacity-desktop-0",
               "at": 0,
-              "value": 0,
-              "easing": "smooth"
+              "value": 0.0,
+              "easing": "linear"
             },
             {
               "id": "maris-approach-copy-opacity-desktop-1",
-              "at": 0.13,
-              "value": 1,
+              "at": 0.1,
+              "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-approach-copy-opacity-desktop-2",
-              "at": 0.8,
-              "value": 1,
+              "at": 0.86,
+              "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-approach-copy-opacity-desktop-3",
-              "at": 0.94,
-              "value": 0,
+              "at": 0.97,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-approach-copy-opacity-desktop-4",
               "at": 1,
-              "value": 0,
+              "value": 0.0,
               "easing": "linear"
             }
           ]
@@ -197,25 +197,25 @@
             {
               "id": "maris-approach-copy-y-desktop-0",
               "at": 0,
-              "value": 24,
+              "value": 18,
               "easing": "smooth"
             },
             {
               "id": "maris-approach-copy-y-desktop-1",
-              "at": 0.15,
+              "at": 0.12,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-approach-copy-y-desktop-2",
-              "at": 0.82,
+              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-approach-copy-y-desktop-3",
               "at": 1,
-              "value": -20,
+              "value": -26,
               "easing": "smooth"
             }
           ]
@@ -233,31 +233,31 @@
             {
               "id": "maris-approach-copy-opacity-mobile-0",
               "at": 0,
-              "value": 0,
-              "easing": "smooth"
+              "value": 0.0,
+              "easing": "linear"
             },
             {
               "id": "maris-approach-copy-opacity-mobile-1",
-              "at": 0.13,
-              "value": 1,
+              "at": 0.1,
+              "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-approach-copy-opacity-mobile-2",
-              "at": 0.8,
-              "value": 1,
+              "at": 0.86,
+              "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-approach-copy-opacity-mobile-3",
-              "at": 0.94,
-              "value": 0,
+              "at": 0.97,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-approach-copy-opacity-mobile-4",
               "at": 1,
-              "value": 0,
+              "value": 0.0,
               "easing": "linear"
             }
           ]
@@ -275,25 +275,25 @@
             {
               "id": "maris-approach-copy-y-mobile-0",
               "at": 0,
-              "value": 24,
+              "value": 18,
               "easing": "smooth"
             },
             {
               "id": "maris-approach-copy-y-mobile-1",
-              "at": 0.15,
+              "at": 0.12,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-approach-copy-y-mobile-2",
-              "at": 0.82,
+              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-approach-copy-y-mobile-3",
               "at": 1,
-              "value": -20,
+              "value": -26,
               "easing": "smooth"
             }
           ]
@@ -345,10 +345,10 @@
           58,
           50
         ],
-        "overlap": 0.3,
+        "overlap": 0.45,
         "direction": "up",
-        "zoom": 1.05,
-        "textEnd": 0.26
+        "zoom": 1.09,
+        "textEnd": 0.3
       },
       "blocks": [],
       "hero": {
@@ -489,31 +489,31 @@
             {
               "id": "maris-parti-copy-opacity-desktop-0",
               "at": 0,
-              "value": 0,
-              "easing": "smooth"
+              "value": 0.0,
+              "easing": "linear"
             },
             {
               "id": "maris-parti-copy-opacity-desktop-1",
-              "at": 0.13,
-              "value": 1,
+              "at": 0.1,
+              "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-parti-copy-opacity-desktop-2",
-              "at": 0.8,
-              "value": 1,
+              "at": 0.86,
+              "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-parti-copy-opacity-desktop-3",
-              "at": 0.94,
-              "value": 0,
+              "at": 0.97,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-parti-copy-opacity-desktop-4",
               "at": 1,
-              "value": 0,
+              "value": 0.0,
               "easing": "linear"
             }
           ]
@@ -531,25 +531,25 @@
             {
               "id": "maris-parti-copy-y-desktop-0",
               "at": 0,
-              "value": 24,
+              "value": 18,
               "easing": "smooth"
             },
             {
               "id": "maris-parti-copy-y-desktop-1",
-              "at": 0.15,
+              "at": 0.12,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-parti-copy-y-desktop-2",
-              "at": 0.82,
+              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-parti-copy-y-desktop-3",
               "at": 1,
-              "value": -20,
+              "value": -26,
               "easing": "smooth"
             }
           ]
@@ -567,31 +567,31 @@
             {
               "id": "maris-parti-copy-opacity-mobile-0",
               "at": 0,
-              "value": 0,
-              "easing": "smooth"
+              "value": 0.0,
+              "easing": "linear"
             },
             {
               "id": "maris-parti-copy-opacity-mobile-1",
-              "at": 0.13,
-              "value": 1,
+              "at": 0.1,
+              "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-parti-copy-opacity-mobile-2",
-              "at": 0.8,
-              "value": 1,
+              "at": 0.86,
+              "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-parti-copy-opacity-mobile-3",
-              "at": 0.94,
-              "value": 0,
+              "at": 0.97,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-parti-copy-opacity-mobile-4",
               "at": 1,
-              "value": 0,
+              "value": 0.0,
               "easing": "linear"
             }
           ]
@@ -609,25 +609,25 @@
             {
               "id": "maris-parti-copy-y-mobile-0",
               "at": 0,
-              "value": 24,
+              "value": 18,
               "easing": "smooth"
             },
             {
               "id": "maris-parti-copy-y-mobile-1",
-              "at": 0.15,
+              "at": 0.12,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-parti-copy-y-mobile-2",
-              "at": 0.82,
+              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-parti-copy-y-mobile-3",
               "at": 1,
-              "value": -20,
+              "value": -26,
               "easing": "smooth"
             }
           ]
@@ -637,7 +637,7 @@
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1774423864869-702b21c2490a?auto=format&fit=crop&fm=jpg&q=86&w=2400",
         "alt": "Modern room opening toward an ocean horizon at sunset",
-        "transition": "curtain",
+        "transition": "dissolve",
         "blendColor": "#171310",
         "maskSoftness": 22,
         "layers": [],
@@ -649,9 +649,9 @@
           61,
           50
         ],
-        "overlap": 0.3,
+        "overlap": 0.45,
         "direction": "up",
-        "zoom": 1.05,
+        "zoom": 1.09,
         "textEnd": 0.3
       },
       "blocks": [],
@@ -827,31 +827,31 @@
             {
               "id": "maris-threshold-copy-opacity-desktop-0",
               "at": 0,
-              "value": 0,
-              "easing": "smooth"
+              "value": 0.0,
+              "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-opacity-desktop-1",
-              "at": 0.13,
-              "value": 1,
+              "at": 0.1,
+              "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-opacity-desktop-2",
-              "at": 0.8,
-              "value": 1,
+              "at": 0.86,
+              "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-opacity-desktop-3",
-              "at": 0.94,
-              "value": 0,
+              "at": 0.97,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-opacity-desktop-4",
               "at": 1,
-              "value": 0,
+              "value": 0.0,
               "easing": "linear"
             }
           ]
@@ -869,25 +869,25 @@
             {
               "id": "maris-threshold-copy-y-desktop-0",
               "at": 0,
-              "value": 24,
+              "value": 18,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-y-desktop-1",
-              "at": 0.15,
+              "at": 0.12,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-y-desktop-2",
-              "at": 0.82,
+              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-y-desktop-3",
               "at": 1,
-              "value": -20,
+              "value": -26,
               "easing": "smooth"
             }
           ]
@@ -905,31 +905,31 @@
             {
               "id": "maris-threshold-copy-opacity-mobile-0",
               "at": 0,
-              "value": 0,
-              "easing": "smooth"
+              "value": 0.0,
+              "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-opacity-mobile-1",
-              "at": 0.13,
-              "value": 1,
+              "at": 0.1,
+              "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-opacity-mobile-2",
-              "at": 0.8,
-              "value": 1,
+              "at": 0.86,
+              "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-opacity-mobile-3",
-              "at": 0.94,
-              "value": 0,
+              "at": 0.97,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-opacity-mobile-4",
               "at": 1,
-              "value": 0,
+              "value": 0.0,
               "easing": "linear"
             }
           ]
@@ -947,25 +947,25 @@
             {
               "id": "maris-threshold-copy-y-mobile-0",
               "at": 0,
-              "value": 24,
+              "value": 18,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-y-mobile-1",
-              "at": 0.15,
+              "at": 0.12,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-y-mobile-2",
-              "at": 0.82,
+              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-y-mobile-3",
               "at": 1,
-              "value": -20,
+              "value": -26,
               "easing": "smooth"
             }
           ]
@@ -975,7 +975,7 @@
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=84&w=2400",
         "alt": "Sunlit modern atrium facing the sea",
-        "transition": "wipe",
+        "transition": "dissolve",
         "blendColor": "#171310",
         "maskSoftness": 22,
         "layers": [],
@@ -987,10 +987,10 @@
           62,
           50
         ],
-        "overlap": 0.3,
+        "overlap": 0.45,
         "direction": "up",
-        "zoom": 1.05,
-        "textEnd": 0.25
+        "zoom": 1.09,
+        "textEnd": 0.3
       },
       "blocks": [],
       "hero": {
@@ -1131,31 +1131,31 @@
             {
               "id": "maris-living-copy-opacity-desktop-0",
               "at": 0,
-              "value": 0,
-              "easing": "smooth"
+              "value": 0.0,
+              "easing": "linear"
             },
             {
               "id": "maris-living-copy-opacity-desktop-1",
-              "at": 0.13,
-              "value": 1,
+              "at": 0.1,
+              "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-living-copy-opacity-desktop-2",
-              "at": 0.8,
-              "value": 1,
+              "at": 0.86,
+              "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-living-copy-opacity-desktop-3",
-              "at": 0.94,
-              "value": 0,
+              "at": 0.97,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-living-copy-opacity-desktop-4",
               "at": 1,
-              "value": 0,
+              "value": 0.0,
               "easing": "linear"
             }
           ]
@@ -1173,25 +1173,25 @@
             {
               "id": "maris-living-copy-y-desktop-0",
               "at": 0,
-              "value": 24,
+              "value": 18,
               "easing": "smooth"
             },
             {
               "id": "maris-living-copy-y-desktop-1",
-              "at": 0.15,
+              "at": 0.12,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-living-copy-y-desktop-2",
-              "at": 0.82,
+              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-living-copy-y-desktop-3",
               "at": 1,
-              "value": -20,
+              "value": -26,
               "easing": "smooth"
             }
           ]
@@ -1209,31 +1209,31 @@
             {
               "id": "maris-living-copy-opacity-mobile-0",
               "at": 0,
-              "value": 0,
-              "easing": "smooth"
+              "value": 0.0,
+              "easing": "linear"
             },
             {
               "id": "maris-living-copy-opacity-mobile-1",
-              "at": 0.13,
-              "value": 1,
+              "at": 0.1,
+              "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-living-copy-opacity-mobile-2",
-              "at": 0.8,
-              "value": 1,
+              "at": 0.86,
+              "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-living-copy-opacity-mobile-3",
-              "at": 0.94,
-              "value": 0,
+              "at": 0.97,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-living-copy-opacity-mobile-4",
               "at": 1,
-              "value": 0,
+              "value": 0.0,
               "easing": "linear"
             }
           ]
@@ -1251,25 +1251,25 @@
             {
               "id": "maris-living-copy-y-mobile-0",
               "at": 0,
-              "value": 24,
+              "value": 18,
               "easing": "smooth"
             },
             {
               "id": "maris-living-copy-y-mobile-1",
-              "at": 0.15,
+              "at": 0.12,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-living-copy-y-mobile-2",
-              "at": 0.82,
+              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-living-copy-y-mobile-3",
               "at": 1,
-              "value": -20,
+              "value": -26,
               "easing": "smooth"
             }
           ]
@@ -1279,7 +1279,7 @@
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1769737122085-97b1ee5ab104?auto=format&fit=crop&fm=jpg&q=86&w=2400",
         "alt": "Modern coastal kitchen and living space with ocean view",
-        "transition": "curtain",
+        "transition": "dissolve",
         "blendColor": "#171310",
         "maskSoftness": 22,
         "layers": [],
@@ -1291,10 +1291,10 @@
           64,
           50
         ],
-        "overlap": 0.3,
+        "overlap": 0.45,
         "direction": "up",
-        "zoom": 1.05,
-        "textEnd": 0.28
+        "zoom": 1.09,
+        "textEnd": 0.3
       },
       "blocks": [],
       "hero": {
@@ -1465,31 +1465,31 @@
             {
               "id": "maris-material-copy-opacity-desktop-0",
               "at": 0,
-              "value": 0,
-              "easing": "smooth"
+              "value": 0.0,
+              "easing": "linear"
             },
             {
               "id": "maris-material-copy-opacity-desktop-1",
-              "at": 0.13,
-              "value": 1,
+              "at": 0.1,
+              "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-material-copy-opacity-desktop-2",
-              "at": 0.8,
-              "value": 1,
+              "at": 0.86,
+              "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-material-copy-opacity-desktop-3",
-              "at": 0.94,
-              "value": 0,
+              "at": 0.97,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-material-copy-opacity-desktop-4",
               "at": 1,
-              "value": 0,
+              "value": 0.0,
               "easing": "linear"
             }
           ]
@@ -1507,25 +1507,25 @@
             {
               "id": "maris-material-copy-y-desktop-0",
               "at": 0,
-              "value": 24,
+              "value": 18,
               "easing": "smooth"
             },
             {
               "id": "maris-material-copy-y-desktop-1",
-              "at": 0.15,
+              "at": 0.12,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-material-copy-y-desktop-2",
-              "at": 0.82,
+              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-material-copy-y-desktop-3",
               "at": 1,
-              "value": -20,
+              "value": -26,
               "easing": "smooth"
             }
           ]
@@ -1543,31 +1543,31 @@
             {
               "id": "maris-material-copy-opacity-mobile-0",
               "at": 0,
-              "value": 0,
-              "easing": "smooth"
+              "value": 0.0,
+              "easing": "linear"
             },
             {
               "id": "maris-material-copy-opacity-mobile-1",
-              "at": 0.13,
-              "value": 1,
+              "at": 0.1,
+              "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-material-copy-opacity-mobile-2",
-              "at": 0.8,
-              "value": 1,
+              "at": 0.86,
+              "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-material-copy-opacity-mobile-3",
-              "at": 0.94,
-              "value": 0,
+              "at": 0.97,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-material-copy-opacity-mobile-4",
               "at": 1,
-              "value": 0,
+              "value": 0.0,
               "easing": "linear"
             }
           ]
@@ -1585,25 +1585,25 @@
             {
               "id": "maris-material-copy-y-mobile-0",
               "at": 0,
-              "value": 24,
+              "value": 18,
               "easing": "smooth"
             },
             {
               "id": "maris-material-copy-y-mobile-1",
-              "at": 0.15,
+              "at": 0.12,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-material-copy-y-mobile-2",
-              "at": 0.82,
+              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-material-copy-y-mobile-3",
               "at": 1,
-              "value": -20,
+              "value": -26,
               "easing": "smooth"
             }
           ]
@@ -1613,7 +1613,7 @@
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1770970831074-6e88b6cc260b?auto=format&fit=crop&fm=jpg&q=86&w=2200",
         "alt": "Architectural material samples, sketches and tactile finishes on a studio table",
-        "transition": "wipe",
+        "transition": "dissolve",
         "blendColor": "#171310",
         "maskSoftness": 22,
         "mask": {
@@ -1642,10 +1642,10 @@
           50,
           50
         ],
-        "overlap": 0.3,
+        "overlap": 0.45,
         "direction": "up",
-        "zoom": 1.05,
-        "textEnd": 0.24
+        "zoom": 1.09,
+        "textEnd": 0.3
       },
       "blocks": [],
       "hero": {
@@ -1786,31 +1786,31 @@
             {
               "id": "maris-wellness-copy-opacity-desktop-0",
               "at": 0,
-              "value": 0,
-              "easing": "smooth"
+              "value": 0.0,
+              "easing": "linear"
             },
             {
               "id": "maris-wellness-copy-opacity-desktop-1",
-              "at": 0.13,
-              "value": 1,
+              "at": 0.1,
+              "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-wellness-copy-opacity-desktop-2",
-              "at": 0.8,
-              "value": 1,
+              "at": 0.86,
+              "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-wellness-copy-opacity-desktop-3",
-              "at": 0.94,
-              "value": 0,
+              "at": 0.97,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-wellness-copy-opacity-desktop-4",
               "at": 1,
-              "value": 0,
+              "value": 0.0,
               "easing": "linear"
             }
           ]
@@ -1828,25 +1828,25 @@
             {
               "id": "maris-wellness-copy-y-desktop-0",
               "at": 0,
-              "value": 24,
+              "value": 18,
               "easing": "smooth"
             },
             {
               "id": "maris-wellness-copy-y-desktop-1",
-              "at": 0.15,
+              "at": 0.12,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-wellness-copy-y-desktop-2",
-              "at": 0.82,
+              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-wellness-copy-y-desktop-3",
               "at": 1,
-              "value": -20,
+              "value": -26,
               "easing": "smooth"
             }
           ]
@@ -1864,31 +1864,31 @@
             {
               "id": "maris-wellness-copy-opacity-mobile-0",
               "at": 0,
-              "value": 0,
-              "easing": "smooth"
+              "value": 0.0,
+              "easing": "linear"
             },
             {
               "id": "maris-wellness-copy-opacity-mobile-1",
-              "at": 0.13,
-              "value": 1,
+              "at": 0.1,
+              "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-wellness-copy-opacity-mobile-2",
-              "at": 0.8,
-              "value": 1,
+              "at": 0.86,
+              "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-wellness-copy-opacity-mobile-3",
-              "at": 0.94,
-              "value": 0,
+              "at": 0.97,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-wellness-copy-opacity-mobile-4",
               "at": 1,
-              "value": 0,
+              "value": 0.0,
               "easing": "linear"
             }
           ]
@@ -1906,25 +1906,25 @@
             {
               "id": "maris-wellness-copy-y-mobile-0",
               "at": 0,
-              "value": 24,
+              "value": 18,
               "easing": "smooth"
             },
             {
               "id": "maris-wellness-copy-y-mobile-1",
-              "at": 0.15,
+              "at": 0.12,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-wellness-copy-y-mobile-2",
-              "at": 0.82,
+              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-wellness-copy-y-mobile-3",
               "at": 1,
-              "value": -20,
+              "value": -26,
               "easing": "smooth"
             }
           ]
@@ -1934,7 +1934,7 @@
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1763485956343-61b0163a3e7e?auto=format&fit=crop&fm=jpg&q=86&w=2200",
         "alt": "Warm travertine wellness interior with restrained fixtures",
-        "transition": "curtain",
+        "transition": "dissolve",
         "blendColor": "#171310",
         "maskSoftness": 22,
         "layers": [],
@@ -1946,9 +1946,9 @@
           56,
           52
         ],
-        "overlap": 0.3,
+        "overlap": 0.45,
         "direction": "down",
-        "zoom": 1.05,
+        "zoom": 1.09,
         "textEnd": 0.3
       },
       "blocks": [],
@@ -2090,31 +2090,31 @@
             {
               "id": "maris-studio-copy-opacity-desktop-0",
               "at": 0,
-              "value": 0,
-              "easing": "smooth"
+              "value": 0.0,
+              "easing": "linear"
             },
             {
               "id": "maris-studio-copy-opacity-desktop-1",
-              "at": 0.13,
-              "value": 1,
+              "at": 0.1,
+              "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-studio-copy-opacity-desktop-2",
-              "at": 0.8,
-              "value": 1,
+              "at": 0.86,
+              "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-studio-copy-opacity-desktop-3",
-              "at": 0.94,
-              "value": 0,
+              "at": 0.97,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-studio-copy-opacity-desktop-4",
               "at": 1,
-              "value": 0,
+              "value": 0.0,
               "easing": "linear"
             }
           ]
@@ -2132,25 +2132,25 @@
             {
               "id": "maris-studio-copy-y-desktop-0",
               "at": 0,
-              "value": 24,
+              "value": 18,
               "easing": "smooth"
             },
             {
               "id": "maris-studio-copy-y-desktop-1",
-              "at": 0.15,
+              "at": 0.12,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-studio-copy-y-desktop-2",
-              "at": 0.82,
+              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-studio-copy-y-desktop-3",
               "at": 1,
-              "value": -20,
+              "value": -26,
               "easing": "smooth"
             }
           ]
@@ -2168,31 +2168,31 @@
             {
               "id": "maris-studio-copy-opacity-mobile-0",
               "at": 0,
-              "value": 0,
-              "easing": "smooth"
+              "value": 0.0,
+              "easing": "linear"
             },
             {
               "id": "maris-studio-copy-opacity-mobile-1",
-              "at": 0.13,
-              "value": 1,
+              "at": 0.1,
+              "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-studio-copy-opacity-mobile-2",
-              "at": 0.8,
-              "value": 1,
+              "at": 0.86,
+              "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-studio-copy-opacity-mobile-3",
-              "at": 0.94,
-              "value": 0,
+              "at": 0.97,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-studio-copy-opacity-mobile-4",
               "at": 1,
-              "value": 0,
+              "value": 0.0,
               "easing": "linear"
             }
           ]
@@ -2210,25 +2210,25 @@
             {
               "id": "maris-studio-copy-y-mobile-0",
               "at": 0,
-              "value": 24,
+              "value": 18,
               "easing": "smooth"
             },
             {
               "id": "maris-studio-copy-y-mobile-1",
-              "at": 0.15,
+              "at": 0.12,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-studio-copy-y-mobile-2",
-              "at": 0.82,
+              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-studio-copy-y-mobile-3",
               "at": 1,
-              "value": -20,
+              "value": -26,
               "easing": "smooth"
             }
           ]
@@ -2238,7 +2238,7 @@
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=82&w=2400",
         "alt": "Architectural studio space opening to daylight and landscape",
-        "transition": "wipe",
+        "transition": "dissolve",
         "blendColor": "#171310",
         "maskSoftness": 22,
         "layers": [],
@@ -2250,10 +2250,10 @@
           55,
           50
         ],
-        "overlap": 0.3,
+        "overlap": 0.45,
         "direction": "up",
-        "zoom": 1.05,
-        "textEnd": 0.28
+        "zoom": 1.09,
+        "textEnd": 0.3
       },
       "blocks": [],
       "hero": {
@@ -2394,31 +2394,31 @@
             {
               "id": "maris-horizon-copy-opacity-desktop-0",
               "at": 0,
-              "value": 0,
-              "easing": "smooth"
+              "value": 0.0,
+              "easing": "linear"
             },
             {
               "id": "maris-horizon-copy-opacity-desktop-1",
-              "at": 0.13,
-              "value": 1,
+              "at": 0.1,
+              "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-horizon-copy-opacity-desktop-2",
-              "at": 0.8,
-              "value": 1,
+              "at": 0.86,
+              "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-horizon-copy-opacity-desktop-3",
-              "at": 0.94,
-              "value": 0,
+              "at": 0.97,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-horizon-copy-opacity-desktop-4",
               "at": 1,
-              "value": 0,
+              "value": 0.0,
               "easing": "linear"
             }
           ]
@@ -2436,25 +2436,25 @@
             {
               "id": "maris-horizon-copy-y-desktop-0",
               "at": 0,
-              "value": 24,
+              "value": 18,
               "easing": "smooth"
             },
             {
               "id": "maris-horizon-copy-y-desktop-1",
-              "at": 0.15,
+              "at": 0.12,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-horizon-copy-y-desktop-2",
-              "at": 0.82,
+              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-horizon-copy-y-desktop-3",
               "at": 1,
-              "value": -20,
+              "value": -26,
               "easing": "smooth"
             }
           ]
@@ -2472,31 +2472,31 @@
             {
               "id": "maris-horizon-copy-opacity-mobile-0",
               "at": 0,
-              "value": 0,
-              "easing": "smooth"
+              "value": 0.0,
+              "easing": "linear"
             },
             {
               "id": "maris-horizon-copy-opacity-mobile-1",
-              "at": 0.13,
-              "value": 1,
+              "at": 0.1,
+              "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-horizon-copy-opacity-mobile-2",
-              "at": 0.8,
-              "value": 1,
+              "at": 0.86,
+              "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-horizon-copy-opacity-mobile-3",
-              "at": 0.94,
-              "value": 0,
+              "at": 0.97,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-horizon-copy-opacity-mobile-4",
               "at": 1,
-              "value": 0,
+              "value": 0.0,
               "easing": "linear"
             }
           ]
@@ -2514,25 +2514,25 @@
             {
               "id": "maris-horizon-copy-y-mobile-0",
               "at": 0,
-              "value": 24,
+              "value": 18,
               "easing": "smooth"
             },
             {
               "id": "maris-horizon-copy-y-mobile-1",
-              "at": 0.15,
+              "at": 0.12,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-horizon-copy-y-mobile-2",
-              "at": 0.82,
+              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-horizon-copy-y-mobile-3",
               "at": 1,
-              "value": -20,
+              "value": -26,
               "easing": "smooth"
             }
           ]
@@ -2542,7 +2542,7 @@
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1762337018404-052afb0e3370?auto=format&fit=crop&fm=jpg&q=84&w=2600",
         "alt": "Coastal architecture set against sea and rock",
-        "transition": "curtain",
+        "transition": "dissolve",
         "blendColor": "#171310",
         "maskSoftness": 22,
         "layers": [],
@@ -2554,10 +2554,10 @@
           61,
           50
         ],
-        "overlap": 0.3,
+        "overlap": 0.45,
         "direction": "up",
-        "zoom": 1.05,
-        "textEnd": 0.24
+        "zoom": 1.09,
+        "textEnd": 0.3
       },
       "blocks": [],
       "hero": {
@@ -2698,31 +2698,31 @@
             {
               "id": "maris-inquiry-copy-opacity-desktop-0",
               "at": 0,
-              "value": 0,
-              "easing": "smooth"
+              "value": 0.0,
+              "easing": "linear"
             },
             {
               "id": "maris-inquiry-copy-opacity-desktop-1",
-              "at": 0.13,
-              "value": 1,
+              "at": 0.1,
+              "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-inquiry-copy-opacity-desktop-2",
-              "at": 0.8,
-              "value": 1,
+              "at": 0.86,
+              "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-inquiry-copy-opacity-desktop-3",
-              "at": 0.94,
-              "value": 0,
+              "at": 0.97,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-inquiry-copy-opacity-desktop-4",
               "at": 1,
-              "value": 0,
+              "value": 0.0,
               "easing": "linear"
             }
           ]
@@ -2740,25 +2740,25 @@
             {
               "id": "maris-inquiry-copy-y-desktop-0",
               "at": 0,
-              "value": 24,
+              "value": 18,
               "easing": "smooth"
             },
             {
               "id": "maris-inquiry-copy-y-desktop-1",
-              "at": 0.15,
+              "at": 0.12,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-inquiry-copy-y-desktop-2",
-              "at": 0.82,
+              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-inquiry-copy-y-desktop-3",
               "at": 1,
-              "value": -20,
+              "value": -26,
               "easing": "smooth"
             }
           ]
@@ -2776,31 +2776,31 @@
             {
               "id": "maris-inquiry-copy-opacity-mobile-0",
               "at": 0,
-              "value": 0,
-              "easing": "smooth"
+              "value": 0.0,
+              "easing": "linear"
             },
             {
               "id": "maris-inquiry-copy-opacity-mobile-1",
-              "at": 0.13,
-              "value": 1,
+              "at": 0.1,
+              "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-inquiry-copy-opacity-mobile-2",
-              "at": 0.8,
-              "value": 1,
+              "at": 0.86,
+              "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-inquiry-copy-opacity-mobile-3",
-              "at": 0.94,
-              "value": 0,
+              "at": 0.97,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-inquiry-copy-opacity-mobile-4",
               "at": 1,
-              "value": 0,
+              "value": 0.0,
               "easing": "linear"
             }
           ]
@@ -2818,25 +2818,25 @@
             {
               "id": "maris-inquiry-copy-y-mobile-0",
               "at": 0,
-              "value": 24,
+              "value": 18,
               "easing": "smooth"
             },
             {
               "id": "maris-inquiry-copy-y-mobile-1",
-              "at": 0.15,
+              "at": 0.12,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-inquiry-copy-y-mobile-2",
-              "at": 0.82,
+              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-inquiry-copy-y-mobile-3",
               "at": 1,
-              "value": -20,
+              "value": -26,
               "easing": "smooth"
             }
           ]
@@ -2846,7 +2846,7 @@
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1774423864869-702b21c2490a?auto=format&fit=crop&fm=jpg&q=84&w=2600",
         "alt": "Coastal residence at golden hour overlooking the sea",
-        "transition": "curtain",
+        "transition": "dissolve",
         "blendColor": "#171310",
         "maskSoftness": 22,
         "mask": {
@@ -2875,10 +2875,10 @@
           60,
           50
         ],
-        "overlap": 0.3,
+        "overlap": 0.45,
         "direction": "up",
-        "zoom": 1.05,
-        "textEnd": 0.25
+        "zoom": 1.09,
+        "textEnd": 0.3
       },
       "blocks": [],
       "hero": {
