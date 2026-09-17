@@ -70,6 +70,7 @@ export function StudioWorkflowGuide({
   }, [hasIdea, hasAssets, customStructure, hasMotion, isReviewable]);
 
   const directorHref = `/studio/agent?idea=${encodeURIComponent(brief.trim() || `Create a memorable immersive experience for ${project.name}.`)}`;
+  const creatorHref = `/studio/assets/create?asset=${encodeURIComponent(`${project.id}-hero-source.webp`)}&type=image&priority=hero-critical&scene=0&reason=${encodeURIComponent(brief.trim() || `Create the first hero visual asset for ${project.name}.`)}`;
 
   return <div className="workflow-guide-backdrop" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) onClose(); }}>
     <section className="workflow-guide" role="dialog" aria-modal="true" aria-labelledby="workflow-guide-title">
@@ -97,8 +98,9 @@ export function StudioWorkflowGuide({
           <a className="workflow-guide__primary" href={directorHref}>Ask Creative Agent to direct it</a>
         </GuideStep>
 
-        <GuideStep number="02" done={status.assets} title="Give Forge the ingredients" description="Import the images, GLBs, video, HDRIs or textures you already have. The Creative Agent will tell you what is still missing.">
-          <button type="button" className="workflow-guide__primary" onClick={onOpenAssets}>Open assets</button>
+        <GuideStep number="02" done={status.assets} title="Give Forge the ingredients" description="Use what you already have or create what the project is missing. You should not have to leave Forge just to produce a hero image, video or 3D asset.">
+          <a className="workflow-guide__primary" href={creatorHref}>Create an asset</a>
+          <button type="button" onClick={onOpenAssets}>Import existing assets</button>
         </GuideStep>
 
         <GuideStep number="03" done={status.structure} title="Shape the experience" description="Create the scene sequence and edit the words. You can stay in the visual cockpit; no source files are required.">
@@ -136,7 +138,7 @@ function GuideStep({ number, done, title, description, children }: { number: str
 function stepTitle(step: StepId) {
   return ({
     idea: "Describe what you want to create.",
-    assets: "Bring in the assets you already have.",
+    assets: "Import or create the assets the idea needs.",
     structure: "Turn the idea into a scene journey.",
     motion: "Give the scenes camera and motion direction.",
     review: "Review the complete experience.",
@@ -147,7 +149,7 @@ function stepTitle(step: StepId) {
 function stepDescription(step: StepId) {
   return ({
     idea: "Do not think about WebGL, GSAP or cameras yet. Start with the outcome and let Director choose the production approach.",
-    assets: "Forge can plan around what exists and identify what should be created next.",
+    assets: "Use existing files, or send a missing asset straight to Forge Asset Creator and place the result into the draft.",
     structure: "Build only the scenes needed to communicate the idea clearly.",
     motion: "Use coordinated motion first; advanced sequencing is optional.",
     review: "Resolve project issues and make sure one signature moment carries the experience.",
