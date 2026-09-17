@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ProductionStudioWorkbench } from "@/src/studio/ProductionStudioWorkbench";
+import { StudioWorkflowDock } from "@/src/studio/StudioWorkflowDock";
 import "./studio.css";
 import "./ui-refinement.css";
 import "./production-studio.css";
@@ -19,5 +20,6 @@ export default function StudioPage() {
       <Link className="studio-agent-entry" href="/studio/agent">Creative Agent <span>Direct this project</span></Link>
     </div>
     <ProductionStudioWorkbench />
+    <StudioWorkflowDock />
   </>;
 }
