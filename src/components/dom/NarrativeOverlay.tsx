@@ -47,7 +47,7 @@ const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
     { selector: scope + "[data-motion-aside]", range: [at(lead + .1), at(lead + .26)], preset: "copy-drift" },
     { selector: scope + "[data-motion-cta]", range: [at(lead + .12), at(lead + .28)], preset: "copy-drift" },
     // Absolute, not lead-relative: the collapse has to sit exactly on the copy's exit window.
-    { selector: scope + "[data-motion-panel]", range: [at(.58), at(.7)], preset: "section-collapse" },
+    { selector: scope + "[data-motion-panel]", range: [at(.52), at(.62)], preset: "section-collapse" },
   ];
 });
 // Ordinary server-rendered content remains the baseline. No opacity/aria-hidden gate owns primary copy.

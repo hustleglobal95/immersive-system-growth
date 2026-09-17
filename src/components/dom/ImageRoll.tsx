@@ -52,7 +52,7 @@ export function ImageRoll({ block, range }: { block: Roll; range: readonly [numb
     measure();
     window.addEventListener("resize", measure);
 
-    const FADE_IN = 0.06, HOLD_END = 0.58, GONE = 0.68;
+    const FADE_IN = 0.06, HOLD_END = 0.52, GONE = 0.62;
     const SWEEP_END = block.sweep;
     const EXIT_LEAN = 0.18, EXIT_TURN = 20, EXIT_SEQUENCE = 0.78;
 
