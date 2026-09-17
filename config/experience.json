@@ -1127,7 +1127,7 @@
       "media": {
         "kind": "color",
         "alt": "Flat field for the manifesto chapter",
-        "transition": "cut",
+        "transition": "mask",
         "blendColor": "#171310",
         "maskSoftness": 22,
         "layers": [],
@@ -1139,18 +1139,35 @@
           61,
           50
         ],
-        "overlap": 0.1,
+        "overlap": 0.38,
         "direction": "up",
         "zoom": 1,
         "textEnd": 0.3,
-        "fill": "#131c19"
+        "fill": "#131c19",
+        "mask": {
+          "preset": "noise-dissolve",
+          "renderer": "auto",
+          "direction": "up",
+          "origin": [
+            50,
+            50
+          ],
+          "softness": 38,
+          "scale": 1.02,
+          "rotation": 0,
+          "intensity": 0.6,
+          "seed": 418,
+          "invert": false,
+          "edgeColor": "#eadbc5",
+          "edgeWidth": 0.18
+        }
       },
       "blocks": [
         {
           "id": "parti-roll",
           "type": "image-roll",
           "direction": "left",
-          "travel": 46,
+          "travel": 100,
           "lift": 7,
           "images": [
             {
@@ -1177,7 +1194,8 @@
               "src": "https://images.unsplash.com/photo-1763485956343-61b0163a3e7e?auto=format&fit=crop&fm=jpg&q=86&w=2200",
               "alt": "Travertine bathing court"
             }
-          ]
+          ],
+          "sweep": 0.52
         }
       ],
       "hero": {
@@ -4211,7 +4229,7 @@
       "media": {
         "kind": "color",
         "alt": "Flat field for the process chapter",
-        "transition": "cut",
+        "transition": "mask",
         "blendColor": "#171310",
         "maskSoftness": 22,
         "layers": [],
@@ -4223,11 +4241,28 @@
           55,
           50
         ],
-        "overlap": 0.1,
+        "overlap": 0.36,
         "direction": "up",
         "zoom": 1,
         "textEnd": 0.32,
-        "fill": "#4d2a1e"
+        "fill": "#4d2a1e",
+        "mask": {
+          "preset": "linear-soft",
+          "renderer": "auto",
+          "direction": "down",
+          "origin": [
+            50,
+            44
+          ],
+          "softness": 38,
+          "scale": 1.02,
+          "rotation": 0,
+          "intensity": 0.6,
+          "seed": 655,
+          "invert": false,
+          "edgeColor": "#eadbc5",
+          "edgeWidth": 0.18
+        }
       },
       "blocks": [
         {
@@ -4262,7 +4297,7 @@
           "id": "studio-roll",
           "type": "image-roll",
           "direction": "right",
-          "travel": 40,
+          "travel": 44,
           "lift": 5,
           "images": [
             {
@@ -4285,7 +4320,8 @@
               "src": "https://images.unsplash.com/photo-1774423864869-702b21c2490a?auto=format&fit=crop&fm=jpg&q=86&w=2400",
               "alt": "Room open to the horizon"
             }
-          ]
+          ],
+          "sweep": 0.34
         }
       ],
       "hero": {

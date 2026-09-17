@@ -173,6 +173,7 @@ const sceneBlockSchema = z.discriminatedUnion("type", [
     travel: finite.min(4).max(180).default(90),
     lift: finite.min(0).max(14).default(5),
     curve: finite.min(0).max(1).default(1),
+    sweep: finite.min(0.1).max(0.56).default(0.32),
   }).strict(),
   z.object({
     id,

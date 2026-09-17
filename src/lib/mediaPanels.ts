@@ -48,10 +48,12 @@ export function sampleMediaPanel(p: number, w: PanelWindow, compact = false) {
     panelX: (axis === "x" ? slideIn : 0) - (exitAxis === "x" ? slideOut : 0),
     imageY: (axis === "y" ? driftIn : 0) + (exitAxis === "y" ? driftOut : 0),
     imageX: (axis === "x" ? driftIn : 0) + (exitAxis === "x" ? driftOut : 0),
-    scale: isCut ? 1
+    // A leaving frame settles back a little as the next one comes over it, so the imagery
+    // collapses into the handover instead of simply being covered. A cut does not: it changes.
+    scale: (isCut ? 1 : 1 - leave * 0.075) * (isCut ? 1
       : transition === "zoom"
         ? 1 + (Math.min(w.zoom, compact ? 1.06 : 1.18) - 1) * (1 - phase)
-        : 1 + (Math.min(w.zoom,compact?1.04:1.18)-1)*(1-clamp((p-w.enterStart)/Math.max(.000001,w.end-w.enterStart))),
+        : 1 + (Math.min(w.zoom,compact?1.04:1.18)-1)*(1-clamp((p-w.enterStart)/Math.max(.000001,w.end-w.enterStart)))),
     opacity: transition === "dissolve" || transition === "zoom" ? phase : 1,
     blur: transition === "dissolve" ? (1 - phase) * (compact ? 3 : 5.5) : 0,
     clip: transition === "curtain" || transition === "wipe" ? (1 - enter) * 100 : 0,

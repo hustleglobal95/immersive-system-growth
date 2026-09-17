@@ -46,6 +46,8 @@ const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
     { selector: scope + "[data-motion-plate]", range: [at(lead + .08), at(lead + .26)], preset: motion.plates ?? "copy-drift" },
     { selector: scope + "[data-motion-aside]", range: [at(lead + .1), at(lead + .26)], preset: "copy-drift" },
     { selector: scope + "[data-motion-cta]", range: [at(lead + .12), at(lead + .28)], preset: "copy-drift" },
+    // Absolute, not lead-relative: the collapse has to sit exactly on the copy's exit window.
+    { selector: scope + "[data-motion-panel]", range: [at(.58), at(.7)], preset: "section-collapse" },
   ];
 });
 // Ordinary server-rendered content remains the baseline. No opacity/aria-hidden gate owns primary copy.
@@ -74,7 +76,7 @@ export function NarrativeOverlay() {
           aria-labelledby={`${scene.id}-heading`}
         >
           {scene.media && <img className="story-media-static" src={scene.media.poster ?? scene.media.src} alt={scene.media.alt} loading={index===0?"eager":"lazy"} />}
-          <div className="story-panel">
+          <div className="story-panel" data-motion-panel>
             <div className="narrative-panel__index" data-motion-index>
               {String(index + 1).padStart(2, "0")}
             </div>

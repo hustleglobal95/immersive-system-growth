@@ -13,6 +13,7 @@ export type CinematicPreset =
   | "lede-words"
   | "lede-scatter"
   | "list-unfold"
+  | "section-collapse"
   | "plate-rise"
   | "label-track"
   | "copy-drift"
@@ -23,7 +24,7 @@ export type CinematicPreset =
 const COPY_PRESETS = new Set<CinematicPreset>([
   "text-settle", "headline-reveal", "headline-words", "headline-chars", "headline-swing",
   "headline-slide", "headline-fracture", "headline-drop", "lede-words", "lede-scatter",
-  "list-unfold", "plate-rise", "label-track", "copy-drift",
+  "list-unfold", "plate-rise", "section-collapse", "label-track", "copy-drift",
 ]);
 /** Presets whose targets are split into per-word or per-character boxes before animating. */
 const SPLIT_PRESETS: Partial<Record<CinematicPreset, "word" | "char">> = {
@@ -207,6 +208,17 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
         }, {
           clipPath: "inset(0% 0% 0% 0%)", scale: 1, yPercent: 0, duration: 1,
           stagger: { amount: compact ? .34 : .6 }, ease: "expo.out", immediateRender: true,
+        });
+      } else if (cue.preset === "section-collapse") {
+        // The chapter folds away from its own base rather than being replaced: it settles back,
+        // tips a little and compresses, so the handover reads as one continuous move.
+        timeline.fromTo(targets, {
+          scale: 1, rotateX: 0, yPercent: 0, transformPerspective: 1400, transformOrigin: "50% 100%",
+        }, {
+          scale: compact ? 0.955 : 0.918,
+          rotateX: compact ? 2.2 : 5.2,
+          yPercent: compact ? -1.4 : -3,
+          duration: 1, ease: "power2.in", immediateRender: true,
         });
       } else if (cue.preset === "list-unfold") {
         // Rows unfold from their own left edge, so the schedule builds line by line.

@@ -62,9 +62,12 @@ export function CinematicMedia() {
         window: getMediaPanelWindow(experience.scenes, index),
         panelY: gsap.quickSetter(panel, "yPercent"),
         panelX: gsap.quickSetter(panel, "xPercent"),
-        imageY: gsap.quickSetter(image, "yPercent"),
-        imageX: gsap.quickSetter(image, "xPercent"),
-        scale: gsap.quickSetter(image, "scale"),
+        // Travel and scale share one matrix on the image, so they are composed in a single
+        // write. Separate transform setters on the same element contend and drop components.
+        frame(xPercent: number, yPercent: number, scale: number) {
+          image.style.transform =
+            `translate(${xPercent.toFixed(3)}%, ${yPercent.toFixed(3)}%) scale(${scale.toFixed(5)})`;
+        },
         playback(visible: boolean) {
           const play = visible && !document.hidden;
           if (!video || play === playing) return;
@@ -139,9 +142,7 @@ export function CinematicMedia() {
         }
         track.panelY(state.panelY);
         track.panelX(state.panelX);
-        track.imageY(state.imageY);
-        track.imageX(state.imageX);
-        track.scale(state.scale);
+        track.frame(state.imageX, state.imageY, state.scale);
         track.playback(state.visible);
       }
     };
