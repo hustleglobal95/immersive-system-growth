@@ -111,51 +111,6 @@
       "path": "https://images.unsplash.com/photo-1774423864869-702b21c2490a?auto=format&fit=crop&fm=jpg&q=84&w=2600",
       "bytes": 577773,
       "sha256": "bc11c13a072cf1cb79cbca71d73fccbad08176ce7ab6ca90f30263a6b6663e07"
-    },
-    {
-      "path": "/textures/client/marble_01_diff_1k.opt.avif",
-      "bytes": 120636,
-      "sha256": "b6d40b651cec6c3b8a893f2a808ff653ae1b5ffb262b0c3d645b18fc2a250825"
-    },
-    {
-      "path": "/textures/client/white_oak_veneer_diff_1k.opt.avif",
-      "bytes": 121299,
-      "sha256": "957d3c586efc1df415ee352ce844c9c72f9763dc954e0b9e7a6f5b350ebcb2c5"
-    },
-    {
-      "path": "/textures/client/white_plaster_02_diff_1k.opt.avif",
-      "bytes": 274076,
-      "sha256": "b0ae953f7fa6683e21f1bc6ec7dd12bc3d9c6d26dc59d43e1df84eb8cabcc227"
-    },
-    {
-      "path": "/textures/client/marble_01_nor_gl_1k.opt.webp",
-      "bytes": 15940,
-      "sha256": "20f87003d506440ce9426fcb116b23fa8b5c3c22fdea99e6bbbb923139a8c347"
-    },
-    {
-      "path": "/textures/client/marble_01_rough_1k.opt.webp",
-      "bytes": 28732,
-      "sha256": "9ffe0e4113260982939740cc58072823e6b4637421a2a2f8811dcbadd3ab5438"
-    },
-    {
-      "path": "/textures/client/white_oak_veneer_nor_gl_1k.opt.webp",
-      "bytes": 148898,
-      "sha256": "db79a94265caa4bb8f6e8c67e64138a9594c3b8dbffdca620f92ad629508507e"
-    },
-    {
-      "path": "/textures/client/white_oak_veneer_rough_1k.opt.webp",
-      "bytes": 157026,
-      "sha256": "93f9cc008d39ad321bf77f1fc32aaa608d26df28e42bba366e5175cba7533ff5"
-    },
-    {
-      "path": "/textures/client/white_plaster_02_nor_gl_1k.opt.webp",
-      "bytes": 307614,
-      "sha256": "93952c341df74132f4508d47f976f07b20afcb87f887e07a8da3c104c224f67e"
-    },
-    {
-      "path": "/textures/client/white_plaster_02_rough_1k.opt.webp",
-      "bytes": 191022,
-      "sha256": "851dcacad468f26c2a50dbee9e6401dff5e13ae81b4a8851bff57407a220855f"
     }
   ],
   "hdr": [
