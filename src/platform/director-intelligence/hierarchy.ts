@@ -165,7 +165,7 @@ function visualHierarchy(_brief: DirectorBrief, treatment: DirectorTreatment): H
   const issues: HierarchyIssue[] = [];
   if (!treatment.grammar.composition.length) issues.push(issue("visual-no-composition-grammar", "visual", "blocker", "No composition grammar defines visual dominance.", "Define composition rules for dominant subject, supporting copy and negative space."));
   if (!treatment.grammar.typography.length) issues.push(issue("visual-no-type-grammar", "visual", "warning", "Typography has no explicit behavioral hierarchy.", "Define headline, supporting copy and metadata behavior relative to the dominant visual subject."));
-  return level("visual", "Visual hierarchy", 10 - penalty(issues), issues, treatment.signatureMoment.name, [treatment.artBible.typographyCharacter, treatment.artBible.whitespace, ...treatment.grammar.composition.slice(0, 2)], ["simultaneous high-contrast focal points", "supporting type competing with the hero subject", "decoration with stronger contrast than the primary action"]);
+  return level("visual", "Visual hierarchy", 10 - penalty(issues), issues, treatment.signatureMoment.name, ["Judge dominance by scale, contrast, position, negative space, motion, depth, lighting and saturation—not font size alone.", treatment.artBible.typographyCharacter, treatment.artBible.whitespace, ...treatment.grammar.composition.slice(0, 2)], ["simultaneous high-contrast focal points", "supporting type competing with the hero subject", "decoration with stronger contrast than the primary action"]);
 }
 
 function interactionHierarchy(brief: DirectorBrief, treatment: DirectorTreatment): HierarchyLevelReport {
