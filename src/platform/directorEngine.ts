@@ -441,7 +441,7 @@ function createGrammar(brief: DirectorBrief, profile: ProjectProfile) {
     motion: profile.motion,
     composition: ["Every frame must have a dominant subject and an intentional quiet area.", "Compose copy and imagery together before adding motion.", "Change composition grammar when emotional state changes, not every section."],
     typography: profile.typography,
-    color: ["Tie color changes to emotional state or information hierarchy.", `Keep the palette grounded in ${brief.brandTruth}.`],
+    color: ["Tie color changes to emotional state or information hierarchy.", `Keep the palette grounded in ${brief.brandTruth.length > 260 ? `${brief.brandTruth.slice(0, 259).trimEnd()}…` : brief.brandTruth}.`],
     materials: profile.materials,
     lighting: profile.lighting,
     imagery: profile.imagery,

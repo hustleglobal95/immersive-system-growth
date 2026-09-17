@@ -81,7 +81,7 @@ export function ExperienceRuntime({ children }: { children?: ReactNode }) {
   }, [lab]);
   // Authoring routes do not mount the client interaction runtime or WebGL canvas.
   // The production canvas remains persistent when navigating between / and /lab.
-  if (pathname === "/design" || pathname.startsWith("/studio")) return <>{children}</>;
+  if (pathname !== "/" && !lab) return <>{children}</>;
   return (
     <div className={`experience-root ${experienceModeClass(currentExperienceMode.id)}`} data-experience-mode={currentExperienceMode.id} data-reduced-motion={motion} data-media-motion={!motion} data-lab={lab}>
       <SystemProfile />

@@ -76,11 +76,12 @@ export function createMotionArchetype(
     ...createMotionPreset("director-macro-approach", config, sceneIndex),
     ...createMotionPreset("product-lift", config, sceneIndex),
     ...createMotionPreset("light-pulse", config, sceneIndex),
-    numberTrack("product-roughness-settle", "Material roughness settle", "material.roughness", [
+    // Scenes that leave roughness to the model (null) have no authored value to settle toward.
+    ...(scene.material.roughness === null ? [] : [numberTrack("product-roughness-settle", "Material roughness settle", "material.roughness", [
       key("product-roughness-a", 0, Math.min(1, scene.material.roughness + 0.16), "smooth"),
       key("product-roughness-b", 0.58, scene.material.roughness, "cubic", motionCurveCatalog.editorial.curve),
       key("product-roughness-c", 1, scene.material.roughness, "linear"),
-    ]),
+    ])]),
     ...createMotionPreset("copy-rise", config, sceneIndex),
   ]);
 }

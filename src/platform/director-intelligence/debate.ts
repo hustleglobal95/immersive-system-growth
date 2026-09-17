@@ -25,7 +25,7 @@ export function runCreativeDebate(territories: DirectorTerritory[], reports: Eva
   const viable = rankings.filter((report) => report.recommendation !== "REJECT");
   const winner = viable[0];
   let disposition: DebateResult["disposition"] = "REJECT ALL";
-  if (winner) disposition = winner.recommendation === "LOCK" ? "LOCK" : winner.recommendation;
+  if (winner) disposition = winner.recommendation as Exclude<typeof winner.recommendation, "REJECT">; // viable excludes REJECT
   const rounds: DebateRound[] = [
     { round: "independent-generation", notes: territories.map((territory) => `${territory.id}: ${territory.thesis}`) },
     { round: "specialist-critique", notes: reports.flatMap((report) => report.critiques.filter((critique) => critique.blockers.length).map((critique) => `${report.territoryId}/${critique.role}: ${critique.blockers.join("; ")}`)) },

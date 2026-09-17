@@ -59,10 +59,37 @@ export function StudioLivePreview({
   useEffect(() => { progressRef.current = progress; }, [progress]);
   useEffect(() => { onProgressChangeRef.current = onProgressChange; }, [onProgressChange]);
 
+  // A scene chosen outside the preview (scene list, story strip) moves the playhead to it
+  // instead of being overwritten by the playhead's previous scene.
+  const [syncedActive, setSyncedActive] = useState(active);
+  if (syncedActive !== active) {
+    setSyncedActive(active);
+    const target = experience.scenes[active];
+    if (target && getSceneIndex(progress, experience) !== active) {
+      setPlaying(false);
+      if (controlledProgress === undefined) setInternalProgress(midpoint(target.range));
+    }
+  }
+
+  const lastActive = useRef(active);
   useEffect(() => {
     const sceneIndex = getSceneIndex(progress, experience);
+    if (active !== lastActive.current) {
+      lastActive.current = active;
+      const target = experience.scenes[active];
+      if (target && sceneIndex !== active) {
+        // Controlled previews own their playhead; ask the owner to move it.
+        const next = midpoint(target.range);
+        progressRef.current = next;
+        onProgressChangeRef.current?.(next);
+        return;
+      }
+    }
     useExperienceStore.getState().setScrollState(progress, 0, 0, sceneIndex);
-    if (sceneIndex !== active) setActive(sceneIndex);
+    if (sceneIndex !== active) {
+      lastActive.current = sceneIndex;
+      setActive(sceneIndex);
+    }
   }, [active, experience, progress, setActive]);
 
   useEffect(() => {

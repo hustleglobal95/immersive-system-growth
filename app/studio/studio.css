@@ -294,8 +294,10 @@
 .studio-preview__canvas { width: 100%; aspect-ratio: 16 / 9; position: relative; overflow: hidden; background: #080808; transition: width .25s ease; }
 .studio-preview__viewport[data-viewport="tablet"] .studio-preview__canvas { width: min(76%, 820px); aspect-ratio: 4 / 3; }
 .studio-preview__viewport[data-viewport="mobile"] .studio-preview__canvas { width: min(42%, 390px); aspect-ratio: 9 / 16; }
-.studio-preview__canvas .scene-canvas { position: absolute; }
-.studio-preview__canvas .cinematic-media { position: absolute; }
+.studio-preview__canvas .scene-canvas,
+body[data-project] .studio-preview__canvas .scene-canvas { position: absolute; }
+.studio-preview__canvas .cinematic-media,
+body[data-project] .studio-preview__canvas .cinematic-media { position: absolute; }
 .studio-preview__canvas .cinematic-transition-layers { position: absolute; }
 .studio-preview__copy { max-width: 58%; position: absolute; z-index: 3; left: 5%; bottom: 7%; display: grid; gap: 7px; pointer-events: none; text-shadow: 0 2px 18px #000; }
 .studio-preview__copy span { color: var(--studio-accent); font-size: 8px; font-weight: 800; letter-spacing: .15em; }

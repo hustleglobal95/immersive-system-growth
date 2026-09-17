@@ -64,6 +64,18 @@ export function ProductionStudioWorkbench() {
     setAdvanced(false);
   };
 
+  // Scene changes inside a full workspace (sequencer scrubbing, playback) keep that workspace open.
+  const selectSceneInWorkspace = (index: number) => {
+    setActiveScene(index);
+    setSelection({ kind: "scene", index });
+  };
+
+  // The cockpit is the Create screen; its advanced controls live in the Motion workspace tab.
+  const openAdvanced = () => {
+    setWorkspace((current) => (current === "Create" ? "Motion" : current));
+    setAdvanced(true);
+  };
+
   const applyArchetype = (name = archetype) => {
     const created = createMotionArchetype(name, draft.experience, sceneIndex);
     const authored = scene.motionTracks.filter((track) => !track.id.startsWith("studio-auto-"));
@@ -142,7 +154,19 @@ export function ProductionStudioWorkbench() {
 
   const deleteScene = () => {
     if (draft.experience.scenes.length <= 1) { setNotice("A Forge experience must keep at least one scene."); return; }
-    draft.setExperience((current) => parseExperience({ ...current, scenes: normalizeRanges(current.scenes.filter((_, index) => index !== sceneIndex)) }));
+    draft.setExperience((current) => {
+      // Drop hotspots and scene-scoped asset references that point at the removed scene so the result still validates.
+      const removed = current.scenes[sceneIndex]?.id;
+      const assets = current.assets.flatMap((asset) => {
+        if (asset.kind === "video" && asset.sceneId === removed) return [];
+        const scenes = asset.scenes?.filter((id) => id !== removed);
+        if (asset.scenes && !scenes?.length) return [];
+        const next = { ...asset, ...(asset.scenes ? { scenes } : {}) };
+        if (next.kind === "model" && next.animation?.sceneId === removed) delete next.animation;
+        return [next];
+      });
+      return parseExperience({ ...current, scenes: normalizeRanges(current.scenes.filter((_, index) => index !== sceneIndex)), hotspots: current.hotspots.filter((hotspot) => hotspot.sceneId !== removed), assets });
+    });
     const next = Math.max(0, sceneIndex - 1);
     setActiveScene(next);
     setSelection({ kind: "scene", index: next });
@@ -206,9 +230,9 @@ export function ProductionStudioWorkbench() {
   return (
     <main className="production-studio">
       <header className="production-topbar">
-        <div className="production-brand"><Link href="/">FORGE</Link><span>STUDIO</span></div>
+        <div className="production-brand"><Link href="/studio" onClick={() => { setWorkspace("Create"); setAdvanced(false); }}>FORGE</Link><span>STUDIO</span></div>
         <nav aria-label="Production workspaces">
-          {workspaces.map((item) => <button key={item} type="button" aria-current={workspace === item ? "page" : undefined} onClick={() => { setWorkspace(item); setAdvanced(false); }}>{item}</button>)}
+          {workspaces.map((item) => <button key={item} type="button" aria-current={workspace === item ? "page" : undefined} onClick={() => { setWorkspace(item); setAdvanced(item !== "Create"); }}>{item}</button>)}
         </nav>
         <div className="production-top-actions">
           <span className="production-status" data-valid={!draft.validation.length}><i />{draft.validation.length ? `${draft.validation.length} issue` : "Ready"}</span>
@@ -221,7 +245,7 @@ export function ProductionStudioWorkbench() {
       {notice && <button type="button" className="production-notice" onClick={() => setNotice("")}>{notice}<span>×</span></button>}
 
       {advanced ? (
-        <AdvancedWorkspace workspace={workspace} draft={draft} activeScene={sceneIndex} setActiveScene={selectScene} onClose={() => setAdvanced(false)} />
+        <AdvancedWorkspace workspace={workspace} draft={draft} activeScene={sceneIndex} setActiveScene={selectSceneInWorkspace} onClose={() => { setAdvanced(false); setWorkspace("Create"); }} />
       ) : (
         <div className="production-layout">
           <aside className="production-left">
@@ -236,7 +260,7 @@ export function ProductionStudioWorkbench() {
           <section className="production-stage">
             <div className="production-stage-head">
               <div><span>{scene.copy.eyebrow}</span><strong>{scene.label}</strong></div>
-              <div className="production-stage-actions"><button type="button" onClick={() => setSelection({ kind: "camera", index: sceneIndex })}>Camera</button><button type="button" onClick={() => setAdvanced(true)}>Advanced</button></div>
+              <div className="production-stage-actions"><button type="button" onClick={() => setSelection({ kind: "camera", index: sceneIndex })}>Camera</button><button type="button" onClick={openAdvanced}>Advanced</button></div>
             </div>
             <div className="production-runtime">
               <StudioLivePreview experience={draft.experience} active={sceneIndex} setActive={selectScene} />
@@ -247,8 +271,8 @@ export function ProductionStudioWorkbench() {
           </section>
 
           <aside className="production-right">
-            <div className="production-panel-title"><div><span>INSPECTOR</span><strong>{selectionLabel}</strong></div><button type="button" onClick={() => setAdvanced(true)}>•••</button></div>
-            <Inspector selection={selection} experience={draft.experience} setExperience={draft.setExperience} sceneIndex={sceneIndex} archetype={archetype} setArchetype={setArchetype} applyArchetype={applyArchetype} buildSelectedNode={buildSelectedNode} resetSceneMotion={resetSceneMotion} openAdvanced={() => setAdvanced(true)} setWorkspace={setWorkspace} />
+            <div className="production-panel-title"><div><span>INSPECTOR</span><strong>{selectionLabel}</strong></div><button type="button" onClick={openAdvanced}>•••</button></div>
+            <Inspector selection={selection} experience={draft.experience} setExperience={draft.setExperience} sceneIndex={sceneIndex} archetype={archetype} setArchetype={setArchetype} applyArchetype={applyArchetype} buildSelectedNode={buildSelectedNode} resetSceneMotion={resetSceneMotion} openAdvanced={openAdvanced} setWorkspace={setWorkspace} />
           </aside>
 
           <section className="production-bottom">

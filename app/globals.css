@@ -35,7 +35,7 @@ html {
 }
 .telemetry-consent {
   position: fixed;
-  z-index: 80;
+  z-index: 99; /* above Scene Lab controls so the one-time choice stays clickable */
   right: 18px;
   bottom: 18px;
   width: min(420px, calc(100vw - 36px));

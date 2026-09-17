@@ -137,12 +137,12 @@ export function applyCreativeExecutionPlan(
       id: `agent-v3-${sceneIndex}-${track.id}`,
       label: `Agent · ${track.label}`,
     }));
+    const authored = scene.motionTracks.filter((track) => !track.id.startsWith("agent-") && !track.id.startsWith("agent-v2-") && !track.id.startsWith("agent-v3-"));
+    // Authored tracks win: skip generated tracks that would animate the same target on the same viewport.
+    const occupied = new Set(authored.map((track) => `${track.viewport}:${track.target}`));
     return {
       ...scene,
-      motionTracks: [
-        ...scene.motionTracks.filter((track) => !track.id.startsWith("agent-") && !track.id.startsWith("agent-v2-") && !track.id.startsWith("agent-v3-")),
-        ...generated,
-      ],
+      motionTracks: [...authored, ...generated.filter((track) => !occupied.has(`${track.viewport}:${track.target}`))],
     };
   });
   return parseExperience({ ...experience, scenes });

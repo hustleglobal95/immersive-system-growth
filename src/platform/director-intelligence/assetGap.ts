@@ -31,7 +31,7 @@ export function analyzeAssetGap(brief: DirectorBrief, treatment: DirectorTreatme
   if (!hasSignature && treatment.signatureMoment.prerequisites.length > 0) items.push({ label: "Signature-moment dependency", assetClass: "signature-critical", decision: "create", exists: false, reason: treatment.signatureMoment.prerequisites.join("; "), creativeConsequence: "The protected signature moment cannot be executed at the intended quality." });
 
   const blockers = items.filter((item) => !item.exists && (item.assetClass === "hero-critical" || item.assetClass === "signature-critical")).map((item) => `${item.label}: ${item.creativeConsequence}`);
-  const weighted = items.map((item) => ({ optional: 0.3, utility: 0.5, supporting: 0.7, "proof-critical": 1, "hero-critical": 1.4, "signature-critical": 1.5 }[item.assetClass] * (item.exists ? 1 : 0));
+  const weighted = items.map((item) => ({ optional: 0.3, utility: 0.5, supporting: 0.7, "proof-critical": 1, "hero-critical": 1.4, "signature-critical": 1.5 }[item.assetClass] * (item.exists ? 1 : 0)));
   const max = items.reduce((sum, item) => sum + ({ optional: 0.3, utility: 0.5, supporting: 0.7, "proof-critical": 1, "hero-critical": 1.4, "signature-critical": 1.5 }[item.assetClass]), 0);
   const completeness = max ? Number((weighted.reduce((a, b) => a + b, 0) / max * 100).toFixed(0)) : 100;
   return { items, blockers, completeness };
