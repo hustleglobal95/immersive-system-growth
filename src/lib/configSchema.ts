@@ -255,7 +255,7 @@ export const sceneMediaSchema = z.object({
   src: assetUrl,
   poster: assetUrl.optional(),
   alt: z.string().min(1).max(300),
-  transition: z.enum(["slide", "curtain", "zoom", "dissolve", "wipe", "mask"]).default("slide"),
+  transition: z.enum(["slide", "curtain", "zoom", "dissolve", "wipe", "mask", "cut"]).default("slide"),
   blendColor: color.optional(),
   maskSoftness: finite.min(0).max(100).default(18),
   mask: maskRevealSchema.optional(),

@@ -1284,29 +1284,29 @@
               "id": "maris-threshold-copy-opacity-desktop-0",
               "at": 0,
               "value": 0.0,
-              "easing": "smooth"
+              "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-opacity-desktop-1",
-              "at": 0.12,
+              "at": 0.03,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-opacity-desktop-2",
-              "at": 0.3,
+              "at": 0.1,
               "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-opacity-desktop-3",
-              "at": 0.9,
+              "at": 0.94,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-opacity-desktop-4",
-              "at": 0.99,
+              "at": 0.985,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -1331,25 +1331,25 @@
             {
               "id": "maris-threshold-copy-y-desktop-0",
               "at": 0,
-              "value": 26,
+              "value": 14,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-y-desktop-1",
-              "at": 0.32,
+              "at": 0.1,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-y-desktop-2",
-              "at": 0.9,
+              "at": 0.94,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-y-desktop-3",
               "at": 1,
-              "value": -30,
+              "value": -14,
               "easing": "smooth"
             }
           ]
@@ -1367,26 +1367,14 @@
             {
               "id": "maris-threshold-copy-blur-desktop-0",
               "at": 0,
-              "value": 5,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-threshold-copy-blur-desktop-1",
-              "at": 0.3,
-              "value": 0,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-threshold-copy-blur-desktop-2",
-              "at": 0.88,
               "value": 0,
               "easing": "linear"
             },
             {
-              "id": "maris-threshold-copy-blur-desktop-3",
+              "id": "maris-threshold-copy-blur-desktop-1",
               "at": 1,
-              "value": 4.5,
-              "easing": "smooth"
+              "value": 0,
+              "easing": "linear"
             }
           ]
         },
@@ -1404,29 +1392,29 @@
               "id": "maris-threshold-copy-opacity-mobile-0",
               "at": 0,
               "value": 0.0,
-              "easing": "smooth"
+              "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-opacity-mobile-1",
-              "at": 0.12,
+              "at": 0.03,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-opacity-mobile-2",
-              "at": 0.3,
+              "at": 0.1,
               "value": 1.0,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-opacity-mobile-3",
-              "at": 0.9,
+              "at": 0.94,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-opacity-mobile-4",
-              "at": 0.99,
+              "at": 0.985,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -1451,25 +1439,25 @@
             {
               "id": "maris-threshold-copy-y-mobile-0",
               "at": 0,
-              "value": 26,
+              "value": 14,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-y-mobile-1",
-              "at": 0.32,
+              "at": 0.1,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-y-mobile-2",
-              "at": 0.9,
+              "at": 0.94,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-y-mobile-3",
               "at": 1,
-              "value": -30,
+              "value": -14,
               "easing": "smooth"
             }
           ]
@@ -1487,26 +1475,14 @@
             {
               "id": "maris-threshold-copy-blur-mobile-0",
               "at": 0,
-              "value": 3.0,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-threshold-copy-blur-mobile-1",
-              "at": 0.3,
-              "value": 0.0,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-threshold-copy-blur-mobile-2",
-              "at": 0.88,
-              "value": 0.0,
+              "value": 0,
               "easing": "linear"
             },
             {
-              "id": "maris-threshold-copy-blur-mobile-3",
+              "id": "maris-threshold-copy-blur-mobile-1",
               "at": 1,
-              "value": 2.7,
-              "easing": "smooth"
+              "value": 0,
+              "easing": "linear"
             }
           ]
         },
@@ -1683,7 +1659,7 @@
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=84&w=2400",
         "alt": "Sunlit modern atrium facing the sea",
-        "transition": "mask",
+        "transition": "cut",
         "blendColor": "#171310",
         "maskSoftness": 22,
         "layers": [],
@@ -1695,27 +1671,10 @@
           62,
           50
         ],
-        "overlap": 0.36,
+        "overlap": 0.1,
         "direction": "up",
-        "zoom": 1.07,
-        "textEnd": 0.28,
-        "mask": {
-          "preset": "diagonal-cut",
-          "renderer": "auto",
-          "direction": "left",
-          "origin": [
-            44,
-            50
-          ],
-          "softness": 36,
-          "scale": 1.02,
-          "rotation": 0,
-          "intensity": 0.72,
-          "seed": 128,
-          "invert": false,
-          "edgeColor": "#eadbc5",
-          "edgeWidth": 0.25
-        }
+        "zoom": 1,
+        "textEnd": 0.16
       },
       "blocks": [],
       "hero": {
@@ -2256,7 +2215,7 @@
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1769737122085-97b1ee5ab104?auto=format&fit=crop&fm=jpg&q=86&w=2400",
         "alt": "Modern coastal kitchen and living space with ocean view",
-        "transition": "zoom",
+        "transition": "cut",
         "blendColor": "#171310",
         "maskSoftness": 22,
         "layers": [],
@@ -2268,9 +2227,9 @@
           64,
           50
         ],
-        "overlap": 0.4,
+        "overlap": 0.1,
         "direction": "up",
-        "zoom": 1.15,
+        "zoom": 1,
         "textEnd": 0.32
       },
       "blocks": [],

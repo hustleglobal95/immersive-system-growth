@@ -9,9 +9,9 @@ import { SceneBlocks } from "./SceneBlocks";
  * each carry a different treatment, and `pace` sets how quickly that chapter's copy lands.
  * Chapters not listed here fall back to the last entry's shape.
  */
-const CHAPTER_MOTION: Record<string, { label: CinematicPreset; headline: CinematicPreset; lede: CinematicPreset; pace: number }> = {
+const CHAPTER_MOTION: Record<string, { label: CinematicPreset; headline: CinematicPreset; lede: CinematicPreset; pace: number; lead?: number }> = {
   parti: { label: "label-track", headline: "headline-words", lede: "lede-words", pace: 1 },
-  threshold: { label: "text-settle", headline: "headline-reveal", lede: "copy-drift", pace: .78 },
+  threshold: { label: "text-settle", headline: "headline-reveal", lede: "copy-drift", pace: .6, lead: .03 },
   living: { label: "label-track", headline: "headline-slide", lede: "lede-scatter", pace: 1.18 },
   material: { label: "text-settle", headline: "headline-chars", lede: "lede-words", pace: 1.3 },
   wellness: { label: "label-track", headline: "headline-swing", lede: "copy-drift", pace: .9 },
@@ -34,7 +34,7 @@ const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
   const scope = '[data-motion-scene="' + index + '"] ';
   // The photograph holds alone for the first stretch of every chapter. Copy motion begins after
   // that beat and runs long, so each effect is crossed by scrolling rather than triggered.
-  const lead = .14;
+  const lead = motion.lead ?? .14;
   return [
     { selector: scope + "[data-motion-index]", range: [at(lead), at(lead + textEnd * .5)], preset: motion.label },
     { selector: scope + "[data-motion-copy]", range: [at(lead + textEnd * .12), at(lead + textEnd * .8)], preset: motion.label },
