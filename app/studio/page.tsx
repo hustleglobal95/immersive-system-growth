@@ -4,6 +4,7 @@ import { ProductionStudioWorkbench } from "@/src/studio/ProductionStudioWorkbenc
 import "./studio.css";
 import "./ui-refinement.css";
 import "./production-studio.css";
+import "./workflow-guide.css";
 import "./director-entry.css";
 
 export const metadata: Metadata = {
