@@ -12,6 +12,7 @@ import { parseStudioProject } from "@/src/platform/studioSchema";
 import { runDirectorIntelligence } from "@/src/platform/director-intelligence/orchestrator";
 import { applyCreativeExecutionPlan, planCreativeExecution } from "@/src/studio/creativeAgentPlan";
 import { useStudioDraft } from "@/src/studio/useStudioDraft";
+import type { AgentSceneAssetItem } from "@/src/studio/creativeAgentAssets";
 import type { AssetManifest } from "@/src/types/assets";
 import type { DirectorBrief } from "@/src/platform/directorSchema";
 
@@ -53,10 +54,11 @@ export function CreativeAgentWorkbench() {
   const intelligence = useMemo(() => runDirectorIntelligence({ brief }), [brief]);
   const report = intelligence.report;
   const selectedTerritory = report.treatment.territories.find((item) => item.id === report.treatment.selectedTerritoryId);
+  const selectedBlocked = plan.sceneMoves.filter((move) => selectedScenes.includes(move.sceneIndex) && !move.assetPlan.canBuildNow).length;
 
   const tryAnother = () => {
     setVariation((value) => value + 1);
-    setNotice("Director changed medium, camera grammar or scene strategy instead of restyling the same answer.");
+    setNotice("Director changed medium, camera grammar, scene strategy and asset requirements instead of restyling the same answer.");
   };
 
   const toggleScene = (sceneIndex: number) => {
@@ -66,17 +68,21 @@ export function CreativeAgentWorkbench() {
   };
 
   const applyPlan = () => {
+    if (!plan.validation.valid) {
+      setNotice(`Creative Agent refused to apply an incomplete plan: ${plan.validation.errors[0] ?? "asset planning validation failed."}`);
+      return;
+    }
     if (!selectedScenes.length) {
       setNotice("Select at least one scene before applying the execution plan.");
       return;
     }
     draft.setExperience((current) => applyCreativeExecutionPlan(current, plan, selectedScenes));
-    setNotice(`${plan.title} applied across ${selectedScenes.length} scene${selectedScenes.length === 1 ? "" : "s"}. The complete change is reversible with Undo.`);
+    setNotice(`${plan.title} motion applied across ${selectedScenes.length} scene${selectedScenes.length === 1 ? "" : "s"}. ${selectedBlocked ? `${selectedBlocked} selected scene${selectedBlocked === 1 ? " remains" : "s remain"} asset-blocked and are not marked production-ready.` : "All selected scenes have a buildable asset path."} The change is reversible with Undo.`);
   };
 
   return <main className="creative-agent">
     <header className="creative-agent__topbar">
-      <div><span>FORGE</span><strong>Creative Agent</strong><em>V2</em></div>
+      <div><span>FORGE</span><strong>Creative Agent</strong><em>V3 · ASSET AWARE</em></div>
       <nav><Link href="/studio">Studio</Link><Link href="/director/intelligence">Director Intelligence</Link></nav>
     </header>
 
@@ -84,7 +90,7 @@ export function CreativeAgentWorkbench() {
       <aside className="creative-agent__brief">
         <span className="creative-agent__eyebrow">EXECUTIVE CREATIVE DIRECTION</span>
         <h1>Describe the outcome. Director chooses the smartest production path.</h1>
-        <p>The agent reads the active Forge project, challenges the idea, chooses the right medium, lays out a multi-scene camera and motion strategy, and previews a reversible patch before changing the project.</p>
+        <p>Every scene the agent proposes must now include an asset strategy: what already exists, what can be reused, what must be created, what is optional, what blocks production, and the cheapest versus best execution.</p>
 
         <label>Creative intent
           <textarea value={idea} onChange={(event) => { setIdea(event.target.value); setVariation(0); }} />
@@ -106,7 +112,8 @@ export function CreativeAgentWorkbench() {
         <div className="creative-agent__verdict">
           <div><span>DIRECTOR VERDICT</span><strong>{report.verdict}</strong></div>
           <div><span>EXECUTION MEDIUM</span><strong>{plan.mediumLabel}</strong></div>
-          <div><span>CREATIVE CEILING</span><strong>{report.ceiling.current} → {report.ceiling.projected}</strong></div>
+          <div><span>ASSET READY</span><strong>{plan.assetSummary.scenesBuildableNow.length}/{plan.sceneMoves.length} scenes</strong></div>
+          <div><span>CREATE</span><strong>{plan.assetSummary.totalAssetsToCreate} required assets</strong></div>
           <div><span>EVIDENCE</span><strong>{Math.round(report.evidence.confidence * 100)}%</strong></div>
         </div>
 
@@ -129,9 +136,20 @@ export function CreativeAgentWorkbench() {
           </div>
         </section>
 
+        <section className="creative-agent__asset-summary">
+          <header><span>MANDATORY ASSET PLAN</span><h3>What must exist for this idea to work</h3></header>
+          <div className="creative-agent__asset-summary-grid">
+            <article><span>CREATE FIRST</span><strong>{plan.assetSummary.highestLeverageAssetToCreateFirst ?? "No critical new asset"}</strong><p>Highest-leverage missing asset across the proposed scene arc.</p></article>
+            <article><span>BUILDABLE NOW</span><strong>{plan.assetSummary.scenesBuildableNow.length}</strong><p>{plan.assetSummary.scenesBuildableNow.join(" · ") || "No proposed scene is buildable yet."}</p></article>
+            <article className={plan.assetSummary.blockedScenes.length ? "is-blocked" : ""}><span>BLOCKED</span><strong>{plan.assetSummary.blockedScenes.length}</strong><p>{plan.assetSummary.blockedScenes.join(" · ") || "No critical asset blockers."}</p></article>
+            <article><span>ASSET BURDEN</span><strong>{plan.assetSummary.totalAssetsToCreate} required</strong><p>{plan.assetSummary.totalExistingAssetsUsed} existing used · {plan.assetSummary.totalReusableAssets} additional reusable</p></article>
+          </div>
+          {!plan.validation.valid && <div className="creative-agent__validation"><strong>PLAN HELD</strong>{plan.validation.errors.map((error) => <p key={error}>{error}</p>)}</div>}
+        </section>
+
         <section className="creative-agent__plan">
           <header>
-            <div><span>EXECUTION PLAN</span><h3>Multi-scene direction</h3></div>
+            <div><span>EXECUTION PLAN</span><h3>Multi-scene direction + asset requirements</h3></div>
             <button type="button" onClick={() => setPreviewOpen((value) => !value)}>{previewOpen ? "Hide patch" : "Preview patch"}</button>
           </header>
           <div className="creative-agent__scene-list">
@@ -140,8 +158,22 @@ export function CreativeAgentWorkbench() {
                 <input type="checkbox" checked={selectedScenes.includes(move.sceneIndex)} onChange={() => toggleScene(move.sceneIndex)} />
                 <span>{String(move.sceneIndex + 1).padStart(2, "0")}</span>
               </label>
-              <div><small>{move.role.toUpperCase()}</small><strong>{move.label}</strong><p>{move.purpose}</p></div>
+              <div><small>{move.role.toUpperCase()} · {move.signatureRole.toUpperCase()}</small><strong>{move.label}</strong><p>{move.purpose}</p></div>
               <div><small>CAMERA + MOTION</small><strong>{move.archetype}</strong><p>{move.cameraStrategy}</p></div>
+              <div className="creative-agent__scene-assets">
+                <div className="creative-agent__scene-assets-head">
+                  <div><small>EXECUTION</small><strong>{mediumName(move.assetPlan.executionMedium)}</strong></div>
+                  <span className={move.assetPlan.canBuildNow ? "is-ready" : "is-blocked"}>{move.assetPlan.canBuildNow ? "BUILDABLE NOW" : "ASSET BLOCKED"}</span>
+                </div>
+                <div className="creative-agent__asset-columns">
+                  <AssetNames title="USE EXISTING" values={move.assetPlan.existingAssets} empty="No registered asset required." />
+                  <AssetNames title="REUSE" values={move.assetPlan.reusableAssets} empty="No additional reusable asset selected." />
+                  <AssetItems title="CREATE" values={move.assetPlan.assetsToCreate} empty="No required new asset." />
+                  <AssetItems title="OPTIONAL" values={move.assetPlan.optionalAssets} empty="No optional asset suggested." />
+                </div>
+                {move.assetPlan.blockers.length > 0 && <div className="creative-agent__blockers"><small>BLOCKERS</small>{move.assetPlan.blockers.map((blocker) => <p key={blocker}>{blocker}</p>)}</div>}
+                <div className="creative-agent__production-notes"><small>PRODUCTION NOTES</small>{move.assetPlan.productionNotes.map((note) => <p key={note}>{note}</p>)}</div>
+              </div>
             </article>)}
           </div>
           {previewOpen && <div className="creative-agent__patch">
@@ -149,15 +181,15 @@ export function CreativeAgentWorkbench() {
             {plan.patchSummary.map((line, index) => <code key={line} className={selectedScenes.includes(plan.sceneMoves[index]?.sceneIndex ?? -1) ? "" : "is-muted"}>{line}</code>)}
           </div>}
           <div className="creative-agent__apply-row">
-            <div><strong>{selectedScenes.length} scene{selectedScenes.length === 1 ? "" : "s"} selected</strong><span>Existing non-agent authored tracks are preserved.</span></div>
-            <button className="creative-agent__apply" onClick={applyPlan}>Apply reversible plan</button>
+            <div><strong>{selectedScenes.length} scene{selectedScenes.length === 1 ? "" : "s"} selected · {selectedBlocked} asset-blocked</strong><span>Missing assets are never faked as complete. Existing non-agent authored tracks are preserved.</span></div>
+            <button className="creative-agent__apply" disabled={!plan.validation.valid} onClick={applyPlan}>Apply reversible plan</button>
           </div>
         </section>
 
         <div className="creative-agent__grid">
           <article>
             <span>ASSET STRATEGY</span>
-            <h3>Use the minimum asset set that proves the idea.</h3>
+            <h3>Every proposed scene must explain its production inputs.</h3>
             {plan.assetStrategy.map((item) => <p key={item}>{item}</p>)}
           </article>
           <article>
@@ -166,9 +198,9 @@ export function CreativeAgentWorkbench() {
             <ol>{plan.productionOrder.map((item) => <li key={item}>{item}</li>)}</ol>
           </article>
           <article>
-            <span>HIGHEST LEVERAGE</span>
-            <h3>{report.ceiling.highestLeverageUpgrades[0] ?? "Refine the signature moment"}</h3>
-            <p>{report.leverage[0]?.reason ?? "Spend craft where the visitor will remember it, not evenly across the experience."}</p>
+            <span>CRITICAL MISSING ASSETS</span>
+            <h3>{plan.assetSummary.criticalMissingAssets[0] ?? "No critical blocker"}</h3>
+            {plan.assetSummary.criticalMissingAssets.length ? plan.assetSummary.criticalMissingAssets.map((item) => <p key={item}>{item}</p>) : <p>The current plan has no hero/signature-critical missing asset.</p>}
           </article>
           <article>
             <span>RISKS / WHAT TO AVOID</span>
@@ -190,6 +222,14 @@ export function CreativeAgentWorkbench() {
   </main>;
 }
 
+function AssetNames({ title, values, empty }: { title: string; values: string[]; empty: string }) {
+  return <section><small>{title}</small>{values.length ? values.map((value) => <p key={value} title={value}>{shortPath(value)}</p>) : <p className="is-empty">{empty}</p>}</section>;
+}
+
+function AssetItems({ title, values, empty }: { title: string; values: AgentSceneAssetItem[]; empty: string }) {
+  return <section><small>{title}</small>{values.length ? values.map((item) => <div className="creative-agent__asset-item" key={`${item.name}-${item.type}`}><strong>{item.name}</strong><span>{item.type} · {item.priority}</span><p>{item.reason}</p></div>) : <p className="is-empty">{empty}</p>}</section>;
+}
+
 function makeBrief(projectName: string, idea: string, sceneCount: number, manifest: AssetManifest, medium: string, signature: string): DirectorBrief {
   return {
     projectName,
@@ -201,10 +241,22 @@ function makeBrief(projectName: string, idea: string, sceneCount: number, manife
     primaryAction: "Continue exploring",
     brandTruth: `The active Forge project should express one clear creative thesis. The current execution candidate is ${medium}, with the signature moment defined as: ${signature}`,
     differentiators: ["Cinematic direction", "Purposeful interaction", "High craft-to-complexity ratio"],
-    constraints: ["Protect mobile performance", "Prefer existing assets before inventing production cost", `Current project contains ${sceneCount} scenes and ${assetCount(manifest)} registered assets`, "All applied Creative Agent changes must remain reversible"],
+    constraints: ["Protect mobile performance", "Prefer existing assets before inventing production cost", `Current project contains ${sceneCount} scenes and ${assetCount(manifest)} registered assets`, "Every proposed scene must include a complete asset strategy", "All applied Creative Agent changes must remain reversible"],
     existingAssets: [],
     references: [],
   };
+}
+
+function mediumName(value: string) {
+  if (value === "depth-image") return "Image → Depth";
+  if (value === "real-3d") return "Real 3D";
+  if (value === "hybrid") return "Hybrid 2.5D + 3D";
+  return "Cinematic DOM + selective WebGL";
+}
+
+function shortPath(value: string) {
+  const parts = value.split("/");
+  return parts[parts.length - 1] || value;
 }
 
 function assetCount(manifest: AssetManifest) {
