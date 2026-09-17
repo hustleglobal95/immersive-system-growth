@@ -18,6 +18,7 @@ export default function StudioPage() {
     <div className="studio-intelligence-dock">
       <Link className="studio-director-entry" href="/director">Director <span>Start with the idea</span></Link>
       <Link className="studio-agent-entry" href="/studio/agent">Creative Agent <span>Direct this project</span></Link>
+      <Link className="studio-asset-entry" href="/studio/assets/create">Asset Creator <span>Create missing production assets</span></Link>
     </div>
     <ProductionStudioWorkbench />
     <StudioWorkflowDock />
