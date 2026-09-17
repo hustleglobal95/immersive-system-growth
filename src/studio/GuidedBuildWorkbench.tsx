@@ -9,6 +9,9 @@ import rawInteractionGraph from "@/config/interaction-graph.json";
 import { parseExperience } from "@/src/lib/configSchema";
 import { parseInteractionGraph } from "@/src/lib/interactionGraph";
 import { parseStudioProject } from "@/src/platform/studioSchema";
+import { AssetManager } from "@/src/studio/AssetManager";
+import { PublishPanel } from "@/src/studio/ProjectPanels";
+import { StudioLivePreview } from "@/src/studio/StudioLivePreview";
 import { applyCreativeExecutionPlan, planCreativeExecution } from "@/src/studio/creativeAgentPlan";
 import {
   buildGuidedIntent,
@@ -23,6 +26,7 @@ import {
 } from "@/src/studio/guidedWorkflow";
 import { useStudioDraft } from "@/src/studio/useStudioDraft";
 import type { AssetManifest } from "@/src/types/assets";
+import type { ExperienceConfig } from "@/src/types/experience";
 
 const initialExperience = parseExperience(rawExperience);
 const initialProject = parseStudioProject(rawProject);
@@ -37,6 +41,7 @@ export function GuidedBuildWorkbench() {
   const [variation, setVariation] = useState(0);
   const [notice, setNotice] = useState("");
   const [hydrated, setHydrated] = useState(false);
+  const [previewScene, setPreviewScene] = useState(0);
 
   useEffect(() => {
     const saved = loadGuidedBrief();
@@ -91,6 +96,7 @@ export function GuidedBuildWorkbench() {
       edges: [],
       mobileSubstitutions: [],
     }));
+    setPreviewScene(0);
     go(1);
     setNotice("Project shell created. Forge is now choosing a production direction from your brief.");
   };
@@ -107,7 +113,6 @@ export function GuidedBuildWorkbench() {
     }
     draft.setExperience((current) => applyCreativeExecutionPlan(current, plan, buildableIndexes));
     setNotice(`${buildableIndexes.length} scene${buildableIndexes.length === 1 ? "" : "s"} received the directed camera and motion plan. Blocked scenes were left untouched.`);
-    go(4);
   };
 
   return <main className="guided-build">
@@ -129,9 +134,9 @@ export function GuidedBuildWorkbench() {
         {notice && <button type="button" className="guided-build__notice" onClick={() => setNotice("")}>{notice}<span>×</span></button>}
         {step === 0 && <BriefStep brief={brief} update={updateBrief} onCreate={createProject} />}
         {step === 1 && <DirectionStep plan={plan} onAnother={() => setVariation((value) => value + 1)} onKeep={() => go(2)} />}
-        {step === 2 && <AssetsStep plan={plan} onContinue={() => go(3)} />}
-        {step === 3 && <BuildStep plan={plan} buildableCount={buildableIndexes.length} onBuild={buildReadyScenes} />}
-        {step === 4 && <ShipStep validIssues={draft.validation.length} blockedCount={blockedCount} planValid={plan.validation.valid} ready={isShipReady} />}
+        {step === 2 && <AssetsStep plan={plan} draft={draft} onContinue={() => go(3)} />}
+        {step === 3 && <BuildStep plan={plan} experience={draft.experience} active={previewScene} setActive={setPreviewScene} buildableCount={buildableIndexes.length} onBuild={buildReadyScenes} canUndo={draft.canUndoExperience} onUndo={() => { draft.undoExperience(); setNotice("Last guided build change undone."); }} onContinue={() => go(4)} />}
+        {step === 4 && <ShipStep draft={draft} blockedCount={blockedCount} planValid={plan.validation.valid} ready={isShipReady} />}
       </section>
     </div>
   </main>;
@@ -161,11 +166,12 @@ function DirectionStep({ plan, onAnother, onKeep }: { plan: ReturnType<typeof pl
       <article><span>PRODUCTION APPROACH</span><strong>{plan.mediumLabel}</strong><p>{plan.sceneMoves.length} directed scene beats</p></article>
     </div>
     <div className="guided-scenes">{plan.sceneMoves.map((move) => <article key={move.sceneIndex}><i>{String(move.sceneIndex + 1).padStart(2, "0")}</i><div><span>{move.role}</span><strong>{move.label}</strong><p>{move.purpose}</p></div></article>)}</div>
-    <div className="guided-actions"><button type="button" onClick={onAnother}>Try a different direction</button><button type="button" className="guided-primary" onClick={onKeep}>Keep this direction →</button></div>
+    <div className="guided-actions"><button type="button" onClick={onAnother}>Try a different direction</button><Link href="/studio/agent">Open detailed Creative Agent</Link><button type="button" className="guided-primary" onClick={onKeep}>Keep this direction →</button></div>
   </section>;
 }
 
-function AssetsStep({ plan, onContinue }: { plan: ReturnType<typeof planCreativeExecution>; onContinue: () => void }) {
+function AssetsStep({ plan, draft, onContinue }: { plan: ReturnType<typeof planCreativeExecution>; draft: ReturnType<typeof useStudioDraft>; onContinue: () => void }) {
+  const [managerOpen, setManagerOpen] = useState(false);
   return <section className="guided-step">
     <span className="guided-build__eyebrow">03 · ASSETS</span><h2>What does this direction need?</h2><p className="guided-step__lead">Forge translates the creative direction into a production shopping list before you waste time building the wrong thing.</p>
     <div className="guided-readiness">
@@ -175,19 +181,23 @@ function AssetsStep({ plan, onContinue }: { plan: ReturnType<typeof planCreative
       <article><span>NEW ASSETS</span><strong>{plan.assetSummary.totalAssetsToCreate}</strong></article>
     </div>
     <div className="guided-asset-scenes">{plan.sceneMoves.map((move) => <article key={move.sceneIndex}><header><div><span>{move.label}</span><strong>{mediumName(move.assetPlan.executionMedium)}</strong></div><em className={move.assetPlan.canBuildNow ? "is-ready" : "is-blocked"}>{move.assetPlan.canBuildNow ? "Ready" : "Needs assets"}</em></header><div className="guided-asset-columns"><section><small>USE</small>{move.assetPlan.existingAssets.length ? move.assetPlan.existingAssets.map((asset) => <p key={asset}>{shortPath(asset)}</p>) : <p>Nothing registered yet.</p>}</section><section><small>CREATE</small>{move.assetPlan.assetsToCreate.length ? move.assetPlan.assetsToCreate.map((asset) => <p key={asset.name}><strong>{asset.name}</strong><span>{asset.priority}</span></p>) : <p>No required new asset.</p>}</section></div>{move.assetPlan.blockers.length > 0 && <footer>{move.assetPlan.blockers.join(" · ")}</footer>}</article>)}</div>
-    <div className="guided-actions"><Link href="/studio?workspace=Assets&advanced=1">Open asset workspace</Link><Link href="/studio/agent">Ask Creative Agent</Link><button type="button" className="guided-primary" onClick={onContinue}>Continue to build →</button></div>
+    <div className="guided-actions"><button type="button" onClick={() => setManagerOpen((value) => !value)}>{managerOpen ? "Hide asset importer" : "Add / import assets"}</button><Link href="/studio/agent">Ask Creative Agent</Link><button type="button" className="guided-primary" onClick={onContinue}>Continue to build →</button></div>
+    {managerOpen && <div className="guided-embedded-panel"><header><span>ASSET IMPORTER</span><p>Add the source material Forge needs. The direction above updates automatically as assets become available.</p></header><AssetManager setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} active={0} /></div>}
   </section>;
 }
 
-function BuildStep({ plan, buildableCount, onBuild }: { plan: ReturnType<typeof planCreativeExecution>; buildableCount: number; onBuild: () => void }) {
+function BuildStep({ plan, experience, active, setActive, buildableCount, onBuild, canUndo, onUndo, onContinue }: { plan: ReturnType<typeof planCreativeExecution>; experience: ExperienceConfig; active: number; setActive: (index: number) => void; buildableCount: number; onBuild: () => void; canUndo: boolean; onUndo: () => void; onContinue: () => void }) {
   return <section className="guided-step">
-    <span className="guided-build__eyebrow">04 · BUILD</span><h2>Build the direction, not the interface.</h2><p className="guided-step__lead">Forge will apply the directed camera and motion system only to scenes whose required production inputs are ready. Missing-asset scenes stay untouched.</p>
+    <span className="guided-build__eyebrow">04 · BUILD</span><h2>Build the direction, not the interface.</h2><p className="guided-step__lead">Forge applies the directed camera and motion system only to scenes whose required production inputs are ready. Missing-asset scenes stay untouched.</p>
     <div className="guided-build-card"><span>READY TO BUILD</span><strong>{buildableCount} / {plan.sceneMoves.length} directed scenes</strong><p>{buildableCount ? "The ready scenes can receive their motion and camera strategy now." : "The direction is waiting on critical assets. Create or import those first."}</p></div>
-    <div className="guided-actions"><Link href="/studio/agent">Review full Creative Agent plan</Link><button type="button" className="guided-primary" disabled={!buildableCount || !plan.validation.valid} onClick={onBuild}>Build what is ready →</button></div>
+    <div className="guided-preview"><header><span>LIVE PREVIEW</span><strong>{experience.scenes[Math.min(active, experience.scenes.length - 1)]?.label}</strong></header><div><StudioLivePreview experience={experience} active={Math.min(active, experience.scenes.length - 1)} setActive={setActive} /></div></div>
+    <div className="guided-actions"><Link href="/studio/agent">Review full Creative Agent plan</Link><button type="button" disabled={!canUndo} onClick={onUndo}>Undo last build</button><button type="button" className="guided-primary" disabled={!buildableCount || !plan.validation.valid} onClick={onBuild}>Build what is ready</button><button type="button" onClick={onContinue}>Continue to ship →</button></div>
   </section>;
 }
 
-function ShipStep({ validIssues, blockedCount, planValid, ready }: { validIssues: number; blockedCount: number; planValid: boolean; ready: boolean }) {
+function ShipStep({ draft, blockedCount, planValid, ready }: { draft: ReturnType<typeof useStudioDraft>; blockedCount: number; planValid: boolean; ready: boolean }) {
+  const [publishOpen, setPublishOpen] = useState(false);
+  const validIssues = draft.validation.length;
   return <section className="guided-step">
     <span className="guided-build__eyebrow">05 · SHIP</span><h2>{ready ? "Ready for publishing review." : "One last production pass."}</h2><p className="guided-step__lead">Forge keeps the release decision simple: resolve project validation and critical asset blockers, then review publishing.</p>
     <div className="guided-ship-checks">
@@ -195,7 +205,9 @@ function ShipStep({ validIssues, blockedCount, planValid, ready }: { validIssues
       <article className={blockedCount ? "is-warn" : "is-good"}><span>ASSET BLOCKERS</span><strong>{blockedCount ? `${blockedCount} blocked scene${blockedCount === 1 ? "" : "s"}` : "Clear"}</strong></article>
       <article className={planValid ? "is-good" : "is-warn"}><span>DIRECTOR PLAN</span><strong>{planValid ? "Valid" : "Held"}</strong></article>
     </div>
-    <div className="guided-actions">{blockedCount > 0 && <Link href="/studio?workspace=Assets&advanced=1">Resolve assets</Link>}<Link href="/studio">Open final preview</Link><Link className="guided-primary" href="/studio?workspace=Ship&advanced=1">Review publishing →</Link></div>
+    {validIssues > 0 && <div className="guided-issues"><span>NEEDS ATTENTION</span>{draft.validation.slice(0, 8).map((issue, index) => <p key={`${index}-${String(issue)}`}>{String(issue)}</p>)}</div>}
+    <div className="guided-actions"><Link href="/studio">Open full Studio</Link><button type="button" className="guided-primary" onClick={() => setPublishOpen((value) => !value)}>{publishOpen ? "Hide publishing" : "Review publishing →"}</button></div>
+    {publishOpen && <div className="guided-embedded-panel"><header><span>PUBLISHING</span><p>Review the destination and production settings without leaving the guided workflow.</p></header><PublishPanel project={draft.project} setProject={draft.setProject} experience={draft.experience} assetManifest={draft.assetManifest} /></div>}
   </section>;
 }
 
