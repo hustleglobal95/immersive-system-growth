@@ -75,17 +75,24 @@ float directionCoord(vec2 uv){
   if(uDirection<2.5)return uv.y;
   return 1.-uv.y;
 }
+/**
+ * A reveal is an entrance. Progress 0 must hide the frame and progress 1 must hand the whole
+ * frame back to the image, so the travelling edge sweeps from -softness to 1 + softness
+ * instead of from 0 to 1 -- otherwise a wide softness leaves the image permanently masked.
+ */
+float sweep(float progress,float s,float pad){return mix(-s-pad,1.+s+pad,progress);}
 float revealMask(vec2 uv,float depth){
   if(uReveal<.5)return 1.;
   float s=max(.002,uSoftness);
   float coord=directionCoord(uv);
-  if(uReveal<1.5)return 1.-smoothstep(uProgress-s,uProgress+s,coord);
-  if(uReveal<2.5){float radius=uProgress*1.05;return 1.-smoothstep(radius-s,radius+s,distance(uv,uPointer*.13+.5));}
-  if(uReveal<3.5){float wave=sin(uv.y*19.+uSeed)*.035+sin(uv.x*31.-uSeed*.3)*.018;float liquid=uProgress+wave+(depth-.5)*.08;return 1.-smoothstep(liquid-s,liquid+s,coord);}
-  if(uReveal<4.5){float n=hash21(floor(uv*vec2(220.,140.))+uSeed);float edge=uProgress+(n-.5)*.17;return 1.-smoothstep(edge-s,edge+s,coord);}
+  float edge=sweep(uProgress,s,0.);
+  if(uReveal<1.5)return 1.-smoothstep(edge-s,edge+s,coord);
+  if(uReveal<2.5){float radius=mix(-s,.78+s,uProgress);return 1.-smoothstep(radius-s,radius+s,distance(uv,uPointer*.13+.5));}
+  if(uReveal<3.5){float wave=sin(uv.y*19.+uSeed)*.035+sin(uv.x*31.-uSeed*.3)*.018;float liquid=sweep(uProgress,s,.06)+wave+(depth-.5)*.08;return 1.-smoothstep(liquid-s,liquid+s,coord);}
+  if(uReveal<4.5){float n=hash21(floor(uv*vec2(220.,140.))+uSeed);float burn=sweep(uProgress,s,.09)+(n-.5)*.17;return 1.-smoothstep(burn-s,burn+s,coord);}
   if(uReveal<5.5){float n=hash21(floor(uv*vec2(180.,110.))+uSeed);return step(n,clamp(uProgress*1.15,0.,1.));}
-  if(uReveal<6.5){float lines=min(fract(uv.x*110.),fract(uv.y*70.));float scan=smoothstep(.0,.14,lines);float gate=1.-smoothstep(uProgress-s,uProgress+s,coord);return max(gate,scan*(1.-gate)*.28);}
-  float contour=abs(fract((depth+uv.y*.12)*42.)-.5);float bands=1.-smoothstep(.03,.11,contour);float gate=1.-smoothstep(uProgress-s,uProgress+s,coord);return max(gate,bands*(1.-gate)*.4);
+  if(uReveal<6.5){float lines=min(fract(uv.x*110.),fract(uv.y*70.));float scan=smoothstep(.0,.14,lines);float gate=1.-smoothstep(edge-s,edge+s,coord);return max(gate,scan*(1.-gate)*.28);}
+  float contour=abs(fract((depth+uv.y*.12)*42.)-.5);float bands=1.-smoothstep(.03,.11,contour);float gate=1.-smoothstep(edge-s,edge+s,coord);return max(gate,bands*(1.-gate)*.4);
 }
 void main(){
   vec2 uv=coverUv(vUv);
@@ -107,7 +114,8 @@ void main(){
   float edgeBand=0.;
   if(uEdgeWidth>0.){
     float coord=directionCoord(uv);
-    edgeBand=1.-smoothstep(uEdgeWidth,uEdgeWidth*3.,abs(coord-uProgress));
+    float travelling=sweep(uProgress,max(.002,uSoftness),0.);
+    edgeBand=1.-smoothstep(uEdgeWidth,uEdgeWidth*3.,abs(coord-travelling));
   }
   vec3 rgb=mix(base.rgb*light,uEdge,min(1.,edgeBand*.8));
   outColor=vec4(rgb,base.a*mask*uOpacity);
@@ -177,7 +185,7 @@ export function CinematicShaderCanvas(props:Props){
       rt={gl,program:p,vao,uniforms,textures,imageSize:[base.naturalWidth,base.naturalHeight]};runtime.current=rt;render();props.onReady?.();unsubscribe=forgeTicker.subscribe(render);
     })().catch((error)=>{runtime.current=null;props.onError?.(error instanceof Error?error:new Error(String(error)));});
     const onResize=()=>render();window.addEventListener("resize",onResize);
-    return()=>{disposed=true;unsubscribe?.();window.removeEventListener("resize",onResize);if(rt){rt.textures.forEach(value=>gl.deleteTexture(value));gl.deleteVertexArray(rt.vao);gl.deleteProgram(rt.program);}runtime.current=null;};
+    return()=>{disposed=true;unsubscribe?.();window.removeEventListener("resize",onResize);if(rt){rt.textures.forEach(value=>gl.deleteTexture(value));gl.deleteVertexArray(rt.vao);gl.deleteProgram(rt.program);}runtime.current=null;/* Each scene mounts its own compositor. Browsers cap live WebGL contexts and drop the oldest, which would take the persistent scene canvas with it, so release this one. */gl.getExtension("WEBGL_lose_context")?.loseContext();};
   },[props.src,props.depthMap,props.normalMap]);
   return <canvas ref={canvas} className="forge-cinematic-shader" style={{position:"absolute",inset:0,width:"100%",height:"100%",pointerEvents:"none"}}/>;
 }

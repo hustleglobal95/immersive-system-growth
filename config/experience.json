@@ -3,10 +3,10 @@
     "name": "ATELIER MARIS | Casa Lumen",
     "description": "A portfolio-grade cinematic architecture experience for a fictional Mediterranean studio, directed as a continuous journey from coastal approach through material, interior, landscape and inquiry.",
     "themeColor": "#d7c2a3",
-    "backgroundColor": "#0b0a08"
+    "backgroundColor": "#171310"
   },
   "runtime": {
-    "sceneHeightVh": 132,
+    "sceneHeightVh": 220,
     "cameraDamping": 7.4,
     "objectDamping": 8.6,
     "pointerInfluence": 0.08,
@@ -141,6 +141,162 @@
               "easing": "ease-in-out"
             }
           ]
+        },
+        {
+          "id": "maris-approach-copy-opacity-desktop",
+          "label": "Chapter copy fade",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.opacity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-approach-copy-opacity-desktop-0",
+              "at": 0,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-approach-copy-opacity-desktop-1",
+              "at": 0.13,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-approach-copy-opacity-desktop-2",
+              "at": 0.8,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-approach-copy-opacity-desktop-3",
+              "at": 0.94,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-approach-copy-opacity-desktop-4",
+              "at": 1,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "id": "maris-approach-copy-y-desktop",
+          "label": "Chapter copy lift",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-approach-copy-y-desktop-0",
+              "at": 0,
+              "value": 24,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-approach-copy-y-desktop-1",
+              "at": 0.15,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-approach-copy-y-desktop-2",
+              "at": 0.82,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-approach-copy-y-desktop-3",
+              "at": 1,
+              "value": -20,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-approach-copy-opacity-mobile",
+          "label": "Chapter copy fade",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.opacity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-approach-copy-opacity-mobile-0",
+              "at": 0,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-approach-copy-opacity-mobile-1",
+              "at": 0.13,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-approach-copy-opacity-mobile-2",
+              "at": 0.8,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-approach-copy-opacity-mobile-3",
+              "at": 0.94,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-approach-copy-opacity-mobile-4",
+              "at": 1,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "id": "maris-approach-copy-y-mobile",
+          "label": "Chapter copy lift",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-approach-copy-y-mobile-0",
+              "at": 0,
+              "value": 24,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-approach-copy-y-mobile-1",
+              "at": 0.15,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-approach-copy-y-mobile-2",
+              "at": 0.82,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-approach-copy-y-mobile-3",
+              "at": 1,
+              "value": -20,
+              "easing": "smooth"
+            }
+          ]
         }
       ],
       "media": {
@@ -148,8 +304,8 @@
         "src": "https://images.unsplash.com/photo-1762337018404-052afb0e3370?auto=format&fit=crop&fm=jpg&q=86&w=2400",
         "alt": "Modern residence on a rocky Mediterranean coastline",
         "transition": "mask",
-        "blendColor": "#0b0a08",
-        "maskSoftness": 14,
+        "blendColor": "#171310",
+        "maskSoftness": 22,
         "mask": {
           "preset": "diagonal-cut",
           "renderer": "auto",
@@ -189,9 +345,9 @@
           58,
           50
         ],
-        "overlap": 0.28,
+        "overlap": 0.3,
         "direction": "up",
-        "zoom": 1.08,
+        "zoom": 1.05,
         "textEnd": 0.26
       },
       "blocks": [],
@@ -319,14 +475,171 @@
           "fov": 58
         }
       },
-      "motionTracks": [],
+      "motionTracks": [
+        {
+          "id": "maris-parti-copy-opacity-desktop",
+          "label": "Chapter copy fade",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.opacity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-parti-copy-opacity-desktop-0",
+              "at": 0,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-parti-copy-opacity-desktop-1",
+              "at": 0.13,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-parti-copy-opacity-desktop-2",
+              "at": 0.8,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-parti-copy-opacity-desktop-3",
+              "at": 0.94,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-parti-copy-opacity-desktop-4",
+              "at": 1,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "id": "maris-parti-copy-y-desktop",
+          "label": "Chapter copy lift",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-parti-copy-y-desktop-0",
+              "at": 0,
+              "value": 24,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-parti-copy-y-desktop-1",
+              "at": 0.15,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-parti-copy-y-desktop-2",
+              "at": 0.82,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-parti-copy-y-desktop-3",
+              "at": 1,
+              "value": -20,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-parti-copy-opacity-mobile",
+          "label": "Chapter copy fade",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.opacity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-parti-copy-opacity-mobile-0",
+              "at": 0,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-parti-copy-opacity-mobile-1",
+              "at": 0.13,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-parti-copy-opacity-mobile-2",
+              "at": 0.8,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-parti-copy-opacity-mobile-3",
+              "at": 0.94,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-parti-copy-opacity-mobile-4",
+              "at": 1,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "id": "maris-parti-copy-y-mobile",
+          "label": "Chapter copy lift",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-parti-copy-y-mobile-0",
+              "at": 0,
+              "value": 24,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-parti-copy-y-mobile-1",
+              "at": 0.15,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-parti-copy-y-mobile-2",
+              "at": 0.82,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-parti-copy-y-mobile-3",
+              "at": 1,
+              "value": -20,
+              "easing": "smooth"
+            }
+          ]
+        }
+      ],
       "media": {
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1774423864869-702b21c2490a?auto=format&fit=crop&fm=jpg&q=86&w=2400",
         "alt": "Modern room opening toward an ocean horizon at sunset",
         "transition": "curtain",
-        "blendColor": "#0e0c09",
-        "maskSoftness": 18,
+        "blendColor": "#171310",
+        "maskSoftness": 22,
         "layers": [],
         "position": [
           54,
@@ -336,9 +649,9 @@
           61,
           50
         ],
-        "overlap": 0.25,
+        "overlap": 0.3,
         "direction": "up",
-        "zoom": 1.06,
+        "zoom": 1.05,
         "textEnd": 0.3
       },
       "blocks": [],
@@ -500,14 +813,171 @@
           "fov": 52
         }
       },
-      "motionTracks": [],
+      "motionTracks": [
+        {
+          "id": "maris-threshold-copy-opacity-desktop",
+          "label": "Chapter copy fade",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.opacity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-threshold-copy-opacity-desktop-0",
+              "at": 0,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-threshold-copy-opacity-desktop-1",
+              "at": 0.13,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-threshold-copy-opacity-desktop-2",
+              "at": 0.8,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-threshold-copy-opacity-desktop-3",
+              "at": 0.94,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-threshold-copy-opacity-desktop-4",
+              "at": 1,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "id": "maris-threshold-copy-y-desktop",
+          "label": "Chapter copy lift",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-threshold-copy-y-desktop-0",
+              "at": 0,
+              "value": 24,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-threshold-copy-y-desktop-1",
+              "at": 0.15,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-threshold-copy-y-desktop-2",
+              "at": 0.82,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-threshold-copy-y-desktop-3",
+              "at": 1,
+              "value": -20,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-threshold-copy-opacity-mobile",
+          "label": "Chapter copy fade",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.opacity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-threshold-copy-opacity-mobile-0",
+              "at": 0,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-threshold-copy-opacity-mobile-1",
+              "at": 0.13,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-threshold-copy-opacity-mobile-2",
+              "at": 0.8,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-threshold-copy-opacity-mobile-3",
+              "at": 0.94,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-threshold-copy-opacity-mobile-4",
+              "at": 1,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "id": "maris-threshold-copy-y-mobile",
+          "label": "Chapter copy lift",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-threshold-copy-y-mobile-0",
+              "at": 0,
+              "value": 24,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-threshold-copy-y-mobile-1",
+              "at": 0.15,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-threshold-copy-y-mobile-2",
+              "at": 0.82,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-threshold-copy-y-mobile-3",
+              "at": 1,
+              "value": -20,
+              "easing": "smooth"
+            }
+          ]
+        }
+      ],
       "media": {
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=84&w=2400",
         "alt": "Sunlit modern atrium facing the sea",
         "transition": "wipe",
-        "blendColor": "#0b0a08",
-        "maskSoftness": 12,
+        "blendColor": "#171310",
+        "maskSoftness": 22,
         "layers": [],
         "position": [
           52,
@@ -647,14 +1117,171 @@
           "fov": 56
         }
       },
-      "motionTracks": [],
+      "motionTracks": [
+        {
+          "id": "maris-living-copy-opacity-desktop",
+          "label": "Chapter copy fade",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.opacity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-living-copy-opacity-desktop-0",
+              "at": 0,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-living-copy-opacity-desktop-1",
+              "at": 0.13,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-living-copy-opacity-desktop-2",
+              "at": 0.8,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-living-copy-opacity-desktop-3",
+              "at": 0.94,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-living-copy-opacity-desktop-4",
+              "at": 1,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "id": "maris-living-copy-y-desktop",
+          "label": "Chapter copy lift",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-living-copy-y-desktop-0",
+              "at": 0,
+              "value": 24,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-living-copy-y-desktop-1",
+              "at": 0.15,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-living-copy-y-desktop-2",
+              "at": 0.82,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-living-copy-y-desktop-3",
+              "at": 1,
+              "value": -20,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-living-copy-opacity-mobile",
+          "label": "Chapter copy fade",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.opacity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-living-copy-opacity-mobile-0",
+              "at": 0,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-living-copy-opacity-mobile-1",
+              "at": 0.13,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-living-copy-opacity-mobile-2",
+              "at": 0.8,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-living-copy-opacity-mobile-3",
+              "at": 0.94,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-living-copy-opacity-mobile-4",
+              "at": 1,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "id": "maris-living-copy-y-mobile",
+          "label": "Chapter copy lift",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-living-copy-y-mobile-0",
+              "at": 0,
+              "value": 24,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-living-copy-y-mobile-1",
+              "at": 0.15,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-living-copy-y-mobile-2",
+              "at": 0.82,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-living-copy-y-mobile-3",
+              "at": 1,
+              "value": -20,
+              "easing": "smooth"
+            }
+          ]
+        }
+      ],
       "media": {
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1769737122085-97b1ee5ab104?auto=format&fit=crop&fm=jpg&q=86&w=2400",
         "alt": "Modern coastal kitchen and living space with ocean view",
-        "transition": "zoom",
-        "blendColor": "#0c0a08",
-        "maskSoftness": 16,
+        "transition": "curtain",
+        "blendColor": "#171310",
+        "maskSoftness": 22,
         "layers": [],
         "position": [
           55,
@@ -664,9 +1291,9 @@
           64,
           50
         ],
-        "overlap": 0.24,
+        "overlap": 0.3,
         "direction": "up",
-        "zoom": 1.08,
+        "zoom": 1.05,
         "textEnd": 0.28
       },
       "blocks": [],
@@ -824,15 +1451,171 @@
               "easing": "smooth"
             }
           ]
+        },
+        {
+          "id": "maris-material-copy-opacity-desktop",
+          "label": "Chapter copy fade",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.opacity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-material-copy-opacity-desktop-0",
+              "at": 0,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-material-copy-opacity-desktop-1",
+              "at": 0.13,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-material-copy-opacity-desktop-2",
+              "at": 0.8,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-material-copy-opacity-desktop-3",
+              "at": 0.94,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-material-copy-opacity-desktop-4",
+              "at": 1,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "id": "maris-material-copy-y-desktop",
+          "label": "Chapter copy lift",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-material-copy-y-desktop-0",
+              "at": 0,
+              "value": 24,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-material-copy-y-desktop-1",
+              "at": 0.15,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-material-copy-y-desktop-2",
+              "at": 0.82,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-material-copy-y-desktop-3",
+              "at": 1,
+              "value": -20,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-material-copy-opacity-mobile",
+          "label": "Chapter copy fade",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.opacity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-material-copy-opacity-mobile-0",
+              "at": 0,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-material-copy-opacity-mobile-1",
+              "at": 0.13,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-material-copy-opacity-mobile-2",
+              "at": 0.8,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-material-copy-opacity-mobile-3",
+              "at": 0.94,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-material-copy-opacity-mobile-4",
+              "at": 1,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "id": "maris-material-copy-y-mobile",
+          "label": "Chapter copy lift",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-material-copy-y-mobile-0",
+              "at": 0,
+              "value": 24,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-material-copy-y-mobile-1",
+              "at": 0.15,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-material-copy-y-mobile-2",
+              "at": 0.82,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-material-copy-y-mobile-3",
+              "at": 1,
+              "value": -20,
+              "easing": "smooth"
+            }
+          ]
         }
       ],
       "media": {
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1770970831074-6e88b6cc260b?auto=format&fit=crop&fm=jpg&q=86&w=2200",
         "alt": "Architectural material samples, sketches and tactile finishes on a studio table",
-        "transition": "mask",
-        "blendColor": "#0b0907",
-        "maskSoftness": 20,
+        "transition": "wipe",
+        "blendColor": "#171310",
+        "maskSoftness": 22,
         "mask": {
           "preset": "ink-spread",
           "renderer": "auto",
@@ -859,9 +1642,9 @@
           50,
           50
         ],
-        "overlap": 0.28,
+        "overlap": 0.3,
         "direction": "up",
-        "zoom": 1.1,
+        "zoom": 1.05,
         "textEnd": 0.24
       },
       "blocks": [],
@@ -989,13 +1772,170 @@
           "fov": 55
         }
       },
-      "motionTracks": [],
+      "motionTracks": [
+        {
+          "id": "maris-wellness-copy-opacity-desktop",
+          "label": "Chapter copy fade",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.opacity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-wellness-copy-opacity-desktop-0",
+              "at": 0,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-wellness-copy-opacity-desktop-1",
+              "at": 0.13,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-wellness-copy-opacity-desktop-2",
+              "at": 0.8,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-wellness-copy-opacity-desktop-3",
+              "at": 0.94,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-wellness-copy-opacity-desktop-4",
+              "at": 1,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "id": "maris-wellness-copy-y-desktop",
+          "label": "Chapter copy lift",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-wellness-copy-y-desktop-0",
+              "at": 0,
+              "value": 24,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-wellness-copy-y-desktop-1",
+              "at": 0.15,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-wellness-copy-y-desktop-2",
+              "at": 0.82,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-wellness-copy-y-desktop-3",
+              "at": 1,
+              "value": -20,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-wellness-copy-opacity-mobile",
+          "label": "Chapter copy fade",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.opacity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-wellness-copy-opacity-mobile-0",
+              "at": 0,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-wellness-copy-opacity-mobile-1",
+              "at": 0.13,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-wellness-copy-opacity-mobile-2",
+              "at": 0.8,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-wellness-copy-opacity-mobile-3",
+              "at": 0.94,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-wellness-copy-opacity-mobile-4",
+              "at": 1,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "id": "maris-wellness-copy-y-mobile",
+          "label": "Chapter copy lift",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-wellness-copy-y-mobile-0",
+              "at": 0,
+              "value": 24,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-wellness-copy-y-mobile-1",
+              "at": 0.15,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-wellness-copy-y-mobile-2",
+              "at": 0.82,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-wellness-copy-y-mobile-3",
+              "at": 1,
+              "value": -20,
+              "easing": "smooth"
+            }
+          ]
+        }
+      ],
       "media": {
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1763485956343-61b0163a3e7e?auto=format&fit=crop&fm=jpg&q=86&w=2200",
         "alt": "Warm travertine wellness interior with restrained fixtures",
-        "transition": "dissolve",
-        "blendColor": "#15100b",
+        "transition": "curtain",
+        "blendColor": "#171310",
         "maskSoftness": 22,
         "layers": [],
         "position": [
@@ -1007,8 +1947,8 @@
           52
         ],
         "overlap": 0.3,
-        "direction": "up",
-        "zoom": 1.06,
+        "direction": "down",
+        "zoom": 1.05,
         "textEnd": 0.3
       },
       "blocks": [],
@@ -1136,14 +2076,171 @@
           "fov": 60
         }
       },
-      "motionTracks": [],
+      "motionTracks": [
+        {
+          "id": "maris-studio-copy-opacity-desktop",
+          "label": "Chapter copy fade",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.opacity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-studio-copy-opacity-desktop-0",
+              "at": 0,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-studio-copy-opacity-desktop-1",
+              "at": 0.13,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-studio-copy-opacity-desktop-2",
+              "at": 0.8,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-studio-copy-opacity-desktop-3",
+              "at": 0.94,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-studio-copy-opacity-desktop-4",
+              "at": 1,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "id": "maris-studio-copy-y-desktop",
+          "label": "Chapter copy lift",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-studio-copy-y-desktop-0",
+              "at": 0,
+              "value": 24,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-studio-copy-y-desktop-1",
+              "at": 0.15,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-studio-copy-y-desktop-2",
+              "at": 0.82,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-studio-copy-y-desktop-3",
+              "at": 1,
+              "value": -20,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-studio-copy-opacity-mobile",
+          "label": "Chapter copy fade",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.opacity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-studio-copy-opacity-mobile-0",
+              "at": 0,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-studio-copy-opacity-mobile-1",
+              "at": 0.13,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-studio-copy-opacity-mobile-2",
+              "at": 0.8,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-studio-copy-opacity-mobile-3",
+              "at": 0.94,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-studio-copy-opacity-mobile-4",
+              "at": 1,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "id": "maris-studio-copy-y-mobile",
+          "label": "Chapter copy lift",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-studio-copy-y-mobile-0",
+              "at": 0,
+              "value": 24,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-studio-copy-y-mobile-1",
+              "at": 0.15,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-studio-copy-y-mobile-2",
+              "at": 0.82,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-studio-copy-y-mobile-3",
+              "at": 1,
+              "value": -20,
+              "easing": "smooth"
+            }
+          ]
+        }
+      ],
       "media": {
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=82&w=2400",
         "alt": "Architectural studio space opening to daylight and landscape",
-        "transition": "curtain",
-        "blendColor": "#0c0b09",
-        "maskSoftness": 14,
+        "transition": "wipe",
+        "blendColor": "#171310",
+        "maskSoftness": 22,
         "layers": [],
         "position": [
           50,
@@ -1153,8 +2250,8 @@
           55,
           50
         ],
-        "overlap": 0.24,
-        "direction": "down",
+        "overlap": 0.3,
+        "direction": "up",
         "zoom": 1.05,
         "textEnd": 0.28
       },
@@ -1283,14 +2380,171 @@
           "fov": 64
         }
       },
-      "motionTracks": [],
+      "motionTracks": [
+        {
+          "id": "maris-horizon-copy-opacity-desktop",
+          "label": "Chapter copy fade",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.opacity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-horizon-copy-opacity-desktop-0",
+              "at": 0,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-horizon-copy-opacity-desktop-1",
+              "at": 0.13,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-horizon-copy-opacity-desktop-2",
+              "at": 0.8,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-horizon-copy-opacity-desktop-3",
+              "at": 0.94,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-horizon-copy-opacity-desktop-4",
+              "at": 1,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "id": "maris-horizon-copy-y-desktop",
+          "label": "Chapter copy lift",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-horizon-copy-y-desktop-0",
+              "at": 0,
+              "value": 24,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-horizon-copy-y-desktop-1",
+              "at": 0.15,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-horizon-copy-y-desktop-2",
+              "at": 0.82,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-horizon-copy-y-desktop-3",
+              "at": 1,
+              "value": -20,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-horizon-copy-opacity-mobile",
+          "label": "Chapter copy fade",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.opacity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-horizon-copy-opacity-mobile-0",
+              "at": 0,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-horizon-copy-opacity-mobile-1",
+              "at": 0.13,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-horizon-copy-opacity-mobile-2",
+              "at": 0.8,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-horizon-copy-opacity-mobile-3",
+              "at": 0.94,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-horizon-copy-opacity-mobile-4",
+              "at": 1,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "id": "maris-horizon-copy-y-mobile",
+          "label": "Chapter copy lift",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-horizon-copy-y-mobile-0",
+              "at": 0,
+              "value": 24,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-horizon-copy-y-mobile-1",
+              "at": 0.15,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-horizon-copy-y-mobile-2",
+              "at": 0.82,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-horizon-copy-y-mobile-3",
+              "at": 1,
+              "value": -20,
+              "easing": "smooth"
+            }
+          ]
+        }
+      ],
       "media": {
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1762337018404-052afb0e3370?auto=format&fit=crop&fm=jpg&q=84&w=2600",
         "alt": "Coastal architecture set against sea and rock",
-        "transition": "zoom",
-        "blendColor": "#090807",
-        "maskSoftness": 16,
+        "transition": "curtain",
+        "blendColor": "#171310",
+        "maskSoftness": 22,
         "layers": [],
         "position": [
           50,
@@ -1302,7 +2556,7 @@
         ],
         "overlap": 0.3,
         "direction": "up",
-        "zoom": 1.1,
+        "zoom": 1.05,
         "textEnd": 0.24
       },
       "blocks": [],
@@ -1430,14 +2684,171 @@
           "fov": 56
         }
       },
-      "motionTracks": [],
+      "motionTracks": [
+        {
+          "id": "maris-inquiry-copy-opacity-desktop",
+          "label": "Chapter copy fade",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.opacity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-inquiry-copy-opacity-desktop-0",
+              "at": 0,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-inquiry-copy-opacity-desktop-1",
+              "at": 0.13,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-inquiry-copy-opacity-desktop-2",
+              "at": 0.8,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-inquiry-copy-opacity-desktop-3",
+              "at": 0.94,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-inquiry-copy-opacity-desktop-4",
+              "at": 1,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "id": "maris-inquiry-copy-y-desktop",
+          "label": "Chapter copy lift",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-inquiry-copy-y-desktop-0",
+              "at": 0,
+              "value": 24,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-inquiry-copy-y-desktop-1",
+              "at": 0.15,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-inquiry-copy-y-desktop-2",
+              "at": 0.82,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-inquiry-copy-y-desktop-3",
+              "at": 1,
+              "value": -20,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-inquiry-copy-opacity-mobile",
+          "label": "Chapter copy fade",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.opacity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-inquiry-copy-opacity-mobile-0",
+              "at": 0,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-inquiry-copy-opacity-mobile-1",
+              "at": 0.13,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-inquiry-copy-opacity-mobile-2",
+              "at": 0.8,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-inquiry-copy-opacity-mobile-3",
+              "at": 0.94,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-inquiry-copy-opacity-mobile-4",
+              "at": 1,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "id": "maris-inquiry-copy-y-mobile",
+          "label": "Chapter copy lift",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-inquiry-copy-y-mobile-0",
+              "at": 0,
+              "value": 24,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-inquiry-copy-y-mobile-1",
+              "at": 0.15,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-inquiry-copy-y-mobile-2",
+              "at": 0.82,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-inquiry-copy-y-mobile-3",
+              "at": 1,
+              "value": -20,
+              "easing": "smooth"
+            }
+          ]
+        }
+      ],
       "media": {
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1774423864869-702b21c2490a?auto=format&fit=crop&fm=jpg&q=84&w=2600",
         "alt": "Coastal residence at golden hour overlooking the sea",
-        "transition": "mask",
-        "blendColor": "#080706",
-        "maskSoftness": 20,
+        "transition": "curtain",
+        "blendColor": "#171310",
+        "maskSoftness": 22,
         "mask": {
           "preset": "film-burn",
           "renderer": "auto",
@@ -1464,9 +2875,9 @@
           60,
           50
         ],
-        "overlap": 0.32,
+        "overlap": 0.3,
         "direction": "up",
-        "zoom": 1.06,
+        "zoom": 1.05,
         "textEnd": 0.25
       },
       "blocks": [],
