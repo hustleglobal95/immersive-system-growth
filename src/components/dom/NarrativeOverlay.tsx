@@ -36,6 +36,14 @@ const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
   const start = scene.range[0];
   const motion = CHAPTER_MOTION[scene.id] ?? FALLBACK_MOTION;
   const scope = '[data-motion-scene="' + index + '"] ';
+  // The marker's window sits in the PREVIOUS chapter, because that is when this section is
+  // rising into frame from the bottom edge.
+  const previous = experience.scenes[index - 1];
+  const priorSpan = previous.range[1] - previous.range[0];
+  const arrival: [number, number] = [
+    previous.range[0] + priorSpan * .72,
+    scene.range[0] + span * .02,
+  ];
   // Chapter shape: the photograph holds alone, the entrance plays, then everything sits
   // completely still through a 90vh hold before the exit. The hold is what was missing -- the
   // entrance used to finish and begin fading in the same breath, which is why it felt rushed.
@@ -53,6 +61,7 @@ const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
     { selector: scope + "[data-motion-aside]", range: [at(lead + .1), at(lead + .26)], preset: "copy-drift" },
     { selector: scope + "[data-motion-cta]", range: [at(lead + .12), at(lead + .28)], preset: "copy-drift" },
     // Absolute, not lead-relative: the collapse has to sit exactly on the copy's exit window.
+    { selector: scope + "[data-motion-panel]", range: arrival, preset: "section-reveal" },
     {
       selector: scope + "[data-motion-panel]",
       range: [at(motion.collapseAt?.[0] ?? .52), at(motion.collapseAt?.[1] ?? .62)],
