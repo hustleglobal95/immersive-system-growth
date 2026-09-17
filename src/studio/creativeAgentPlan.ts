@@ -1,9 +1,18 @@
 import { createMotionArchetype, type MotionArchetypeName } from "@/src/platform/motionArchetypes";
 import { parseExperience } from "@/src/lib/configSchema";
+import {
+  buildAssetPlanSummary,
+  buildSceneAssetPlans,
+  validateSceneAssetPlans,
+  type AgentAssetPlanSummary,
+  type AgentAssetPlanValidation,
+  type AgentExecutionMedium,
+  type AgentSceneAssetPlan,
+} from "@/src/studio/creativeAgentAssets";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig } from "@/src/types/experience";
 
-export type CreativeMedium = "depth-image" | "real-3d" | "hybrid" | "cinematic-dom";
+export type CreativeMedium = AgentExecutionMedium;
 
 export interface CreativeSceneMove {
   sceneIndex: number;
@@ -12,6 +21,8 @@ export interface CreativeSceneMove {
   archetype: MotionArchetypeName;
   cameraStrategy: string;
   purpose: string;
+  signatureRole: "primary" | "secondary" | "none";
+  assetPlan: AgentSceneAssetPlan;
 }
 
 export interface CreativeExecutionPlan {
@@ -21,6 +32,8 @@ export interface CreativeExecutionPlan {
   mediumLabel: string;
   mediumReason: string;
   assetStrategy: string[];
+  assetSummary: AgentAssetPlanSummary;
+  validation: AgentAssetPlanValidation;
   sceneMoves: CreativeSceneMove[];
   productionOrder: string[];
   risks: string[];
@@ -45,10 +58,26 @@ export function planCreativeExecution(input: {
 
   const medium = chooseMedium({ lower, modelCount, imageCount, videoCount, hasRig, variation });
   const mediumCopy = mediumDescription(medium, { modelCount, imageCount, hasRig });
-  const sceneMoves = buildSceneMoves(experience, lower, medium, variation, hasRig);
+  const baseMoves = buildSceneMoves(experience, lower, medium, variation, hasRig);
   const signatureMoment = signatureFor(medium, lower, hasRig);
+  const assetPlans = buildSceneAssetPlans({
+    experience,
+    manifest,
+    scenes: baseMoves,
+    globalMedium: medium,
+    idea,
+    signatureMoment,
+  });
+  const sceneMoves: CreativeSceneMove[] = baseMoves.map((move, index) => ({
+    ...move,
+    signatureRole: move.role === "reveal" || move.role === "threshold" ? "primary" : index === 0 ? "secondary" : "none",
+    assetPlan: assetPlans[index],
+  }));
+  const assetSummary = buildAssetPlanSummary(assetPlans);
+  const validation = validateSceneAssetPlans(assetPlans, assetSummary);
 
   const assetStrategy = [
+    "Every proposed scene carries its own execution medium, existing/reusable asset list, create list, blockers, cheapest acceptable version and best version.",
     medium === "depth-image"
       ? "Use the strongest hero image as a depth source; generate foreground/midground/background separation before adding effects."
       : medium === "real-3d"
@@ -56,9 +85,12 @@ export function planCreativeExecution(input: {
         : medium === "hybrid"
           ? "Reserve real geometry for the hero/signature object and use depth-treated imagery for surrounding atmosphere and transitions."
           : "Keep the experience DOM-first and use WebGL only where it adds spatial meaning rather than decorative cost.",
-    modelCount ? `${modelCount} registered model${modelCount === 1 ? "" : "s"}: inspect hierarchy and choose one hero-quality asset before authoring choreography.` : "No registered model is available, so do not design the concept around an orbit or geometry-dependent reveal yet.",
-    imageCount ? `${imageCount} registered texture/image asset${imageCount === 1 ? "" : "s"}: rank them by hero potential, depth separation and edge quality.` : "Add one strong visual source before expanding scene count; a weak asset cannot be fixed by motion density.",
-    videoCount ? `${videoCount} video asset${videoCount === 1 ? "" : "s"}: use video as proof or atmosphere, not as a substitute for a coherent camera idea.` : "No video dependency is required for this direction.",
+    assetSummary.highestLeverageAssetToCreateFirst
+      ? `Create first: ${assetSummary.highestLeverageAssetToCreateFirst}. It is the highest-leverage missing asset across the proposed scene arc.`
+      : "No critical new asset is required before the proposed scene arc can begin production.",
+    assetSummary.blockedScenes.length
+      ? `${assetSummary.blockedScenes.length} proposed scene${assetSummary.blockedScenes.length === 1 ? " is" : "s are"} blocked until critical assets are created.`
+      : "All proposed scenes can begin with the current registered asset set.",
   ];
 
   return {
@@ -68,17 +100,25 @@ export function planCreativeExecution(input: {
     mediumLabel: mediumCopy.label,
     mediumReason: mediumCopy.reason,
     assetStrategy,
+    assetSummary,
+    validation,
     sceneMoves,
     productionOrder: [
       "Lock the one-line experience thesis and signature moment.",
-      "Choose the minimum hero asset set needed to prove the idea.",
+      assetSummary.highestLeverageAssetToCreateFirst
+        ? `Create or source ${assetSummary.highestLeverageAssetToCreateFirst} before spending time on secondary polish.`
+        : "Confirm the registered hero assets selected by the scene asset plans.",
+      "Resolve all hero/signature-critical asset blockers before treating the scene as production-ready.",
       "Author the opening and signature camera beats before secondary transitions.",
       "Apply motion across the selected scene arc, then reduce anything that competes with the signature moment.",
       "Review mobile framing and performance before increasing visual complexity.",
     ],
-    risks: buildRisks(medium, { modelCount, imageCount, hasRig, sceneCount }),
+    risks: buildRisks(medium, { modelCount, imageCount, hasRig, sceneCount, blockedSceneCount: assetSummary.blockedScenes.length }),
     signatureMoment,
-    patchSummary: sceneMoves.map((move) => `${String(move.sceneIndex + 1).padStart(2, "0")} ${move.label}: ${move.archetype} · ${move.cameraStrategy}`),
+    patchSummary: sceneMoves.map((move) => {
+      const create = move.assetPlan.assetsToCreate.length ? move.assetPlan.assetsToCreate.map((asset) => asset.name).join(", ") : "no required new assets";
+      return `${String(move.sceneIndex + 1).padStart(2, "0")} ${move.label}: ${move.archetype} · ${move.assetPlan.executionMedium} · create ${create}`;
+    }),
   };
 }
 
@@ -87,19 +127,20 @@ export function applyCreativeExecutionPlan(
   plan: CreativeExecutionPlan,
   selectedSceneIndexes?: number[],
 ): ExperienceConfig {
+  if (!plan.validation.valid) throw new Error(`Creative Agent plan is invalid: ${plan.validation.errors.join(" ")}`);
   const allowed = selectedSceneIndexes ? new Set(selectedSceneIndexes) : null;
   const scenes = experience.scenes.map((scene, sceneIndex) => {
     const move = plan.sceneMoves.find((item) => item.sceneIndex === sceneIndex);
     if (!move || (allowed && !allowed.has(sceneIndex))) return scene;
     const generated = createMotionArchetype(move.archetype, experience, sceneIndex).map((track) => ({
       ...track,
-      id: `agent-v2-${sceneIndex}-${track.id}`,
+      id: `agent-v3-${sceneIndex}-${track.id}`,
       label: `Agent · ${track.label}`,
     }));
     return {
       ...scene,
       motionTracks: [
-        ...scene.motionTracks.filter((track) => !track.id.startsWith("agent-") && !track.id.startsWith("agent-v2-")),
+        ...scene.motionTracks.filter((track) => !track.id.startsWith("agent-") && !track.id.startsWith("agent-v2-") && !track.id.startsWith("agent-v3-")),
         ...generated,
       ],
     };
@@ -117,7 +158,7 @@ function chooseMedium(input: { lower: string; modelCount: number; imageCount: nu
   return "cinematic-dom";
 }
 
-function buildSceneMoves(experience: ExperienceConfig, lower: string, medium: CreativeMedium, variation: number, hasRig: boolean): CreativeSceneMove[] {
+function buildSceneMoves(experience: ExperienceConfig, lower: string, medium: CreativeMedium, variation: number, hasRig: boolean) {
   const count = experience.scenes.length;
   const indexes = count <= 4 ? [...Array(count).keys()] : unique([0, Math.floor((count - 1) * 0.32), Math.floor((count - 1) * 0.62), count - 1]);
   const roles: CreativeSceneMove["role"][] = ["establish", "build", "reveal", "resolve"];
@@ -183,12 +224,13 @@ function signatureFor(medium: CreativeMedium, lower: string, hasRig: boolean) {
   return "A typography/composition reveal whose timing feels spatial even though the experience remains lightweight.";
 }
 
-function buildRisks(medium: CreativeMedium, input: { modelCount: number; imageCount: number; hasRig: boolean; sceneCount: number }) {
+function buildRisks(medium: CreativeMedium, input: { modelCount: number; imageCount: number; hasRig: boolean; sceneCount: number; blockedSceneCount: number }) {
   const risks: string[] = [];
   if (medium === "depth-image") risks.push("Depth edges can tear under aggressive camera movement; keep perspective shifts restrained and mask difficult silhouettes.");
   if (medium === "real-3d" && !input.modelCount && !input.hasRig) risks.push("The concept currently expects geometry that is not registered in the project.");
   if (medium === "hybrid") risks.push("The image-to-geometry handoff must match lens, exposure and horizon or the transition will feel synthetic.");
   if (!input.imageCount && medium !== "real-3d") risks.push("The current asset manifest has no image texture to support the proposed image-led treatment.");
+  if (input.blockedSceneCount) risks.push(`${input.blockedSceneCount} proposed scene${input.blockedSceneCount === 1 ? " is" : "s are"} blocked by missing critical assets; do not present them as production-ready.`);
   if (input.sceneCount > 8) risks.push("Do not spread the same intensity across every chapter; reserve the strongest production move for a small scene arc.");
   risks.push("Mobile should preserve the concept with reduced travel, not simply shrink the desktop choreography.");
   return risks;
