@@ -6,7 +6,10 @@ export type CinematicPreset =
   | "headline-reveal"
   | "headline-words"
   | "headline-chars"
+  | "headline-swing"
+  | "headline-slide"
   | "lede-words"
+  | "lede-scatter"
   | "label-track"
   | "copy-drift"
   | "curtain"
@@ -14,14 +17,17 @@ export type CinematicPreset =
   | "gallery-settle";
 /** Presets that carry primary copy, so they are allowed to animate accessible content. */
 const COPY_PRESETS = new Set<CinematicPreset>([
-  "text-settle", "headline-reveal", "headline-words", "headline-chars", "lede-words",
-  "label-track", "copy-drift",
+  "text-settle", "headline-reveal", "headline-words", "headline-chars", "headline-swing",
+  "headline-slide", "lede-words", "lede-scatter", "label-track", "copy-drift",
 ]);
 /** Presets whose targets are split into per-word or per-character boxes before animating. */
 const SPLIT_PRESETS: Partial<Record<CinematicPreset, "word" | "char">> = {
   "headline-words": "word",
   "headline-chars": "char",
+  "headline-swing": "word",
+  "headline-slide": "word",
   "lede-words": "word",
+  "lede-scatter": "word",
 };
 
 interface SplitTarget { element: HTMLElement; html: string }
@@ -135,6 +141,32 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
           yPercent: 0, rotateX: 0, opacity: 1, duration: 1,
           stagger: { amount: compact ? .42 : .74, from: "start" },
           ease: "power4.out", immediateRender: true,
+        });
+      } else if (cue.preset === "headline-swing") {
+        // Words hinge down from their top edge, last word first, so the line closes backwards.
+        timeline.fromTo(targets, {
+          rotateX: compact ? -46 : -88, yPercent: 46, opacity: 0,
+          transformPerspective: 900, transformOrigin: "50% 0%",
+        }, {
+          rotateX: 0, yPercent: 0, opacity: 1, duration: 1,
+          stagger: { amount: compact ? .34 : .58, from: "end" },
+          ease: "power4.out", immediateRender: true,
+        });
+      } else if (cue.preset === "headline-slide") {
+        // Alternating words slide in from opposite sides inside their masks.
+        timeline.fromTo(targets, {
+          xPercent: (index: number) => (index % 2 ? 1 : -1) * (compact ? 52 : 96),
+          opacity: 0,
+        }, {
+          xPercent: 0, opacity: 1, duration: 1,
+          stagger: { amount: compact ? .3 : .5, from: "start" },
+          ease: "power4.out", immediateRender: true,
+        });
+      } else if (cue.preset === "lede-scatter") {
+        timeline.fromTo(targets, { yPercent: 38, scale: .92, opacity: 0 }, {
+          yPercent: 0, scale: 1, opacity: 1, duration: 1,
+          stagger: { amount: compact ? .46 : .82, from: "random" },
+          ease: "power2.out", immediateRender: true,
         });
       } else if (cue.preset === "lede-words") {
         timeline.fromTo(targets, { yPercent: 64, opacity: 0, filter: "blur(5px)" }, {

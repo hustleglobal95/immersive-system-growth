@@ -1,35 +1,48 @@
 import Link from "next/link";
 import { experience } from "@/src/lib/experience";
 import { CinematicDomMotion } from "./CinematicDomMotion";
-import type { CinematicCue } from "@/src/lib/cinematicDom";
+import type { CinematicCue, CinematicPreset } from "@/src/lib/cinematicDom";
 import { SceneBlocks } from "./SceneBlocks";
-// Each chapter lands in layers driven entirely by scroll: the index and label tighten their
-// tracking, the headline assembles word by word out of its own mask, the lede follows word by
-// word out of focus, then the aside and the action arrive. One scroll clock seeks every
-// timeline, so scrubbing backwards reconstructs the same frame.
+/**
+ * Per-chapter motion direction. Each section gets its own combination so the sequence reads as
+ * nine authored chapters rather than one effect repeated: the label, the headline and the lede
+ * each carry a different treatment, and `pace` sets how quickly that chapter's copy lands.
+ * Chapters not listed here fall back to the last entry's shape.
+ */
+const CHAPTER_MOTION: Record<string, { label: CinematicPreset; headline: CinematicPreset; lede: CinematicPreset; pace: number }> = {
+  parti: { label: "label-track", headline: "headline-words", lede: "lede-words", pace: 1 },
+  threshold: { label: "text-settle", headline: "headline-reveal", lede: "copy-drift", pace: .78 },
+  living: { label: "label-track", headline: "headline-slide", lede: "lede-scatter", pace: 1.18 },
+  material: { label: "text-settle", headline: "headline-chars", lede: "lede-words", pace: 1.3 },
+  wellness: { label: "label-track", headline: "headline-swing", lede: "copy-drift", pace: .9 },
+  studio: { label: "text-settle", headline: "headline-words", lede: "lede-scatter", pace: 1.1 },
+  horizon: { label: "label-track", headline: "headline-reveal", lede: "lede-words", pace: .72 },
+  inquiry: { label: "text-settle", headline: "headline-chars", lede: "copy-drift", pace: 1.24 },
+};
+const FALLBACK_MOTION = { label: "label-track", headline: "headline-words", lede: "lede-words", pace: 1 } as const;
+
+// Every cue is seeked by the one scroll clock, so scrubbing backwards reconstructs the same frame.
 const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
-  const span = scene.range[1] - scene.range[0];
-  const start = scene.range[0];
-  const textEnd = scene.media?.textEnd ?? .28;
-  const at = (fraction: number) => start + span * Math.min(1, fraction);
-  const scope = '[data-motion-scene="' + index + '"] ';
-  const closing = index === experience.scenes.length - 1;
   // The arrival chapter has no scroll behind it, so a scroll-gated entrance would leave the
   // hero half-assembled on load. It renders settled and leaves through its copy tracks.
   if (!index) return [];
+  const span = scene.range[1] - scene.range[0];
+  const start = scene.range[0];
+  const motion = CHAPTER_MOTION[scene.id] ?? FALLBACK_MOTION;
+  const textEnd = (scene.media?.textEnd ?? .28) * motion.pace;
+  const at = (fraction: number) => start + span * Math.min(1, fraction);
+  const scope = '[data-motion-scene="' + index + '"] ';
+  // The photograph holds alone for the first stretch of every chapter. Copy motion begins after
+  // that beat and runs long, so each effect is crossed by scrolling rather than triggered.
+  const lead = .14;
   return [
-    { selector: scope + "[data-motion-index]", range: [start, at(textEnd * .4)], preset: "label-track" },
-    { selector: scope + "[data-motion-copy]", range: [at(textEnd * .1), at(textEnd * .62)], preset: "label-track" },
-    {
-      selector: scope + "[data-motion-headline]",
-      range: [start, at(textEnd + .1)],
-      // The closing statement cascades per character; every chapter headline rises per word.
-      preset: closing ? "headline-chars" : "headline-words",
-    },
-    { selector: scope + "[data-motion-lede]", range: [at(textEnd * .45), at(textEnd + .3)], preset: "lede-words" },
-    { selector: scope + "[data-motion-aside]", range: [at(textEnd + .12), at(textEnd + .46)], preset: "copy-drift" },
-    { selector: scope + "[data-motion-cta]", range: [at(textEnd + .2), at(textEnd + .58)], preset: "copy-drift" },
-    { selector: scope + "[data-motion-block]", range: [at(.08), at(.66)], preset: "copy-drift" },
+    { selector: scope + "[data-motion-index]", range: [at(lead), at(lead + textEnd * .5)], preset: motion.label },
+    { selector: scope + "[data-motion-copy]", range: [at(lead + textEnd * .12), at(lead + textEnd * .8)], preset: motion.label },
+    { selector: scope + "[data-motion-headline]", range: [at(lead), at(lead + textEnd + .26)], preset: motion.headline },
+    { selector: scope + "[data-motion-lede]", range: [at(lead + textEnd * .5), at(lead + textEnd + .46)], preset: motion.lede },
+    { selector: scope + "[data-motion-aside]", range: [at(lead + textEnd + .2), at(lead + textEnd + .62)], preset: "copy-drift" },
+    { selector: scope + "[data-motion-cta]", range: [at(lead + textEnd + .3), at(lead + textEnd + .76)], preset: "copy-drift" },
+    { selector: scope + "[data-motion-block]", range: [at(lead), at(.82)], preset: "copy-drift" },
   ];
 });
 // Ordinary server-rendered content remains the baseline. No opacity/aria-hidden gate owns primary copy.
