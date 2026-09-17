@@ -53,12 +53,13 @@ export function CreativeAgentWorkbench() {
   );
   const intelligence = useMemo(() => runDirectorIntelligence({ brief }), [brief]);
   const report = intelligence.report;
+  const hierarchyBlocked = report.hierarchy.blockers.length > 0;
   const selectedTerritory = report.treatment.territories.find((item) => item.id === report.treatment.selectedTerritoryId);
   const selectedBlocked = plan.sceneMoves.filter((move) => selectedScenes.includes(move.sceneIndex) && !move.assetPlan.canBuildNow).length;
 
   const tryAnother = () => {
     setVariation((value) => value + 1);
-    setNotice("Director changed medium, camera grammar, scene strategy and asset requirements instead of restyling the same answer.");
+    setNotice("Director changed medium, camera grammar, scene strategy, hierarchy and asset requirements instead of restyling the same answer.");
   };
 
   const toggleScene = (sceneIndex: number) => {
@@ -68,6 +69,10 @@ export function CreativeAgentWorkbench() {
   };
 
   const applyPlan = () => {
+    if (hierarchyBlocked) {
+      setNotice(`Creative Agent held the patch because hierarchy is unresolved: ${report.hierarchy.blockers[0]}`);
+      return;
+    }
     if (!plan.validation.valid) {
       setNotice(`Creative Agent refused to apply an incomplete plan: ${plan.validation.errors[0] ?? "asset planning validation failed."}`);
       return;
@@ -82,7 +87,7 @@ export function CreativeAgentWorkbench() {
 
   return <main className="creative-agent">
     <header className="creative-agent__topbar">
-      <div><span>FORGE</span><strong>Creative Agent</strong><em>V3 · ASSET AWARE</em></div>
+      <div><span>FORGE</span><strong>Creative Agent</strong><em>V4 · HIERARCHY AWARE</em></div>
       <nav><Link href="/studio">Studio</Link><Link href="/director/intelligence">Director Intelligence</Link></nav>
     </header>
 
@@ -90,7 +95,7 @@ export function CreativeAgentWorkbench() {
       <aside className="creative-agent__brief">
         <span className="creative-agent__eyebrow">EXECUTIVE CREATIVE DIRECTION</span>
         <h1>Describe the outcome. Director chooses the smartest production path.</h1>
-        <p>Every scene the agent proposes must now include an asset strategy: what already exists, what can be reused, what must be created, what is optional, what blocks production, and the cheapest versus best execution.</p>
+        <p>Every scene must now pass both asset planning and hierarchy review: strategy, narrative, section importance, information, visual focus, interaction, motion/spatial attention and semantic accessibility.</p>
 
         <label>Creative intent
           <textarea value={idea} onChange={(event) => { setIdea(event.target.value); setVariation(0); }} />
@@ -111,6 +116,7 @@ export function CreativeAgentWorkbench() {
       <section className="creative-agent__stage">
         <div className="creative-agent__verdict">
           <div><span>DIRECTOR VERDICT</span><strong>{report.verdict}</strong></div>
+          <div><span>HIERARCHY</span><strong>{report.hierarchy.overallScore}/10</strong></div>
           <div><span>EXECUTION MEDIUM</span><strong>{plan.mediumLabel}</strong></div>
           <div><span>ASSET READY</span><strong>{plan.assetSummary.scenesBuildableNow.length}/{plan.sceneMoves.length} scenes</strong></div>
           <div><span>CREATE</span><strong>{plan.assetSummary.totalAssetsToCreate} required assets</strong></div>
@@ -134,6 +140,21 @@ export function CreativeAgentWorkbench() {
             <h3>Spend the craft here.</h3>
             <p>{plan.signatureMoment}</p>
           </div>
+        </section>
+
+        <section className="creative-agent__hierarchy">
+          <header><div><span>HIERARCHY ENGINE</span><h3>Importance must propagate downward.</h3></div><strong>{report.hierarchy.overallScore}/10</strong></header>
+          <div className="creative-agent__hierarchy-chain">{report.hierarchy.recommendedNarrative.map((item, index) => <span key={`${item}-${index}`}>{item}{index < report.hierarchy.recommendedNarrative.length - 1 ? " →" : ""}</span>)}</div>
+          <div className="creative-agent__hierarchy-levels">
+            {report.hierarchy.levels.map((level) => <article key={level.id} data-status={level.status}>
+              <div><span>{level.label}</span><strong>{level.score}</strong></div>
+              <p>{level.principle}</p>
+              <small>DOMINANT</small><b>{level.dominant}</b>
+              {level.issues[0] && <em>{level.issues[0].message} {level.issues[0].recommendation}</em>}
+            </article>)}
+          </div>
+          <div className="creative-agent__attention-rule"><span>ATTENTION RULE</span><strong>{report.hierarchy.attentionRules[0]?.owner}</strong><p>{report.hierarchy.attentionRules[0]?.reason}</p></div>
+          {hierarchyBlocked && <div className="creative-agent__validation"><strong>HIERARCHY HELD</strong>{report.hierarchy.blockers.map((blocker) => <p key={blocker}>{blocker}</p>)}</div>}
         </section>
 
         <section className="creative-agent__asset-summary">
@@ -181,8 +202,8 @@ export function CreativeAgentWorkbench() {
             {plan.patchSummary.map((line, index) => <code key={line} className={selectedScenes.includes(plan.sceneMoves[index]?.sceneIndex ?? -1) ? "" : "is-muted"}>{line}</code>)}
           </div>}
           <div className="creative-agent__apply-row">
-            <div><strong>{selectedScenes.length} scene{selectedScenes.length === 1 ? "" : "s"} selected · {selectedBlocked} asset-blocked</strong><span>Missing assets are never faked as complete. Existing non-agent authored tracks are preserved.</span></div>
-            <button className="creative-agent__apply" disabled={!plan.validation.valid} onClick={applyPlan}>Apply reversible plan</button>
+            <div><strong>{selectedScenes.length} scene{selectedScenes.length === 1 ? "" : "s"} selected · {selectedBlocked} asset-blocked · {hierarchyBlocked ? "hierarchy held" : "hierarchy clear"}</strong><span>Missing assets are never faked as complete. Existing non-agent authored tracks are preserved.</span></div>
+            <button className="creative-agent__apply" disabled={!plan.validation.valid || hierarchyBlocked} onClick={applyPlan}>Apply reversible plan</button>
           </div>
         </section>
 
