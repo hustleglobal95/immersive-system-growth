@@ -84,7 +84,7 @@ export function NarrativeOverlay() {
               <h2 id={`${scene.id}-heading`} data-motion-headline>{scene.copy.headline}</h2>
             )}
             <p className="narrative-body" data-motion-lede>{scene.copy.body}</p>
-            <SceneBlocks blocks={scene.blocks} />
+            <SceneBlocks blocks={scene.blocks} range={scene.range} />
             {experience.hotspots
               .filter((h) => h.sceneId === scene.id)
               .map((h) => (

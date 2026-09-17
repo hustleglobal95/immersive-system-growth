@@ -156,7 +156,22 @@ const sceneBlockSchema = z.discriminatedUnion("type", [
       description: z.string().min(1).max(220),
       price: z.string().min(1).max(24),
       badge: z.string().max(40).optional(),
+      // A square plate beside an index row. Optional, so existing indexes stay valid.
+      thumb: assetUrl.optional(),
     }).strict()).min(2).max(8),
+  }).strict(),
+  z.object({
+    id,
+    type: z.literal("image-roll"),
+    // A drifting rank of small square plates, carried across the section by scroll. Decorative
+    // by definition, so it never holds primary copy or an action.
+    images: z.array(z.object({
+      src: assetUrl,
+      alt: z.string().min(1).max(200),
+    }).strict()).min(3).max(10),
+    direction: z.enum(["left", "right"]).default("left"),
+    travel: finite.min(4).max(60).default(22),
+    lift: finite.min(0).max(14).default(5),
   }).strict(),
   z.object({
     id,

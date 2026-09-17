@@ -353,6 +353,8 @@ function semanticText(scene: SceneDefinition) {
     if (block.type === "statement") return `${block.title} ${block.body ?? ""} ${block.accent ?? ""}`;
     if (block.type === "brand-band") return block.text;
     if (block.type === "menu-grid") return `${block.title} ${block.items.map((item) => `${item.name} ${item.description}`).join(" ")}`;
+    // An image roll is decorative, so it contributes no semantic text.
+    if (block.type === "image-roll") return "";
     return `${block.title} ${block.cta.label}`;
   }).join(" ");
   return `${scene.id} ${scene.label} ${scene.copy.eyebrow ?? ""} ${scene.copy.headline} ${scene.copy.body} ${blocks}`.toLowerCase();

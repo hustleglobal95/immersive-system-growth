@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { SceneBlock } from "@/src/types/experience";
+import { ImageRoll } from "./ImageRoll";
 
 function Statement({ block }: { block: Extract<SceneBlock, { type: "statement" }> }) {
   return (
@@ -31,6 +32,7 @@ function MenuGrid({ block }: { block: Extract<SceneBlock, { type: "menu-grid" }>
         {block.items.map((item) => (
           <li key={item.name}>
             <div>
+              {item.thumb && <img className="menu-thumb" src={item.thumb} alt="" decoding="async" loading="lazy" />}
               {item.badge && <span className="menu-badge">{item.badge}</span>}
               <h4>{item.name}</h4>
               <p>{item.description}</p>
@@ -66,7 +68,7 @@ function OrderCard({ block }: { block: Extract<SceneBlock, { type: "order-card" 
   );
 }
 
-export function SceneBlocks({ blocks }: { blocks: readonly SceneBlock[] }) {
+export function SceneBlocks({ blocks, range }: { blocks: readonly SceneBlock[]; range: readonly [number, number] }) {
   if (!blocks.length) return null;
   return (
     <div className="scene-blocks">
@@ -74,6 +76,7 @@ export function SceneBlocks({ blocks }: { blocks: readonly SceneBlock[] }) {
         if (block.type === "statement") return <Statement key={block.id} block={block} />;
         if (block.type === "brand-band") return <BrandBand key={block.id} block={block} />;
         if (block.type === "menu-grid") return <MenuGrid key={block.id} block={block} />;
+        if (block.type === "image-roll") return <ImageRoll key={block.id} block={block} range={range} />;
         return <OrderCard key={block.id} block={block} />;
       })}
     </div>

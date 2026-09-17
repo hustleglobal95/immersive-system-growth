@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { experience } from "@/src/lib/experience";
+import { architecturalFont, bodyFont, editorialFont } from "@/src/design/fonts";
 import { ExperienceRuntime } from "@/src/components/runtime/ExperienceRuntime";
 import "./globals.css";
 import "./experience-modes.css";
@@ -24,7 +25,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const project = isAtelierMaris ? "atelier-maris" : isNocterra ? "nocterra" : "forge";
   return (
     <html lang="en">
-      <body data-project={project}>
+      <body
+        data-project={project}
+        className={`${bodyFont.variable} ${editorialFont.variable} ${architecturalFont.variable}`}
+      >
         <ExperienceRuntime>{children}</ExperienceRuntime>
       </body>
     </html>

@@ -1097,7 +1097,41 @@
         "textEnd": 0.3,
         "fill": "#131c19"
       },
-      "blocks": [],
+      "blocks": [
+        {
+          "id": "parti-roll",
+          "type": "image-roll",
+          "direction": "left",
+          "travel": 26,
+          "lift": 6,
+          "images": [
+            {
+              "src": "https://images.unsplash.com/photo-1762337018404-052afb0e3370?auto=format&fit=crop&fm=jpg&q=86&w=2400",
+              "alt": "Coastal approach"
+            },
+            {
+              "src": "https://images.unsplash.com/photo-1774423864869-702b21c2490a?auto=format&fit=crop&fm=jpg&q=86&w=2400",
+              "alt": "Room open to the horizon"
+            },
+            {
+              "src": "https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=84&w=2400",
+              "alt": "Sunlit atrium"
+            },
+            {
+              "src": "https://images.unsplash.com/photo-1769737122085-97b1ee5ab104?auto=format&fit=crop&fm=jpg&q=86&w=2400",
+              "alt": "Interior toward the sea"
+            },
+            {
+              "src": "https://images.unsplash.com/photo-1770970831074-6e88b6cc260b?auto=format&fit=crop&fm=jpg&q=86&w=2200",
+              "alt": "Material samples on a studio table"
+            },
+            {
+              "src": "https://images.unsplash.com/photo-1763485956343-61b0163a3e7e?auto=format&fit=crop&fm=jpg&q=86&w=2200",
+              "alt": "Travertine bathing court"
+            }
+          ]
+        }
+      ],
       "hero": {
         "motion": "linear",
         "from": {
@@ -2229,31 +2263,36 @@
               "name": "Casa Lumen",
               "description": "Private residence, new build",
               "price": "2024 / Begur",
-              "badge": "01"
+              "badge": "01",
+              "thumb": "https://images.unsplash.com/photo-1770970831074-6e88b6cc260b?auto=format&fit=crop&fm=jpg&q=86&w=2200"
             },
             {
               "name": "Casa Vent",
               "description": "Cliff house, section study",
               "price": "2023 / Llafranc",
-              "badge": "02"
+              "badge": "02",
+              "thumb": "https://images.unsplash.com/photo-1762337018404-052afb0e3370?auto=format&fit=crop&fm=jpg&q=86&w=2400"
             },
             {
               "name": "Casa Sal",
               "description": "Interior transformation",
               "price": "2023 / Cadaques",
-              "badge": "03"
+              "badge": "03",
+              "thumb": "https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=84&w=2400"
             },
             {
               "name": "Casa Pedra",
               "description": "Coastal retreat, two courts",
               "price": "2022 / Begur",
-              "badge": "04"
+              "badge": "04",
+              "thumb": "https://images.unsplash.com/photo-1763485956343-61b0163a3e7e?auto=format&fit=crop&fm=jpg&q=86&w=2200"
             },
             {
               "name": "Casa Nord",
               "description": "Residence and studio",
               "price": "2021 / Palafrugell",
-              "badge": "05"
+              "badge": "05",
+              "thumb": "https://images.unsplash.com/photo-1774423864869-702b21c2490a?auto=format&fit=crop&fm=jpg&q=86&w=2400"
             }
           ]
         }
@@ -4000,6 +4039,35 @@
           "accent": "04",
           "title": "Construction oversight",
           "body": "To completion. Weekly on site, with the same people who drew it."
+        },
+        {
+          "id": "studio-roll",
+          "type": "image-roll",
+          "direction": "right",
+          "travel": 18,
+          "lift": 4,
+          "images": [
+            {
+              "src": "https://images.unsplash.com/photo-1763485956343-61b0163a3e7e?auto=format&fit=crop&fm=jpg&q=86&w=2200",
+              "alt": "Travertine bathing court"
+            },
+            {
+              "src": "https://images.unsplash.com/photo-1770970831074-6e88b6cc260b?auto=format&fit=crop&fm=jpg&q=86&w=2200",
+              "alt": "Material samples on a studio table"
+            },
+            {
+              "src": "https://images.unsplash.com/photo-1769737122085-97b1ee5ab104?auto=format&fit=crop&fm=jpg&q=86&w=2400",
+              "alt": "Interior toward the sea"
+            },
+            {
+              "src": "https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=84&w=2400",
+              "alt": "Sunlit atrium"
+            },
+            {
+              "src": "https://images.unsplash.com/photo-1774423864869-702b21c2490a?auto=format&fit=crop&fm=jpg&q=86&w=2400",
+              "alt": "Room open to the horizon"
+            }
+          ]
         }
       ],
       "hero": {
