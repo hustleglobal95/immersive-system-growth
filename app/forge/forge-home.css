@@ -1,0 +1,51 @@
+.forge-home {
+  --fh-bg: #08090a; --fh-panel: #0f1113; --fh-line: rgba(255,255,255,.09); --fh-line-strong: rgba(255,255,255,.18);
+  --fh-text: #f3f1eb; --fh-muted: #8b8e91; --fh-accent: #ff6633;
+  min-height: 100svh; background: var(--fh-bg); color: var(--fh-text); font-family: Arial, Helvetica, sans-serif; font-size: 14px;
+}
+.forge-home * { box-sizing: border-box; }
+.forge-home a { color: inherit; text-decoration: none; }
+.forge-home button, .forge-home input { font: inherit; color: inherit; }
+
+.forge-home__bar { height: 62px; padding: 0 24px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--fh-line); }
+.forge-home__brand { font-size: 20px; font-weight: 800; letter-spacing: -.02em; }
+.forge-home__bar span { color: var(--fh-muted); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+
+.forge-home__body { width: min(1120px, 100%); margin: 0 auto; padding: 36px 24px 64px; display: grid; gap: 40px; }
+.forge-home__section h2 { margin: 0 0 14px; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--fh-muted); font-weight: 700; display: flex; gap: 8px; align-items: baseline; }
+.forge-home__section h2 small { font-size: 12px; color: var(--fh-muted); letter-spacing: 0; }
+
+.forge-home__new { display: grid; grid-template-columns: minmax(220px, 1fr) auto auto; gap: 16px; align-items: end; padding: 20px; border: 1px solid var(--fh-line); border-radius: 12px; background: var(--fh-panel); }
+.forge-home__new label { display: grid; gap: 6px; }
+.forge-home__new label span, .forge-home__new legend { font-size: 12px; color: var(--fh-muted); }
+.forge-home__new input { height: 42px; padding: 0 12px; border: 1px solid var(--fh-line-strong); border-radius: 8px; background: #08090a; }
+.forge-home__new input:focus { outline: 2px solid var(--fh-accent); outline-offset: 1px; }
+.forge-home__new fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 6px; }
+.forge-home__kinds { display: flex; flex-wrap: wrap; gap: 6px; }
+.forge-home__kinds button { height: 42px; padding: 0 12px; border: 1px solid var(--fh-line); border-radius: 8px; background: transparent; text-transform: capitalize; cursor: pointer; }
+.forge-home__kinds button[aria-pressed="true"] { border-color: var(--fh-accent); background: rgba(255,102,51,.12); }
+
+.forge-home__button { display: inline-flex; align-items: center; justify-content: center; height: 42px; padding: 0 16px; border: 1px solid var(--fh-line-strong); border-radius: 8px; background: transparent; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.forge-home__button:hover { border-color: var(--fh-text); }
+.forge-home__button--primary { border-color: var(--fh-accent); background: var(--fh-accent); color: #111 !important; }
+.forge-home__button--primary:hover { border-color: #ff8a5f; background: #ff8a5f; }
+.forge-home__button:disabled { opacity: .4; cursor: not-allowed; }
+
+.forge-home__projects, .forge-home__tools { list-style: none; margin: 0; padding: 0; }
+.forge-home__projects { display: grid; gap: 10px; }
+.forge-home__project { display: flex; justify-content: space-between; gap: 20px; align-items: center; padding: 18px 20px; border: 1px solid var(--fh-line); border-radius: 12px; background: var(--fh-panel); }
+.forge-home__project strong { font-size: 17px; }
+.forge-home__project p { margin: 6px 0 8px; color: var(--fh-muted); line-height: 1.45; max-width: 640px; }
+.forge-home__meta { font-size: 12px; color: var(--fh-muted); }
+.forge-home__actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+.forge-home__tools { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.forge-home__tool { display: grid; gap: 6px; height: 100%; padding: 16px 18px; border: 1px solid var(--fh-line); border-radius: 12px; background: var(--fh-panel); }
+.forge-home__tool:hover { border-color: var(--fh-line-strong); background: #14171a; }
+.forge-home__tool strong { font-size: 15px; }
+.forge-home__tool span { color: var(--fh-muted); line-height: 1.4; }
+
+@media (max-width: 860px) {
+  .forge-home__new { grid-template-columns: 1fr; }
+  .forge-home__project { flex-direction: column; align-items: flex-start; }
+}

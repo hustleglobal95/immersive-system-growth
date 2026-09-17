@@ -372,3 +372,32 @@ export function recommendStructure(input: { projectType: string; tier?: Structur
     "brand-flagship";
   return createStructurePlan(archetype, input.tier ?? "immersive");
 }
+
+export const navigationModeCatalog: { id: NavigationMode; label: string; description: string }[] = [
+  { id: "minimal", label: "Minimal", description: "Logo and one call to action; the story carries navigation." },
+  { id: "anchored", label: "Anchored", description: "In-page links jump to key sections of one long page." },
+  { id: "chaptered", label: "Chaptered", description: "Numbered chapters with a progress rail." },
+  { id: "full-site", label: "Full site", description: "Multi-page menu with a persistent primary action." },
+];
+
+export interface StructureLibraryItem extends Omit<StructureSection, "id"> {
+  key: string;
+  archetypes: SiteArchetypeId[];
+}
+
+/** Every distinct section defined across archetypes and tiers, for drag-and-drop composition. */
+export const structureSectionLibrary: StructureLibraryItem[] = (() => {
+  const items = new Map<string, StructureLibraryItem>();
+  for (const definition of archetypes) {
+    for (const seed of [...definition.core, ...definition.immersive, ...definition.signature, ...definition.flagship]) {
+      const key = `${seed.role}:${seed.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+      const existing = items.get(key);
+      if (existing) {
+        if (!existing.archetypes.includes(definition.id)) existing.archetypes.push(definition.id);
+      } else {
+        items.set(key, { ...seed, key, archetypes: [definition.id] });
+      }
+    }
+  }
+  return [...items.values()];
+})();

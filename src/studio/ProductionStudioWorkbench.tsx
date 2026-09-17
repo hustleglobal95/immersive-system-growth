@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import rawExperience from "@/config/experience.json";
 import rawProject from "@/config/studio-project.json";
@@ -9,6 +9,7 @@ import rawInteractionGraph from "@/config/interaction-graph.json";
 import { parseExperience } from "@/src/lib/configSchema";
 import { parseInteractionGraph } from "@/src/lib/interactionGraph";
 import { parseStudioProject } from "@/src/platform/studioSchema";
+import { emptyInteractionGraph } from "@/src/platform/emptyInteractionGraph";
 import { createMotionArchetype, motionArchetypeCatalog, type MotionArchetypeName } from "@/src/platform/motionArchetypes";
 import { StudioLivePreview } from "@/src/studio/StudioLivePreview";
 import { SequencerEditor } from "@/src/studio/SequencerEditor";
@@ -185,17 +186,58 @@ export function ProductionStudioWorkbench() {
     setSelection({ kind: "scene", index: target });
   };
 
-  const createProject = () => {
-    const id = slug(newName) || "untitled-experience";
-    const starter = makeStarterExperience(draft.experience, newName, newKind);
+  const startProject = (name: string, kind: ProjectKind) => {
+    const id = slug(name) || "untitled-experience";
+    const starter = makeStarterExperience(draft.experience, name, kind);
     draft.setExperience(starter);
-    draft.setProject((current) => ({ ...current, id, name: newName, deployment: { ...current.deployment, projectName: id } }));
+    draft.setProject((current) => ({ ...current, id, name, deployment: { ...current.deployment, projectName: id } }));
+    draft.setInteractionGraph(emptyInteractionGraph(id));
     setActiveScene(0);
     setSelection({ kind: "scene", index: 0 });
     setWorkspace("Create");
+    setAdvanced(false);
     setNewProjectOpen(false);
-    setNotice(`${newName} created from zero with a valid Forge runtime and starter scene.`);
+    setNotice(`${name} created from zero with a valid Forge runtime and starter scene.`);
   };
+  const createProject = () => startProject(newName, newKind);
+
+  // Opened from the Forge workspace: /studio?new=<name>&kind=<kind> or /studio?open=<project>.
+  // Studio stays covered until the requested project is loaded, so a previous project never flashes.
+  const [booting, setBooting] = useState(true);
+  const bootHandled = useRef(false);
+  useEffect(() => {
+    if (!draft.hydrated || bootHandled.current) return;
+    bootHandled.current = true;
+    const params = new URLSearchParams(window.location.search);
+    const newName = params.get("new")?.trim();
+    const open = params.get("open");
+    const clearUrl = () => window.history.replaceState(null, "", "/studio");
+    const kinds: ProjectKind[] = ["real-estate", "product", "hospitality", "automotive", "fashion", "custom"];
+    if (newName) {
+      const kind = kinds.find((item) => item === params.get("kind")) ?? "custom";
+      void Promise.resolve().then(() => { startProject(newName.slice(0, 80), kind); clearUrl(); setBooting(false); });
+    } else if (open && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(open)) {
+      void fetch(`/api/forge/projects/${open}`, { cache: "no-store" })
+        .then(async (response) => {
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error ?? "Project could not be opened.");
+          draft.setExperience(parseExperience(payload.experience));
+          draft.setProject(parseStudioProject(payload.project));
+          draft.setInteractionGraph(parseInteractionGraph(payload.interactionGraph));
+          setActiveScene(0);
+          setSelection({ kind: "scene", index: 0 });
+          setWorkspace("Create");
+          setAdvanced(false);
+          setNotice(`${payload.project.name} opened.`);
+        })
+        .catch((error: unknown) => setNotice(error instanceof Error ? error.message : "Project could not be opened."))
+        .finally(() => { clearUrl(); setBooting(false); });
+    } else {
+      void Promise.resolve().then(() => setBooting(false));
+    }
+    // Runs once after the saved draft hydrates; later renders must not re-open the project.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draft.hydrated]);
 
   const importExperience = async (file?: File) => {
     if (!file) return;
@@ -229,8 +271,9 @@ export function ProductionStudioWorkbench() {
 
   return (
     <main className="production-studio">
+      {booting && <div className="production-boot" role="status" aria-live="polite">Loading workspace…</div>}
       <header className="production-topbar">
-        <div className="production-brand"><Link href="/studio" onClick={() => { setWorkspace("Create"); setAdvanced(false); }}>FORGE</Link><span>STUDIO</span></div>
+        <div className="production-brand"><Link href="/forge">FORGE</Link><span>STUDIO</span></div>
         <nav aria-label="Production workspaces">
           {workspaces.map((item) => <button key={item} type="button" aria-current={workspace === item ? "page" : undefined} onClick={() => { setWorkspace(item); setAdvanced(item !== "Create"); }}>{item}</button>)}
         </nav>

@@ -40,3 +40,6 @@
 .production-runtime .studio-preview__viewport[data-viewport="mobile"] .studio-preview__canvas{width:min(42%,390px,100cqh*9/16)}
 .production-runtime .studio-preview__toolbar,.production-runtime .studio-preview__transport{flex:none}
 }
+
+/* Covers Studio while a project requested from the Forge workspace loads. */
+.production-boot{position:fixed;inset:0;z-index:300;display:grid;place-items:center;background:#08090a;color:#8b8e91;font-size:13px;letter-spacing:.12em;text-transform:uppercase}

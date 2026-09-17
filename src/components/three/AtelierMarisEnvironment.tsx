@@ -3,6 +3,7 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { BackSide, Group, ShaderMaterial } from "three";
+import { useCasaSurfaces } from "@/src/components/three/materials/CasaLumenSurfaces";
 import { useExperienceStore } from "@/src/store/experienceStore";
 
 const SKY_VERTEX = `varying vec3 vWorld; void main(){ vec4 world=modelMatrix*vec4(position,1.0); vWorld=normalize(world.xyz); gl_Position=projectionMatrix*viewMatrix*world; }`;
@@ -20,18 +21,32 @@ function Olive({ position, scale=1, rotation=0 }:{position:[number,number,number
 
 function Villa(){
   const fins=useMemo(()=>Array.from({length:13},(_,i)=>-3.18+i*.53),[]);
+  const surface=useCasaSurfaces();
+  const stone=surface("stone",3), stoneFine=surface("stone",1.4), plaster=surface("plaster",2.5), oak=surface("oak",1.6), oakFine=surface("oak",1);
   return <group>
-    <mesh receiveShadow position={[0,-1.12,-.9]}><boxGeometry args={[10.8,.18,10.8]}/><meshStandardMaterial color="#c7b395" roughness={.83}/></mesh>
-    <mesh castShadow receiveShadow position={[-3.8,.35,-1.5]}><boxGeometry args={[.48,3.45,7.2]}/><meshStandardMaterial color="#b9a485" roughness={.92}/></mesh>
-    <mesh castShadow receiveShadow position={[3.82,.35,-1.1]}><boxGeometry args={[.5,3.45,6.4]}/><meshStandardMaterial color="#c7b699" roughness={.9}/></mesh>
-    <mesh castShadow position={[0,2.05,-1.25]}><boxGeometry args={[8.1,.28,6.9]}/><meshStandardMaterial color="#8e7457" roughness={.82}/></mesh>
-    <mesh receiveShadow position={[0,-.98,-1.45]}><boxGeometry args={[7.35,.12,6.0]}/><meshStandardMaterial color="#d1c3ae" roughness={.72}/></mesh>
-    <mesh position={[0,.35,-4.25]}><boxGeometry args={[7.1,2.8,.05]}/><meshPhysicalMaterial color="#a8c4cb" transparent opacity={.24} transmission={.55} roughness={.08}/></mesh>
-    <group position={[0,.38,1.1]}>{fins.map((x,i)=><mesh key={i} castShadow position={[x,0,0]}><boxGeometry args={[.095,3.15,.33]}/><meshStandardMaterial color={i%2?"#614936":"#76583f"} roughness={.72}/></mesh>)}</group>
-    <mesh position={[0,-1.0,4.3]} receiveShadow><boxGeometry args={[7.8,.1,3.2]}/><meshPhysicalMaterial color="#234f5d" roughness={.13} clearcoat={.78} clearcoatRoughness={.12}/></mesh>
-    <mesh position={[0,-.91,2.62]} receiveShadow><boxGeometry args={[8.2,.1,.16]}/><meshStandardMaterial color="#d2c1a9" roughness={.76}/></mesh>
-    <mesh position={[-1.4,-.8,-1.55]}><boxGeometry args={[2.5,.22,1.2]}/><meshStandardMaterial color="#d8cfc1" roughness={.96}/></mesh>
-    <mesh position={[1.2,-.78,-1.4]}><boxGeometry args={[1.65,.25,.92]}/><meshStandardMaterial color="#d8cfc1" roughness={.96}/></mesh>
+    {/* podium */}
+    <mesh receiveShadow position={[0,-1.12,-.9]}><boxGeometry args={[10.8,.18,10.8]}/><meshStandardMaterial {...stone} color="#d9c8ac" roughness={.85}/></mesh>
+    {/* stone planes */}
+    <mesh castShadow receiveShadow position={[-3.8,.35,-1.5]}><boxGeometry args={[.48,3.45,7.2]}/><meshStandardMaterial {...plaster} color="#cdbb9f" roughness={.92} normalScale={[.6,.6]}/></mesh>
+    <mesh castShadow receiveShadow position={[3.82,.35,-1.1]}><boxGeometry args={[.5,3.45,6.4]}/><meshStandardMaterial {...plaster} color="#d6c6a9" roughness={.9} normalScale={[.6,.6]}/></mesh>
+    {/* oak roof plane */}
+    <mesh castShadow position={[0,2.05,-1.25]}><boxGeometry args={[8.1,.28,6.9]}/><meshStandardMaterial {...oak} color="#9c7c58" roughness={.75}/></mesh>
+    {/* honed stone interior floor */}
+    <mesh receiveShadow position={[0,-.98,-1.45]}><boxGeometry args={[7.35,.12,6.0]}/><meshStandardMaterial {...stoneFine} color="#e2d6c2" roughness={.5} metalness={.02}/></mesh>
+    {/* glass toward the bathing court */}
+    <mesh position={[0,.35,-4.25]}><boxGeometry args={[7.1,2.8,.05]}/><meshPhysicalMaterial color="#cfe2e4" transparent opacity={.16} transmission={.74} roughness={.05} thickness={.2}/></mesh>
+    {/* oak brise-soleil */}
+    <group position={[0,.38,1.1]}>{fins.map((x,i)=><mesh key={i} castShadow position={[x,0,0]}><boxGeometry args={[.095,3.15,.33]}/><meshStandardMaterial {...oakFine} color={i%2?"#7b5b3e":"#8a6846"} roughness={.7}/></mesh>)}</group>
+    {/* pool, coping and low furniture */}
+    <mesh position={[0,-1.0,4.3]} receiveShadow><boxGeometry args={[7.8,.1,3.2]}/><meshPhysicalMaterial color="#286b76" roughness={.06} clearcoat={.9} clearcoatRoughness={.06} metalness={.06}/></mesh>
+    <mesh position={[0,-.91,2.62]} receiveShadow><boxGeometry args={[8.2,.1,.16]}/><meshStandardMaterial {...stone} color="#e0d1b8" roughness={.8}/></mesh>
+    <mesh castShadow position={[-1.4,-.8,-1.55]}><boxGeometry args={[2.5,.22,1.2]}/><meshStandardMaterial {...plaster} color="#e6ddd0" roughness={.96}/></mesh>
+    <mesh castShadow position={[1.2,-.78,-1.4]}><boxGeometry args={[1.65,.25,.92]}/><meshStandardMaterial {...plaster} color="#e6ddd0" roughness={.96}/></mesh>
+    {/* ceiling light slots so the interior chapters read under the roof */}
+    <mesh position={[0,1.88,-.7]}><boxGeometry args={[5.4,.05,.14]}/><meshStandardMaterial color="#fff7ea" emissive="#ffeed4" emissiveIntensity={2.4} toneMapped={false}/></mesh>
+    <mesh position={[0,1.88,-2.8]}><boxGeometry args={[5.4,.05,.14]}/><meshStandardMaterial color="#fff7ea" emissive="#ffeed4" emissiveIntensity={2.4} toneMapped={false}/></mesh>
+    <pointLight position={[-.3,1.5,-1.5]} intensity={2.8} distance={10} decay={1.5} color="#ffe9cc"/>
+    <pointLight position={[1.7,1.1,-3.0]} intensity={1.7} distance={6.5} decay={1.6} color="#fff2e0"/>
   </group>;
 }
 
