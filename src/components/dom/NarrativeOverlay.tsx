@@ -9,8 +9,14 @@ import { SceneBlocks } from "./SceneBlocks";
  * each carry a different treatment, and `pace` sets how quickly that chapter's copy lands.
  * Chapters not listed here fall back to the last entry's shape.
  */
-const CHAPTER_MOTION: Record<string, { label: CinematicPreset; headline: CinematicPreset; lede: CinematicPreset; pace: number; lead?: number; rows?: CinematicPreset; plates?: CinematicPreset }> = {
-  parti: { label: "label-track", headline: "headline-words", lede: "lede-words", pace: 1 },
+const CHAPTER_MOTION: Record<string, { label: CinematicPreset; headline: CinematicPreset; lede: CinematicPreset; pace: number; lead?: number; rows?: CinematicPreset; plates?: CinematicPreset;
+  collapse?: CinematicPreset; collapseAt?: readonly [number, number] }> = {
+  // 01 Position clears its words early and upward, leaving the carousel alone in the frame
+  // for a beat before the ring itself goes.
+  parti: {
+    label: "label-track", headline: "headline-words", lede: "lede-words", pace: .9,
+    collapse: "section-lift", collapseAt: [.38, .48],
+  },
   threshold: { label: "text-settle", headline: "headline-reveal", lede: "copy-drift", pace: .6, lead: .03 },
   living: { label: "label-track", headline: "headline-drop", lede: "lede-words", pace: 1, lead: .1, rows: "list-unfold", plates: "plate-rise" },
   material: { label: "label-track", headline: "headline-fracture", lede: "lede-scatter", pace: 1, lead: .1, rows: "list-unfold" },
@@ -47,7 +53,11 @@ const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
     { selector: scope + "[data-motion-aside]", range: [at(lead + .1), at(lead + .26)], preset: "copy-drift" },
     { selector: scope + "[data-motion-cta]", range: [at(lead + .12), at(lead + .28)], preset: "copy-drift" },
     // Absolute, not lead-relative: the collapse has to sit exactly on the copy's exit window.
-    { selector: scope + "[data-motion-panel]", range: [at(.52), at(.62)], preset: "section-collapse" },
+    {
+      selector: scope + "[data-motion-panel]",
+      range: [at(motion.collapseAt?.[0] ?? .52), at(motion.collapseAt?.[1] ?? .62)],
+      preset: motion.collapse ?? "section-collapse",
+    },
   ];
 });
 // Ordinary server-rendered content remains the baseline. No opacity/aria-hidden gate owns primary copy.

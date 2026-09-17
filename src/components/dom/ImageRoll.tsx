@@ -52,8 +52,8 @@ export function ImageRoll({ block, range }: { block: Roll; range: readonly [numb
     measure();
     window.addEventListener("resize", measure);
 
-    const FADE_IN = 0.06, HOLD_END = 0.52, GONE = 0.62;
-    const SWEEP_END = block.sweep;
+    const FADE_IN = 0.06, GONE = 0.62;
+    const SWEEP_END = block.sweep, HOLD_END = block.exit;
     const EXIT_LEAN = 0.18, EXIT_TURN = 20, EXIT_SEQUENCE = 0.78;
 
     // The ring follows scroll through a damped lerp rather than tracking it rigidly, and keeps
@@ -180,7 +180,7 @@ export function ImageRoll({ block, range }: { block: Roll; range: readonly [numb
         plate.style.zIndex = "";
       });
     };
-  }, [block.curve, block.direction, block.sweep, block.travel, range, reduced]);
+  }, [block.curve, block.direction, block.exit, block.sweep, block.travel, range, reduced]);
 
   return (
     <div className="image-roll" aria-hidden="true">

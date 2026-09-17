@@ -14,6 +14,7 @@ export type CinematicPreset =
   | "lede-scatter"
   | "list-unfold"
   | "section-collapse"
+  | "section-lift"
   | "plate-rise"
   | "label-track"
   | "copy-drift"
@@ -24,7 +25,7 @@ export type CinematicPreset =
 const COPY_PRESETS = new Set<CinematicPreset>([
   "text-settle", "headline-reveal", "headline-words", "headline-chars", "headline-swing",
   "headline-slide", "headline-fracture", "headline-drop", "lede-words", "lede-scatter",
-  "list-unfold", "plate-rise", "section-collapse", "label-track", "copy-drift",
+  "list-unfold", "plate-rise", "section-collapse", "section-lift", "label-track", "copy-drift",
 ]);
 /** Presets whose targets are split into per-word or per-character boxes before animating. */
 const SPLIT_PRESETS: Partial<Record<CinematicPreset, "word" | "char">> = {
@@ -218,6 +219,17 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
           scale: compact ? 0.955 : 0.918,
           rotateX: compact ? 2.2 : 5.2,
           yPercent: compact ? -1.4 : -3,
+          duration: 1, ease: "power2.in", immediateRender: true,
+        });
+      } else if (cue.preset === "section-lift") {
+        // A harder version of the collapse: the words compress and carry upward out of the
+        // frame, clearing the section for whatever is still playing beneath them.
+        timeline.fromTo(targets, {
+          scale: 1, yPercent: 0, rotateX: 0, transformPerspective: 1400, transformOrigin: "50% 0%",
+        }, {
+          scale: compact ? 0.93 : 0.872,
+          yPercent: compact ? -7 : -14,
+          rotateX: compact ? 3 : 7,
           duration: 1, ease: "power2.in", immediateRender: true,
         });
       } else if (cue.preset === "list-unfold") {
