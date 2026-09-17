@@ -30,9 +30,9 @@ function MenuGrid({ block }: { block: Extract<SceneBlock, { type: "menu-grid" }>
       <h3 id={block.id + "-title"}>{block.title}</h3>
       <ul>
         {block.items.map((item) => (
-          <li key={item.name}>
+          <li key={item.name} data-motion-row>
             <div>
-              {item.thumb && <img className="menu-thumb" src={item.thumb} alt="" decoding="async" loading="lazy" />}
+              {item.thumb && <img className="menu-thumb" src={item.thumb} alt="" data-motion-plate decoding="async" loading="lazy" />}
               {item.badge && <span className="menu-badge">{item.badge}</span>}
               <h4>{item.name}</h4>
               <p>{item.description}</p>

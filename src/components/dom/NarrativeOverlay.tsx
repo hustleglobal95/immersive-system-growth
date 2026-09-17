@@ -9,11 +9,11 @@ import { SceneBlocks } from "./SceneBlocks";
  * each carry a different treatment, and `pace` sets how quickly that chapter's copy lands.
  * Chapters not listed here fall back to the last entry's shape.
  */
-const CHAPTER_MOTION: Record<string, { label: CinematicPreset; headline: CinematicPreset; lede: CinematicPreset; pace: number; lead?: number }> = {
+const CHAPTER_MOTION: Record<string, { label: CinematicPreset; headline: CinematicPreset; lede: CinematicPreset; pace: number; lead?: number; rows?: CinematicPreset; plates?: CinematicPreset }> = {
   parti: { label: "label-track", headline: "headline-words", lede: "lede-words", pace: 1 },
   threshold: { label: "text-settle", headline: "headline-reveal", lede: "copy-drift", pace: .6, lead: .03 },
-  living: { label: "label-track", headline: "headline-slide", lede: "lede-scatter", pace: 1.18 },
-  material: { label: "text-settle", headline: "headline-chars", lede: "lede-words", pace: 1.3 },
+  living: { label: "label-track", headline: "headline-drop", lede: "lede-words", pace: 1, lead: .1, rows: "list-unfold", plates: "plate-rise" },
+  material: { label: "label-track", headline: "headline-fracture", lede: "lede-scatter", pace: 1, lead: .1, rows: "list-unfold" },
   wellness: { label: "label-track", headline: "headline-swing", lede: "copy-drift", pace: .9 },
   studio: { label: "text-settle", headline: "headline-words", lede: "lede-scatter", pace: 1.1 },
   horizon: { label: "label-track", headline: "headline-reveal", lede: "lede-words", pace: .72 },
@@ -30,20 +30,22 @@ const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
   const start = scene.range[0];
   const motion = CHAPTER_MOTION[scene.id] ?? FALLBACK_MOTION;
   const scope = '[data-motion-scene="' + index + '"] ';
-  // Every cue lands inside the window the copy is actually lit for. The pinned panel releases
-  // at roughly 0.62 of its section, so all motion finishes before that and the chapter ends on
-  // a held frame rather than on content sliding away upward.
-  const lead = motion.lead ?? .12;
-  const pace = Math.min(1, motion.pace);
+  // Chapter shape: the photograph holds alone, the entrance plays, then everything sits
+  // completely still through a 90vh hold before the exit. The hold is what was missing -- the
+  // entrance used to finish and begin fading in the same breath, which is why it felt rushed.
+  const lead = motion.lead ?? .06;
+  const pace = Math.min(1.15, motion.pace);
   const at = (fraction: number) => start + span * Math.min(1, fraction);
   return [
-    { selector: scope + "[data-motion-index]", range: [at(lead), at(lead + .1 * pace)], preset: motion.label },
-    { selector: scope + "[data-motion-copy]", range: [at(lead + .02), at(lead + .14 * pace)], preset: motion.label },
-    { selector: scope + "[data-motion-headline]", range: [at(lead), at(lead + .3 * pace)], preset: motion.headline },
-    { selector: scope + "[data-motion-lede]", range: [at(lead + .1), at(lead + .38 * pace)], preset: motion.lede },
-    { selector: scope + "[data-motion-aside]", range: [at(lead + .18), at(lead + .42)], preset: "copy-drift" },
-    { selector: scope + "[data-motion-cta]", range: [at(lead + .22), at(lead + .44)], preset: "copy-drift" },
-    { selector: scope + "[data-motion-block]", range: [at(lead + .04), at(lead + .4)], preset: "copy-drift" },
+    { selector: scope + "[data-motion-index]", range: [at(lead), at(lead + .08 * pace)], preset: motion.label },
+    { selector: scope + "[data-motion-copy]", range: [at(lead + .02), at(lead + .12 * pace)], preset: motion.label },
+    { selector: scope + "[data-motion-headline]", range: [at(lead), at(lead + .2 * pace)], preset: motion.headline },
+    { selector: scope + "[data-motion-lede]", range: [at(lead + .06), at(lead + .24 * pace)], preset: motion.lede },
+    { selector: scope + "[data-motion-block]", range: [at(lead + .04), at(lead + .24)], preset: "copy-drift" },
+    { selector: scope + "[data-motion-row]", range: [at(lead + .06), at(lead + .25)], preset: motion.rows ?? "copy-drift" },
+    { selector: scope + "[data-motion-plate]", range: [at(lead + .08), at(lead + .26)], preset: motion.plates ?? "copy-drift" },
+    { selector: scope + "[data-motion-aside]", range: [at(lead + .1), at(lead + .26)], preset: "copy-drift" },
+    { selector: scope + "[data-motion-cta]", range: [at(lead + .12), at(lead + .28)], preset: "copy-drift" },
   ];
 });
 // Ordinary server-rendered content remains the baseline. No opacity/aria-hidden gate owns primary copy.

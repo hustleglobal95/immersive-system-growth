@@ -52,7 +52,7 @@ export function ImageRoll({ block, range }: { block: Roll; range: readonly [numb
     measure();
     window.addEventListener("resize", measure);
 
-    const FADE_IN = 0.09, SWEEP_END = 0.46, HOLD_END = 0.52, GONE = 0.6;
+    const FADE_IN = 0.06, SWEEP_END = 0.32, HOLD_END = 0.58, GONE = 0.68;
     const EXIT_LEAN = 0.18, EXIT_TURN = 20, EXIT_SEQUENCE = 0.78;
 
     // The ring follows scroll through a damped lerp rather than tracking it rigidly, and keeps

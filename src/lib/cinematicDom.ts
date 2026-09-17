@@ -8,8 +8,12 @@ export type CinematicPreset =
   | "headline-chars"
   | "headline-swing"
   | "headline-slide"
+  | "headline-fracture"
+  | "headline-drop"
   | "lede-words"
   | "lede-scatter"
+  | "list-unfold"
+  | "plate-rise"
   | "label-track"
   | "copy-drift"
   | "curtain"
@@ -18,7 +22,8 @@ export type CinematicPreset =
 /** Presets that carry primary copy, so they are allowed to animate accessible content. */
 const COPY_PRESETS = new Set<CinematicPreset>([
   "text-settle", "headline-reveal", "headline-words", "headline-chars", "headline-swing",
-  "headline-slide", "lede-words", "lede-scatter", "label-track", "copy-drift",
+  "headline-slide", "headline-fracture", "headline-drop", "lede-words", "lede-scatter",
+  "list-unfold", "plate-rise", "label-track", "copy-drift",
 ]);
 /** Presets whose targets are split into per-word or per-character boxes before animating. */
 const SPLIT_PRESETS: Partial<Record<CinematicPreset, "word" | "char">> = {
@@ -26,6 +31,8 @@ const SPLIT_PRESETS: Partial<Record<CinematicPreset, "word" | "char">> = {
   "headline-chars": "char",
   "headline-swing": "word",
   "headline-slide": "word",
+  "headline-fracture": "char",
+  "headline-drop": "char",
   "lede-words": "word",
   "lede-scatter": "word",
 };
@@ -167,6 +174,47 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
           yPercent: 0, scale: 1, opacity: 1, duration: 1,
           stagger: { amount: compact ? .46 : .82, from: "random" },
           ease: "power2.out", immediateRender: true,
+        });
+      } else if (cue.preset === "headline-fracture") {
+        // The most worked headline on the site: characters arrive from alternating sides of the
+        // line, out of focus and over-scaled, and resolve into place one after another.
+        timeline.fromTo(targets, {
+          yPercent: (index: number) => (index % 2 ? 132 : -126),
+          rotate: (index: number) => (index % 2 ? 5.5 : -5.5),
+          scale: 1.24,
+          opacity: 0,
+          filter: "blur(13px)",
+          transformOrigin: "50% 100%",
+        }, {
+          yPercent: 0, rotate: 0, scale: 1, opacity: 1, filter: "blur(0px)", duration: 1,
+          stagger: { amount: compact ? .5 : .86, from: "start" },
+          ease: "expo.out", immediateRender: true,
+        });
+      } else if (cue.preset === "headline-drop") {
+        // Characters fall in from above behind their own mask, last letter first, so the line
+        // assembles backwards and lands heavy.
+        timeline.fromTo(targets, {
+          yPercent: -128, scale: 1.16, opacity: 0, transformOrigin: "50% 0%",
+        }, {
+          yPercent: 0, scale: 1, opacity: 1, duration: 1,
+          stagger: { amount: compact ? .46 : .8, from: "end" },
+          ease: "power4.out", immediateRender: true,
+        });
+      } else if (cue.preset === "plate-rise") {
+        // Square plates rise out of their own frame and settle from a slight over-scale.
+        timeline.fromTo(targets, {
+          clipPath: "inset(100% 0% 0% 0%)", scale: 1.22, yPercent: 26,
+        }, {
+          clipPath: "inset(0% 0% 0% 0%)", scale: 1, yPercent: 0, duration: 1,
+          stagger: { amount: compact ? .34 : .6 }, ease: "expo.out", immediateRender: true,
+        });
+      } else if (cue.preset === "list-unfold") {
+        // Rows unfold from their own left edge, so the schedule builds line by line.
+        timeline.fromTo(targets, {
+          clipPath: "inset(0% 100% 0% 0%)", x: compact ? -18 : -46, opacity: 0,
+        }, {
+          clipPath: "inset(0% 0% 0% 0%)", x: 0, opacity: 1, duration: 1,
+          stagger: { amount: compact ? .3 : .52 }, ease: "power3.out", immediateRender: true,
         });
       } else if (cue.preset === "lede-words") {
         timeline.fromTo(targets, { yPercent: 64, opacity: 0, filter: "blur(5px)" }, {
