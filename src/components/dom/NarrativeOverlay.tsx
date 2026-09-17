@@ -3,18 +3,32 @@ import { experience } from "@/src/lib/experience";
 import { CinematicDomMotion } from "./CinematicDomMotion";
 import type { CinematicCue } from "@/src/lib/cinematicDom";
 import { SceneBlocks } from "./SceneBlocks";
-// Each chapter lands in layers: label, then the headline wiping up out of its own box, then the
-// lede drifting into focus behind it. One scroll clock seeks all three, so reverse is exact.
+// Each chapter lands in layers driven entirely by scroll: the index and label tighten their
+// tracking, the headline assembles word by word out of its own mask, the lede follows word by
+// word out of focus, then the aside and the action arrive. One scroll clock seeks every
+// timeline, so scrubbing backwards reconstructs the same frame.
 const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
   const span = scene.range[1] - scene.range[0];
   const start = scene.range[0];
   const textEnd = scene.media?.textEnd ?? .28;
-  const at = (fraction: number) => start + span * fraction;
+  const at = (fraction: number) => start + span * Math.min(1, fraction);
   const scope = '[data-motion-scene="' + index + '"] ';
+  const closing = index === experience.scenes.length - 1;
+  // The arrival chapter has no scroll behind it, so a scroll-gated entrance would leave the
+  // hero half-assembled on load. It renders settled and leaves through its copy tracks.
+  if (!index) return [];
   return [
-    { selector: scope + "[data-motion-copy]", range: [start, at(textEnd * .6)], preset: "text-settle" },
-    { selector: scope + "[data-motion-headline]", range: [start, at(textEnd)], preset: "headline-reveal" },
-    { selector: scope + "[data-motion-lede]", range: [at(textEnd * .35), at(textEnd + .16)], preset: "copy-drift" },
+    { selector: scope + "[data-motion-index]", range: [start, at(textEnd * .4)], preset: "label-track" },
+    { selector: scope + "[data-motion-copy]", range: [at(textEnd * .1), at(textEnd * .62)], preset: "label-track" },
+    {
+      selector: scope + "[data-motion-headline]",
+      range: [start, at(textEnd + .1)],
+      // The closing statement cascades per character; every chapter headline rises per word.
+      preset: closing ? "headline-chars" : "headline-words",
+    },
+    { selector: scope + "[data-motion-lede]", range: [at(textEnd * .45), at(textEnd + .3)], preset: "lede-words" },
+    { selector: scope + "[data-motion-aside]", range: [at(textEnd + .12), at(textEnd + .46)], preset: "copy-drift" },
+    { selector: scope + "[data-motion-cta]", range: [at(textEnd + .2), at(textEnd + .58)], preset: "copy-drift" },
     { selector: scope + "[data-motion-block]", range: [at(.08), at(.66)], preset: "copy-drift" },
   ];
 });
@@ -45,7 +59,7 @@ export function NarrativeOverlay() {
         >
           {scene.media && <img className="story-media-static" src={scene.media.poster ?? scene.media.src} alt={scene.media.alt} loading={index===0?"eager":"lazy"} />}
           <div className="story-panel">
-            <div className="narrative-panel__index">
+            <div className="narrative-panel__index" data-motion-index>
               {String(index + 1).padStart(2, "0")}
             </div>
             {scene.copy.eyebrow && (
@@ -61,13 +75,13 @@ export function NarrativeOverlay() {
             {experience.hotspots
               .filter((h) => h.sceneId === scene.id)
               .map((h) => (
-                <details key={h.id} className="story-detail">
+                <details key={h.id} className="story-detail" data-motion-aside>
                   <summary data-forge-interaction={`hotspot-${h.id}`}>{h.label}</summary>
                   <p>{h.description}</p>
                 </details>
               ))}
             {scene.copy.cta && (
-              <Link className="forge-button" href={scene.copy.cta.href} data-forge-interaction={`cta-${scene.id}`}>
+              <Link className="forge-button" href={scene.copy.cta.href} data-motion-cta data-forge-interaction={`cta-${scene.id}`}>
                 {scene.copy.cta.label}
               </Link>
             )}

@@ -947,3 +947,18 @@ html {
   min-height: auto;
   padding-block: 100px 40px;
 }
+
+/* Per-token masking boxes created by the cinematic DOM splitter. The padding/margin pair keeps
+   descenders from clipping while the inner span travels inside the mask. */
+.forge-split {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
+}
+.forge-split__inner { display: inline-block; will-change: transform; }
+.forge-split-word { display: inline-block; white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) {
+  .forge-split { overflow: visible; padding-bottom: 0; margin-bottom: 0; }
+}

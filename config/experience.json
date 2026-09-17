@@ -297,6 +297,174 @@
               "easing": "smooth"
             }
           ]
+        },
+        {
+          "id": "maris-atmos-approach-vignette",
+          "label": "Chapter vignette breathe",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.vignette",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-approach-vignette-0",
+              "at": 0,
+              "value": 0.2728,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-approach-vignette-1",
+              "at": 0.42,
+              "value": 0.1452,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-approach-vignette-2",
+              "at": 1,
+              "value": 0.264,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-approach-exposure",
+          "label": "Chapter exposure lift",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "world.exposure",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-approach-exposure-0",
+              "at": 0,
+              "value": 0.9936,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-approach-exposure-1",
+              "at": 0.34,
+              "value": 1.08,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-approach-exposure-2",
+              "at": 0.78,
+              "value": 1.1556,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-approach-exposure-3",
+              "at": 1,
+              "value": 1.0368,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-approach-fog",
+          "label": "Chapter haze clearing",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "world.fogDensity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-approach-fog-0",
+              "at": 0,
+              "value": 0.0124,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-approach-fog-1",
+              "at": 0.4,
+              "value": 0.0056,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-approach-fog-2",
+              "at": 1,
+              "value": 0.0106,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-approach-bloom-desktop",
+          "label": "Chapter bloom swell",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.bloom",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-approach-bloom-desktop-0",
+              "at": 0,
+              "value": 0.104,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-approach-bloom-desktop-1",
+              "at": 0.46,
+              "value": 0.3035,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-approach-bloom-desktop-2",
+              "at": 0.82,
+              "value": 0.1456,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-approach-bloom-desktop-3",
+              "at": 1,
+              "value": 0.1092,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-approach-bloom-mobile",
+          "label": "Chapter bloom swell",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.bloom",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-approach-bloom-mobile-0",
+              "at": 0,
+              "value": 0.104,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-approach-bloom-mobile-1",
+              "at": 0.46,
+              "value": 0.245,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-approach-bloom-mobile-2",
+              "at": 0.82,
+              "value": 0.1456,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-approach-bloom-mobile-3",
+              "at": 1,
+              "value": 0.1092,
+              "easing": "smooth"
+            }
+          ]
         }
       ],
       "media": {
@@ -628,6 +796,174 @@
               "id": "maris-parti-copy-y-mobile-3",
               "at": 1,
               "value": -26,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-parti-vignette",
+          "label": "Chapter vignette breathe",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.vignette",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-parti-vignette-0",
+              "at": 0,
+              "value": 0.248,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-parti-vignette-1",
+              "at": 0.42,
+              "value": 0.132,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-parti-vignette-2",
+              "at": 1,
+              "value": 0.24,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-parti-exposure",
+          "label": "Chapter exposure lift",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "world.exposure",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-parti-exposure-0",
+              "at": 0,
+              "value": 1.012,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-parti-exposure-1",
+              "at": 0.34,
+              "value": 1.1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-parti-exposure-2",
+              "at": 0.78,
+              "value": 1.177,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-parti-exposure-3",
+              "at": 1,
+              "value": 1.056,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-parti-fog",
+          "label": "Chapter haze clearing",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "world.fogDensity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-parti-fog-0",
+              "at": 0,
+              "value": 0.0109,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-parti-fog-1",
+              "at": 0.4,
+              "value": 0.0049,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-parti-fog-2",
+              "at": 1,
+              "value": 0.0092,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-parti-bloom-desktop",
+          "label": "Chapter bloom swell",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.bloom",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-parti-bloom-desktop-0",
+              "at": 0,
+              "value": 0.112,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-parti-bloom-desktop-1",
+              "at": 0.46,
+              "value": 0.323,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-parti-bloom-desktop-2",
+              "at": 0.82,
+              "value": 0.1568,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-parti-bloom-desktop-3",
+              "at": 1,
+              "value": 0.1176,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-parti-bloom-mobile",
+          "label": "Chapter bloom swell",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.bloom",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-parti-bloom-mobile-0",
+              "at": 0,
+              "value": 0.112,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-parti-bloom-mobile-1",
+              "at": 0.46,
+              "value": 0.26,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-parti-bloom-mobile-2",
+              "at": 0.82,
+              "value": 0.1568,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-parti-bloom-mobile-3",
+              "at": 1,
+              "value": 0.1176,
               "easing": "smooth"
             }
           ]
@@ -969,6 +1305,174 @@
               "easing": "smooth"
             }
           ]
+        },
+        {
+          "id": "maris-atmos-threshold-vignette",
+          "label": "Chapter vignette breathe",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.vignette",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-threshold-vignette-0",
+              "at": 0,
+              "value": 0.1984,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-threshold-vignette-1",
+              "at": 0.42,
+              "value": 0.1056,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-threshold-vignette-2",
+              "at": 1,
+              "value": 0.192,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-threshold-exposure",
+          "label": "Chapter exposure lift",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "world.exposure",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-threshold-exposure-0",
+              "at": 0,
+              "value": 1.0304,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-threshold-exposure-1",
+              "at": 0.34,
+              "value": 1.12,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-threshold-exposure-2",
+              "at": 0.78,
+              "value": 1.1984,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-threshold-exposure-3",
+              "at": 1,
+              "value": 1.0752,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-threshold-fog",
+          "label": "Chapter haze clearing",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "world.fogDensity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-threshold-fog-0",
+              "at": 0,
+              "value": 0.0078,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-threshold-fog-1",
+              "at": 0.4,
+              "value": 0.0035,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-threshold-fog-2",
+              "at": 1,
+              "value": 0.0066,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-threshold-bloom-desktop",
+          "label": "Chapter bloom swell",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.bloom",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-threshold-bloom-desktop-0",
+              "at": 0,
+              "value": 0.088,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-threshold-bloom-desktop-1",
+              "at": 0.46,
+              "value": 0.2645,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-threshold-bloom-desktop-2",
+              "at": 0.82,
+              "value": 0.1232,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-threshold-bloom-desktop-3",
+              "at": 1,
+              "value": 0.0924,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-threshold-bloom-mobile",
+          "label": "Chapter bloom swell",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.bloom",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-threshold-bloom-mobile-0",
+              "at": 0,
+              "value": 0.088,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-threshold-bloom-mobile-1",
+              "at": 0.46,
+              "value": 0.215,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-threshold-bloom-mobile-2",
+              "at": 0.82,
+              "value": 0.1232,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-threshold-bloom-mobile-3",
+              "at": 1,
+              "value": 0.0924,
+              "easing": "smooth"
+            }
+          ]
         }
       ],
       "media": {
@@ -1270,6 +1774,174 @@
               "id": "maris-living-copy-y-mobile-3",
               "at": 1,
               "value": -26,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-living-vignette",
+          "label": "Chapter vignette breathe",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.vignette",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-living-vignette-0",
+              "at": 0,
+              "value": 0.1736,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-living-vignette-1",
+              "at": 0.42,
+              "value": 0.0924,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-living-vignette-2",
+              "at": 1,
+              "value": 0.168,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-living-exposure",
+          "label": "Chapter exposure lift",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "world.exposure",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-living-exposure-0",
+              "at": 0,
+              "value": 1.0396,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-living-exposure-1",
+              "at": 0.34,
+              "value": 1.13,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-living-exposure-2",
+              "at": 0.78,
+              "value": 1.2091,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-living-exposure-3",
+              "at": 1,
+              "value": 1.0848,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-living-fog",
+          "label": "Chapter haze clearing",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "world.fogDensity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-living-fog-0",
+              "at": 0,
+              "value": 0.0062,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-living-fog-1",
+              "at": 0.4,
+              "value": 0.0028,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-living-fog-2",
+              "at": 1,
+              "value": 0.0053,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-living-bloom-desktop",
+          "label": "Chapter bloom swell",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.bloom",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-living-bloom-desktop-0",
+              "at": 0,
+              "value": 0.08,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-living-bloom-desktop-1",
+              "at": 0.46,
+              "value": 0.245,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-living-bloom-desktop-2",
+              "at": 0.82,
+              "value": 0.112,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-living-bloom-desktop-3",
+              "at": 1,
+              "value": 0.084,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-living-bloom-mobile",
+          "label": "Chapter bloom swell",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.bloom",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-living-bloom-mobile-0",
+              "at": 0,
+              "value": 0.08,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-living-bloom-mobile-1",
+              "at": 0.46,
+              "value": 0.2,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-living-bloom-mobile-2",
+              "at": 0.82,
+              "value": 0.112,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-living-bloom-mobile-3",
+              "at": 1,
+              "value": 0.084,
               "easing": "smooth"
             }
           ]
@@ -1607,6 +2279,174 @@
               "easing": "smooth"
             }
           ]
+        },
+        {
+          "id": "maris-atmos-material-vignette",
+          "label": "Chapter vignette breathe",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.vignette",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-material-vignette-0",
+              "at": 0,
+              "value": 0.2232,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-material-vignette-1",
+              "at": 0.42,
+              "value": 0.1188,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-material-vignette-2",
+              "at": 1,
+              "value": 0.216,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-material-exposure",
+          "label": "Chapter exposure lift",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "world.exposure",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-material-exposure-0",
+              "at": 0,
+              "value": 1.0304,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-material-exposure-1",
+              "at": 0.34,
+              "value": 1.12,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-material-exposure-2",
+              "at": 0.78,
+              "value": 1.1984,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-material-exposure-3",
+              "at": 1,
+              "value": 1.0752,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-material-fog",
+          "label": "Chapter haze clearing",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "world.fogDensity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-material-fog-0",
+              "at": 0,
+              "value": 0.0062,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-material-fog-1",
+              "at": 0.4,
+              "value": 0.0028,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-material-fog-2",
+              "at": 1,
+              "value": 0.0053,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-material-bloom-desktop",
+          "label": "Chapter bloom swell",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.bloom",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-material-bloom-desktop-0",
+              "at": 0,
+              "value": 0.096,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-material-bloom-desktop-1",
+              "at": 0.46,
+              "value": 0.284,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-material-bloom-desktop-2",
+              "at": 0.82,
+              "value": 0.1344,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-material-bloom-desktop-3",
+              "at": 1,
+              "value": 0.1008,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-material-bloom-mobile",
+          "label": "Chapter bloom swell",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.bloom",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-material-bloom-mobile-0",
+              "at": 0,
+              "value": 0.096,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-material-bloom-mobile-1",
+              "at": 0.46,
+              "value": 0.23,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-material-bloom-mobile-2",
+              "at": 0.82,
+              "value": 0.1344,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-material-bloom-mobile-3",
+              "at": 1,
+              "value": 0.1008,
+              "easing": "smooth"
+            }
+          ]
         }
       ],
       "media": {
@@ -1928,6 +2768,174 @@
               "easing": "smooth"
             }
           ]
+        },
+        {
+          "id": "maris-atmos-wellness-vignette",
+          "label": "Chapter vignette breathe",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.vignette",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-wellness-vignette-0",
+              "at": 0,
+              "value": 0.248,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-wellness-vignette-1",
+              "at": 0.42,
+              "value": 0.132,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-wellness-vignette-2",
+              "at": 1,
+              "value": 0.24,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-wellness-exposure",
+          "label": "Chapter exposure lift",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "world.exposure",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-wellness-exposure-0",
+              "at": 0,
+              "value": 0.9936,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-wellness-exposure-1",
+              "at": 0.34,
+              "value": 1.08,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-wellness-exposure-2",
+              "at": 0.78,
+              "value": 1.1556,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-wellness-exposure-3",
+              "at": 1,
+              "value": 1.0368,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-wellness-fog",
+          "label": "Chapter haze clearing",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "world.fogDensity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-wellness-fog-0",
+              "at": 0,
+              "value": 0.0078,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-wellness-fog-1",
+              "at": 0.4,
+              "value": 0.0035,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-wellness-fog-2",
+              "at": 1,
+              "value": 0.0066,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-wellness-bloom-desktop",
+          "label": "Chapter bloom swell",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.bloom",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-wellness-bloom-desktop-0",
+              "at": 0,
+              "value": 0.088,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-wellness-bloom-desktop-1",
+              "at": 0.46,
+              "value": 0.2645,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-wellness-bloom-desktop-2",
+              "at": 0.82,
+              "value": 0.1232,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-wellness-bloom-desktop-3",
+              "at": 1,
+              "value": 0.0924,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-wellness-bloom-mobile",
+          "label": "Chapter bloom swell",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.bloom",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-wellness-bloom-mobile-0",
+              "at": 0,
+              "value": 0.088,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-wellness-bloom-mobile-1",
+              "at": 0.46,
+              "value": 0.215,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-wellness-bloom-mobile-2",
+              "at": 0.82,
+              "value": 0.1232,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-wellness-bloom-mobile-3",
+              "at": 1,
+              "value": 0.0924,
+              "easing": "smooth"
+            }
+          ]
         }
       ],
       "media": {
@@ -2229,6 +3237,174 @@
               "id": "maris-studio-copy-y-mobile-3",
               "at": 1,
               "value": -26,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-studio-vignette",
+          "label": "Chapter vignette breathe",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.vignette",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-studio-vignette-0",
+              "at": 0,
+              "value": 0.2232,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-studio-vignette-1",
+              "at": 0.42,
+              "value": 0.1188,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-studio-vignette-2",
+              "at": 1,
+              "value": 0.216,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-studio-exposure",
+          "label": "Chapter exposure lift",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "world.exposure",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-studio-exposure-0",
+              "at": 0,
+              "value": 0.9752,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-studio-exposure-1",
+              "at": 0.34,
+              "value": 1.06,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-studio-exposure-2",
+              "at": 0.78,
+              "value": 1.1342,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-studio-exposure-3",
+              "at": 1,
+              "value": 1.0176,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-studio-fog",
+          "label": "Chapter haze clearing",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "world.fogDensity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-studio-fog-0",
+              "at": 0,
+              "value": 0.0093,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-studio-fog-1",
+              "at": 0.4,
+              "value": 0.0042,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-studio-fog-2",
+              "at": 1,
+              "value": 0.0079,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-studio-bloom-desktop",
+          "label": "Chapter bloom swell",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.bloom",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-studio-bloom-desktop-0",
+              "at": 0,
+              "value": 0.08,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-studio-bloom-desktop-1",
+              "at": 0.46,
+              "value": 0.245,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-studio-bloom-desktop-2",
+              "at": 0.82,
+              "value": 0.112,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-studio-bloom-desktop-3",
+              "at": 1,
+              "value": 0.084,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-studio-bloom-mobile",
+          "label": "Chapter bloom swell",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.bloom",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-studio-bloom-mobile-0",
+              "at": 0,
+              "value": 0.08,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-studio-bloom-mobile-1",
+              "at": 0.46,
+              "value": 0.2,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-studio-bloom-mobile-2",
+              "at": 0.82,
+              "value": 0.112,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-studio-bloom-mobile-3",
+              "at": 1,
+              "value": 0.084,
               "easing": "smooth"
             }
           ]
@@ -2536,6 +3712,174 @@
               "easing": "smooth"
             }
           ]
+        },
+        {
+          "id": "maris-atmos-horizon-vignette",
+          "label": "Chapter vignette breathe",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.vignette",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-horizon-vignette-0",
+              "at": 0,
+              "value": 0.2976,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-horizon-vignette-1",
+              "at": 0.42,
+              "value": 0.1584,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-horizon-vignette-2",
+              "at": 1,
+              "value": 0.288,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-horizon-exposure",
+          "label": "Chapter exposure lift",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "world.exposure",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-horizon-exposure-0",
+              "at": 0,
+              "value": 0.9384,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-horizon-exposure-1",
+              "at": 0.34,
+              "value": 1.02,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-horizon-exposure-2",
+              "at": 0.78,
+              "value": 1.0914,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-horizon-exposure-3",
+              "at": 1,
+              "value": 0.9792,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-horizon-fog",
+          "label": "Chapter haze clearing",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "world.fogDensity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-horizon-fog-0",
+              "at": 0,
+              "value": 0.0124,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-horizon-fog-1",
+              "at": 0.4,
+              "value": 0.0056,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-horizon-fog-2",
+              "at": 1,
+              "value": 0.0106,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-horizon-bloom-desktop",
+          "label": "Chapter bloom swell",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.bloom",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-horizon-bloom-desktop-0",
+              "at": 0,
+              "value": 0.128,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-horizon-bloom-desktop-1",
+              "at": 0.46,
+              "value": 0.362,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-horizon-bloom-desktop-2",
+              "at": 0.82,
+              "value": 0.1792,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-horizon-bloom-desktop-3",
+              "at": 1,
+              "value": 0.1344,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-horizon-bloom-mobile",
+          "label": "Chapter bloom swell",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.bloom",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-horizon-bloom-mobile-0",
+              "at": 0,
+              "value": 0.128,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-horizon-bloom-mobile-1",
+              "at": 0.46,
+              "value": 0.29,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-horizon-bloom-mobile-2",
+              "at": 0.82,
+              "value": 0.1792,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-horizon-bloom-mobile-3",
+              "at": 1,
+              "value": 0.1344,
+              "easing": "smooth"
+            }
+          ]
         }
       ],
       "media": {
@@ -2837,6 +4181,174 @@
               "id": "maris-inquiry-copy-y-mobile-3",
               "at": 1,
               "value": -26,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-inquiry-vignette",
+          "label": "Chapter vignette breathe",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.vignette",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-inquiry-vignette-0",
+              "at": 0,
+              "value": 0.3224,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-inquiry-vignette-1",
+              "at": 0.42,
+              "value": 0.1716,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-inquiry-vignette-2",
+              "at": 1,
+              "value": 0.312,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-inquiry-exposure",
+          "label": "Chapter exposure lift",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "world.exposure",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-inquiry-exposure-0",
+              "at": 0,
+              "value": 0.92,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-inquiry-exposure-1",
+              "at": 0.34,
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-inquiry-exposure-2",
+              "at": 0.78,
+              "value": 1.07,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-inquiry-exposure-3",
+              "at": 1,
+              "value": 0.96,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-inquiry-fog",
+          "label": "Chapter haze clearing",
+          "viewport": "all",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "world.fogDensity",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-inquiry-fog-0",
+              "at": 0,
+              "value": 0.0124,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-inquiry-fog-1",
+              "at": 0.4,
+              "value": 0.0056,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-inquiry-fog-2",
+              "at": 1,
+              "value": 0.0106,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-inquiry-bloom-desktop",
+          "label": "Chapter bloom swell",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.bloom",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-inquiry-bloom-desktop-0",
+              "at": 0,
+              "value": 0.12,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-inquiry-bloom-desktop-1",
+              "at": 0.46,
+              "value": 0.3425,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-inquiry-bloom-desktop-2",
+              "at": 0.82,
+              "value": 0.168,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-inquiry-bloom-desktop-3",
+              "at": 1,
+              "value": 0.126,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "id": "maris-atmos-inquiry-bloom-mobile",
+          "label": "Chapter bloom swell",
+          "viewport": "mobile",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "post.bloom",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "maris-atmos-inquiry-bloom-mobile-0",
+              "at": 0,
+              "value": 0.12,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-inquiry-bloom-mobile-1",
+              "at": 0.46,
+              "value": 0.275,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-atmos-inquiry-bloom-mobile-2",
+              "at": 0.82,
+              "value": 0.168,
+              "easing": "linear"
+            },
+            {
+              "id": "maris-atmos-inquiry-bloom-mobile-3",
+              "at": 1,
+              "value": 0.126,
               "easing": "smooth"
             }
           ]
