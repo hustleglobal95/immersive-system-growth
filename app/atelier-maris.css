@@ -285,24 +285,25 @@ body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu l
   grid-column: 1 / -1;
   width: 100vw;
   margin-left: calc(50% - 50vw);
-  overflow: hidden;
+  overflow: visible;
   padding: 3.4vh 0;
-  mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
 }
-.image-roll__track {
-  display: flex;
-  gap: 26px;
-  padding-inline: 5vw;
-  will-change: transform;
+.image-roll { --roll-plate: clamp(124px, 13vw, 208px); perspective: 1250px; perspective-origin: 50% 50%; }
+.image-roll__stage {
+  position: relative;
+  height: var(--roll-plate, 240px);
+  transform-style: preserve-3d;
 }
 .image-roll__plate {
-  flex: 0 0 auto;
-  width: clamp(124px, 13vw, 208px);
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: var(--roll-plate, 240px);
   aspect-ratio: 1;
-  margin: 0;
+  margin: 0 0 0 calc(var(--roll-plate, 240px) / -2);
   overflow: hidden;
-  will-change: transform;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
   box-shadow: 0 26px 60px rgba(6, 5, 4, .42);
 }
 .image-roll__plate img {
@@ -316,11 +317,12 @@ body[data-project="atelier-maris"] [data-scene-id="parti"] .scene-blocks { margi
 body[data-project="atelier-maris"] [data-scene-id="studio"] .scene-blocks { align-items: start; }
 body[data-project="atelier-maris"] [data-scene-id="studio"] .image-roll { margin-top: 6vh; }
 @media (prefers-reduced-motion: reduce) {
-  .image-roll { mask-image: none; -webkit-mask-image: none; }
-  .image-roll__track { flex-wrap: wrap; justify-content: center; }
+  .image-roll { overflow: hidden; }
+  .image-roll__stage { display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; height: auto; }
+  .image-roll__plate { position: relative; left: auto; margin: 0; }
 }
 @media (max-width: 900px) {
-  .image-roll__plate { width: clamp(104px, 34vw, 150px); }
+  .image-roll { --roll-plate: clamp(104px, 30vw, 140px); }
   .menu-thumb { width: 48px; height: 48px; }
   body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li > div {
     grid-template-columns: 48px 1fr;
@@ -342,12 +344,43 @@ body[data-project="atelier-maris"] .story-section--center h2 { max-width: 14ch; 
 
 /* The process section carries four columns and a roll inside one viewport, so its plates and
    its column text run smaller than the manifesto's. */
-body[data-project="atelier-maris"] [data-scene-id="studio"] .image-roll { padding: 2vh 0; }
-body[data-project="atelier-maris"] [data-scene-id="studio"] .image-roll__plate {
-  width: clamp(98px, 9.6vw, 158px);
+body[data-project="atelier-maris"] [data-scene-id="studio"] .image-roll { padding: 3.6vh 0; }
+body[data-project="atelier-maris"] [data-scene-id="studio"] .image-roll {
+  --roll-plate: clamp(112px, 11.2vw, 176px);
 }
 body[data-project="atelier-maris"] [data-scene-id="studio"] .scene-block--statement > p:last-child {
   font-size: 13px;
   line-height: 1.5;
 }
 body[data-project="atelier-maris"] [data-scene-id="studio"] .story-panel { padding: 12vh 0 6vh; }
+
+/* 01 / Position carries the rank as the section's main image event, so its plates run large.
+   The process section keeps its smaller plates, since four columns share that viewport. */
+body[data-project="atelier-maris"] [data-scene-id="parti"] .image-roll { padding: 3vh 0; }
+
+body[data-project="atelier-maris"] [data-scene-id="parti"] .image-roll {
+  --roll-plate: clamp(196px, 21.6vw, 326px);
+}
+body[data-project="atelier-maris"] [data-scene-id="parti"] .image-roll__plate {
+  box-shadow: 0 34px 76px rgba(6, 5, 4, .5);
+}
+body[data-project="atelier-maris"] [data-scene-id="parti"] h2 {
+  font-size: clamp(44px, 5.8vw, 108px);
+}
+@media (max-width: 900px) {
+  body[data-project="atelier-maris"] [data-scene-id="parti"] .image-roll {
+    --roll-plate: clamp(140px, 42vw, 210px);
+  }
+  body[data-project="atelier-maris"] [data-scene-id="parti"] .image-roll { padding: 4.6vh 0; }
+  body[data-project="atelier-maris"] [data-scene-id="studio"] .image-roll { padding: 3.2vh 0; }
+}
+
+/* The rank can be moved by hand. Horizontal drags belong to it; vertical scrolling stays with
+   the page, and the images never become a drag-and-drop target. */
+.image-roll {
+  cursor: grab;
+  touch-action: pan-y;
+  pointer-events: auto;
+}
+.image-roll[data-dragging="true"] { cursor: grabbing; }
+.image-roll__plate img { user-select: none; -webkit-user-drag: none; }

@@ -29,20 +29,21 @@ const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
   const span = scene.range[1] - scene.range[0];
   const start = scene.range[0];
   const motion = CHAPTER_MOTION[scene.id] ?? FALLBACK_MOTION;
-  const textEnd = (scene.media?.textEnd ?? .28) * motion.pace;
-  const at = (fraction: number) => start + span * Math.min(1, fraction);
   const scope = '[data-motion-scene="' + index + '"] ';
-  // The photograph holds alone for the first stretch of every chapter. Copy motion begins after
-  // that beat and runs long, so each effect is crossed by scrolling rather than triggered.
-  const lead = motion.lead ?? .14;
+  // Every cue lands inside the window the copy is actually lit for. The pinned panel releases
+  // at roughly 0.62 of its section, so all motion finishes before that and the chapter ends on
+  // a held frame rather than on content sliding away upward.
+  const lead = motion.lead ?? .12;
+  const pace = Math.min(1, motion.pace);
+  const at = (fraction: number) => start + span * Math.min(1, fraction);
   return [
-    { selector: scope + "[data-motion-index]", range: [at(lead), at(lead + textEnd * .5)], preset: motion.label },
-    { selector: scope + "[data-motion-copy]", range: [at(lead + textEnd * .12), at(lead + textEnd * .8)], preset: motion.label },
-    { selector: scope + "[data-motion-headline]", range: [at(lead), at(lead + textEnd + .26)], preset: motion.headline },
-    { selector: scope + "[data-motion-lede]", range: [at(lead + textEnd * .5), at(lead + textEnd + .46)], preset: motion.lede },
-    { selector: scope + "[data-motion-aside]", range: [at(lead + textEnd + .2), at(lead + textEnd + .62)], preset: "copy-drift" },
-    { selector: scope + "[data-motion-cta]", range: [at(lead + textEnd + .3), at(lead + textEnd + .76)], preset: "copy-drift" },
-    { selector: scope + "[data-motion-block]", range: [at(lead), at(.82)], preset: "copy-drift" },
+    { selector: scope + "[data-motion-index]", range: [at(lead), at(lead + .1 * pace)], preset: motion.label },
+    { selector: scope + "[data-motion-copy]", range: [at(lead + .02), at(lead + .14 * pace)], preset: motion.label },
+    { selector: scope + "[data-motion-headline]", range: [at(lead), at(lead + .3 * pace)], preset: motion.headline },
+    { selector: scope + "[data-motion-lede]", range: [at(lead + .1), at(lead + .38 * pace)], preset: motion.lede },
+    { selector: scope + "[data-motion-aside]", range: [at(lead + .18), at(lead + .42)], preset: "copy-drift" },
+    { selector: scope + "[data-motion-cta]", range: [at(lead + .22), at(lead + .44)], preset: "copy-drift" },
+    { selector: scope + "[data-motion-block]", range: [at(lead + .04), at(lead + .4)], preset: "copy-drift" },
   ];
 });
 // Ordinary server-rendered content remains the baseline. No opacity/aria-hidden gate owns primary copy.
