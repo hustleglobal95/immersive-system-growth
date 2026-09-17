@@ -63,10 +63,10 @@ export function CinematicSystemsLayer(){
     if(trail.length){ctx.save();ctx.globalCompositeOperation="screen";for(const point of trail){ctx.globalAlpha=(1-point.age)*.28;ctx.fillStyle="#ffffff";ctx.beginPath();ctx.arc((point.x*.5+.5)*width,(-point.y*.5+.5)*height,Math.max(1,5*(1-point.age)),0,Math.PI*2);ctx.fill();}ctx.restore();}
   },[config,composed,quality,reduced,trail,pointer.x,pointer.y,local]);
 
-  if(!config)return null;
+  if(!config||base?.media?.kind==="color")return null;
   const stackScale=composed?.stack?.scale??1;
   return <div className="forge-cinematic-systems" aria-hidden="true" style={{position:"fixed",inset:0,zIndex:6,pointerEvents:"none",overflow:"hidden"}}>
-    {gpuEligible&&base.media?.kind==="image"&&<div style={{position:"absolute",inset:0,transform:`scale(${stackScale})`,transformOrigin:"50% 50%",willChange:"transform"}}>
+    {gpuEligible&&base.media?.kind==="image"&&base.media.src&&<div style={{position:"absolute",inset:0,transform:`scale(${stackScale})`,transformOrigin:"50% 50%",willChange:"transform"}}>
       <CinematicShaderCanvas src={base.media.src} depthMap={config.spatial?.depthMap} normalMap={config.spatial?.normalMap} spatial={config.spatial} reveal={config.reveal} progress={composed?.reveal?.progress??local} pointerX={pointer.x} pointerY={pointer.y} scrollProgress={local} onReady={()=>setShaderReady(true)} onError={()=>{setShaderReady(false);setShaderFailed(true);}} />
     </div>}
     <canvas ref={canvas} style={{position:"absolute",inset:0,width:"100%",height:"100%"}} />

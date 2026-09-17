@@ -43,6 +43,8 @@ export function MaskedMediaLayer() {
           media.mask ?? { softness: media.maskSoftness },
         );
         if (resolveMaskBackend(mask, { quality, webglStatus, reducedMotion }) !== "webgl") return null;
+        // A flat colour plate has no texture to sample, so it stays on the DOM path.
+        if (media.kind === "color" || !media.src) return null;
         return (
           <AssetBoundary key={scene.id} id={`mask-media-${scene.id}`}>
             <Suspense fallback={null}>

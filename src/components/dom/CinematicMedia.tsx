@@ -61,7 +61,9 @@ export function CinematicMedia() {
         scene,
         window: getMediaPanelWindow(experience.scenes, index),
         panelY: gsap.quickSetter(panel, "yPercent"),
+        panelX: gsap.quickSetter(panel, "xPercent"),
         imageY: gsap.quickSetter(image, "yPercent"),
+        imageX: gsap.quickSetter(image, "xPercent"),
         scale: gsap.quickSetter(image, "scale"),
         playback(visible: boolean) {
           const play = visible && !document.hidden;
@@ -104,10 +106,14 @@ export function CinematicMedia() {
         track.panel.style.visibility = state.visible ? "visible" : "hidden";
         track.panel.style.opacity = String(motion.opacity ?? state.opacity);
         track.panel.style.filter = `blur(${state.blur}px)`;
+        // Curtains close on their own axis; a wipe crosses the frame from the authored side.
+        const c = state.clip, half = c / 2;
         track.panel.style.clipPath = state.transition === "curtain"
-          ? `inset(${state.clip / 2}% 0 ${state.clip / 2}% 0)`
+          ? state.clipAxis === "x" ? `inset(0 ${half}% 0 ${half}%)` : `inset(${half}% 0 ${half}% 0)`
           : state.transition === "wipe"
-            ? `inset(0 ${state.clip}% 0 0)`
+            ? state.clipAxis === "x"
+              ? state.clipSign > 0 ? `inset(0 ${c}% 0 0)` : `inset(0 0 0 ${c}%)`
+              : state.clipSign > 0 ? `inset(0 0 ${c}% 0)` : `inset(${c}% 0 0 0)`
             : "none";
         if (track.mask) {
           const css = createCssMaskStyle(reveal, track.mask);
@@ -132,7 +138,9 @@ export function CinematicMedia() {
           delete track.panel.dataset.maskPreset;
         }
         track.panelY(state.panelY);
+        track.panelX(state.panelX);
         track.imageY(state.imageY);
+        track.imageX(state.imageX);
         track.scale(state.scale);
         track.playback(state.visible);
       }
@@ -180,8 +188,10 @@ export function CinematicMedia() {
           } as CSSProperties}
         >
           {media ? media.kind === "video"
-            ? <video src={media.src} poster={media.poster} muted playsInline loop preload="none" />
-            : <img src={media.src} alt="" decoding="async" />
+            ? <video src={media.poster ? media.src : undefined} poster={media.poster} muted playsInline loop preload="none" />
+            : media.kind === "color"
+              ? <div className="media-panel__fill" style={{ background: media.fill }} />
+              : <img src={media.src} alt="" decoding="async" />
             : <div className={`media-fixture media-fixture--${index % 3}`}><span>MEDIA STUDY / {String(index + 1).padStart(2, "0")}</span><i /><b /></div>}
         </div>
         <div className="media-panel__shade" />

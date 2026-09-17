@@ -251,8 +251,11 @@ export const transitionLayerSchema = z.discriminatedUnion("kind", [
   z.object({ ...transitionLayerBase, kind: z.literal("image"), src: assetUrl, position: z.tuple([finite.min(0).max(100), finite.min(0).max(100)]).default([50, 50]) }).strict(),
 ]);
 export const sceneMediaSchema = z.object({
-  kind: z.enum(["image", "video"]),
-  src: assetUrl,
+  // A "color" plate is a chapter whose background is a flat field rather than a photograph. It
+  // is a first-class media kind, so it inherits every transition, mask and overlap rule.
+  kind: z.enum(["image", "video", "color"]),
+  src: assetUrl.optional(),
+  fill: color.optional(),
   poster: assetUrl.optional(),
   alt: z.string().min(1).max(300),
   transition: z.enum(["slide", "curtain", "zoom", "dissolve", "wipe", "mask", "cut"]).default("slide"),
@@ -263,11 +266,13 @@ export const sceneMediaSchema = z.object({
   position: z.tuple([finite.min(0).max(100),finite.min(0).max(100)]).default([50,50]),
   mobilePosition: z.tuple([finite.min(0).max(100),finite.min(0).max(100)]).default([50,50]),
   overlap: finite.min(.1).max(.45).default(.25),
-  direction: z.enum(["up","down"]).default("up"),
+  direction: z.enum(["up","down","left","right"]).default("up"),
   zoom: finite.min(1).max(1.18).default(1.06),
   textEnd: finite.min(.1).max(.6).default(.28),
 }).strict().superRefine((media, context) => {
   if (media.kind === "video" && !media.poster) context.addIssue({ code: "custom", message: "Video media requires a poster", path: ["poster"] });
+  if (media.kind === "color" && !media.fill) context.addIssue({ code: "custom", message: "Color media requires a fill", path: ["fill"] });
+  if (media.kind !== "color" && !media.src) context.addIssue({ code: "custom", message: "Image and video media require a src", path: ["src"] });
   const ids = new Set<string>();
   media.layers.forEach((layer, index) => {
     if (ids.has(layer.id)) context.addIssue({ code: "custom", message: "Transition layer IDs must be unique", path: ["layers", index, "id"] });

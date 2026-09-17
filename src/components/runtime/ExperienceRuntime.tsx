@@ -8,6 +8,7 @@ import { CinematicTransitionLayers } from "@/src/components/dom/CinematicTransit
 import { ProgressRail } from "@/src/components/dom/ProgressRail";
 import { HotspotDialog } from "@/src/components/dom/HotspotDialog";
 import { SiteChrome } from "@/src/components/dom/SiteChrome";
+import { SiteFooter } from "@/src/components/dom/SiteFooter";
 import { ExperienceModeLayer, currentExperienceMode } from "@/src/components/dom/ExperienceModeLayer";
 import { experienceModeClass } from "@/src/platform/experienceModes";
 import { WebGLBoundary } from "@/src/components/runtime/WebGLBoundary";
@@ -104,6 +105,7 @@ export function ExperienceRuntime({ children }: { children?: ReactNode }) {
       {currentExperienceMode.composition.navigation === "standard" && <ProgressRail />}
       <HotspotDialog />
       <RuntimeStatus />
+      {currentExperienceMode.composition.navigation === "standard" && <SiteFooter />}
       {debug && <DebugHUD />}
       {lab && <LabControls />}
       {children}

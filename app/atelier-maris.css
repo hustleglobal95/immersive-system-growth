@@ -2,3 +2,215 @@ body[data-project="atelier-maris"]{--maris-ink:#171310;--maris-stone:#d7c2a3;--m
 @media(prefers-reduced-motion:reduce){body[data-project="atelier-maris"] .story-media-static{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;filter:brightness(.52) saturate(.8)}body[data-project="atelier-maris"] .story-panel{position:relative;top:auto;height:auto;padding:0}body[data-project="atelier-maris"] .story-section{align-items:center}}
 
 body[data-project="atelier-maris"] [data-media-panel="1"] .media-panel__inner img{filter:saturate(.95) contrast(1.04) brightness(1.3)}
+
+/* ---------------------------------------------------------------------------
+   Structural sections. Three chapters carry a flat field instead of a
+   photograph and hold real content: a point of view, the work index and the
+   process. Laid out as editorial spreads on the section margin -- hairline
+   rules, no cards, no radius, no shadows.
+   --------------------------------------------------------------------------- */
+body[data-project="atelier-maris"] [data-scene-id="parti"] .story-panel { width: min(1100px, 82vw); }
+body[data-project="atelier-maris"] [data-scene-id="parti"] h2 {
+  font-size: clamp(54px, 7.4vw, 146px);
+  max-width: 15ch;
+}
+body[data-project="atelier-maris"] .story-section--blocks { align-items: flex-start; padding: 0 5vw; }
+body[data-project="atelier-maris"] .story-section--blocks .story-panel {
+  /* Pinned like every other chapter, so the spread holds while its section is crossed
+     instead of scrolling out through the top after the first viewport. */
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: min(1240px, 90vw);
+  max-width: none;
+  padding: 13vh 0 8vh;
+  justify-content: center;
+  text-shadow: none;
+}
+body[data-project="atelier-maris"] .story-section--blocks .story-panel::before { display: none; }
+body[data-project="atelier-maris"] .story-section--blocks h2 {
+  font-size: clamp(40px, 4.6vw, 78px);
+  line-height: .94;
+  max-width: 17ch;
+}
+body[data-project="atelier-maris"] .story-section--blocks .narrative-body {
+  max-width: 540px;
+  margin-top: 22px;
+  font-size: 17px;
+  text-shadow: none;
+}
+body[data-project="atelier-maris"] .scene-blocks { gap: 0; margin-top: 8vh; }
+
+/* 03 / Selected work -- an index, read as a contents page rather than a card wall */
+body[data-project="atelier-maris"] [data-scene-id="living"] .story-panel { color: #171310; }
+body[data-project="atelier-maris"] [data-scene-id="living"] .eyebrow { color: #7a5c3a; text-shadow: none; }
+body[data-project="atelier-maris"] [data-scene-id="living"] .narrative-body { color: rgba(23, 19, 16, .72); }
+body[data-project="atelier-maris"] [data-scene-id="living"] .narrative-panel__index { color: rgba(23, 19, 16, .45); }
+body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  backdrop-filter: none;
+}
+body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu > h3 {
+  margin-bottom: 0;
+  padding-bottom: 14px;
+  font: 500 11px/1 "DM Sans", Arial, sans-serif;
+  letter-spacing: .24em;
+  color: rgba(23, 19, 16, .55);
+}
+body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu ul {
+  grid-template-columns: 1fr;
+  gap: 0;
+  background: none;
+}
+body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li {
+  min-height: 0;
+  align-items: baseline;
+  padding: 22px 0;
+  background: none;
+  border-top: 1px solid rgba(23, 19, 16, .22);
+}
+body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li:last-child {
+  border-bottom: 1px solid rgba(23, 19, 16, .22);
+}
+body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li > div {
+  display: grid;
+  grid-template-columns: 3.5ch minmax(0, 20ch) minmax(0, 1fr);
+  align-items: baseline;
+  gap: 8px 34px;
+  flex: 1;
+}
+body[data-project="atelier-maris"] [data-scene-id="living"] .menu-badge {
+  color: rgba(23, 19, 16, .45);
+  font: 500 11px/1 "DM Sans", Arial, sans-serif;
+  letter-spacing: .14em;
+}
+body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu h4 {
+  margin: 0;
+  font: 400 clamp(24px, 2.5vw, 40px)/1 "Cormorant Garamond", Georgia, serif;
+  letter-spacing: -.025em;
+  hyphens: none;
+}
+body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li p {
+  grid-column: 3;
+  margin: 0;
+  color: rgba(23, 19, 16, .62);
+  font-size: 14px;
+  line-height: 1.5;
+}
+body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu strong {
+  color: rgba(23, 19, 16, .78);
+  font: 500 12px/1 "DM Sans", Arial, sans-serif;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* 06 / Process -- four stages as one band, numbers over hairlines */
+body[data-project="atelier-maris"] [data-scene-id="studio"] .scene-blocks {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 38px;
+  margin-top: 9vh;
+}
+body[data-project="atelier-maris"] [data-scene-id="studio"] .scene-block--statement {
+  max-width: none;
+  padding-top: 22px;
+  border-top: 1px solid rgba(244, 234, 215, .34);
+}
+body[data-project="atelier-maris"] [data-scene-id="studio"] .scene-block--statement h3 {
+  font: 400 clamp(20px, 1.9vw, 30px)/1.06 "Cormorant Garamond", Georgia, serif;
+  letter-spacing: -.02em;
+}
+body[data-project="atelier-maris"] [data-scene-id="studio"] .scene-block--statement > p:last-child {
+  margin-top: 12px;
+  color: rgba(244, 234, 215, .72);
+  font-size: 14px;
+  line-height: 1.58;
+}
+body[data-project="atelier-maris"] [data-scene-id="studio"] .scene-block__accent {
+  margin-bottom: 0 !important;
+  color: #e3aa7c;
+  font: 500 11px/1 "DM Sans", Arial, sans-serif;
+  letter-spacing: .22em;
+}
+
+/* ---------------------------------------------------------------------------
+   Footer. The site has to end somewhere: navigation, contact and legal in
+   ordinary DOM, scrolling over the fixed media plate.
+   --------------------------------------------------------------------------- */
+.maris-footer {
+  position: relative;
+  z-index: 14;
+  background: #0f0d0a;
+  color: #efe6d8;
+  padding: 13vh 5vw 5vh;
+  display: grid;
+  gap: 9vh;
+  border-top: 1px solid rgba(239, 230, 216, .16);
+}
+.maris-footer__mark {
+  margin: 0 0 18px;
+  font: 400 clamp(30px, 4.4vw, 74px)/1 "Cormorant Garamond", Georgia, serif;
+  letter-spacing: .2em;
+}
+.maris-footer__line {
+  max-width: 34ch;
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.6;
+  color: rgba(239, 230, 216, .72);
+}
+.maris-footer__cols {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 40px;
+}
+.maris-footer__cols h2 {
+  margin: 0 0 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(239, 230, 216, .2);
+  font: 500 11px/1 "DM Sans", Arial, sans-serif;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: rgba(239, 230, 216, .58);
+}
+.maris-footer__cols ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 11px; }
+.maris-footer__cols li { font-size: 14.5px; line-height: 1.5; color: rgba(239, 230, 216, .84); }
+.maris-footer__cols a { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; }
+.maris-footer__cols a:hover { border-bottom-color: rgba(239, 230, 216, .5); }
+.maris-footer__cols li span {
+  display: inline-block;
+  width: 3.2ch;
+  color: rgba(239, 230, 216, .42);
+  font-size: 11px;
+  letter-spacing: .14em;
+}
+.maris-footer__base {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding-top: 26px;
+  border-top: 1px solid rgba(239, 230, 216, .16);
+  font-size: 12px;
+  letter-spacing: .04em;
+  color: rgba(239, 230, 216, .52);
+}
+.maris-footer__base p { margin: 0; }
+@media (max-width: 900px) {
+  body[data-project="atelier-maris"] .story-section--blocks .story-panel { width: 100%; height: auto; min-height: 100vh; padding: 14vh 0 8vh; }
+  body[data-project="atelier-maris"] [data-scene-id="studio"] .scene-blocks { grid-template-columns: 1fr; row-gap: 30px; }
+  body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li { flex-direction: column; gap: 10px; }
+  body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li > div { grid-template-columns: 3.5ch 1fr; gap: 6px 18px; }
+  body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li p { grid-column: 2; }
+  .maris-footer__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 34px; }
+  .maris-footer__base { flex-direction: column; gap: 10px; }
+}
+
+/* The rail crosses both dark photographs and the bone field, so it carries its own shadow
+   rather than relying on either ground. */
+body[data-project="atelier-maris"] .progress-rail__items {
+  text-shadow: 0 1px 3px rgba(9, 8, 6, .8), 0 0 10px rgba(9, 8, 6, .55);
+}
+body[data-project="atelier-maris"] .progress-rail__track { background: rgba(255, 255, 255, .34); }
