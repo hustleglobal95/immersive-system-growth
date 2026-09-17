@@ -547,7 +547,7 @@ export const experienceSchema = z
       .strict(),
     runtime: z
       .object({
-        sceneHeightVh: finite.min(80).max(300),
+        sceneHeightVh: finite.min(80).max(600),
         cameraDamping: finite.min(0.1).max(30),
         objectDamping: finite.min(0.1).max(30),
         pointerInfluence: finite.min(0).max(0.5),

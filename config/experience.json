@@ -6,7 +6,7 @@
     "backgroundColor": "#171310"
   },
   "runtime": {
-    "sceneHeightVh": 300,
+    "sceneHeightVh": 440,
     "cameraDamping": 7.4,
     "objectDamping": 8.6,
     "pointerInfluence": 0.08,
