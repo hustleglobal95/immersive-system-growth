@@ -13,7 +13,10 @@ export const metadata: Metadata = {
 
 export default function StudioPage() {
   return <>
-    <Link className="studio-director-entry" href="/director">Director <span>Start with the idea</span></Link>
+    <div className="studio-intelligence-dock">
+      <Link className="studio-director-entry" href="/director">Director <span>Start with the idea</span></Link>
+      <Link className="studio-agent-entry" href="/studio/agent">Creative Agent <span>Direct this project</span></Link>
+    </div>
     <ProductionStudioWorkbench />
   </>;
 }
