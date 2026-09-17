@@ -35,6 +35,11 @@ export function CreativeAgentWorkbench() {
   const [notice, setNotice] = useState("");
   const [previewOpen, setPreviewOpen] = useState(true);
 
+  useEffect(() => {
+    const seededIdea = new URLSearchParams(window.location.search).get("idea")?.trim();
+    if (seededIdea) setIdea(seededIdea.slice(0, 4000));
+  }, []);
+
   const plan = useMemo(() => planCreativeExecution({
     idea,
     experience: draft.experience,
@@ -83,7 +88,7 @@ export function CreativeAgentWorkbench() {
   return <main className="creative-agent">
     <header className="creative-agent__topbar">
       <div><span>FORGE</span><strong>Creative Agent</strong><em>V3 · ASSET AWARE</em></div>
-      <nav><Link href="/studio">Studio</Link><Link href="/director/intelligence">Director Intelligence</Link></nav>
+      <nav><Link href="/studio/assets/create">Asset Creator</Link><Link href="/studio">Studio</Link><Link href="/director/intelligence">Director Intelligence</Link></nav>
     </header>
 
     <section className="creative-agent__layout">
@@ -124,16 +129,8 @@ export function CreativeAgentWorkbench() {
         </article>
 
         <section className="creative-agent__decision">
-          <div>
-            <span>MEDIUM DECISION</span>
-            <h3>{plan.mediumLabel}</h3>
-            <p>{plan.mediumReason}</p>
-          </div>
-          <div>
-            <span>SIGNATURE MOMENT</span>
-            <h3>Spend the craft here.</h3>
-            <p>{plan.signatureMoment}</p>
-          </div>
+          <div><span>MEDIUM DECISION</span><h3>{plan.mediumLabel}</h3><p>{plan.mediumReason}</p></div>
+          <div><span>SIGNATURE MOMENT</span><h3>Spend the craft here.</h3><p>{plan.signatureMoment}</p></div>
         </section>
 
         <section className="creative-agent__asset-summary">
@@ -148,74 +145,39 @@ export function CreativeAgentWorkbench() {
         </section>
 
         <section className="creative-agent__plan">
-          <header>
-            <div><span>EXECUTION PLAN</span><h3>Multi-scene direction + asset requirements</h3></div>
-            <button type="button" onClick={() => setPreviewOpen((value) => !value)}>{previewOpen ? "Hide patch" : "Preview patch"}</button>
-          </header>
+          <header><div><span>EXECUTION PLAN</span><h3>Multi-scene direction + asset requirements</h3></div><button type="button" onClick={() => setPreviewOpen((value) => !value)}>{previewOpen ? "Hide patch" : "Preview patch"}</button></header>
           <div className="creative-agent__scene-list">
             {plan.sceneMoves.map((move) => <article key={`${move.sceneIndex}-${move.archetype}`} className={selectedScenes.includes(move.sceneIndex) ? "is-selected" : ""}>
-              <label>
-                <input type="checkbox" checked={selectedScenes.includes(move.sceneIndex)} onChange={() => toggleScene(move.sceneIndex)} />
-                <span>{String(move.sceneIndex + 1).padStart(2, "0")}</span>
-              </label>
+              <label><input type="checkbox" checked={selectedScenes.includes(move.sceneIndex)} onChange={() => toggleScene(move.sceneIndex)} /><span>{String(move.sceneIndex + 1).padStart(2, "0")}</span></label>
               <div><small>{move.role.toUpperCase()} · {move.signatureRole.toUpperCase()}</small><strong>{move.label}</strong><p>{move.purpose}</p></div>
               <div><small>CAMERA + MOTION</small><strong>{move.archetype}</strong><p>{move.cameraStrategy}</p></div>
               <div className="creative-agent__scene-assets">
-                <div className="creative-agent__scene-assets-head">
-                  <div><small>EXECUTION</small><strong>{mediumName(move.assetPlan.executionMedium)}</strong></div>
-                  <span className={move.assetPlan.canBuildNow ? "is-ready" : "is-blocked"}>{move.assetPlan.canBuildNow ? "BUILDABLE NOW" : "ASSET BLOCKED"}</span>
-                </div>
+                <div className="creative-agent__scene-assets-head"><div><small>EXECUTION</small><strong>{mediumName(move.assetPlan.executionMedium)}</strong></div><span className={move.assetPlan.canBuildNow ? "is-ready" : "is-blocked"}>{move.assetPlan.canBuildNow ? "BUILDABLE NOW" : "ASSET BLOCKED"}</span></div>
                 <div className="creative-agent__asset-columns">
                   <AssetNames title="USE EXISTING" values={move.assetPlan.existingAssets} empty="No registered asset required." />
                   <AssetNames title="REUSE" values={move.assetPlan.reusableAssets} empty="No additional reusable asset selected." />
-                  <AssetItems title="CREATE" values={move.assetPlan.assetsToCreate} empty="No required new asset." />
-                  <AssetItems title="OPTIONAL" values={move.assetPlan.optionalAssets} empty="No optional asset suggested." />
+                  <AssetItems title="CREATE" values={move.assetPlan.assetsToCreate} empty="No required new asset." sceneIndex={move.sceneIndex} />
+                  <AssetItems title="OPTIONAL" values={move.assetPlan.optionalAssets} empty="No optional asset suggested." sceneIndex={move.sceneIndex} />
                 </div>
                 {move.assetPlan.blockers.length > 0 && <div className="creative-agent__blockers"><small>BLOCKERS</small>{move.assetPlan.blockers.map((blocker) => <p key={blocker}>{blocker}</p>)}</div>}
                 <div className="creative-agent__production-notes"><small>PRODUCTION NOTES</small>{move.assetPlan.productionNotes.map((note) => <p key={note}>{note}</p>)}</div>
               </div>
             </article>)}
           </div>
-          {previewOpen && <div className="creative-agent__patch">
-            <span>PATCH PREVIEW · NOTHING CHANGES UNTIL YOU APPLY</span>
-            {plan.patchSummary.map((line, index) => <code key={line} className={selectedScenes.includes(plan.sceneMoves[index]?.sceneIndex ?? -1) ? "" : "is-muted"}>{line}</code>)}
-          </div>}
-          <div className="creative-agent__apply-row">
-            <div><strong>{selectedScenes.length} scene{selectedScenes.length === 1 ? "" : "s"} selected · {selectedBlocked} asset-blocked</strong><span>Missing assets are never faked as complete. Existing non-agent authored tracks are preserved.</span></div>
-            <button className="creative-agent__apply" disabled={!plan.validation.valid} onClick={applyPlan}>Apply reversible plan</button>
-          </div>
+          {previewOpen && <div className="creative-agent__patch"><span>PATCH PREVIEW · NOTHING CHANGES UNTIL YOU APPLY</span>{plan.patchSummary.map((line, index) => <code key={line} className={selectedScenes.includes(plan.sceneMoves[index]?.sceneIndex ?? -1) ? "" : "is-muted"}>{line}</code>)}</div>}
+          <div className="creative-agent__apply-row"><div><strong>{selectedScenes.length} scene{selectedScenes.length === 1 ? "" : "s"} selected · {selectedBlocked} asset-blocked</strong><span>Missing assets are never faked as complete. Existing non-agent authored tracks are preserved.</span></div><button className="creative-agent__apply" disabled={!plan.validation.valid} onClick={applyPlan}>Apply reversible plan</button></div>
         </section>
 
         <div className="creative-agent__grid">
-          <article>
-            <span>ASSET STRATEGY</span>
-            <h3>Every proposed scene must explain its production inputs.</h3>
-            {plan.assetStrategy.map((item) => <p key={item}>{item}</p>)}
-          </article>
-          <article>
-            <span>PRODUCTION ORDER</span>
-            <h3>Build in leverage order.</h3>
-            <ol>{plan.productionOrder.map((item) => <li key={item}>{item}</li>)}</ol>
-          </article>
-          <article>
-            <span>CRITICAL MISSING ASSETS</span>
-            <h3>{plan.assetSummary.criticalMissingAssets[0] ?? "No critical blocker"}</h3>
-            {plan.assetSummary.criticalMissingAssets.length ? plan.assetSummary.criticalMissingAssets.map((item) => <p key={item}>{item}</p>) : <p>The current plan has no hero/signature-critical missing asset.</p>}
-          </article>
-          <article>
-            <span>RISKS / WHAT TO AVOID</span>
-            <h3>{report.cliches.detected[0] ?? "Decorative complexity"}</h3>
-            {plan.risks.map((risk) => <p key={risk}>{risk}</p>)}
-          </article>
+          <article><span>ASSET STRATEGY</span><h3>Every proposed scene must explain its production inputs.</h3>{plan.assetStrategy.map((item) => <p key={item}>{item}</p>)}</article>
+          <article><span>PRODUCTION ORDER</span><h3>Build in leverage order.</h3><ol>{plan.productionOrder.map((item) => <li key={item}>{item}</li>)}</ol></article>
+          <article><span>CRITICAL MISSING ASSETS</span><h3>{plan.assetSummary.criticalMissingAssets[0] ?? "No critical blocker"}</h3>{plan.assetSummary.criticalMissingAssets.length ? plan.assetSummary.criticalMissingAssets.map((item) => <p key={item}>{item}</p>) : <p>The current plan has no hero/signature-critical missing asset.</p>}</article>
+          <article><span>RISKS / WHAT TO AVOID</span><h3>{report.cliches.detected[0] ?? "Decorative complexity"}</h3>{plan.risks.map((risk) => <p key={risk}>{risk}</p>)}</article>
         </div>
 
         <section className="creative-agent__council">
           <header><span>DIRECTOR COUNCIL</span><h3>Independent pressure test</h3></header>
-          {report.selectedEvaluation.critiques.slice(0, 6).map((critique) => <article key={critique.role}>
-            <strong>{critique.role}</strong>
-            <span>{critique.recommendation}</span>
-            <p>{critique.concerns[0] ?? critique.strengths[0] ?? "No material concern."}</p>
-          </article>)}
+          {report.selectedEvaluation.critiques.slice(0, 6).map((critique) => <article key={critique.role}><strong>{critique.role}</strong><span>{critique.recommendation}</span><p>{critique.concerns[0] ?? critique.strengths[0] ?? "No material concern."}</p></article>)}
         </section>
       </section>
     </section>
@@ -226,8 +188,13 @@ function AssetNames({ title, values, empty }: { title: string; values: string[];
   return <section><small>{title}</small>{values.length ? values.map((value) => <p key={value} title={value}>{shortPath(value)}</p>) : <p className="is-empty">{empty}</p>}</section>;
 }
 
-function AssetItems({ title, values, empty }: { title: string; values: AgentSceneAssetItem[]; empty: string }) {
-  return <section><small>{title}</small>{values.length ? values.map((item) => <div className="creative-agent__asset-item" key={`${item.name}-${item.type}`}><strong>{item.name}</strong><span>{item.type} · {item.priority}</span><p>{item.reason}</p></div>) : <p className="is-empty">{empty}</p>}</section>;
+function AssetItems({ title, values, empty, sceneIndex }: { title: string; values: AgentSceneAssetItem[]; empty: string; sceneIndex: number }) {
+  return <section><small>{title}</small>{values.length ? values.map((item) => <div className="creative-agent__asset-item" key={`${item.name}-${item.type}`}><strong>{item.name}</strong><span>{item.type} · {item.priority}</span><p>{item.reason}</p><Link className="creative-agent__create-asset" href={assetCreatorHref(item, sceneIndex)}>{title === "CREATE" ? "Create this asset" : "Explore creating it"}</Link></div>) : <p className="is-empty">{empty}</p>}</section>;
+}
+
+function assetCreatorHref(item: AgentSceneAssetItem, sceneIndex: number) {
+  const query = new URLSearchParams({ asset: item.name, type: item.type, reason: item.reason, priority: item.priority, scene: String(sceneIndex) });
+  return `/studio/assets/create?${query.toString()}`;
 }
 
 function makeBrief(projectName: string, idea: string, sceneCount: number, manifest: AssetManifest, medium: string, signature: string): DirectorBrief {
