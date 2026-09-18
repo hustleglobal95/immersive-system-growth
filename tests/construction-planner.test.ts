@@ -196,3 +196,37 @@ test("companion and personalization patterns become global production rules", ()
   assert.ok(plan.globalRules.some((rule) => /companion-device messages/i.test(rule)));
   assert.ok(plan.globalRules.some((rule) => /personalization inputs/i.test(rule)));
 });
+
+test("latest runtime architecture patterns change planner output", () => {
+  const treatment = directProject(
+    brief("brand", [
+      { id: "hero", label: "Hero repeated-object GLB scene", type: "model", notes: "Repeated geometry with interactive DOM overlays." },
+    ]),
+  );
+  const base = buildConstructionDirectives(treatment);
+  const directives = {
+    ...base,
+    patternIds: Array.from(new Set([
+      ...base.patternIds,
+      "design-grid-runtime-contract",
+      "gpu-instance-data-packing",
+      "shared-simulation-field",
+      "scene-neighborhood-window",
+      "production-preset-parity",
+      "physics-proxy-dom",
+      "transition-preload-race",
+      "imperative-hot-path-state",
+    ])),
+  };
+  const plan = planImmersiveConstruction(treatment, directives);
+  const policies = plan.sceneDecisions.flatMap((scene) => scene.performancePolicy);
+
+  assert.ok(plan.globalRules.some((rule) => /grid geometry|overlay/i.test(rule)));
+  assert.ok(plan.globalRules.some((rule) => /same validated scene preset/i.test(rule)));
+  assert.ok(plan.globalRules.some((rule) => /simulation field/i.test(rule)));
+  assert.ok(plan.globalRules.some((rule) => /per-frame visual values imperative/i.test(rule)));
+  assert.ok(plan.criticalBootStrategy.some((rule) => /destination code|readiness races/i.test(rule)));
+  assert.ok(plan.criticalBootStrategy.some((rule) => /scene neighborhood/i.test(rule)));
+  assert.ok(policies.some((rule) => /GPU attributes|atlases/i.test(rule)));
+  assert.ok(policies.some((rule) => /distant scene GPU resources|scene and the minimum adjacent/i.test(rule)));
+});
