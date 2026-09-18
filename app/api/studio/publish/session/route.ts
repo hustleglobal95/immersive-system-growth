@@ -4,6 +4,8 @@ export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   if (process.env.FORGE_STUDIO_PUBLISH_ENABLED !== "true") return Response.json({ ok: false, error: "Studio publishing is disabled" }, { status: 404 });
+  const size = Number(request.headers.get("content-length") ?? 0);
+  if (!Number.isFinite(size) || size > 4096) return Response.json({ ok: false, error: "Unlock request is too large" }, { status: 413 });
   const origin = request.headers.get("origin");
   if (origin && origin !== new URL(request.url).origin) return Response.json({ ok: false, error: "Cross-origin publishing is blocked" }, { status: 403 });
   const expected = process.env.FORGE_STUDIO_PUBLISH_SECRET ?? "";
