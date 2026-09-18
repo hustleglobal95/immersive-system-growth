@@ -51,7 +51,7 @@
     "recipe:list": "node scripts/recipe-list.mjs",
     "recipe:apply": "node --import tsx scripts/apply-recipe.mjs",
     "test": "node --import tsx --test tests/*.test.ts",
-    "check": "npm run doctor && npm run architecture:audit && npm run command:catalog:audit && npm run director:audit && npm run director:intelligence:audit && npm run reference:corpus:audit && npm run project:validate && npm run release:report && npm run creative:audit && npm run creative:recipes && npm run experience:validate && npm run experience:modes:audit && npm run interaction:validate && npm run cinematic:systems:audit && npm run motion:systems:audit && npm run cinematic:audit && npm run camera:audit && npm run camera:spatial:audit && npm run rig:audit && npm run visual:audit && npm run assets:audit && npm run performance:audit && npm run test && npm run typecheck && npm run lint",
+    "check": "npm run doctor && npm run architecture:audit && npm run command:catalog:audit && npm run director:audit && npm run director:intelligence:audit && npm run reference:corpus:audit && npm run autonomy:benchmark && npm run project:validate && npm run release:report && npm run creative:audit && npm run creative:recipes && npm run experience:validate && npm run experience:modes:audit && npm run interaction:validate && npm run cinematic:systems:audit && npm run motion:systems:audit && npm run cinematic:audit && npm run camera:audit && npm run camera:spatial:audit && npm run rig:audit && npm run visual:audit && npm run assets:audit && npm run performance:audit && npm run test && npm run typecheck && npm run lint",
     "cinematic:audit": "node --import tsx scripts/cinematic-audit.mjs",
     "camera:audit": "node --import tsx scripts/camera-audit.mjs",
     "camera:spatial:audit": "node --import tsx scripts/spatial-camera-audit.mjs",
@@ -85,7 +85,9 @@
     "visual:baseline:update": "node scripts/visual-regression.mjs --update",
     "performance:audit": "node --import tsx scripts/performance-audit.mjs",
     "release:report": "node --import tsx scripts/release-report.mjs",
-    "experience:modes:audit": "node --import tsx scripts/experience-mode-audit.mjs"
+    "experience:modes:audit": "node --import tsx scripts/experience-mode-audit.mjs",
+    "autonomy:benchmark": "node --import tsx scripts/autonomy-benchmark.mjs",
+    "autonomy:capture": "node --import tsx scripts/autonomy-capture.mjs"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "5.3.0",

@@ -82,6 +82,8 @@ Immersive Site Forge 6.0 is organized as a multi-project production platform rat
 - reference-deconstruction workflow that maps immersive precedents onto existing Forge systems before new dependencies
 - evidence-weighted, source-diverse precedent retrieval plus a reference corpus integrity audit
 - eight-layer hierarchy intelligence spanning strategy, narrative, section, information, visual, interaction, motion/spatial and semantic/accessibility priority
+- autonomy foundation with grounded short-prompt brief inference, decision-time construction guidance, five autonomy levels, deterministic render-review plans, functional verification contracts and forced-improvement candidate selection
+- 30-case one-line commercial prompt benchmark enforced by `npm run check`
 - nine Claude command playbooks
 - project, scene and asset templates
 - GitHub CI and contribution templates

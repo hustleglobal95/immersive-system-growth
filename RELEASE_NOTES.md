@@ -2,6 +2,8 @@
 
 ## 6.0.0
 
+- Added Forge Autonomy v1: evidence-aware short-prompt inference, decision-time guidance routing, five autonomy levels, deterministic render/functional review contracts and forced-optimization candidate acceptance.
+- Added a 30-case commercial one-line prompt benchmark and made it part of the full Forge check gate.
 - Added Forge Director immersive construction intelligence with 196 evidence-graded references, 98 executable construction patterns and 16 primary technical doctrine groups.
 - Added an eight-layer Hierarchy Engine that can block production when strategy, narrative, visual, interaction, motion/spatial or semantic priorities compete.
 - Added Guided Build inside Studio plus direct Asset Creator handoffs from Creative Agent, including Meshy 3D and Higgsfield image/video generation paths with server-only credentials.

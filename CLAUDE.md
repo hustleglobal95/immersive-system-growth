@@ -33,6 +33,8 @@ Build cinematic, spatial, interactive websites that feel like one continuous exp
 23. Viewport gizmos may write selected keyframes, but they must not own production transforms or ship active in the public runtime.
 24. Editor dependencies with reciprocal network-copyleft or custom commercial licenses are not accepted into the Studio client bundle.
 25. Reference-driven immersive work must deconstruct composition, typography, depth, motion, continuity, interaction, DOM/WebGL roles, mobile translation and first-use performance before implementation. Consult `docs/IMMERSIVE_CONSTRUCTION_INTELLIGENCE.md` and map the principles to existing Forge systems before proposing a new dependency.
+26. Short-prompt autonomy must compile an evidence-aware brief before Director runs. Do not silently replace unknown project type, audience, conversion intent or brand truth with high-confidence generic defaults.
+27. Autonomous repair uses forced optimization: a candidate may replace the incumbent only after hard gates pass and comparative review establishes improvement. Newer output is not automatically better.
 
 ## Before implementation
 
@@ -81,6 +83,7 @@ Before declaring completion:
 npm run doctor
 npm run experience:validate
 npm run assets:audit
+npm run autonomy:benchmark
 npm test
 npm run typecheck
 npm run lint

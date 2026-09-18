@@ -10,11 +10,11 @@ import { parseExperience } from "@/src/lib/configSchema";
 import { parseInteractionGraph } from "@/src/lib/interactionGraph";
 import { parseStudioProject } from "@/src/platform/studioSchema";
 import { runDirectorIntelligence } from "@/src/platform/director-intelligence/orchestrator";
+import { inferPromptIntelligence } from "@/src/platform/autonomy/promptIntelligence";
 import { applyCreativeExecutionPlan, planCreativeExecution } from "@/src/studio/creativeAgentPlan";
 import { useStudioDraft } from "@/src/studio/useStudioDraft";
 import type { AgentSceneAssetItem } from "@/src/studio/creativeAgentAssets";
 import type { AssetManifest } from "@/src/types/assets";
-import type { DirectorBrief } from "@/src/platform/directorSchema";
 
 const initialExperience = parseExperience(rawExperience);
 const initialProject = parseStudioProject(rawProject);
@@ -40,22 +40,27 @@ export function CreativeAgentWorkbench() {
     if (seededIdea) setIdea(seededIdea.slice(0, 4000));
   }, []);
 
+  const promptIntelligence = useMemo(() => inferPromptIntelligence({
+    prompt: idea,
+    projectName: draft.project.name,
+    sceneCount: draft.experience.scenes.length,
+    manifest: draft.assetManifest,
+  }), [idea, draft.project.name, draft.experience.scenes.length, draft.assetManifest]);
+
   const plan = useMemo(() => planCreativeExecution({
     idea,
     experience: draft.experience,
     manifest: draft.assetManifest,
     variation,
-  }), [idea, draft.experience, draft.assetManifest, variation]);
+    preferredMedia: promptIntelligence.recommendedMedia,
+  }), [idea, draft.experience, draft.assetManifest, variation, promptIntelligence.recommendedMedia]);
 
   const [selectedScenes, setSelectedScenes] = useState<number[]>([]);
   useEffect(() => {
     setSelectedScenes(plan.sceneMoves.map((move) => move.sceneIndex));
   }, [plan.title, plan.sceneMoves.length]);
 
-  const brief = useMemo(
-    () => makeBrief(draft.project.name, idea, draft.experience.scenes.length, draft.assetManifest, plan.mediumLabel, plan.signatureMoment),
-    [draft.project.name, idea, draft.experience.scenes.length, draft.assetManifest, plan.mediumLabel, plan.signatureMoment],
-  );
+  const brief = promptIntelligence.brief;
   const intelligence = useMemo(() => runDirectorIntelligence({ brief }), [brief]);
   const report = intelligence.report;
   const hierarchyBlocked = report.hierarchy.blockers.length > 0;
@@ -121,6 +126,8 @@ export function CreativeAgentWorkbench() {
       <section className="creative-agent__stage">
         <div className="creative-agent__verdict">
           <div><span>DIRECTOR VERDICT</span><strong>{report.verdict}</strong></div>
+          <div><span>PROMPT READ</span><strong>{promptIntelligence.projectType.value} · {promptIntelligence.tier.value}</strong></div>
+          <div><span>INFERENCE</span><strong>{Math.round(promptIntelligence.confidence * 100)}%</strong></div>
           <div><span>HIERARCHY</span><strong>{report.hierarchy.overallScore}/10</strong></div>
           <div><span>EXECUTION MEDIUM</span><strong>{plan.mediumLabel}</strong></div>
           <div><span>ASSET READY</span><strong>{plan.assetSummary.scenesBuildableNow.length}/{plan.sceneMoves.length} scenes</strong></div>
@@ -214,6 +221,12 @@ export function CreativeAgentWorkbench() {
 
         <div className="creative-agent__grid">
           <article>
+            <span>PROMPT INTELLIGENCE</span>
+            <h3>{promptIntelligence.projectType.value} · {promptIntelligence.primaryAction.value}</h3>
+            <p>{promptIntelligence.brandTruth.value}</p>
+            <p>{promptIntelligence.unknowns[0]}</p>
+          </article>
+          <article>
             <span>ASSET STRATEGY</span>
             <h3>Every proposed scene must explain its production inputs.</h3>
             {plan.assetStrategy.map((item) => <p key={item}>{item}</p>)}
@@ -259,23 +272,6 @@ function AssetItems({ title, values, empty, sceneIndex }: { title: string; value
 function assetCreatorHref(item: AgentSceneAssetItem, sceneIndex: number) {
   const query = new URLSearchParams({ asset: item.name, type: item.type, reason: item.reason, priority: item.priority, scene: String(sceneIndex) });
   return `/studio/assets/create?${query.toString()}`;
-}
-
-function makeBrief(projectName: string, idea: string, sceneCount: number, manifest: AssetManifest, medium: string, signature: string): DirectorBrief {
-  return {
-    projectName,
-    projectType: "brand",
-    tier: "flagship",
-    client: projectName,
-    audience: "A design-aware visitor who should understand the idea immediately and remember one signature experience.",
-    objective: idea,
-    primaryAction: "Continue exploring",
-    brandTruth: `The active Forge project should express one clear creative thesis. The current execution candidate is ${medium}, with the signature moment defined as: ${signature}`,
-    differentiators: ["Cinematic direction", "Purposeful interaction", "High craft-to-complexity ratio"],
-    constraints: ["Protect mobile performance", "Prefer existing assets before inventing production cost", `Current project contains ${sceneCount} scenes and ${assetCount(manifest)} registered assets`, "Every proposed scene must include a complete asset strategy", "All applied Creative Agent changes must remain reversible"],
-    existingAssets: [],
-    references: [],
-  };
 }
 
 function mediumName(value: string) {
