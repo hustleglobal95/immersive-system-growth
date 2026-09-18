@@ -140,7 +140,7 @@ export function StudioLivePreview({
           {(["desktop", "tablet", "mobile"] as const).map((size) => <button type="button" key={size} aria-pressed={viewport === size} onClick={() => setViewport(size)}>{size}</button>)}
         </div>
         <label>Quality<select aria-label="Preview quality" value={quality} onChange={(event) => useExperienceStore.getState().setQuality(event.target.value as QualityMode)}><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label>
-        <span>{stats.calls} calls / {stats.triangles.toLocaleString()} triangles</span>
+        <span>{stats.calls || stats.triangles ? `Render · ${stats.calls} calls · ${stats.triangles.toLocaleString()} triangles` : "Renderer ready"}</span>
       </div>}
       <div className="studio-preview__viewport" data-viewport={effectiveViewport} data-review-mode={reviewMode ? "true" : "false"}>
         <div className="studio-preview__canvas">
