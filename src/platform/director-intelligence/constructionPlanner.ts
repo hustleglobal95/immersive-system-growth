@@ -216,7 +216,11 @@ function chooseMedium(input: {
 
   if (
     hasVideo &&
-    patternSet.has("pre-rendered-sequence-for-fidelity") &&
+    (
+      patternSet.has("pre-rendered-sequence-for-fidelity") ||
+      patternSet.has("layered-video-state-machine") ||
+      patternSet.has("shared-media-source-mapping")
+    ) &&
     beat.intensity >= 5
   ) {
     return "media";
@@ -377,6 +381,12 @@ function performancePolicy(
   if (patterns.has("pre-rendered-sequence-for-fidelity") && medium === "media") {
     rules.push("Prefetch/cache only the active frame neighborhood and verify decode memory so offline-rendered fidelity does not create a first-load stall.");
   }
+  if (patterns.has("shared-media-source-mapping") && medium === "media") {
+    rules.push("Decode one authored media source for synchronized multi-surface compositions and map distinct UV/crop regions instead of running duplicate decoders.");
+  }
+  if (patterns.has("layered-video-state-machine") && medium === "media") {
+    rules.push("Preload the next authored media state before committing the interaction and keep layer clocks synchronized across prepared loop boundaries.");
+  }
   if (patterns.has("offscreen-render-worker") && ["3d", "hybrid", "shader"].includes(medium)) {
     rules.push("If profiling shows main-thread contention, isolate the heavy canvas behind a narrow OffscreenCanvas/worker state protocol.");
   }
@@ -519,6 +529,18 @@ function globalRules(
   }
   if (patterns.has("entry-ritual-earns-its-wait")) {
     rules.push("Treat the preloader/enter state as a prologue that establishes motion/permission context, never as decorative delay.");
+  }
+  if (patterns.has("storyboard-before-wireframe")) {
+    rules.push("Lock the temporal storyboard—dominant subject, copy role, carried anchor, intensity and transition intent—before polishing individual section layouts.");
+  }
+  if (patterns.has("grid-as-orientation-memory")) {
+    rules.push("Use the project grid as persistent orientation memory across chapters and align DOM/WebGL endpoints to the same runtime geometry.");
+  }
+  if (patterns.has("interface-recedes-behind-content")) {
+    rules.push("Remove decorative chrome when strong media/spacing can carry discovery, while keeping semantic navigation and direct-access paths intact.");
+  }
+  if (patterns.has("sound-as-continuity-layer")) {
+    rules.push("Treat ambience, interaction cues and score as stateful continuity layers tied to the same narrative phases as the visual experience.");
   }
   if (patterns.has("design-grid-runtime-contract")) {
     rules.push("Store desktop/mobile grid geometry as runtime project data and make a development overlay inspect the exact production columns, gutters and rows.");
