@@ -15,7 +15,7 @@ const CHAPTER_MOTION: Record<string, { label: CinematicPreset; headline: Cinemat
   // for a beat before the ring itself goes.
   parti: {
     label: "label-track", headline: "headline-words", lede: "lede-words", pace: .9,
-    collapse: "section-lift", collapseAt: [.46, .54],
+    collapse: "section-lift", collapseAt: [.52, .6],
   },
   threshold: { label: "text-settle", headline: "headline-reveal", lede: "copy-drift", pace: .6, lead: .03 },
   living: { label: "label-track", headline: "headline-drop", lede: "lede-words", pace: 1, lead: .1, rows: "list-unfold", plates: "plate-rise" },
@@ -55,7 +55,7 @@ const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
     { selector: scope + "[data-motion-cta]", range: [at(lead + .06), at(lead + .14)], preset: "copy-drift" },
     {
       selector: scope + "[data-motion-panel]",
-      range: [at(motion.collapseAt?.[0] ?? .62), at(motion.collapseAt?.[1] ?? .7)],
+      range: [at(motion.collapseAt?.[0] ?? .68), at(motion.collapseAt?.[1] ?? .78)],
       preset: motion.collapse ?? "section-collapse",
     },
   ];

@@ -7,6 +7,12 @@ export interface PanelWindow { start: number; end: number; enterStart: number; e
 const axisOf = (direction: MediaDirection) => (direction === "left" || direction === "right" ? "x" : "y") as "x" | "y";
 const signOf = (direction: MediaDirection) => (direction === "up" || direction === "left" ? 1 : -1);
 const clamp = (n: number) => Math.max(0, Math.min(1, n));
+/**
+ * Handover ramps were linear, which is what made every cross-fade read as mechanical: the
+ * frame started and stopped changing at full rate. Easing both ends lets a handover begin and
+ * settle rather than switch on.
+ */
+const ease = (n: number) => { const t = clamp(n); return t * t * t * (t * (t * 6 - 15) + 10); };
 export function getMediaPanelWindow(scenes: readonly SceneDefinition[], index: number): PanelWindow {
   const scene = scenes[index], prior = scenes[index - 1], next = scenes[index + 1];
   return {
@@ -30,8 +36,8 @@ export function sampleMediaPanel(p: number, w: PanelWindow, compact = false) {
   // with no blend, no drift and no reveal. Authored slides use it to change hard.
   const isCut = w.transition === "cut";
   const enter = w.first || (isCut && p >= w.start) ? 1 : isCut ? 0
-    : clamp((p - w.enterStart) / Math.max(.000001,w.start-w.enterStart));
-  const leave = w.last ? 0 : clamp((p-w.exitStart)/Math.max(.000001,w.end-w.exitStart));
+    : ease((p - w.enterStart) / Math.max(.000001,w.start-w.enterStart));
+  const leave = w.last ? 0 : ease((p-w.exitStart)/Math.max(.000001,w.end-w.exitStart));
   const exitDirection = w.exitDirection ?? w.direction;
   const axis = axisOf(w.direction), exitAxis = axisOf(exitDirection);
   const sign = signOf(w.direction), exitSign = signOf(exitDirection);
