@@ -223,7 +223,7 @@ The result can use the existing Forge creative compiler without inventing a para
 
 Director does not treat a reference as a request to import its implementation stack. Before reference-driven production, Forge deconstructs the observable construction: composition, typography, depth, scroll choreography, persistent anchors, interaction physics, DOM/WebGL responsibilities, mobile translation and first-use performance costs.
 
-Reusable construction knowledge lives in `src/platform/director-intelligence/constructionKnowledge.ts` and is compiled into the existing Creative Plan. The current research pool contains **155 evidence-graded immersive references** and **84 executable construction patterns**, spanning composition, typography, camera direction, interaction causality, DOM/WebGL coordination, asset pipelines, mobile translation, transition budgeting and first-use performance.
+Reusable construction knowledge lives in `src/platform/director-intelligence/constructionKnowledge.ts` and is compiled into the existing Creative Plan. The current research pool contains **170 evidence-graded immersive references** and **92 executable construction patterns**, spanning composition, typography, camera direction, interaction causality, DOM/WebGL coordination, asset pipelines, mobile translation, transition budgeting and first-use performance.
 
 These are **construction rules, not component presets**. They describe how to use Forge's existing camera, motion, R3F, shader, media, mask and interaction systems. They do not prescribe a proprietary palette, typeface, branded layout or signature interaction from a reference.
 
