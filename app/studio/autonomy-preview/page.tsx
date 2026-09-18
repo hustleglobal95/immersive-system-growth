@@ -10,18 +10,21 @@ export const dynamic = "force-dynamic";
 export default async function AutonomyPreviewPage({
   searchParams,
 }: {
-  searchParams: Promise<{ progress?: string; viewport?: string }>;
+  searchParams: Promise<{ progress?: string; viewport?: string; variant?: string }>;
 }) {
   if (process.env.FORGE_AUTONOMY_PREVIEW !== "1") notFound();
   const params=await searchParams;
   const progress=clamp(Number(params.progress ?? "0"));
   const viewport=params.viewport==="mobile" ? "mobile" : "desktop";
-  const candidatePath=process.env.FORGE_AUTONOMY_EXPERIENCE_PATH;
-  const raw=candidatePath
-    ? JSON.parse(fs.readFileSync(path.resolve(candidatePath),"utf8"))
+  const variant=params.variant==="candidate" ? "candidate" : "incumbent";
+  const incumbentPath=process.env.FORGE_AUTONOMY_INCUMBENT_PATH;
+  const candidatePath=process.env.FORGE_AUTONOMY_CANDIDATE_PATH ?? process.env.FORGE_AUTONOMY_EXPERIENCE_PATH;
+  const selectedPath=variant==="candidate" ? candidatePath : incumbentPath;
+  const raw=selectedPath
+    ? JSON.parse(fs.readFileSync(path.resolve(selectedPath),"utf8"))
     : rawExperience;
   const experience=parseExperience(raw);
-  return <AutonomyPreviewClient experience={experience} progress={progress} viewport={viewport} />;
+  return <AutonomyPreviewClient experience={experience} progress={progress} viewport={viewport} variant={variant} />;
 }
 
 function clamp(value:number) {
