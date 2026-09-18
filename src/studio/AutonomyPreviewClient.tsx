@@ -51,6 +51,7 @@ export function AutonomyPreviewClient({
           sceneId:sampled.scene.id,
           localProgress:sampled.localProgress,
           camera:sampled.camera,
+          runtimeCamera:store.cameraTelemetry,
           hero:sampled.hero,
           world:sampled.world,
           post:sampled.post,
