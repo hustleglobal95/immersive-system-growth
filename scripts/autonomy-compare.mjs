@@ -50,11 +50,11 @@ for(const captureId of common) {
     });
     if(!response.ok) throw new Error("Pairwise critic failed for " + captureId + " round " + (round+1) + ": HTTP " + response.status);
     const payload=await response.json();
-    judgments.push(pairwiseJudgmentFromResponse({ judgeId:captureId+"-round-"+(round+1),request,response:payload }));
+    judgments.push(pairwiseJudgmentFromResponse({ judgeId:captureId+"-round-"+(round+1),request,response:payload,candidateId }));
   }
 }
 
-const candidateHardGateFailures=hardGateFailures(candidate);
+const candidateHardGateFailures=[...new Set([...hardGateFailures(candidate),...judgments.flatMap((item)=>item.hardGateFailures)])];
 const decision=forcedOptimizationDecision({ incumbentId,candidateId,judgments,candidateHardGateFailures });
 await fs.mkdir(path.dirname(outputPath),{ recursive:true });
 await fs.writeFile(outputPath,JSON.stringify({ version:1,projectContext,commonCaptureCount:common.length,candidateHardGateFailures,decision },null,2)+"\n");
