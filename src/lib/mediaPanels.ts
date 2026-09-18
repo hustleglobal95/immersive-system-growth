@@ -2,7 +2,8 @@ import type { SceneDefinition } from "@/src/types/experience";
 
 export type MediaTransition = "slide" | "curtain" | "zoom" | "dissolve" | "wipe" | "mask" | "cut";
 export type MediaDirection = "up" | "down" | "left" | "right";
-export interface PanelWindow { start: number; end: number; enterStart: number; exitStart: number; first: boolean; last: boolean; direction: MediaDirection; exitDirection?: MediaDirection; zoom: number; transition?: MediaTransition; exitCut?: boolean }
+export interface PanelWindow { start: number; end: number; enterStart: number; exitStart: number; first: boolean; last: boolean; direction: MediaDirection; exitDirection?: MediaDirection; zoom: number; transition?: MediaTransition; exitCut?: boolean;
+  drift?: { from: { x: number; y: number; zoom: number }; to: { x: number; y: number; zoom: number } } }
 /** Travel axis and sign for a direction, so a handover can cross the frame either way. */
 const axisOf = (direction: MediaDirection) => (direction === "left" || direction === "right" ? "x" : "y") as "x" | "y";
 const signOf = (direction: MediaDirection) => (direction === "up" || direction === "left" ? 1 : -1);
@@ -25,6 +26,7 @@ export function getMediaPanelWindow(scenes: readonly SceneDefinition[], index: n
     direction: scene.media?.direction ?? "up",
     exitDirection: next?.media?.direction ?? "up",
     zoom: scene.media?.zoom ?? 1.06,
+    drift: scene.media?.drift,
     transition: scene.media?.transition ?? "slide",
     // A panel is replaced by a hard cut, not slid out from under one: drifting would expose
     // the plate behind it in the beat before the swap.
@@ -48,15 +50,24 @@ export function sampleMediaPanel(p: number, w: PanelWindow, compact = false) {
   const slideOut = transition === "slide" && !w.exitCut ? exitSign * leave * 35 : 0;
   const driftIn = isCut ? 0 : -sign * (1 - enter) * travel;
   const driftOut = isCut ? 0 : exitSign * leave * travel;
+  // The frame's own move across its chapter, independent of the handover travel: a push in, a
+  // pan, a rise, a pull back, or nothing at all where stillness is the point.
+  const sceneT = ease((p - w.start) / Math.max(.000001, w.end - w.start));
+  const lerp = (a: number, b: number) => a + (b - a) * sceneT;
+  const drift = w.drift;
+  const driftScale = drift ? lerp(drift.from.zoom, drift.to.zoom) : null;
+  const driftPanX = drift ? lerp(drift.from.x, drift.to.x) : 0;
+  const driftPanY = drift ? lerp(drift.from.y, drift.to.y) : 0;
   return {
     visible: p >= (isCut ? w.start : w.enterStart) && (w.last ? p <= w.end : p < w.end),
     panelY: (axis === "y" ? slideIn : 0) - (exitAxis === "y" ? slideOut : 0),
     panelX: (axis === "x" ? slideIn : 0) - (exitAxis === "x" ? slideOut : 0),
-    imageY: (axis === "y" ? driftIn : 0) + (exitAxis === "y" ? driftOut : 0),
-    imageX: (axis === "x" ? driftIn : 0) + (exitAxis === "x" ? driftOut : 0),
+    imageY: (axis === "y" ? driftIn : 0) + (exitAxis === "y" ? driftOut : 0) + driftPanY,
+    imageX: (axis === "x" ? driftIn : 0) + (exitAxis === "x" ? driftOut : 0) + driftPanX,
     // A leaving frame settles back a little as the next one comes over it, so the imagery
     // collapses into the handover instead of simply being covered. A cut does not: it changes.
     scale: (isCut ? 1 : 1 - leave * 0.075) * (isCut ? 1
+      : driftScale !== null ? driftScale
       : transition === "zoom"
         ? 1 + (Math.min(w.zoom, compact ? 1.06 : 1.18) - 1) * (1 - phase)
         : 1 + (Math.min(w.zoom,compact?1.04:1.18)-1)*(1-clamp((p-w.enterStart)/Math.max(.000001,w.end-w.enterStart)))),

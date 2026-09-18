@@ -286,6 +286,18 @@ export const sceneMediaSchema = z.object({
   overlap: finite.min(.1).max(.45).default(.25),
   direction: z.enum(["up","down","left","right"]).default("up"),
   zoom: finite.min(1).max(1.18).default(1.06),
+  drift: z.object({
+    from: z.object({
+      x: finite.min(-12).max(12).default(0),
+      y: finite.min(-12).max(12).default(0),
+      zoom: finite.min(0.88).max(1.24).default(1),
+    }).strict().default({ x: 0, y: 0, zoom: 1 }),
+    to: z.object({
+      x: finite.min(-12).max(12).default(0),
+      y: finite.min(-12).max(12).default(0),
+      zoom: finite.min(0.88).max(1.24).default(1),
+    }).strict().default({ x: 0, y: 0, zoom: 1 }),
+  }).strict().optional(),
   textEnd: finite.min(.1).max(.6).default(.28),
 }).strict().superRefine((media, context) => {
   if (media.kind === "video" && !media.poster) context.addIssue({ code: "custom", message: "Video media requires a poster", path: ["poster"] });

@@ -587,6 +587,18 @@
           "invert": false,
           "edgeColor": "#eadbc5",
           "edgeWidth": 0.2
+        },
+        "drift": {
+          "from": {
+            "x": 0,
+            "y": 0,
+            "zoom": 1.0
+          },
+          "to": {
+            "x": 0,
+            "y": 0,
+            "zoom": 1.1
+          }
         }
       },
       "blocks": [],
@@ -1786,7 +1798,19 @@
         "direction": "left",
         "zoom": 1.06,
         "textEnd": 0.16,
-        "src": "https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=84&w=2400"
+        "src": "https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=84&w=2400",
+        "drift": {
+          "from": {
+            "x": 3.2,
+            "y": 0,
+            "zoom": 1.03
+          },
+          "to": {
+            "x": -3.2,
+            "y": 0,
+            "zoom": 1.03
+          }
+        }
       },
       "blocks": [],
       "hero": {
@@ -3005,6 +3029,18 @@
           "invert": false,
           "edgeColor": "#eadbc5",
           "edgeWidth": 0.2
+        },
+        "drift": {
+          "from": {
+            "x": 0,
+            "y": 0,
+            "zoom": 1.0
+          },
+          "to": {
+            "x": -1.5,
+            "y": -1.2,
+            "zoom": 1.16
+          }
         }
       },
       "blocks": [
@@ -3587,7 +3623,19 @@
         "direction": "right",
         "zoom": 1.06,
         "textEnd": 0.3,
-        "src": "https://images.unsplash.com/photo-1763485956343-61b0163a3e7e?auto=format&fit=crop&fm=jpg&q=86&w=2200"
+        "src": "https://images.unsplash.com/photo-1763485956343-61b0163a3e7e?auto=format&fit=crop&fm=jpg&q=86&w=2200",
+        "drift": {
+          "from": {
+            "x": 0,
+            "y": 3.4,
+            "zoom": 1.05
+          },
+          "to": {
+            "x": 0,
+            "y": -3.4,
+            "zoom": 1.05
+          }
+        }
       },
       "blocks": [],
       "hero": {
@@ -4793,6 +4841,18 @@
           "invert": false,
           "edgeColor": "#eadbc5",
           "edgeWidth": 0.2
+        },
+        "drift": {
+          "from": {
+            "x": 0,
+            "y": -2.0,
+            "zoom": 1.14
+          },
+          "to": {
+            "x": 0,
+            "y": 0,
+            "zoom": 1.0
+          }
         }
       },
       "blocks": [],
@@ -5366,6 +5426,18 @@
           "invert": false,
           "edgeColor": "#eadbc5",
           "edgeWidth": 0.2
+        },
+        "drift": {
+          "from": {
+            "x": 0,
+            "y": 0,
+            "zoom": 1.02
+          },
+          "to": {
+            "x": 0,
+            "y": 0,
+            "zoom": 1.02
+          }
         }
       },
       "blocks": [],
