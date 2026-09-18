@@ -81,17 +81,23 @@ test("signature scene receives stronger prewarm/performance direction when heavy
   assert.ok(heavySignature.length >= 1, "signature beat should be rendered, not DOM-only");
 
   // The behavior that matters: the heaviest moment is never left to compile or load on
-  // arrival. Which pattern supplies that direction is a corpus decision, so accept it from
-  // the scene's own policy or from the plan's boot strategy.
+  // arrival. Which pattern supplies the direction is a corpus decision, so assert the
+  // direction exists rather than naming the pattern that produced it.
   assert.ok(
-    heavySignature.every((scene) => scene.performancePolicy.length >= 1),
-    "a heavy signature scene should carry explicit performance direction",
+    heavySignature.every((scene) =>
+      scene.performancePolicy.some((rule) => /prewarm/i.test(rule)),
+    ),
+    "a heavy signature scene should carry explicit prewarm direction",
   );
+
+  // The signature chapter is covered by name, not merely as whichever heavy chapter came
+  // first: those are different chapters whenever an earlier beat also renders.
+  const signatureSceneIds = signatureScenes.map((scene) => scene.sceneId);
   assert.ok(
     plan.criticalBootStrategy.some((rule) =>
-      /prewarm|preload|precompile|before it becomes interactive/i.test(rule),
+      /prewarm/i.test(rule) && signatureSceneIds.some((id) => rule.includes(id)),
     ),
-    "boot strategy should prewarm heavy work ahead of the visitor reaching it",
+    "boot strategy should prewarm the signature chapter by name",
   );
 });
 
