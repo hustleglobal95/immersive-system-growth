@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { experience } from "@/src/lib/experience";
+import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { interactionGraph } from "@/src/lib/interactionGraphConfig";
 import { interactionEventTypeSchema } from "@/src/lib/interactionGraph";
 import {
@@ -30,6 +30,7 @@ interface DragPointerState {
 }
 
 export function InteractionGraphController() {
+  const experience = useExperienceConfig();
   const activeScene = useExperienceStore((state) => state.activeScene);
   const selectedHotspot = useExperienceStore((state) => state.selectedHotspot);
   const previousScene = useRef<number | null>(null);
