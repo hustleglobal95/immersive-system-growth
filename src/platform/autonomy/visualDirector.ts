@@ -22,7 +22,8 @@ export const pairwiseVisualResponseSchema=z.object({
   winner:z.enum(["first","second","tie"]),
   confidence:z.number().min(0).max(1),
   reasons:z.array(z.string().min(1).max(800)).min(1).max(12),
-  hardGateFailures:z.array(z.string().min(1).max(500)).max(12).default([]),
+  firstHardGateFailures:z.array(z.string().min(1).max(500)).max(12).default([]),
+  secondHardGateFailures:z.array(z.string().min(1).max(500)).max(12).default([]),
 }).strict();
 
 export interface SpecialistCriticBrief {
@@ -160,15 +161,21 @@ export function pairwiseJudgmentFromResponse(input:{
   judgeId:string;
   request:PairwiseCriticRequest;
   response:unknown;
+  candidateId?:string;
 }):PairwiseJudgment {
   const parsed=pairwiseVisualResponseSchema.parse(input.response);
   const winnerId=parsed.winner==="first" ? input.request.firstId : parsed.winner==="second" ? input.request.secondId : undefined;
+  const candidateFailures=input.candidateId
+    ? input.request.firstId===input.candidateId ? parsed.firstHardGateFailures
+      : input.request.secondId===input.candidateId ? parsed.secondHardGateFailures
+      : []
+    : [...parsed.firstHardGateFailures,...parsed.secondHardGateFailures];
   return {
     judgeId:input.judgeId,
     firstId:input.request.firstId,
     secondId:input.request.secondId,
     winnerId,
-    hardGateFailures:parsed.hardGateFailures,
+    hardGateFailures:candidateFailures,
     reasons:parsed.reasons,
     confidence:parsed.confidence,
   };
