@@ -101,8 +101,8 @@ test("construction directives are grounded in both patterns and corpus precedent
 });
 
 
-test("broader immersive corpus adds 53 public studio and technical/source studies", () => {
-  assert.equal(broaderImmersiveReferenceCorpus.length, 53);
+test("broader immersive corpus adds 147 public studio and technical/source studies", () => {
+  assert.equal(broaderImmersiveReferenceCorpus.length, 147);
   assert.ok(
     broaderImmersiveReferenceCorpus.every(
       (reference) =>
@@ -110,7 +110,7 @@ test("broader immersive corpus adds 53 public studio and technical/source studie
         reference.evidenceLevel === "technical-reference",
     ),
   );
-  assert.equal(immersiveReferenceCorpus.length, 102);
+  assert.equal(immersiveReferenceCorpus.length, 196);
 });
 
 test("broader corpus teaches implementation-shaping lessons rather than only visual style", () => {
@@ -161,8 +161,8 @@ test("every corpus pattern id resolves to executable construction knowledge", ()
   const missing = Array.from(referenced).filter((id) => !known.has(id));
 
   assert.deepEqual(missing, []);
-  assert.equal(immersiveConstructionPatterns.length, 59);
-  assert.equal(known.size, 59);
+  assert.equal(immersiveConstructionPatterns.length, 98);
+  assert.equal(known.size, 98);
 });
 
 test("construction consensus ranks patterns by evidence across precedents", () => {
@@ -187,4 +187,88 @@ test("construction consensus ranks patterns by evidence across precedents", () =
           previous.support >= current.support),
     );
   }
+});
+
+test("aggressive research adds media, audio, camera, DCC and interaction knowledge", () => {
+  const patterns = new Set(immersiveConstructionPatterns.map((pattern) => pattern.id));
+
+  for (const id of [
+    "scrubbable-media-delivery",
+    "depth-map-volumetric-reconstruction",
+    "offscreen-render-worker",
+    "progressive-fidelity-stack",
+    "audio-reactive-semantic-band",
+    "scroll-distance-pacing",
+    "directional-cut-continuity",
+    "spatial-metaphor-compression",
+    "dcc-semantic-naming-contract",
+    "static-geometry-batching",
+    "input-work-on-demand",
+    "orthographic-diorama-staging",
+    "gamified-progress-with-skip",
+    "pre-rendered-sequence-for-fidelity",
+    "cross-device-companion-control",
+    "personalization-to-render-state",
+    "teach-nonstandard-navigation",
+    "entry-ritual-earns-its-wait",
+    "mode-switch-preserves-context",
+  ]) {
+    assert.ok(patterns.has(id), `Missing aggressive-research pattern: ${id}`);
+  }
+
+  for (const referenceId of [
+    "codrops-kai-design-dept",
+    "codrops-phantom-land",
+    "codrops-until-labs",
+    "codrops-aether-1",
+    "codrops-crosswire",
+    "codrops-windland",
+    "codrops-kode-immersive",
+    "codrops-forged-build",
+    "source-bruno-simon-folio-2019",
+    "source-abigail-bloom-room",
+    "unseen-letter",
+    "unseen-superlist",
+    "hello-monday-google-cloud",
+    "unit9-lightsaber-escape",
+    "codrops-motoyoshi-takamitsu",
+    "codrops-dich-fashion",
+    "codrops-jason-bergh",
+    "locomotive-scout-motors",
+    "uncasual-tokimonsta",
+  ]) {
+    assert.ok(
+      immersiveReferenceCorpus.some((reference) => reference.id === referenceId),
+      `Missing aggressive-research reference: ${referenceId}`,
+    );
+  }
+});
+
+test("reference retrieval covers visual, technical and shipped-case evidence roles", () => {
+  const treatment = directProject(brief);
+  const retrieved = retrieveImmersiveReferences(treatment, 8);
+  const levels = new Set(retrieved.map(({ reference }) => reference.evidenceLevel));
+
+  assert.ok(
+    levels.has("visual-preview") || levels.has("public-description"),
+    "Expected at least one visual precedent.",
+  );
+  assert.ok(levels.has("technical-reference"), "Expected at least one technical precedent.");
+  assert.ok(levels.has("public-case-study"), "Expected at least one shipped case-study precedent.");
+});
+
+test("construction evidence exposes global pattern maturity", () => {
+  const treatment = directProject(brief);
+  const directives = buildConstructionDirectives(treatment, 7);
+  const maturities = new Set(["emerging", "supported", "established", "strong"]);
+
+  assert.ok(directives.patternEvidence.length > 0);
+  assert.ok(
+    directives.patternEvidence.every(
+      (item) =>
+        item.globalReferenceCount >= item.referenceIds.length &&
+        item.globalSourceCount >= item.sourceCount &&
+        maturities.has(item.maturity),
+    ),
+  );
 });

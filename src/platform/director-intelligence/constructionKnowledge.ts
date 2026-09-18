@@ -1,5 +1,7 @@
 import type { DirectorTreatment } from "@/src/platform/directorSchema";
-import { retrieveImmersiveReferences } from "@/src/platform/director-intelligence/referenceCorpus";
+import { immersiveReferenceCorpus, retrieveImmersiveReferences } from "@/src/platform/director-intelligence/referenceCorpus";
+import { doctrineForPatterns } from "@/src/platform/director-intelligence/technicalDoctrine";
+import { failureLessonsForTreatment } from "@/src/platform/director-intelligence/failureKnowledge";
 
 export interface ImmersiveConstructionPattern {
   id: string;
@@ -1439,6 +1441,856 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
     avoid: ["Hand-keyframing hundreds of points for a mathematically simple motion.", "Randomness that prevents reverse reconstruction."],
   },
   {
+    id: "scrubbable-media-delivery",
+    title: "Encode media for interaction, not just playback",
+    signals: ["video", "scrub", "drag", "timeline", "frame", "media", "touchable"],
+    composition: [
+      "Use scrubbable media when authored footage is the product evidence or tactile subject; keep the control relationship obvious in the frame.",
+    ],
+    motion: [
+      "Map one bounded interaction signal to media time and keep seeks monotonic enough that decoding does not fight the gesture.",
+    ],
+    transitions: [
+      "Pre-position the destination frame before revealing the media so the first visible scrub state is already decoded.",
+    ],
+    interaction: [
+      "Drag or scroll should feel like direct manipulation of time, not a decorative video effect.",
+    ],
+    implementation: [
+      "Encode interactive video with a deliberately short keyframe interval and lightweight decoding profile instead of treating a streaming master as scrub-ready.",
+      "Provide a browser-compatible decode fallback when native seeking cannot meet the interaction latency requirement.",
+    ],
+    mobile: [
+      "Reduce resolution/bitrate before increasing keyframe distance; responsive scrubbing matters more than surplus pixel density.",
+    ],
+    avoid: ["Long-GOP delivery files used for frame-sensitive scrubbing.", "Seeking video on every noisy pointer sample without smoothing or bounds."],
+  },
+  {
+    id: "depth-map-volumetric-reconstruction",
+    title: "Reconstruct spatial subjects from compact 2D data",
+    signals: ["depth", "particle", "portrait", "scan", "volumetric", "photo", "point cloud"],
+    composition: [
+      "Use depth-derived volume when the subject needs spatial presence but a full mesh is not required for silhouette, lighting or interaction.",
+    ],
+    motion: [
+      "Let particles separate, breathe or reform around the subject while preserving enough stable structure for recognition.",
+    ],
+    transitions: [
+      "Morph between compact image/depth datasets rather than loading a new heavy mesh for each portrait or state.",
+    ],
+    interaction: [
+      "Use pointer movement to reveal volume or depth subtly; do not destroy facial/product recognition for the sake of particle motion.",
+    ],
+    implementation: [
+      "Pack subject color plus normalized depth into small textures and reconstruct Z position in the vertex shader.",
+      "Keep particle attributes static where possible and move subject deformation to GPU uniforms/texture sampling.",
+    ],
+    mobile: [
+      "Lower particle density and texture resolution while preserving the depth silhouette and key features.",
+    ],
+    avoid: ["Photogrammetry-scale geometry when two compact maps can produce the required perception.", "CPU-updating tens of thousands of particle positions every frame."],
+  },
+  {
+    id: "offscreen-render-worker",
+    title: "Move isolated heavy rendering off the main thread when it earns the complexity",
+    signals: ["offscreen", "worker", "canvas", "heavy", "thread", "responsiveness", "render"],
+    composition: [],
+    motion: [
+      "Keep interaction-facing state small and serializable so the main thread can communicate intent without owning the heavy render loop.",
+    ],
+    transitions: [],
+    interaction: [
+      "Pointer/scroll input remains captured on the main thread and forwards only the state required by the isolated renderer.",
+    ],
+    implementation: [
+      "Use OffscreenCanvas/WebWorker architecture for self-contained expensive canvases when profiling shows main-thread contention, not as a default abstraction.",
+      "Define a narrow message protocol for resize, quality tier, progress and interaction state before moving rendering off-thread.",
+    ],
+    mobile: [
+      "Prefer reduced work first; use off-thread rendering only where browser support and memory cost still justify it.",
+    ],
+    avoid: ["Worker architecture added without a measured main-thread bottleneck.", "Chatty per-object messages that erase the threading benefit."],
+  },
+  {
+    id: "progressive-fidelity-stack",
+    title: "Spend full fidelity only near the visitor",
+    signals: ["stack", "pages", "collection", "near", "load", "texture", "layer", "depth"],
+    composition: [
+      "Collections may show many stacked/deep items at once, but only the visually relevant frontier needs full material and media fidelity.",
+    ],
+    motion: [
+      "Promote an item to full fidelity as it approaches interaction/reveal and demote it after it recedes.",
+    ],
+    transitions: [
+      "Fidelity promotion must complete before the item becomes the visual focus.",
+    ],
+    interaction: [
+      "Direct navigation should be able to promote a distant item immediately without requiring linear travel through every intermediate object.",
+    ],
+    implementation: [
+      "Use simplified geometry, low-resolution textures, placeholders or reduced passes for buried/deep items and promote them based on proximity/stack position.",
+    ],
+    mobile: [
+      "Keep a smaller full-fidelity neighborhood around the active item.",
+    ],
+    avoid: ["Fully loading every item in a deep visual stack.", "Visible fidelity swaps after an item has already become the focus."],
+  },
+  {
+    id: "audio-reactive-semantic-band",
+    title: "Use sound as a controlled semantic signal",
+    signals: ["audio", "sound", "frequency", "reactive", "music", "voice", "spectrum"],
+    composition: [
+      "Audio-reactive visuals should support the subject or atmosphere rather than compete with readable content.",
+    ],
+    motion: [
+      "Extract and smooth a meaningful frequency/energy band before mapping it to visual tension, speed, amplitude or material response.",
+      "Use audio filtering during transitions when the sonic change strengthens the perceived temporal/spatial shift.",
+    ],
+    transitions: [
+      "Sound can lead or soften a scene transition, but the audio state should follow the same narrative phase as the visual transition.",
+    ],
+    interaction: [
+      "Audio-driven changes should feel causal but not mechanically literal; smooth peaks and constrain the response range.",
+    ],
+    implementation: [
+      "Keep analysis parameters and smoothing explicit so different tracks do not produce wildly different visual behavior.",
+    ],
+    mobile: [
+      "Respect autoplay restrictions and allow the visual system to remain coherent without audio input.",
+    ],
+    avoid: ["Raw FFT bins directly shaking the interface.", "Making core navigation depend on audio playback permission."],
+  },
+  {
+    id: "scroll-distance-pacing",
+    title: "Edit scroll pacing with spatial distance",
+    signals: ["scroll", "pace", "distance", "view height", "chapter", "rhythm", "camera"],
+    composition: [
+      "Give important frames enough scroll distance to be read; compress transitional or low-information travel.",
+    ],
+    motion: [
+      "Treat section travel distance as an editing variable: add view-heights to slow a beat, remove them to accelerate it.",
+    ],
+    transitions: [
+      "Use distance changes to create anticipation before a cut or signature reveal instead of adding more easing complexity.",
+    ],
+    interaction: [],
+    implementation: [
+      "Store narrative distance explicitly per chapter so pacing can be tuned independently from camera path geometry.",
+    ],
+    mobile: [
+      "Retune distance for touch momentum and smaller screens; do not preserve desktop scroll length blindly.",
+    ],
+    avoid: ["Equal scroll length for every chapter regardless of information or emotional weight.", "Solving pacing only with easing while physical travel remains wrong."],
+  },
+  {
+    id: "directional-cut-continuity",
+    title: "Use film cuts without breaking directional continuity",
+    signals: ["cut", "edit", "direction", "camera", "stairs", "floor", "scene", "continuity"],
+    composition: [
+      "A hard spatial cut is acceptable when the outgoing and incoming frames preserve a clear directional, subject or lighting relationship.",
+    ],
+    motion: [
+      "Carry the dominant motion vector through the cut so the visitor's body model of the experience remains coherent.",
+    ],
+    transitions: [
+      "Prefer a clean cut over an awkward curved camera move when scroll is one-dimensional and the curve would imply free navigation.",
+    ],
+    interaction: [],
+    implementation: [
+      "Represent the cut as a deterministic chapter boundary with explicit outgoing/incoming camera states, not an accidental teleport.",
+    ],
+    mobile: [
+      "Cuts may become even more useful on mobile where long 3D travel is expensive; preserve directional logic.",
+    ],
+    avoid: ["Curving a scroll-bound camera merely to connect every space physically.", "Cuts that reverse direction or reorient the world with no visual explanation."],
+  },
+  {
+    id: "spatial-metaphor-compression",
+    title: "Use one spatial metaphor to compress a complex offering",
+    signals: ["service", "complex", "system", "platform", "infrastructure", "map", "grid", "landscape"],
+    composition: [
+      "Map complex capabilities into a small set of repeated spatial units so the visitor can understand the system by seeing relationships, not reading a feature wall.",
+    ],
+    motion: [
+      "Animate the repeated units only when their movement explains flow, users, dependencies or transformation.",
+    ],
+    transitions: [
+      "Move from system overview to local detail without abandoning the same spatial vocabulary.",
+    ],
+    interaction: [
+      "Let visitors inspect a subsystem while keeping enough surrounding context to understand where it sits in the whole.",
+    ],
+    implementation: [
+      "Use instancing/data-driven placement when the metaphor relies on repeated modules.",
+      "Author scene placement in a DCC/data layer and export only the transforms/flags the runtime needs.",
+    ],
+    mobile: [
+      "Reduce simultaneous modules and camera depth while preserving system relationships.",
+    ],
+    avoid: ["Abstract 3D that is visually impressive but explains nothing.", "A different visual metaphor for every feature."],
+  },
+  {
+    id: "dcc-semantic-naming-contract",
+    title: "Make DCC scene names part of the runtime contract",
+    signals: ["blender", "dcc", "name", "node", "material", "collision", "export", "scene"],
+    composition: [],
+    motion: [],
+    transitions: [],
+    interaction: [],
+    implementation: [
+      "Use stable naming conventions in Blender/C4D/Houdini to encode runtime roles such as material family, collision, center/pivot, activation zone, hotspot or animation group.",
+      "Parse those names into runtime behavior so authored scene structure survives export without a separate fragile mapping file.",
+      "Validate required semantic names during asset intake before the experience is wired.",
+    ],
+    mobile: [
+      "Use the same semantic scene contract across quality variants so runtime logic does not fork by asset tier.",
+    ],
+    avoid: ["Runtime logic coupled to arbitrary mesh order.", "Manual node mappings that silently drift after every DCC export."],
+  },
+  {
+    id: "static-geometry-batching",
+    title: "Batch static geometry by actual runtime material/state",
+    signals: ["merge", "batch", "static", "geometry", "draw call", "material", "instancing"],
+    composition: [],
+    motion: [],
+    transitions: [],
+    interaction: [],
+    implementation: [
+      "Merge or instance static geometry that shares material/state after authored transforms are applied, while keeping interactive/dynamic objects separate.",
+      "Batch by the runtime material/shader path rather than by arbitrary DCC grouping.",
+    ],
+    mobile: [
+      "Use more aggressive static batching/instancing where CPU and draw-call budgets are tighter.",
+    ],
+    avoid: ["One draw call per decorative static mesh.", "Merging objects that still need independent interaction, visibility or animation."],
+  },
+  {
+    id: "input-work-on-demand",
+    title: "Do expensive input work only when input changed",
+    signals: ["pointer", "raycast", "mouse", "touch", "input", "intersection", "hover"],
+    composition: [],
+    motion: [],
+    transitions: [],
+    interaction: [
+      "Pointer-driven raycasts, hit tests and expensive hover evaluation should run only after the relevant input state changes or when the target scene moved.",
+    ],
+    implementation: [
+      "Track dirty input state and skip raycasts/intersection work on frames where neither pointer nor target/camera changed.",
+    ],
+    mobile: [
+      "Avoid hover-equivalent hit testing on touch-only devices unless a gesture actually requires it.",
+    ],
+    avoid: ["Raycasting every frame against unchanged pointer and scene state.", "Desktop hover logic left permanently active on coarse-pointer devices."],
+  },
+  {
+    id: "orthographic-diorama-staging",
+    title: "Use orthographic staging for diagrammatic miniature worlds",
+    signals: ["orthographic", "room", "diorama", "miniature", "isometric", "model", "section"],
+    composition: [
+      "Use an orthographic or near-orthographic camera when the subject should read as a designed object/layout rather than a naturalistic photographed space.",
+      "Reposition/scale the same diorama across chapters to make it behave like a persistent graphic subject.",
+    ],
+    motion: [
+      "Use controlled subject translation/scale and selective object reveals rather than free orbiting.",
+    ],
+    transitions: [
+      "Let the diorama transform between chapter compositions while DOM sections maintain readable editorial rhythm.",
+    ],
+    interaction: [
+      "Subtle whole-scene pointer tilt can add life without compromising the diagrammatic composition.",
+    ],
+    implementation: [
+      "Author separate desktop/mobile transforms for the persistent diorama and keep camera projection stable where possible.",
+    ],
+    mobile: [
+      "Re-stage scale and offset for portrait rather than switching to a generic fallback.",
+    ],
+    avoid: ["Perspective-heavy camera moves that destroy the graphic miniature read.", "Independent object wobble that fragments the diorama."],
+  },
+  {
+    id: "gamified-progress-with-skip",
+    title: "Gamify progression only with an escape hatch",
+    signals: ["game", "unlock", "progress", "puzzle", "skip", "reward", "portfolio"],
+    composition: [
+      "Keep the core site structure understandable even when progression is framed as a game or sequence of unlocks.",
+    ],
+    motion: [
+      "Rewards should visibly change the world/interface so progress feels consequential.",
+    ],
+    transitions: [
+      "Unlock transitions should reveal the newly available content immediately after the causal action.",
+    ],
+    interaction: [
+      "Track progress explicitly and always provide a direct skip/bypass route for visitors who came for information rather than play.",
+    ],
+    implementation: [
+      "Model unlocks as explicit state rather than DOM side effects so progress can survive navigation and remain testable.",
+    ],
+    mobile: [
+      "Simplify puzzle gestures that are awkward on touch but preserve the same progression semantics.",
+    ],
+    avoid: ["Mandatory novelty interactions blocking high-intent visitors.", "Hidden progress state with no feedback or recovery."],
+  },
+  {
+    id: "pre-rendered-sequence-for-fidelity",
+    title: "Use pre-rendered sequences when visual fidelity matters more than free viewpoint",
+    signals: ["sequence", "rendered", "frames", "fidelity", "scroll", "luxury", "product", "cgi"],
+    composition: [
+      "Treat the pre-rendered subject as authored cinematography: reserve a stable readable plane for copy and let framing/light/material quality carry the premium impression.",
+    ],
+    motion: [
+      "Tie frame selection to normalized progress with smoothing and prefetch around the active range so the sequence feels directly controlled.",
+    ],
+    transitions: [
+      "Blend from pre-rendered sequence to realtime interaction only where the visitor gains a capability that the sequence cannot provide.",
+    ],
+    interaction: [
+      "Use scroll/drag to control authored time; do not imply free camera control when only frame selection is available.",
+    ],
+    implementation: [
+      "Choose image/video sequence rendering when offline lighting/material fidelity produces more value than realtime viewpoint freedom.",
+      "Budget decode/cache memory explicitly and load a neighborhood around current progress rather than the entire sequence blindly.",
+    ],
+    mobile: [
+      "Use a smaller frame set/resolution while preserving shot continuity and material quality.",
+    ],
+    avoid: ["Rebuilding fixed cinematography as expensive realtime 3D without interaction benefit.", "Loading hundreds of full-resolution frames before first paint."],
+  },
+  {
+    id: "cross-device-companion-control",
+    title: "Use a companion device as a semantic controller",
+    signals: ["phone", "second screen", "websocket", "gyroscope", "device motion", "companion", "remote"],
+    composition: [
+      "Keep the primary display responsible for the shared visual world and the companion screen focused on control, feedback or a complementary private view.",
+    ],
+    motion: [
+      "Filter and bound sensor input before mapping it to the primary scene so latency/noise does not destabilize the world.",
+    ],
+    transitions: [
+      "Connection, calibration and disconnect states must have explicit visual feedback before the cinematic sequence depends on the companion.",
+    ],
+    interaction: [
+      "Map companion sensors/actions onto the same semantic action model used by local input so the experience has one interaction language.",
+    ],
+    implementation: [
+      "Use a low-latency realtime channel for small control state; do not stream heavy scene state between devices.",
+      "Provide a local fallback path when pairing fails or a second device is unavailable.",
+    ],
+    mobile: [
+      "Treat the phone as controller only when that role adds meaning; otherwise preserve a complete single-device path.",
+    ],
+    avoid: ["Second-screen novelty with no narrative/product reason.", "Hard dependency on a companion device without recovery."],
+  },
+  {
+    id: "personalization-to-render-state",
+    title: "Translate user data into bounded visual identity",
+    signals: ["personalization", "profile", "spotify", "user data", "avatar", "generated", "preferences", "mood"],
+    composition: [
+      "Personalized output should still live inside a stable brand composition so user variance does not destroy hierarchy.",
+    ],
+    motion: [
+      "Map data dimensions to a controlled set of visual/motion parameters with explicit ranges and art-directed combinations.",
+    ],
+    transitions: [
+      "Reveal personalization as a causal transformation from input/profile to output rather than presenting a random result.",
+    ],
+    interaction: [
+      "Explain or imply which user choices/data dimensions affect the result when that transparency improves trust and play.",
+    ],
+    implementation: [
+      "Normalize external/user data before mapping it to rendering state and keep a non-connected/manual input path when account access is unavailable.",
+      "Separate deterministic identity parameters from ephemeral animation noise so personalized results remain recognizable and shareable.",
+    ],
+    mobile: [
+      "Keep personalization and shareability intact even if the realtime rendering path is simplified.",
+    ],
+    avoid: ["Unbounded user data directly driving shaders/layout.", "Requiring account connection when a meaningful fallback can exist."],
+  },
+  {
+    id: "teach-nonstandard-navigation",
+    title: "Teach unfamiliar navigation before demanding it",
+    signals: ["horizontal", "drag", "unusual", "navigation", "scroll", "gesture", "affordance"],
+    composition: [
+      "Use the opening frame to make the available movement direction or interaction surface visually inferable before hiding conventional page cues.",
+    ],
+    motion: [
+      "A short first-load demonstration may move the interface in the intended direction, then return control immediately to the visitor.",
+    ],
+    transitions: [],
+    interaction: [
+      "Pair nonstandard navigation with an obvious alternate control path or persistent orientation cue until the behavior is learned.",
+    ],
+    implementation: [
+      "Store the tutorial/first-run state separately from the navigation state so teaching motion never corrupts actual progress.",
+    ],
+    mobile: [
+      "Retune the teaching gesture for touch and avoid demonstrating hover-only behavior.",
+    ],
+    avoid: ["Novel navigation with no initial affordance.", "Long forced tutorials before visitors can interact."],
+  },
+  {
+    id: "entry-ritual-earns-its-wait",
+    title: "Make the entry ritual perform real jobs",
+    signals: ["preloader", "loader", "enter", "audio", "permission", "intro", "ritual", "opening"],
+    composition: [
+      "The loading/entry composition should introduce the world's visual hierarchy or tone rather than present generic progress chrome.",
+    ],
+    motion: [
+      "Use the entry sequence to establish the motion language that the rest of the experience will reuse.",
+    ],
+    transitions: [
+      "The final loader state should become or reveal the first real composition so the wait reads as a prologue, not an interruption.",
+    ],
+    interaction: [
+      "If user activation is required for audio or another browser permission, make the enter action meaningful and combine it with that permission point.",
+    ],
+    implementation: [
+      "Only hold the visitor for work that is genuinely critical to the first meaningful state; defer later assets.",
+    ],
+    mobile: [
+      "Shorten the ritual and critical asset set on constrained devices while preserving the same introduction.",
+    ],
+    avoid: ["Decorative loaders that add delay after the page is ready.", "Requesting audio permission with no contextual reason."],
+  },
+  {
+    id: "mode-switch-preserves-context",
+    title: "Switch presentation modes without losing selection or story context",
+    signals: ["mode", "slider", "list", "grid", "view", "toggle", "archive", "switch"],
+    composition: [
+      "Different views may optimize for mood, scanning or detail, but they must map to the same underlying content/selection model.",
+    ],
+    motion: [
+      "Fade or transform the outgoing mode, rebuild/reposition the destination invisibly, then reveal it at the equivalent content position.",
+    ],
+    transitions: [
+      "Use a persistent backdrop, media subject or other anchor through the mode change so DOM reconstruction does not feel like navigation to a different site.",
+    ],
+    interaction: [
+      "Keep current item, focus and navigation meaning stable across view changes.",
+    ],
+    implementation: [
+      "Model mode and selection separately; create an explicit transition transaction so teardown/rebuild cannot expose half-ready UI.",
+    ],
+    mobile: [
+      "Offer the mode that best suits touch by default while preserving direct access to the same content.",
+    ],
+    avoid: ["Resetting to item one when switching views.", "Animating out before the destination mode is ready."],
+  },
+  {
+    id: "design-grid-runtime-contract",
+    title: "Keep the design grid inspectable in the real build",
+    signals: ["grid", "figma", "layout", "alignment", "editorial", "precision", "margin"],
+    composition: [
+      "Translate authored columns, gutters, rows and margins into explicit runtime tokens instead of approximating them by eye during implementation.",
+      "Use the same grid to place both semantic DOM and WebGL-aligned media so the spatial and editorial layers share one geometry.",
+    ],
+    motion: [
+      "Motion may break the grid temporarily, but resting states and transition endpoints should resolve back to authored alignment unless the concept explicitly rejects it.",
+    ],
+    transitions: [],
+    interaction: [],
+    implementation: [
+      "Provide a development-only grid overlay or measurement mode that renders the production layout rules directly in the browser.",
+      "When a reference/design file drives the build, store the grid values as project data/tokens so visual QA can compare against the actual implementation.",
+    ],
+    mobile: [
+      "Author a separate mobile grid contract rather than proportionally shrinking the desktop one.",
+    ],
+    avoid: ["Treating Figma gutters as loose inspiration.", "Hard-coded one-off offsets that cannot be inspected against the project grid."],
+  },
+  {
+    id: "gpu-instance-data-packing",
+    title: "Pack repeated-object state for the GPU",
+    signals: ["instance", "instancing", "atlas", "attribute", "gpu", "packing", "crowd", "repeated"],
+    composition: [],
+    motion: [
+      "Keep per-instance animation/state compact enough that large repeated systems remain a single coherent visual field.",
+    ],
+    transitions: [],
+    interaction: [],
+    implementation: [
+      "Atlas repeated material textures and pack small per-instance values such as color, UV region, tiling, metalness or state into the fewest practical GPU attributes.",
+      "Decode/expand packed values in the shader when that reduces buffer count, memory bandwidth or draw-call/material pressure.",
+      "Validate precision and atlas sampling on mobile GPUs, including half-texel/mipmap edge cases.",
+    ],
+    mobile: [
+      "Reduce instance count and attribute precision before splitting the field into many independent materials/draw calls.",
+    ],
+    avoid: ["One material per visually unique repeated object.", "Shipping verbose per-instance objects when a compact attribute representation is sufficient."],
+  },
+  {
+    id: "shared-simulation-field",
+    title: "Share renderer-level simulations across effects",
+    signals: ["fluid", "flowmap", "simulation", "field", "fbo", "shared", "velocity", "renderer"],
+    composition: [],
+    motion: [
+      "One simulation field may feed several visual consumers so related effects react to the same motion energy instead of diverging.",
+    ],
+    transitions: [
+      "During chapter overlap, only the active owner advances/resizes the shared simulation while passive consumers may sample the existing field.",
+    ],
+    interaction: [
+      "Normalize pointer/scroll impulses once before injecting them into a shared field.",
+    ],
+    implementation: [
+      "Own expensive renderer-level simulations once per renderer and expose their textures/state to consumers through refs or equivalent low-overhead channels.",
+      "Define one active simulation driver at a time so overlapping sections cannot fight over FBO size, timestep or input injection.",
+    ],
+    mobile: [
+      "Lower resolution/update frequency of the shared field rather than duplicating cheaper simulations per effect.",
+    ],
+    avoid: ["A separate fluid/flow simulation for every shader that wants cursor velocity.", "Multiple sections resizing or stepping the same renderer resource in one frame."],
+  },
+  {
+    id: "scene-neighborhood-window",
+    title: "Keep only the active scene neighborhood alive",
+    signals: ["scene", "neighbor", "adjacent", "mount", "dispose", "memory", "transition", "scroll"],
+    composition: [],
+    motion: [
+      "Maintain enough neighboring scene state for transitions to overlap without keeping the entire experience resident.",
+    ],
+    transitions: [
+      "Keep the active scene plus the minimum previous/next neighborhood required for reversible handoff; dispose scenes once they are outside that window.",
+    ],
+    interaction: [],
+    implementation: [
+      "Mount/prewarm the destination before overlap, keep the active and adjacent scenes alive through the transition, then dispose distant textures, geometries and shader pipelines.",
+      "Size the scene window by actual transition requirements and memory budget, not by a fixed assumption that every chapter must persist.",
+    ],
+    mobile: [
+      "Use a smaller scene neighborhood and earlier disposal under tighter memory pressure.",
+    ],
+    avoid: ["Keeping every point cloud/video/shader scene mounted for the whole page.", "Unmounting the destination before reverse-scroll can reconstruct the handoff."],
+  },
+  {
+    id: "production-preset-parity",
+    title: "Use the same scene data in creative tooling and production",
+    signals: ["preset", "playground", "studio", "authoring", "production", "tool", "scene data"],
+    composition: [
+      "Creative controls should manipulate the same camera/layout/material/transition values the production runtime consumes.",
+    ],
+    motion: [
+      "Preview timing and motion from the production sampler rather than a separate approximation layer.",
+    ],
+    transitions: [],
+    interaction: [],
+    implementation: [
+      "Define one validated scene-preset contract for camera, environment, assets, postprocessing, mobile offsets and transitions, and make both the playground/Studio and runtime consume it.",
+      "Avoid a prototype format that engineering must reinterpret manually before shipping.",
+    ],
+    mobile: [
+      "Quality tiers and mobile overrides must be previewable through the same production preset contract.",
+    ],
+    avoid: ["Designer-only controls that export screenshots instead of runtime values.", "Production rewrites of a separate motion prototype format."],
+  },
+  {
+    id: "physics-proxy-dom",
+    title: "Use invisible physics to drive semantic DOM",
+    signals: ["physics", "rapier", "matter", "dom", "collider", "rigid body", "gravity"],
+    composition: [
+      "Keep visible text/shapes accessible in DOM while an invisible physics world supplies believable motion where semantic HTML still matters.",
+    ],
+    motion: [
+      "Copy rigid-body transforms into DOM transforms each active frame; stop the physics loop when the section cannot affect visible pixels.",
+    ],
+    transitions: [
+      "Start physics close enough to reveal that the visitor sees the causal event, and tear it down/rebuild when layout dimensions invalidate collider geometry.",
+    ],
+    interaction: [
+      "Derive collider size/shape from the real DOM element and keep the semantic element responsible for focus/click behavior.",
+    ],
+    implementation: [
+      "Treat the physics scene as a simulation proxy, not the renderer. Recreate colliders on responsive layout changes so physical and visual geometry stay aligned.",
+    ],
+    mobile: [
+      "Use simpler colliders, lower step frequency or deterministic fallback motion when full simulation is unnecessary.",
+    ],
+    avoid: ["Rasterizing semantic DOM into WebGL just to gain physics.", "Running hidden physics continuously outside the active section."],
+  },
+  {
+    id: "transition-preload-race",
+    title: "Race destination readiness against the exit animation",
+    signals: ["route", "transition", "preload", "chunk", "image", "navigation", "ready"],
+    composition: [],
+    motion: [
+      "Begin loading destination code/media the instant navigation intent is known while the outgoing composition performs its exit choreography.",
+    ],
+    transitions: [
+      "Commit the destination only after both the visual exit gate and destination critical readiness resolve; if loading wins early, the user never waits on a blank frame.",
+    ],
+    interaction: [
+      "Protect against accidental/velocity-driven navigation by modeling transition state explicitly and allowing cancellation before the commit point.",
+    ],
+    implementation: [
+      "Start route chunk/data/hero-media preloads in parallel with the exit timeline and gate final route swap on readiness instead of adding a fixed delay.",
+    ],
+    mobile: [
+      "Shorten exit choreography and reduce destination critical media so the same overlap strategy remains effective on slower networks.",
+    ],
+    avoid: ["Starting destination fetch only after the exit animation finishes.", "Navigating on raw scroll threshold without state/velocity guards."],
+  },
+  {
+    id: "imperative-hot-path-state",
+    title: "Keep high-frequency visual state out of reconciliation",
+    signals: ["scroll", "uniform", "ref", "react", "frame", "high frequency", "pointer"],
+    composition: [],
+    motion: [
+      "High-frequency scroll/pointer/camera values should update render-time state directly without forcing component-tree reconciliation every frame.",
+    ],
+    transitions: [],
+    interaction: [
+      "Transient interaction values may live in refs/runtime stores while semantic outcomes such as selection, navigation and accessibility state remain declarative.",
+    ],
+    implementation: [
+      "Drive shader uniforms, camera offsets, transient transforms and other per-frame values through refs/direct style or the Forge frame sampler instead of React state updates.",
+      "Keep large Three.js geometries/material objects out of reactive state containers that walk/serialize them during ordinary UI commits.",
+    ],
+    mobile: [
+      "The same rule becomes more important under lower CPU budgets; reduce update frequency before promoting transient values into UI state.",
+    ],
+    avoid: ["setState on every scroll/pointer frame.", "Passing multi-megabyte scene objects through reactive state when stable refs are sufficient."],
+  },
+  {
+    id: "shared-media-source-mapping",
+    title: "Decode one media source and map it across multiple surfaces",
+    signals: ["video", "texture", "planes", "uv", "screens", "multi-screen", "installation"],
+    composition: [
+      "Treat multiple spatial screens/surfaces as one composed media canvas when they display coordinated parts of the same authored source.",
+    ],
+    motion: [
+      "Keep all surfaces phase-locked by sampling one decoded source rather than starting separate media elements that may drift.",
+    ],
+    transitions: [
+      "Author transitions inside the shared media source or through UV/material state when synchronized timing matters across surfaces.",
+    ],
+    interaction: [],
+    implementation: [
+      "Decode one video/image source and reuse its texture across several meshes with distinct UV regions when the content is authored as one synchronized atlas.",
+      "Prefer one decode/upload path over several identical high-resolution video decoders when the surfaces share timing.",
+    ],
+    mobile: [
+      "Reduce source resolution/bitrate while preserving the shared mapping and synchronized composition.",
+    ],
+    avoid: ["Multiple duplicate video decoders showing synchronized crops of the same source.", "Independent playback clocks for surfaces that must remain frame-aligned."],
+  },
+  {
+    id: "layered-video-state-machine",
+    title: "Use authored video layers as an interactive state machine",
+    signals: ["video", "layers", "loops", "interactive", "state", "cinematic", "product", "control"],
+    composition: [
+      "Separate stable background/context footage from state-changing foreground layers so authored cinematography can remain interactive.",
+    ],
+    motion: [
+      "Cut or crossfade between loopable media states only at prepared boundaries so interaction feels immediate without exposing seams.",
+    ],
+    transitions: [
+      "Preload the next loop/state before the action commits and preserve a common visual anchor across the media switch.",
+    ],
+    interaction: [
+      "Map user actions to a small explicit set of media states instead of allowing unconstrained seeking when the footage was authored around discrete outcomes.",
+    ],
+    implementation: [
+      "Use layered video/canvas/WebGL compositing when several deterministic visual states can be delivered more efficiently as authored footage than realtime 3D.",
+      "Model loop/state ownership explicitly and keep media clocks synchronized where layers must composite together.",
+    ],
+    mobile: [
+      "Reduce simultaneous layers and decode resolution before replacing the interaction with a static state.",
+    ],
+    avoid: ["Realtime 3D recreations of footage that only needs a finite set of interactive states.", "Uncoordinated loop boundaries that visibly jump under interaction."],
+  },
+  {
+    id: "sound-as-continuity-layer",
+    title: "Use sound to preserve place, scale and continuity",
+    signals: ["sound", "audio", "ambient", "world", "cinematic", "scale", "transition", "music"],
+    composition: [
+      "Keep sound subordinate to comprehension but let it reinforce the perceived scale, material and atmosphere of the visual world.",
+    ],
+    motion: [
+      "Tie authored sound cues to meaningful movement or state changes rather than triggering generic whooshes for every animation.",
+    ],
+    transitions: [
+      "Use crossfades, filtering, spatial emphasis or persistent ambience to bridge chapter changes and prevent the world from feeling reset.",
+    ],
+    interaction: [
+      "Interactive sound should acknowledge the same semantic action as the visual response; one action should not produce unrelated audio behavior.",
+    ],
+    implementation: [
+      "Treat ambience, interaction cues and authored score as separate controllable layers tied to the experience state machine.",
+      "Respect autoplay/permission constraints and keep the experience complete when sound is unavailable.",
+    ],
+    mobile: [
+      "Preserve essential narrative cues at lower complexity and keep a silent path fully usable.",
+    ],
+    avoid: ["Sound effects attached indiscriminately to every motion event.", "Visual transitions that reset ambience abruptly without narrative reason."],
+  },
+  {
+    id: "storyboard-before-wireframe",
+    title: "Storyboard temporal experiences before conventional wireframes",
+    signals: ["storyboard", "story", "sequence", "long-scroll", "cinematic", "pacing", "chapter"],
+    composition: [
+      "For experiences whose value depends on order, reveal and transition, define the sequence of visual beats before optimizing individual screens.",
+      "Each storyboard frame should identify the dominant subject, copy role, carried anchor and visual temperature.",
+    ],
+    motion: [
+      "Use the storyboard to set intensity, duration character and transition intent before assigning easing or implementation detail.",
+    ],
+    transitions: [
+      "Design the connection between beats at the same time as the beats themselves so the site never becomes a stack of individually polished sections.",
+    ],
+    interaction: [
+      "Mark which beats are directed and which give control back to the visitor before implementation.",
+    ],
+    implementation: [
+      "Store chapter/beat intent in Forge treatment data so camera, media and DOM implementation can be changed without losing the temporal plan.",
+    ],
+    mobile: [
+      "Re-storyboard the portrait journey when pacing or visual order must change; do not merely compress the desktop sequence.",
+    ],
+    avoid: ["Designing every section in isolation and inventing transitions afterward.", "Treating a cinematic long-scroll as a static sitemap plus animation."],
+  },
+  {
+    id: "grid-as-orientation-memory",
+    title: "Use a persistent grid as navigational memory",
+    signals: ["grid", "columns", "editorial", "orientation", "navigation", "portfolio", "layout"],
+    composition: [
+      "Keep a recognizable column/gutter/alignment system across changing media scales so visitors retain spatial orientation while compositions become expressive.",
+      "Allow hero media to span or break the grid selectively, but preserve enough stable alignments that the break feels intentional.",
+    ],
+    motion: [
+      "Transitions may temporarily detach content from the grid, then land the next chapter on an identifiable shared alignment.",
+    ],
+    transitions: [
+      "Use column edges, baselines and image bounds as transition anchors so spatial continuity survives large visual changes.",
+    ],
+    interaction: [],
+    implementation: [
+      "Represent the grid as project-level runtime data/tokens and use the same geometry for DOM placement, WebGL alignment and visual QA.",
+    ],
+    mobile: [
+      "Define a separate portrait grid that preserves hierarchy and recurring alignment relationships.",
+    ],
+    avoid: ["A different alignment system per section.", "Breaking the grid everywhere until no stable orientation remains."],
+  },
+  {
+    id: "interface-recedes-behind-content",
+    title: "Let the interface disappear when content is strong enough",
+    signals: ["minimal", "editorial", "content", "portfolio", "gallery", "quiet", "interface"],
+    composition: [
+      "Remove persistent controls, labels and decoration that compete with high-quality media when the next action remains inferable.",
+      "Use negative space, crop and sequence to create discoverability before adding visible UI chrome.",
+    ],
+    motion: [
+      "Interaction feedback should be subtle and local when the work itself carries the emotional weight.",
+    ],
+    transitions: [
+      "Use media continuity and spacing rhythm to guide progression instead of adding a transition layer solely to announce every change.",
+    ],
+    interaction: [
+      "Keep direct navigation accessible even when the visible interface is intentionally quiet.",
+    ],
+    implementation: [
+      "Separate accessibility/navigation structure from decorative chrome so visual reduction never removes semantic wayfinding.",
+    ],
+    mobile: [
+      "Restore explicit controls where touch discoverability would otherwise fall below an acceptable threshold.",
+    ],
+    avoid: ["Minimalism that makes navigation ambiguous.", "Adding interface decoration merely to make quiet sections feel designed."],
+  },
+  {
+    id: "networked-presence-as-atmosphere",
+    title: "Show other visitors as presence before turning the site into a multiplayer game",
+    signals: ["live", "presence", "multiplayer", "networked", "community", "shared", "visitor"],
+    composition: [
+      "Use remote visitor traces, marks, avatars or activity as a secondary world layer so the main story remains legible even when no one else is present.",
+    ],
+    motion: [
+      "Interpolate remote presence locally and keep its motion visually softer than the primary visitor-controlled subject.",
+    ],
+    transitions: [
+      "Presence should survive chapter changes only when the shared world is persistent; otherwise fade/recontextualize it with the world boundary.",
+    ],
+    interaction: [
+      "Start with ambient awareness of others; add direct multiplayer interaction only when it advances the product/community thesis.",
+    ],
+    implementation: [
+      "Transmit compact semantic transforms/events rather than full render state and synthesize presentation locally.",
+      "Design a complete single-user state so network absence or low concurrency never leaves the experience empty.",
+    ],
+    mobile: [
+      "Reduce remote entity count and update frequency before removing the sense that others are present.",
+    ],
+    avoid: ["Multiplayer infrastructure added only as novelty.", "Remote presence becoming more visually dominant than the site's primary content."],
+  },
+  {
+    id: "transition-render-decimation",
+    title: "Spend fewer renders on secondary scenes during visually busy transitions",
+    signals: ["transition", "multiple scenes", "render", "ping pong", "frame", "performance", "overlap"],
+    composition: [],
+    motion: [
+      "During fast movement or cross-world overlap, expensive secondary scene outputs may update at a lower cadence while the primary transition still updates every display frame.",
+    ],
+    transitions: [
+      "Alternate or decimate updates only while motion/occlusion makes the reduced cadence perceptually acceptable, then restore full cadence before either scene settles.",
+    ],
+    interaction: [],
+    implementation: [
+      "Reuse the previous render target for a secondary scene on skipped frames instead of rerendering every heavy world during overlap.",
+      "Keep transition progress itself full-rate and deterministic; only the expensive scene refresh cadence may be reduced.",
+    ],
+    mobile: [
+      "Use a more aggressive overlap cadence when necessary, but restore full-rate rendering before the visitor regains precise control.",
+    ],
+    avoid: ["Permanent low-FPS rendering of the focused scene.", "Decimating state simulation in a way that makes reverse or interaction nondeterministic."],
+  },
+  {
+    id: "commerce-inside-world",
+    title: "Embed discovery and commerce in the same immersive world",
+    signals: ["commerce", "shop", "merch", "product", "store", "purchase", "drop", "retail"],
+    composition: [
+      "Let products, drops or purchase opportunities appear as meaningful destinations/objects in the world while price, variant and checkout controls remain highly legible.",
+    ],
+    motion: [
+      "Move from exploration into purchase mode by reducing environmental motion and increasing product/UI stability.",
+    ],
+    transitions: [
+      "Preserve the selected product/subject as the anchor when crossing from immersive discovery to rational commerce.",
+    ],
+    interaction: [
+      "Exploration may unlock or reveal products, but buying must not depend on mastering a game-like control scheme.",
+    ],
+    implementation: [
+      "Keep catalog, inventory, pricing and checkout state in normal commerce/data systems; the spatial layer references those records instead of duplicating them.",
+    ],
+    mobile: [
+      "Preserve product discovery and direct purchase routes even if the explorable world becomes simpler.",
+    ],
+    avoid: ["A beautiful virtual store that makes products harder to find or buy.", "Checkout embedded as unreadable UI inside 3D."],
+  },
+  {
+    id: "content-intensity-render-mode",
+    title: "Match rendering intensity to the information job of each chapter",
+    signals: ["content", "information", "careers", "vision", "digital", "theme", "mode", "density"],
+    composition: [
+      "Use quieter, more spacious editorial treatment for dense practical information and reserve stronger spatial/WebGL treatment for chapters whose job is emotion, identity or system explanation.",
+    ],
+    motion: [
+      "Reduce motion amplitude as reading density rises; increase spatial expression only when the chapter's meaning benefits from it.",
+    ],
+    transitions: [
+      "Bridge quiet and immersive modes through a shared palette, type system, subject or motion direction so the site still feels like one identity.",
+    ],
+    interaction: [
+      "Do not force playful interaction onto careers, legal, specs or other high-intent reading tasks.",
+    ],
+    implementation: [
+      "Choose scene medium per chapter rather than choosing one renderer intensity for the whole site.",
+    ],
+    mobile: [
+      "Bias even more strongly toward clear editorial presentation in dense chapters while preserving one or two signature spatial moments.",
+    ],
+    avoid: ["Maximum WebGL intensity on every route.", "Flattening visionary chapters into the same quiet template used for dense information."],
+  },
+  {
     id: "prewarm-signature-systems",
     title: "Prewarm signature systems",
     signals: ["shader", "3d", "video", "particles", "postprocessing", "cinematic", "performance"],
@@ -1458,16 +2310,29 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
   },
 ];
 
+export type ConstructionPatternMaturity =
+  | "emerging"
+  | "supported"
+  | "established"
+  | "strong";
+
 export interface ConstructionPatternEvidence {
   patternId: string;
   support: number;
   sourceCount: number;
   referenceIds: string[];
+  globalReferenceCount: number;
+  globalSourceCount: number;
+  maturity: ConstructionPatternMaturity;
 }
 
 export interface ImmersiveConstructionDirectives {
   patternIds: string[];
   patternEvidence: ConstructionPatternEvidence[];
+  technicalDoctrineIds: string[];
+  technicalVerification: string[];
+  failureLessonIds: string[];
+  failureAvoidance: string[];
   referenceIds: string[];
   referenceLessons: string[];
   compositionRules: string[];
@@ -1540,10 +2405,24 @@ export function buildConstructionDirectives(
     0,
     Math.max(limit, treatment.tier === "flagship" ? 14 : 12),
   );
+  const doctrine = doctrineForPatterns(patterns.map((pattern) => pattern.id));
+  const failureLessons = failureLessonsForTreatment(
+    treatment,
+    patterns.map((pattern) => pattern.id),
+  );
 
   return {
     patternIds: patterns.map((pattern) => pattern.id),
     patternEvidence,
+    technicalDoctrineIds: doctrine.map((item) => item.id),
+    technicalVerification: unique(doctrine.flatMap((item) => item.verification)),
+    failureLessonIds: failureLessons.map((item) => item.id),
+    failureAvoidance: unique(
+      failureLessons.flatMap((item) => [
+        item.failure,
+        ...item.recovery,
+      ]),
+    ),
     referenceIds: references.map(({ reference }) => reference.id),
     referenceLessons: unique(
       references.flatMap(({ reference }) => reference.transferableLessons),
@@ -1552,9 +2431,16 @@ export function buildConstructionDirectives(
     motionRules: unique(patterns.flatMap((pattern) => pattern.motion)),
     transitionRules: unique(patterns.flatMap((pattern) => pattern.transitions)),
     interactionRules: unique(patterns.flatMap((pattern) => pattern.interaction)),
-    implementationRules: unique(patterns.flatMap((pattern) => pattern.implementation)),
+    implementationRules: unique([
+      ...patterns.flatMap((pattern) => pattern.implementation),
+      ...doctrine.flatMap((item) => item.principles),
+      ...failureLessons.flatMap((item) => item.recovery),
+    ]),
     mobileRules: unique(patterns.flatMap((pattern) => pattern.mobile)),
-    forbiddenPatterns: unique(patterns.flatMap((pattern) => pattern.avoid)),
+    forbiddenPatterns: unique([
+      ...patterns.flatMap((pattern) => pattern.avoid),
+      ...failureLessons.map((item) => item.failure),
+    ]),
   };
 }
 
@@ -1598,19 +2484,78 @@ function rankPatternEvidence(
     }
   }
 
+  const globalEvidence = globalPatternEvidence();
+
   return Array.from(buckets.entries())
-    .map(([patternId, bucket]) => ({
-      patternId,
-      support: Number(bucket.support.toFixed(3)),
-      sourceCount: bucket.sourceHosts.size,
-      referenceIds: bucket.referenceIds,
-    }))
+    .map(([patternId, bucket]) => {
+      const global = globalEvidence.get(patternId) ?? {
+        references: 0,
+        sources: 0,
+        maturity: "emerging" as ConstructionPatternMaturity,
+      };
+      return {
+        patternId,
+        support: Number(bucket.support.toFixed(3)),
+        sourceCount: bucket.sourceHosts.size,
+        referenceIds: bucket.referenceIds,
+        globalReferenceCount: global.references,
+        globalSourceCount: global.sources,
+        maturity: global.maturity,
+      };
+    })
     .sort(
       (a, b) =>
         b.sourceCount - a.sourceCount ||
         b.support - a.support ||
+        maturityScore(b.maturity) - maturityScore(a.maturity) ||
         a.patternId.localeCompare(b.patternId),
     );
+}
+
+function globalPatternEvidence() {
+  const buckets = new Map<
+    string,
+    { referenceIds: Set<string>; sourceHosts: Set<string> }
+  >();
+
+  for (const reference of immersiveReferenceCorpus) {
+    if (reference.evidenceLevel === "catalog") continue;
+    for (const patternId of reference.constructionPatternIds) {
+      const bucket = buckets.get(patternId) ?? {
+        referenceIds: new Set<string>(),
+        sourceHosts: new Set<string>(),
+      };
+      bucket.referenceIds.add(reference.id);
+      bucket.sourceHosts.add(sourceHost(reference.source));
+      buckets.set(patternId, bucket);
+    }
+  }
+
+  return new Map(
+    Array.from(buckets.entries()).map(([patternId, bucket]) => {
+      const references = bucket.referenceIds.size;
+      const sources = bucket.sourceHosts.size;
+      const maturity: ConstructionPatternMaturity =
+        references >= 5 && sources >= 3
+          ? "strong"
+          : references >= 3 && sources >= 2
+            ? "established"
+            : references >= 2
+              ? "supported"
+              : "emerging";
+      return [patternId, { references, sources, maturity }];
+    }),
+  );
+}
+
+function maturityScore(maturity: ConstructionPatternMaturity) {
+  return maturity === "strong"
+    ? 4
+    : maturity === "established"
+      ? 3
+      : maturity === "supported"
+        ? 2
+        : 1;
 }
 
 function sourceHost(source: string) {

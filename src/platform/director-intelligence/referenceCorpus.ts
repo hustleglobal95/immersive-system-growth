@@ -964,8 +964,28 @@ function diverseReferenceSelection(
   const hostCounts = new Map<string, number>();
   const maxPerHost = limit >= 5 ? 2 : 1;
 
+  // A strong immersive decision needs visual precedent, implementation
+  // precedent and shipped-project evidence. Seed those evidence roles before
+  // ranking can collapse the set toward one kind of reference.
+  for (const role of ["visual", "technical", "case-study"] as const) {
+    if (chosen.length >= limit) break;
+    const candidate = candidates.find(
+      (item) =>
+        evidenceRole(item.reference.evidenceLevel) === role &&
+        !chosen.some((chosenItem) => chosenItem.reference.id === item.reference.id),
+    );
+    if (!candidate) continue;
+    chosen.push({
+      ...candidate,
+      reasons: [...candidate.reasons, `Evidence-role coverage: ${role}.`],
+    });
+    const host = sourceHost(candidate.reference.source);
+    hostCounts.set(host, (hostCounts.get(host) ?? 0) + 1);
+  }
+
   for (const candidate of candidates) {
     if (chosen.length >= limit) break;
+    if (chosen.some((item) => item.reference.id === candidate.reference.id)) continue;
     const host = sourceHost(candidate.reference.source);
     if ((hostCounts.get(host) ?? 0) >= maxPerHost) continue;
     chosen.push(candidate);
@@ -981,6 +1001,15 @@ function diverseReferenceSelection(
   }
 
   return chosen;
+}
+
+function evidenceRole(level: ImmersiveReferenceEvidenceLevel) {
+  if (level === "technical-reference") return "technical" as const;
+  if (level === "public-case-study") return "case-study" as const;
+  if (level === "visual-preview" || level === "public-description") {
+    return "visual" as const;
+  }
+  return "catalog" as const;
 }
 
 function sourceHost(source: string) {

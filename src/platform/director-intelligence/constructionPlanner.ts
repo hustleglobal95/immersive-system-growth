@@ -60,6 +60,7 @@ export function planImmersiveConstruction(
   const patternSet = new Set(directives.patternIds);
   const persistentWorld =
     patternSet.has("single-world-under-interface") ||
+    patternSet.has("orthographic-diorama-staging") ||
     (
       patternSet.has("continuous-visual-anchor") &&
       hasModel &&
@@ -216,6 +217,18 @@ function chooseMedium(input: {
   if (
     hasVideo &&
     (
+      patternSet.has("pre-rendered-sequence-for-fidelity") ||
+      patternSet.has("layered-video-state-machine") ||
+      patternSet.has("shared-media-source-mapping")
+    ) &&
+    beat.intensity >= 5
+  ) {
+    return "media";
+  }
+
+  if (
+    hasVideo &&
+    (
       mode === "cinematic-media" ||
       patternSet.has("small-subject-big-environment")
     ) &&
@@ -317,6 +330,21 @@ function motionStrategy(
 }
 
 function interactionStrategy(patterns: Set<string>, interactionLevel: number) {
+  if (patterns.has("teach-nonstandard-navigation") && interactionLevel >= 5) {
+    return "Teach the nonstandard navigation with a short first-run motion cue, then hand control back immediately while keeping an alternate orientation/control path visible.";
+  }
+  if (patterns.has("cross-device-companion-control") && interactionLevel >= 6) {
+    return "Map the companion device to semantic actions through a low-latency control channel, expose pairing/calibration state, and keep a local fallback.";
+  }
+  if (patterns.has("networked-presence-as-atmosphere") && interactionLevel >= 6) {
+    return "Keep remote visitors as a secondary presence layer and interpolate their compact semantic state locally; direct multiplayer actions are optional unless community is the thesis.";
+  }
+  if (patterns.has("commerce-inside-world") && interactionLevel >= 5) {
+    return "Let exploration reveal/select products, then stabilize the selected subject and hand purchase intent to clear semantic commerce controls.";
+  }
+  if (patterns.has("gamified-progress-with-skip") && interactionLevel >= 6) {
+    return "Track explicit progression/unlock state, make rewards visibly consequential, and keep a direct skip route available for high-intent visitors.";
+  }
   if (interactionLevel >= 7 && patterns.has("interaction-as-thesis")) {
     return "Use one causal interaction that changes subject/world/content state and expresses the thesis; route it through semantic action state.";
   }
@@ -352,6 +380,48 @@ function performancePolicy(
   }
   if (patterns.has("single-canvas-multi-view")) {
     rules.push("Use one shared renderer for section-scoped 3D views and render only active view rectangles.");
+  }
+  if (patterns.has("scrubbable-media-delivery") && medium === "media") {
+    rules.push("Use interaction-optimized media encoding with short keyframe intervals and verify browser seek latency before production lock.");
+  }
+  if (patterns.has("pre-rendered-sequence-for-fidelity") && medium === "media") {
+    rules.push("Prefetch/cache only the active frame neighborhood and verify decode memory so offline-rendered fidelity does not create a first-load stall.");
+  }
+  if (patterns.has("shared-media-source-mapping") && medium === "media") {
+    rules.push("Decode one authored media source for synchronized multi-surface compositions and map distinct UV/crop regions instead of running duplicate decoders.");
+  }
+  if (patterns.has("layered-video-state-machine") && medium === "media") {
+    rules.push("Preload the next authored media state before committing the interaction and keep layer clocks synchronized across prepared loop boundaries.");
+  }
+  if (patterns.has("offscreen-render-worker") && ["3d", "hybrid", "shader"].includes(medium)) {
+    rules.push("If profiling shows main-thread contention, isolate the heavy canvas behind a narrow OffscreenCanvas/worker state protocol.");
+  }
+  if (patterns.has("progressive-fidelity-stack")) {
+    rules.push("Promote only the active/nearby visual stack to full fidelity and simplify deeper layers until they approach focus.");
+  }
+  if (patterns.has("input-work-on-demand")) {
+    rules.push("Gate expensive pointer hit testing/raycast work on dirty input or changed scene/camera state.");
+  }
+  if (patterns.has("gpu-instance-data-packing")) {
+    rules.push("Pack repeated-object material/state into compact GPU attributes/atlases instead of multiplying materials and draw calls.");
+  }
+  if (patterns.has("shared-simulation-field")) {
+    rules.push("Own expensive simulation fields once per renderer; one active driver advances/resizes the field while related effects sample it.");
+  }
+  if (patterns.has("scene-neighborhood-window")) {
+    rules.push("Keep only the active scene and the minimum adjacent transition neighborhood resident; dispose distant scene GPU resources.");
+  }
+  if (patterns.has("imperative-hot-path-state")) {
+    rules.push("Keep per-frame camera/uniform/pointer transforms out of component reconciliation and update them through stable refs/runtime state.");
+  }
+  if (patterns.has("physics-proxy-dom") && medium === "dom") {
+    rules.push("If physics drives semantic DOM, run the invisible simulation only while the section can affect visible pixels and rebuild colliders after layout changes.");
+  }
+  if (patterns.has("transition-render-decimation") && ["3d", "hybrid", "shader"].includes(medium)) {
+    rules.push("During visually busy multi-scene overlap, secondary scene render targets may update at a reduced cadence while transition progress remains full-rate; restore full cadence before the scene settles.");
+  }
+  if (patterns.has("networked-presence-as-atmosphere")) {
+    rules.push("Represent remote visitors with compact network state and cap/interpolate visible peers locally so presence does not become a render/network bottleneck.");
   }
   return rules;
 }
@@ -410,6 +480,15 @@ function criticalBootStrategy(
   if (patterns.has("transition-readiness-gate")) {
     rules.push("Gate visible scene/page handoffs on the destination's critical code/media/render readiness instead of fixed delays.");
   }
+  if (patterns.has("transition-preload-race")) {
+    rules.push("Start destination code/data/hero-media loading with navigation intent so readiness races the outgoing transition instead of starting after it.");
+  }
+  if (patterns.has("scene-neighborhood-window")) {
+    rules.push("Prewarm the next required scene neighborhood before overlap and release distant scenes only after reverse-safe handoff completes.");
+  }
+  if (patterns.has("entry-ritual-earns-its-wait")) {
+    rules.push("Let the entry ritual cover only genuinely critical first-state work and hand its final frame directly into the opening composition; defer later assets.");
+  }
   if (firstHeavy) {
     rules.push(`Prewarm the first heavy chapter (${firstHeavy.sceneId}) before it becomes interactive.`);
   }
@@ -435,6 +514,66 @@ function globalRules(
   }
   if (patterns.has("composable-rendering-systems")) {
     rules.push("Build scene variety from composable render/material/particle/transition capabilities instead of duplicating whole pipelines.");
+  }
+  if (patterns.has("scroll-distance-pacing")) {
+    rules.push("Store chapter travel distance as an explicit pacing variable; tune view-height distance independently from easing and camera geometry.");
+  }
+  if (patterns.has("directional-cut-continuity")) {
+    rules.push("Use deterministic film cuts when a one-axis scroll journey would become less legible by physically curving through every space; preserve the dominant motion direction across the cut.");
+  }
+  if (patterns.has("dcc-semantic-naming-contract")) {
+    rules.push("Treat DCC node names as validated runtime semantics for materials, pivots, collision, zones and behavior groups.");
+  }
+  if (patterns.has("static-geometry-batching")) {
+    rules.push("Batch static same-material geometry after authored transforms, while keeping independently interactive/animated objects separate.");
+  }
+  if (patterns.has("audio-reactive-semantic-band")) {
+    rules.push("Smooth and bound meaningful audio energy before it modulates visuals; audio response must reinforce the subject rather than shake the interface.");
+  }
+  if (patterns.has("personalization-to-render-state")) {
+    rules.push("Normalize personalization inputs into bounded art-directed render parameters and preserve a meaningful manual/fallback path.");
+  }
+  if (patterns.has("cross-device-companion-control")) {
+    rules.push("Keep companion-device messages compact and semantic; the primary world owns rendering while the second device supplies control state.");
+  }
+  if (patterns.has("mode-switch-preserves-context")) {
+    rules.push("Separate presentation mode from content selection and preserve equivalent item/focus state through any slider/list/grid mode transition.");
+  }
+  if (patterns.has("entry-ritual-earns-its-wait")) {
+    rules.push("Treat the preloader/enter state as a prologue that establishes motion/permission context, never as decorative delay.");
+  }
+  if (patterns.has("storyboard-before-wireframe")) {
+    rules.push("Lock the temporal storyboard—dominant subject, copy role, carried anchor, intensity and transition intent—before polishing individual section layouts.");
+  }
+  if (patterns.has("grid-as-orientation-memory")) {
+    rules.push("Use the project grid as persistent orientation memory across chapters and align DOM/WebGL endpoints to the same runtime geometry.");
+  }
+  if (patterns.has("interface-recedes-behind-content")) {
+    rules.push("Remove decorative chrome when strong media/spacing can carry discovery, while keeping semantic navigation and direct-access paths intact.");
+  }
+  if (patterns.has("sound-as-continuity-layer")) {
+    rules.push("Treat ambience, interaction cues and score as stateful continuity layers tied to the same narrative phases as the visual experience.");
+  }
+  if (patterns.has("content-intensity-render-mode")) {
+    rules.push("Match rendering intensity to the chapter's information job: practical/high-density reading gets a quieter plane, while spatial intensity is reserved for identity, system explanation and signature beats.");
+  }
+  if (patterns.has("commerce-inside-world")) {
+    rules.push("Keep catalog, inventory, pricing and checkout in semantic commerce/data systems while the immersive world owns discovery and product context.");
+  }
+  if (patterns.has("networked-presence-as-atmosphere")) {
+    rules.push("A shared world must remain complete in single-user mode; networked presence enriches atmosphere without becoming a hard dependency.");
+  }
+  if (patterns.has("design-grid-runtime-contract")) {
+    rules.push("Store desktop/mobile grid geometry as runtime project data and make a development overlay inspect the exact production columns, gutters and rows.");
+  }
+  if (patterns.has("production-preset-parity")) {
+    rules.push("Studio/playground controls and the shipped runtime must consume the same validated scene preset and deterministic motion data.");
+  }
+  if (patterns.has("shared-simulation-field")) {
+    rules.push("Related fluid/flow effects share one renderer-level simulation field and one normalized input source instead of running duplicate simulations.");
+  }
+  if (patterns.has("imperative-hot-path-state")) {
+    rules.push("Keep transient per-frame visual values imperative while semantic outcomes such as selection/navigation remain declarative.");
   }
   if (patterns.has("prototype-prune-converge")) {
     rules.push("Prototype signature ideas modularly and cut any effect that no longer strengthens the final thesis.");

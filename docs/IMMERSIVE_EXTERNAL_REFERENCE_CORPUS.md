@@ -4,9 +4,9 @@ Reviewed: **2026-09-18**
 
 This corpus expands Forge beyond GetLayers so Director does not overfit to one marketplace, one studio, one visual trend or one implementation style.
 
-It contains **53 public studio case studies, technical breakdowns and official source studies** from Dogstudio, Lusion, makemepulse, Bonhomme, 14islands and Codrops.
+It contains **121 public studio case studies, technical breakdowns and source studies** from Dogstudio, Lusion, makemepulse, Bonhomme, 14islands and Codrops.
 
-Combined with the 49-template GetLayers corpus, Forge now has **102 immersive references** and **59 executable construction patterns**.
+Combined with the 49-template GetLayers corpus, Forge now has **196 immersive references** and **98 executable construction patterns**.
 
 ## What this corpus is for
 
@@ -98,7 +98,7 @@ The goal is **not** to copy a studio's exact visual identity, proprietary engine
 
 ## New construction intelligence extracted
 
-This expansion first added 15 patterns on top of the original 29, then the second research pass added 8 more. The current library contains **59 patterns**:
+This expansion first added 15 patterns on top of the original 29, then the second research pass added 8 more. The current library contains **98 patterns**:
 
 1. **interaction-as-thesis**
 2. **multi-subscene-transition-budget**
@@ -132,6 +132,75 @@ This expansion first added 15 patterns on top of the original 29, then the secon
 30. **feature-difference-as-motion**
 
 These are executable in `src/platform/director-intelligence/constructionKnowledge.ts`.
+
+## Aggressive research pass — round 2
+
+The second aggressive pass expands the corpus from visual/section construction into **delivery engineering, camera semantics, DCC contracts, demand-driven computation and interaction-specific media preparation**.
+
+Newly encoded technical/source precedents include:
+
+- **KAI Design Dept.** — scrub-ready video encoding, browser decode fallback, Blender-authored media/3D synchronization and multi-pass line depth-of-field.
+- **Phantom.land** — one motion language across DOM/WebGL, lower-level Three subsystems inside R3F, inertial spatial interaction and depth-map particle portraits.
+- **UntilLabs** — image-derived living particle fields, one-draw-call point rendering and FBO-separated postprocessing.
+- **Aether 1** — smoothed frequency-band input drives meaningful audio-product visuals and transition filtering.
+- **Crosswire** — repeated spatial metaphor for service complexity, DCC-exported transforms and instanced runtime modules.
+- **Windland** — baked light/shadow, shader-driven vegetation, conditional postprocessing and runtime quality selection.
+- **Selva** — six chapters composed as one continuous camera walk with editorial overlay, authored mobile and reduced-motion reading.
+- **Maison Margiela Fragrance Garden** — intangible fragrance translated into an explorable ingredient/story world with mobile continuity.
+- **Martin Laxenaire Portfolio 2025** — optional game progression, shared render device, per-scene quality, idle compilation and sequential media preloading.
+- **35mm** — mathematically generated film geometry from one plane and a small scroll-uniform surface.
+- **KODE Immersive** — same-material draw-call batching, measured OffscreenCanvas/WebWorker isolation and connection-speed QA.
+- **Obys Design Books** — tactile material motion, multiple navigation modes over one selection model and fidelity promotion near the active stack.
+- **Frequency Breathwork** — subject behavior becomes the motion grammar; smoothed audio signals and explicit mobile scene lifecycle.
+- **Forged.build** — one dominant camera axis per scroll chapter, directional film cuts, view-height pacing and baked/runtime hybrid production.
+- **Sketching the Impossible** — immersive 3D built from simple geometry plus strong texture/art direction; 3D is introduced only when real depth is necessary.
+- **Stas Bondar Portfolio 2025** — WebGL used as an enhancement layer over a familiar editorial project grid.
+- **Ponpon Mania** — illustration remains the primary identity while WebGL/GSAP extend narrative participation.
+- **Immersive Garden / ACME** — animated image recomposition handles system explanation; WebGL is reserved for the chapter that benefits from spatial immersion.
+- **NK / Awwwards Amsterdam** — host-city geometry becomes an event/navigation metaphor while practical program content remains explicit.
+- **Moooi Digital Flagship** — motion, sound, commerce and large type operate as one sensory system without sacrificing keyboard navigation.
+- **Bruno Simon Folio 2019 source study** — DCC semantic naming, static-material batching, dirty-input raycasting, world zones and lightweight projected shadows.
+- **Abigail Bloom room source study** — one orthographic diorama persists through scroll, with separately authored desktop/mobile staging and a staged assembly intro.
+
+This pass adds construction knowledge for:
+
+- interaction-optimized video delivery;
+- depth-map volumetric reconstruction;
+- measured off-main-thread rendering;
+- progressive fidelity for deep visual stacks;
+- semantic audio-reactive motion;
+- scroll-distance pacing;
+- directional film-cut continuity;
+- spatial metaphors for complex products/services;
+- DCC semantic naming contracts;
+- static-geometry batching;
+- input work on demand;
+- persistent orthographic diorama staging;
+- gamified progression with a direct skip path.
+
+The important principle is that these are **capability decisions**, not dependency recommendations. Forge should know when a technique is appropriate and express it with its existing runtime where possible.
+
+### Third wave: official studio process evidence
+
+The aggressive pass then widened beyond Codrops-heavy technical material with official studio case studies from **Unseen Studio, Hello Monday and UNIT9**:
+
+- **Superlist** — hidden-surface culling in Houdini, baked animation and compact matcap materials.
+- **Letter** — a deliberate choice of scroll-linked pre-rendered sequences over realtime 3D where offline material fidelity mattered more.
+- **BlueYard** — Houdini particle motion converted into compressed texture/data formats for WebGL.
+- **Quai Network** — a building/city construction metaphor used as the product narrative itself.
+- **Dala.AI** — one persistent particle language morphs between metaphors for fragmented knowledge.
+- **Contra** — report data becomes interactive 3D evidence instead of decorative WebGL.
+- **Lewa House** — a destination map remains immersive on mobile rather than being removed.
+- **Google Cloud Infrastructure** — repeated infrastructure is instanced, models are simplified through browser iteration, and parse cost is treated as an asset-budget concern.
+- **Bang & Olufsen / See Yourself in Sound** — profile data is normalized into an art-directed realtime avatar with a manual fallback and shareable output.
+- **Lightsaber Escape** — a phone becomes a realtime companion controller for the desktop spatial world.
+- **Volkswagen Virtual Test Drive** — 360 media and WebGL are mixed so exploration reveals concrete vehicle features and then hands into configuration.
+
+This adds three more construction rules:
+
+- **pre-rendered-sequence-for-fidelity** — choose offline-rendered frames when fixed cinematography/material quality is the requirement;
+- **cross-device-companion-control** — use a second device only when its sensors/control role meaningfully improves the interaction;
+- **personalization-to-render-state** — map user/profile data into bounded art-directed render parameters with a non-connected fallback.
 
 ## Important cross-studio lessons
 
@@ -237,7 +306,7 @@ This is exactly the level Forge should keep accumulating: not another dependency
 
 ## Retrieval policy
 
-Director now retrieves from the combined **102-reference corpus**, not the GetLayers set alone.
+Director now retrieves from the combined **196-reference corpus**, not the GetLayers set alone.
 
 Retrieval deliberately limits source monoculture: when enough candidates exist, no single source host can dominate the selected precedent set. The Director can therefore combine, for example:
 

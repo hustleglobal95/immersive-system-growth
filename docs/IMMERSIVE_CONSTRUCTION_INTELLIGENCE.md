@@ -4,7 +4,7 @@ Forge already has the runtime systems required to build high-end immersive websi
 
 The objective is not to add another animation library or replace Forge's cinematic architecture. The objective is to make Director understand how strong immersive sites are composed so it can choose the right existing Forge systems with much less trial and error.
 
-The current research base contains **102 evidence-graded references** and **59 executable construction patterns**. Reference selection is source-diversified and recurring patterns are ranked by evidence strength plus independent source support rather than by a single favorite studio.
+The current research base contains **196 evidence-graded references** and **98 executable construction patterns**. Reference selection is source-diversified and recurring patterns are ranked by evidence strength plus independent source support rather than by a single favorite studio.
 
 ## Operating rule
 
@@ -208,6 +208,66 @@ Before the visitor reaches a signature chapter, the required resources should al
 - generated geometry or particle buffers
 
 A site that is smooth only on the second pass is not finished.
+
+### 11. Media delivery as interaction infrastructure
+
+When video is scrubbed, dragged or used as a tactile surface, encoding becomes part of interaction design. Keyframe interval, decode complexity and browser seek behavior determine whether the gesture feels direct. Forge should distinguish playback-optimized media from interaction-optimized media.
+
+### 12. Camera input semantics
+
+Scroll is a one-dimensional input. If a scroll-bound camera curves, circles and changes axes continuously, the visitor may expect game-style control that the input cannot provide. Prefer one dominant travel axis per chapter and use deterministic film cuts when a spatial connection would otherwise make the control model ambiguous.
+
+### 13. DCC-to-runtime contracts
+
+Blender/C4D/Houdini are not only asset exporters. Node names, pivots, zones, animation groups and semantic markers can become validated runtime metadata. Forge should preserve those semantics through optimization so art-direction changes do not create brittle hand-maintained mappings.
+
+### 14. Demand-driven computation
+
+Rendering quality is not only about lower resolution. Expensive work should disappear when it cannot change visible pixels: offscreen scenes stop, raycasts wait for dirty input, compute passes run only while their effect is active, deep visual-stack items remain simplified, and worker isolation is reserved for measured main-thread contention.
+
+## Pattern maturity
+
+Not every lesson in the corpus deserves equal authority. Forge now tracks global support for each construction pattern across all reviewed precedents.
+
+Patterns are classified as:
+
+- **emerging** — one reviewed precedent;
+- **supported** — at least two reviewed precedents;
+- **established** — at least three precedents across at least two independent source hosts;
+- **strong** — at least five precedents across at least three independent source hosts.
+
+Director still may use an emerging pattern when it precisely fits a client's idea, but it can distinguish a one-off experiment from a technique repeatedly validated across unrelated productions. Pattern evidence includes both the references retrieved for the current brief and the pattern's global reference/source counts.
+
+## Primary technical doctrine
+
+Creative precedents answer **what construction choices repeatedly work**. Primary technical documentation answers **how the underlying browser/runtime behavior actually works**.
+
+Forge keeps those evidence types separate so official implementation guidance cannot accidentally become a visual style precedent.
+
+The executable doctrine lives in:
+
+`src/platform/director-intelligence/technicalDoctrine.ts`
+
+The current sixteen doctrine groups cover:
+
+1. Three.js shader compilation and GPU resource initialization before first-use.
+2. React Three Fiber demand rendering and explicit invalidation.
+3. Browser video-frame synchronization with `requestVideoFrameCallback`.
+4. OffscreenCanvas/worker isolation for measured main-thread rendering contention.
+5. A shared GSAP ticker/heartbeat for systems that must remain phase-locked.
+6. Prepared high-frequency setters for measured hot paths.
+7. Refresh-rate-independent elapsed-time motion.
+8. GPU-friendly texture and mesh compression with decode cost considered alongside transfer size.
+9. Draw-call reduction through instancing/batching when object independence allows it.
+10. Cinematic media capability selection based on expected decode quality rather than codec support alone.
+11. Page-visibility suspension when the document cannot produce visible pixels.
+12. Reduced-motion substitution that preserves information and causality.
+13. Smoothed audio analysis before audio energy becomes visual motion.
+14. Browser view-transition lifecycle treated as a readiness transaction.
+15. Renderer-info budgeting for memory and draw work at the exact narrative frame that matters.
+16. GSAP responsive motion creation/cleanup as one lifecycle.
+
+When a selected construction pattern overlaps one of these doctrines, its principles are injected into Director implementation rules and its verification checks are compiled into the production performance rules. This means technical research changes the build plan instead of remaining documentation.
 
 ## Forge construction patterns
 

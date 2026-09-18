@@ -4,10 +4,24 @@ import {
 import {
   immersiveConstructionPatterns,
 } from "../src/platform/director-intelligence/constructionKnowledge.ts";
+import {
+  immersiveTechnicalDoctrine,
+} from "../src/platform/director-intelligence/technicalDoctrine.ts";
 
 const errors = [];
 const ids = new Set();
 const knownPatterns = new Set(immersiveConstructionPatterns.map((pattern) => pattern.id));
+
+for (const doctrine of immersiveTechnicalDoctrine) {
+  if (!doctrine.source.startsWith("https://")) {
+    errors.push(`Technical doctrine ${doctrine.id} has a non-HTTPS source.`);
+  }
+  for (const patternId of doctrine.patternIds) {
+    if (!knownPatterns.has(patternId)) {
+      errors.push(`Technical doctrine ${doctrine.id} points to unknown doctrine pattern ${patternId}.`);
+    }
+  }
+}
 
 for (const reference of immersiveReferenceCorpus) {
   if (ids.has(reference.id)) errors.push(`Duplicate reference id: ${reference.id}`);
@@ -63,6 +77,7 @@ const underSupported = immersiveConstructionPatterns
 console.log("Forge immersive reference corpus audit");
 console.log(`references: ${immersiveReferenceCorpus.length}`);
 console.log(`construction patterns: ${immersiveConstructionPatterns.length}`);
+console.log(`primary technical doctrines: ${immersiveTechnicalDoctrine.length}`);
 console.log("\nevidence levels:");
 printCounts(evidenceCounts);
 console.log("\nsource hosts:");
@@ -76,11 +91,14 @@ for (const item of underSupported) {
   console.log(`- ${item.id}: ${item.references} references / ${item.hosts} source hosts`);
 }
 
-if (immersiveReferenceCorpus.length < 102) {
-  errors.push(`Expected at least 102 references; found ${immersiveReferenceCorpus.length}.`);
+if (immersiveReferenceCorpus.length < 196) {
+  errors.push(`Expected at least 196 references; found ${immersiveReferenceCorpus.length}.`);
 }
-if (immersiveConstructionPatterns.length < 59) {
-  errors.push(`Expected at least 59 construction patterns; found ${immersiveConstructionPatterns.length}.`);
+if (immersiveConstructionPatterns.length < 98) {
+  errors.push(`Expected at least 98 construction patterns; found ${immersiveConstructionPatterns.length}.`);
+}
+if (immersiveTechnicalDoctrine.length < 16) {
+  errors.push(`Expected at least 16 technical doctrines; found ${immersiveTechnicalDoctrine.length}.`);
 }
 
 if (errors.length) {
