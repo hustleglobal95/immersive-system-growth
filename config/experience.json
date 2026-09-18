@@ -1135,8 +1135,9 @@
         }
       ],
       "media": {
-        "kind": "color",
-        "alt": "Flat field for the manifesto chapter",
+        "kind": "shader",
+        "shader": "tide",
+        "alt": "Live light field for the manifesto chapter",
         "transition": "mask",
         "blendColor": "#171310",
         "maskSoftness": 22,
@@ -1170,7 +1171,8 @@
           "invert": false,
           "edgeColor": "#eadbc5",
           "edgeWidth": 0.18
-        }
+        },
+        "shaderTint": "#31463b"
       },
       "blocks": [
         {

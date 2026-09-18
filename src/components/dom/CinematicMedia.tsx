@@ -10,6 +10,7 @@ import { useExperienceStore } from "@/src/store/experienceStore";
 import { remap01 } from "@/src/lib/math";
 import { sampleSceneMotion } from "@/src/lib/motionSequencer";
 import { dispatchForgeInteraction } from "@/src/runtime/interactionEvents";
+import { MediaShader } from "@/src/components/dom/MediaShader";
 
 export function CinematicMedia() {
   const experience = useExperienceConfig();
@@ -176,7 +177,11 @@ export function CinematicMedia() {
       const mask = media?.transition === "mask"
         ? createMaskReveal(media.mask?.preset ?? "linear-soft", media.mask ?? { softness: media.maskSoftness })
         : null;
-      if (mask && resolveMaskBackend(mask, { quality, webglStatus, reducedMotion: reduced }) === "webgl") return null;
+      // MaskedMediaLayer declines any plate it has no texture to sample, so a colour or shader
+      // field stays on this path whatever its mask resolves to. Skipping it here as well left
+      // those chapters painting nothing at all on a high-quality device.
+      const drawn = !!media?.src && media.kind !== "color" && media.kind !== "shader";
+      if (drawn && mask && resolveMaskBackend(mask, { quality, webglStatus, reducedMotion: reduced }) === "webgl") return null;
       return <div key={`${scene.id}-${preview}`} className="media-panel" data-media-panel={index} style={{ zIndex: index }}>
         <div
           className="media-panel__inner"
@@ -192,7 +197,11 @@ export function CinematicMedia() {
             ? <video src={media.poster ? media.src : undefined} poster={media.poster} muted playsInline loop preload="none" />
             : media.kind === "color"
               ? <div className="media-panel__fill" style={{ background: media.fill }} />
-              : <img src={media.src} alt="" decoding="async" />
+              : media.kind === "shader"
+                ? <div className="media-panel__fill" style={{ background: media.fill }}>
+                    <MediaShader shader={media.shader!} deep={media.fill!} light={media.shaderTint ?? media.fill!} />
+                  </div>
+                : <img src={media.src} alt="" decoding="async" />
             : <div className={`media-fixture media-fixture--${index % 3}`}><span>MEDIA STUDY / {String(index + 1).padStart(2, "0")}</span><i /><b /></div>}
         </div>
         <div className="media-panel__shade" />

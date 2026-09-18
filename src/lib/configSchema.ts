@@ -270,9 +270,12 @@ export const transitionLayerSchema = z.discriminatedUnion("kind", [
   z.object({ ...transitionLayerBase, kind: z.literal("image"), src: assetUrl, position: z.tuple([finite.min(0).max(100), finite.min(0).max(100)]).default([50, 50]) }).strict(),
 ]);
 export const sceneMediaSchema = z.object({
-  // A "color" plate is a chapter whose background is a flat field rather than a photograph. It
-  // is a first-class media kind, so it inherits every transition, mask and overlap rule.
-  kind: z.enum(["image", "video", "color"]),
+  // A "color" plate is a chapter whose background is a flat field rather than a photograph, and
+  // a "shader" plate is that field rendered live. Both are first-class media kinds, so they
+  // inherit every transition, mask and overlap rule rather than sitting outside the system.
+  kind: z.enum(["image", "video", "color", "shader"]),
+  shader: z.enum(["tide"]).optional(),
+  shaderTint: color.optional(),
   src: assetUrl.optional(),
   fill: color.optional(),
   poster: assetUrl.optional(),
@@ -303,7 +306,11 @@ export const sceneMediaSchema = z.object({
 }).strict().superRefine((media, context) => {
   if (media.kind === "video" && !media.poster) context.addIssue({ code: "custom", message: "Video media requires a poster", path: ["poster"] });
   if (media.kind === "color" && !media.fill) context.addIssue({ code: "custom", message: "Color media requires a fill", path: ["fill"] });
-  if (media.kind !== "color" && !media.src) context.addIssue({ code: "custom", message: "Image and video media require a src", path: ["src"] });
+  // A shader plate must name its artifact and still carry a flat fill, which is what shows if
+  // WebGL is unavailable or the reader has asked for reduced motion.
+  if (media.kind === "shader" && !media.shader) context.addIssue({ code: "custom", message: "Shader media requires a shader name", path: ["shader"] });
+  if (media.kind === "shader" && !media.fill) context.addIssue({ code: "custom", message: "Shader media requires a fill to fall back to", path: ["fill"] });
+  if (media.kind !== "color" && media.kind !== "shader" && !media.src) context.addIssue({ code: "custom", message: "Image and video media require a src", path: ["src"] });
   const ids = new Set<string>();
   media.layers.forEach((layer, index) => {
     if (ids.has(layer.id)) context.addIssue({ code: "custom", message: "Transition layer IDs must be unique", path: ["layers", index, "id"] });
