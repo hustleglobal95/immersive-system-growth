@@ -37,11 +37,17 @@ test("current GetLayers template corpus tracks all 49 public catalog templates",
   );
 });
 
-test("catalog-only references never invent construction traits", () => {
+test("48 public template previews are visually reviewed and unresolved catalog entries stay evidence-empty", () => {
+  const reviewed = getLayersTemplateCorpus.filter(
+    (reference) => reference.evidenceLevel !== "catalog",
+  );
   const catalogOnly = getLayersTemplateCorpus.filter(
     (reference) => reference.evidenceLevel === "catalog",
   );
-  assert.ok(catalogOnly.length > 30);
+
+  assert.equal(reviewed.length, 48);
+  assert.equal(catalogOnly.length, 1);
+  assert.equal(catalogOnly[0]?.id, "northwall");
   assert.ok(
     catalogOnly.every(
       (reference) =>
@@ -56,14 +62,14 @@ test("deep references carry evidence-backed transferable construction lessons", 
   const supported = getLayersTemplateCorpus.filter(
     (reference) => reference.evidenceLevel !== "catalog",
   );
-  assert.ok(supported.length >= 7);
+  assert.equal(supported.length, 48);
   assert.ok(
     supported.every(
       (reference) =>
         reference.observedTraits.length > 0 &&
         reference.transferableLessons.length > 0 &&
         reference.evidenceNotes.length > 0 &&
-        reference.confidence > 0.7,
+        reference.confidence >= 0.72,
     ),
   );
 });
