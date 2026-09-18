@@ -9,6 +9,7 @@ const options=args(process.argv.slice(2));
 const baseURL=String(options.url || process.env.FORGE_URL || "http://127.0.0.1:3000");
 const outputRoot=String(options.output || "test-results/autonomy-candidate");
 const previewRoute=String(options.route || "/studio/autonomy-preview");
+const variant=String(options.variant || "candidate")==="incumbent" ? "incumbent" : "candidate";
 const candidatePath=String(options.experience || process.env.FORGE_AUTONOMY_EXPERIENCE_PATH || "");
 const source=candidatePath ? JSON.parse(await fs.readFile(candidatePath,"utf8")) : rawExperience;
 const experience=parseExperience(source);
@@ -19,7 +20,7 @@ const browser=await chromium.launch({
   headless:true,
   args:["--use-gl=angle","--use-angle=swiftshader","--enable-webgl","--ignore-gpu-blocklist"],
 });
-const report={ version:1,generatedAt:new Date().toISOString(),project:experience.meta.name,baseURL,previewRoute,plan,captures:[],runtimeErrors:[] };
+const report={ version:1,generatedAt:new Date().toISOString(),project:experience.meta.name,variant,baseURL,previewRoute,plan,captures:[],runtimeErrors:[] };
 
 try {
   await fs.mkdir(outputRoot,{ recursive:true });
@@ -32,6 +33,7 @@ try {
       const url=new URL(previewRoute,baseURL);
       url.searchParams.set("progress",String(capture.progress));
       url.searchParams.set("viewport",viewport);
+      url.searchParams.set("variant",variant);
       const pathOut=path.join(outputRoot,capture.id+".png");
       try {
         const response=await page.goto(url.toString(),{ waitUntil:"domcontentloaded",timeout:20000 });
@@ -43,7 +45,7 @@ try {
         const overflow=await root.evaluate((element)=>element.scrollWidth>element.clientWidth+1);
         await page.locator(".studio-preview__canvas").first().screenshot({ path:pathOut,animations:"disabled",timeout:15000 });
         report.captures.push({ ...capture,path:pathOut,status:"captured",horizontalOverflow:overflow });
-        console.log("AUTONOMY CANDIDATE CAPTURE " + capture.id);
+        console.log("AUTONOMY " + variant.toUpperCase() + " CAPTURE " + capture.id);
       } catch(error) {
         report.captures.push({ ...capture,path:pathOut,status:"failed",horizontalOverflow:false,error:error instanceof Error ? error.message : String(error) });
       }
@@ -52,7 +54,7 @@ try {
   }
   await fs.writeFile(path.join(outputRoot,"review-report.json"),JSON.stringify(report,null,2)+"\n");
   const failures=report.captures.filter((item)=>item.status!=="captured" || item.horizontalOverflow);
-  console.log("Candidate capture: " + (report.captures.length-failures.length) + "/" + report.captures.length + " clean captures.");
+  console.log(variant + " capture: " + (report.captures.length-failures.length) + "/" + report.captures.length + " clean captures.");
   if(failures.length || report.runtimeErrors.length) process.exitCode=1;
 } finally {
   await browser.close();
