@@ -1,4 +1,5 @@
 import type { DirectorTreatment } from "@/src/platform/directorSchema";
+import { broaderImmersiveReferenceCorpus } from "@/src/platform/director-intelligence/broaderReferenceCorpus";
 
 export type ImmersiveReferenceEvidenceLevel =
   | "catalog"
@@ -871,6 +872,11 @@ export const getLayersTemplateCorpus: ImmersiveReference[] = catalogSeeds.map(
   },
 );
 
+export const immersiveReferenceCorpus: ImmersiveReference[] = [
+  ...getLayersTemplateCorpus,
+  ...broaderImmersiveReferenceCorpus,
+];
+
 export interface RetrievedImmersiveReference {
   reference: ImmersiveReference;
   score: number;
@@ -899,7 +905,7 @@ export function retrieveImmersiveReferences(
     .join(" ")
     .toLowerCase();
 
-  return getLayersTemplateCorpus
+  return immersiveReferenceCorpus
     .filter((reference) => reference.transferableLessons.length > 0)
     .map((reference) => {
       let score = reference.confidence * 0.35;
