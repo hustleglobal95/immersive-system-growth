@@ -46,7 +46,7 @@ test("Director generates valid treatments and executable creative plans for ever
       assert.equal(compilation.creativePlan.scenes.length, treatment.emotionalArc.length);
       assert.equal(compilation.creativePlan.concept, treatment.thesis);
       assert.equal(compilation.creativePlan.artDirection?.northStar, treatment.thesis);
-      assert.ok(compilation.creativePlan.constraints.prohibited.length >= 3);
+      assert.ok(compilation.creativePlan.constraints.prohibited.length >= 3);\n      assert.equal(compilation.provenance.construction, "director-intelligence.constructionKnowledge");\n      assert.ok(compilation.creativePlan.scenes.some((scene) =>\n        scene.direction?.implementationNotes.some((note) => note.startsWith("Construction patterns:")),\n      ));\n      assert.ok((compilation.creativePlan.artDirection?.forbiddenPatterns.length ?? 0) >= treatment.noGoRules.length);
     }
   }
 });
