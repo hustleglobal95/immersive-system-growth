@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { responsiveImage } from "@/src/lib/responsiveImage";
 import { cinematicProgress } from "@/src/lib/cinematicProgress";
 import { remap01 } from "@/src/lib/math";
 import { useExperienceStore } from "@/src/store/experienceStore";
@@ -187,7 +188,7 @@ export function ImageRoll({ block, range }: { block: Roll; range: readonly [numb
       <div className="image-roll__stage" ref={stage}>
         {[...block.images, ...block.images, ...block.images].map((image, index) => (
           <figure className="image-roll__plate" key={`${image.src}-${index}`}>
-            <img src={image.src} alt="" decoding="async" loading="lazy" />
+            <img {...responsiveImage(image.src, "(max-width: 760px) 42vw, 340px", 640)} alt="" decoding="async" loading="lazy" />
           </figure>
         ))}
       </div>

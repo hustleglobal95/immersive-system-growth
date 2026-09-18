@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { responsiveImage } from "@/src/lib/responsiveImage";
 import { experience } from "@/src/lib/experience";
 import { CinematicDomMotion } from "./CinematicDomMotion";
 import type { CinematicCue, CinematicPreset } from "@/src/lib/cinematicDom";
@@ -110,7 +111,13 @@ export function NarrativeOverlay() {
           }}
           aria-labelledby={`${scene.id}-heading`}
         >
-          {scene.media && <img className="story-media-static" src={scene.media.poster ?? scene.media.src} alt={scene.media.alt} loading={index===0?"eager":"lazy"} />}
+          {/* The static fallback for a visitor without motion. CSS hides all seven as soon as
+              the motion runtime marks the document, but a browser still fetches a hidden eager
+              image -- seven of them, at w=2400, on every visit. Lazy means a hidden one is never
+              fetched at all, while the no-JS case still sees them and loads what is in view. */}
+          {scene.media && <img className="story-media-static"
+            {...responsiveImage(scene.media.poster ?? scene.media.src ?? "", "100vw", 1280)}
+            alt={scene.media.alt} loading="lazy" />}
           <div className="story-panel" data-motion-panel>
             {/* The chapter number and its "NN / NAME" label are no longer printed above the
                 headline. The eyebrow stays on the scene in config, because the Studio editors

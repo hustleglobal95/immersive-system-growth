@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { responsiveImage } from "@/src/lib/responsiveImage";
 import Link from "next/link";
 import { SiteHeader } from "@/src/components/dom/SiteHeader";
 import { SiteFooter } from "@/src/components/dom/SiteFooter";
@@ -26,7 +27,7 @@ export default function WorkIndexPage() {
             <li key={project.slug}>
               <Link href={`/work/${project.slug}`}>
                 <span className="work-index__no">{String(index + 1).padStart(2, "0")}</span>
-                <img src={project.hero} alt="" decoding="async" loading="lazy" />
+                <img {...responsiveImage(project.hero, "(max-width: 760px) 22vw, 120px", 360)} alt="" decoding="async" loading="lazy" />
                 <span className="work-index__name">{project.name}</span>
                 <span className="work-index__type">{project.typology}</span>
                 <span className="work-index__meta">{project.year} / {project.location}</span>

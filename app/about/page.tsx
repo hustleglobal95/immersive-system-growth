@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { responsiveImage } from "@/src/lib/responsiveImage";
 import Link from "next/link";
 import { SiteHeader } from "@/src/components/dom/SiteHeader";
 import { SiteFooter } from "@/src/components/dom/SiteFooter";
@@ -80,7 +81,7 @@ export default function AboutPage() {
             {projects.slice(0, 3).map((project) => (
               <li key={project.slug}>
                 <Link href={`/work/${project.slug}`}>
-                  <img src={project.hero} alt="" decoding="async" loading="lazy" />
+                  <img {...responsiveImage(project.hero, "(max-width: 760px) 44vw, 240px", 480)} alt="" decoding="async" loading="lazy" />
                   <strong>{project.name}</strong>
                   <span>{project.year} / {project.location}</span>
                 </Link>

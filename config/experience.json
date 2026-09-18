@@ -20,12 +20,6 @@
   "heroVisible": false,
   "assets": [
     {
-      "id": "casa-lumen-light",
-      "kind": "environment",
-      "url": "/hdr/umhlanga_sunrise_1k.hdr",
-      "persist": true
-    },
-    {
       "id": "maris-pavilion",
       "kind": "model",
       "url": "/models/reference/pavilion.glb",

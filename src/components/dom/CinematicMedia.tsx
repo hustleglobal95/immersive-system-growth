@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { responsiveImage } from "@/src/lib/responsiveImage";
 import gsap from "gsap";
 import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { getSceneIndex } from "@/src/lib/experience";
@@ -222,7 +223,7 @@ export function CinematicMedia() {
                 ? <div className="media-panel__fill" style={{ background: media.fill }}>
                     <MediaShader shader={media.shader!} deep={media.fill!} light={media.shaderTint ?? media.fill!} />
                   </div>
-                : <img src={media.src} alt="" decoding="async" />
+                : <img {...responsiveImage(media.src!, "100vw")} alt="" decoding="async" />
             : <div className={`media-fixture media-fixture--${index % 3}`}><span>MEDIA STUDY / {String(index + 1).padStart(2, "0")}</span><i /><b /></div>}
         </div>
         <div className="media-panel__shade" />
