@@ -81,6 +81,8 @@ test("Visual Director turns high-confidence findings into a bounded candidate",(
   assert.equal(applied.ok,true,applied.errors.join("; "));
   assert.notEqual(applied.fingerprintBefore,applied.fingerprintAfter);
   assert.notDeepEqual(applied.candidate.scenes[0],initial.scenes[0]);
+  assert.deepEqual(applied.candidate.scenes.map((scene)=>({ id:scene.id,range:scene.range,copy:scene.copy })),initial.scenes.map((scene)=>({ id:scene.id,range:scene.range,copy:scene.copy })));
+  assert.deepEqual(applied.candidate.hotspots,initial.hotspots);
 });
 
 test("unmapped visual blockers prevent autonomous candidate generation",()=>{
