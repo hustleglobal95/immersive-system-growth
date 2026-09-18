@@ -1,5 +1,5 @@
 import type { DirectorTreatment } from "@/src/platform/directorSchema";
-import { retrieveImmersiveReferences } from "@/src/platform/director-intelligence/referenceCorpus";
+import { immersiveReferenceCorpus, retrieveImmersiveReferences } from "@/src/platform/director-intelligence/referenceCorpus";
 import { doctrineForPatterns } from "@/src/platform/director-intelligence/technicalDoctrine";
 
 export interface ImmersiveConstructionPattern {
@@ -1895,11 +1895,20 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
   },
 ];
 
+export type ConstructionPatternMaturity =
+  | "emerging"
+  | "supported"
+  | "established"
+  | "strong";
+
 export interface ConstructionPatternEvidence {
   patternId: string;
   support: number;
   sourceCount: number;
   referenceIds: string[];
+  globalReferenceCount: number;
+  globalSourceCount: number;
+  maturity: ConstructionPatternMaturity;
 }
 
 export interface ImmersiveConstructionDirectives {
@@ -2043,19 +2052,78 @@ function rankPatternEvidence(
     }
   }
 
+  const globalEvidence = globalPatternEvidence();
+
   return Array.from(buckets.entries())
-    .map(([patternId, bucket]) => ({
-      patternId,
-      support: Number(bucket.support.toFixed(3)),
-      sourceCount: bucket.sourceHosts.size,
-      referenceIds: bucket.referenceIds,
-    }))
+    .map(([patternId, bucket]) => {
+      const global = globalEvidence.get(patternId) ?? {
+        references: 0,
+        sources: 0,
+        maturity: "emerging" as ConstructionPatternMaturity,
+      };
+      return {
+        patternId,
+        support: Number(bucket.support.toFixed(3)),
+        sourceCount: bucket.sourceHosts.size,
+        referenceIds: bucket.referenceIds,
+        globalReferenceCount: global.references,
+        globalSourceCount: global.sources,
+        maturity: global.maturity,
+      };
+    })
     .sort(
       (a, b) =>
         b.sourceCount - a.sourceCount ||
         b.support - a.support ||
+        maturityScore(b.maturity) - maturityScore(a.maturity) ||
         a.patternId.localeCompare(b.patternId),
     );
+}
+
+function globalPatternEvidence() {
+  const buckets = new Map<
+    string,
+    { referenceIds: Set<string>; sourceHosts: Set<string> }
+  >();
+
+  for (const reference of immersiveReferenceCorpus) {
+    if (reference.evidenceLevel === "catalog") continue;
+    for (const patternId of reference.constructionPatternIds) {
+      const bucket = buckets.get(patternId) ?? {
+        referenceIds: new Set<string>(),
+        sourceHosts: new Set<string>(),
+      };
+      bucket.referenceIds.add(reference.id);
+      bucket.sourceHosts.add(sourceHost(reference.source));
+      buckets.set(patternId, bucket);
+    }
+  }
+
+  return new Map(
+    Array.from(buckets.entries()).map(([patternId, bucket]) => {
+      const references = bucket.referenceIds.size;
+      const sources = bucket.sourceHosts.size;
+      const maturity: ConstructionPatternMaturity =
+        references >= 5 && sources >= 3
+          ? "strong"
+          : references >= 3 && sources >= 2
+            ? "established"
+            : references >= 2
+              ? "supported"
+              : "emerging";
+      return [patternId, { references, sources, maturity }];
+    }),
+  );
+}
+
+function maturityScore(maturity: ConstructionPatternMaturity) {
+  return maturity === "strong"
+    ? 4
+    : maturity === "established"
+      ? 3
+      : maturity === "supported"
+        ? 2
+        : 1;
 }
 
 function sourceHost(source: string) {
