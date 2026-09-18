@@ -1170,8 +1170,16 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
   },
 ];
 
+export interface ConstructionPatternEvidence {
+  patternId: string;
+  support: number;
+  sourceCount: number;
+  referenceIds: string[];
+}
+
 export interface ImmersiveConstructionDirectives {
   patternIds: string[];
+  patternEvidence: ConstructionPatternEvidence[];
   referenceIds: string[];
   referenceLessons: string[];
   compositionRules: string[];
@@ -1228,21 +1236,26 @@ export function buildConstructionDirectives(
   treatment: DirectorTreatment,
   limit = 7,
 ): ImmersiveConstructionDirectives {
-  const references = retrieveImmersiveReferences(treatment, 5);
+  const referenceLimit =
+    treatment.tier === "flagship" ? 10 :
+    treatment.tier === "signature" ? 9 :
+    treatment.tier === "immersive" ? 8 : 6;
+  const references = retrieveImmersiveReferences(treatment, referenceLimit);
   const basePatterns = selectConstructionPatterns(treatment, limit);
-  const referencePatternIds = unique(
-    references.flatMap(({ reference }) => reference.constructionPatternIds),
-  );
-  const referencedPatterns = referencePatternIds
-    .map((id) => immersiveConstructionPatterns.find((pattern) => pattern.id === id))
+  const patternEvidence = rankPatternEvidence(references);
+  const referencedPatterns = patternEvidence
+    .map(({ patternId }) =>
+      immersiveConstructionPatterns.find((pattern) => pattern.id === patternId),
+    )
     .filter((pattern): pattern is ImmersiveConstructionPattern => Boolean(pattern));
   const patterns = uniquePatterns([...basePatterns, ...referencedPatterns]).slice(
     0,
-    Math.max(limit, 10),
+    Math.max(limit, treatment.tier === "flagship" ? 14 : 12),
   );
 
   return {
     patternIds: patterns.map((pattern) => pattern.id),
+    patternEvidence,
     referenceIds: references.map(({ reference }) => reference.id),
     referenceLessons: unique(
       references.flatMap(({ reference }) => reference.transferableLessons),
@@ -1255,6 +1268,69 @@ export function buildConstructionDirectives(
     mobileRules: unique(patterns.flatMap((pattern) => pattern.mobile)),
     forbiddenPatterns: unique(patterns.flatMap((pattern) => pattern.avoid)),
   };
+}
+
+function rankPatternEvidence(
+  references: ReturnType<typeof retrieveImmersiveReferences>,
+): ConstructionPatternEvidence[] {
+  const buckets = new Map<
+    string,
+    {
+      support: number;
+      referenceIds: string[];
+      sourceHosts: Set<string>;
+    }
+  >();
+
+  for (const { reference } of references) {
+    const evidenceWeight =
+      reference.evidenceLevel === "technical-reference"
+        ? 1.4
+        : reference.evidenceLevel === "public-case-study"
+          ? 1.2
+          : reference.evidenceLevel === "public-description"
+            ? 1
+            : reference.evidenceLevel === "visual-preview"
+              ? 0.65
+              : 0;
+    const host = sourceHost(reference.source);
+
+    for (const patternId of reference.constructionPatternIds) {
+      const bucket = buckets.get(patternId) ?? {
+        support: 0,
+        referenceIds: [],
+        sourceHosts: new Set<string>(),
+      };
+      bucket.support += reference.confidence * evidenceWeight;
+      if (!bucket.referenceIds.includes(reference.id)) {
+        bucket.referenceIds.push(reference.id);
+      }
+      bucket.sourceHosts.add(host);
+      buckets.set(patternId, bucket);
+    }
+  }
+
+  return Array.from(buckets.entries())
+    .map(([patternId, bucket]) => ({
+      patternId,
+      support: Number(bucket.support.toFixed(3)),
+      sourceCount: bucket.sourceHosts.size,
+      referenceIds: bucket.referenceIds,
+    }))
+    .sort(
+      (a, b) =>
+        b.sourceCount - a.sourceCount ||
+        b.support - a.support ||
+        a.patternId.localeCompare(b.patternId),
+    );
+}
+
+function sourceHost(source: string) {
+  try {
+    return new URL(source).hostname.replace(/^www\./, "");
+  } catch {
+    return source;
+  }
 }
 
 function uniquePatterns(patterns: ImmersiveConstructionPattern[]) {
