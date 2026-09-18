@@ -26,6 +26,8 @@ export function StudioLivePreview({
   progress: controlledProgress,
   onProgressChange,
   gizmo = null,
+  reviewMode = false,
+  reviewViewport,
 }: {
   experience: ExperienceConfig;
   active: number;
@@ -33,10 +35,12 @@ export function StudioLivePreview({
   progress?: number;
   onProgressChange?: (progress: number) => void;
   gizmo?: StudioGizmoState | null;
+  reviewMode?: boolean;
+  reviewViewport?: "desktop" | "mobile";
 }) {
   const [internalProgress, setInternalProgress] = useState(() => midpoint(experience.scenes[active].range));
   const progress = controlledProgress ?? internalProgress;
-  const [viewport, setViewport] = useState<Viewport>("desktop");
+  const [viewport, setViewport] = useState<Viewport>(reviewViewport ?? "desktop");
   const [playing, setPlaying] = useState(false);
   const progressRef = useRef(progress);
   const onProgressChangeRef = useRef(onProgressChange);
@@ -114,7 +118,8 @@ export function StudioLivePreview({
     if (onProgressChangeRef.current) onProgressChangeRef.current(next);
     else setInternalProgress(next);
   };
-  const aspect = viewport === "mobile" ? 9 / 16 : viewport === "tablet" ? 4 / 3 : 16 / 9;
+  const effectiveViewport:Viewport = reviewViewport ?? viewport;
+  const aspect = effectiveViewport === "mobile" ? 9 / 16 : effectiveViewport === "tablet" ? 4 / 3 : 16 / 9;
   const sampled = sampleExperience(progress, false, experience, aspect);
 
   const selectScene = (index: number) => {
@@ -124,19 +129,19 @@ export function StudioLivePreview({
   };
 
   return (
-    <section className="studio-card studio-preview" aria-labelledby="live-preview-title">
-      <div className="studio-card__head">
+    <section className="studio-card studio-preview" aria-labelledby={reviewMode ? undefined : "live-preview-title"} aria-label={reviewMode ? "Autonomy visual review" : undefined}>
+      {!reviewMode && <div className="studio-card__head">
         <div><span>PRODUCTION RUNTIME</span><h2 id="live-preview-title">Live experience preview</h2></div>
         <output data-status={webgl}>{webgl}</output>
-      </div>
-      <div className="studio-preview__toolbar">
+      </div>}
+      {!reviewMode && <div className="studio-preview__toolbar">
         <div role="group" aria-label="Preview viewport">
           {(["desktop", "tablet", "mobile"] as const).map((size) => <button type="button" key={size} aria-pressed={viewport === size} onClick={() => setViewport(size)}>{size}</button>)}
         </div>
         <label>Quality<select aria-label="Preview quality" value={quality} onChange={(event) => useExperienceStore.getState().setQuality(event.target.value as QualityMode)}><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label>
         <span>{stats.calls} calls / {stats.triangles.toLocaleString()} triangles</span>
-      </div>
-      <div className="studio-preview__viewport" data-viewport={viewport}>
+      </div>}
+      <div className="studio-preview__viewport" data-viewport={effectiveViewport} data-review-mode={reviewMode ? "true" : "false"}>
         <div className="studio-preview__canvas">
           <ExperienceConfigProvider value={experience}><StudioEditorProvider value={gizmo}><SceneCanvas /><CinematicMedia /><CinematicTransitionLayers /></StudioEditorProvider></ExperienceConfigProvider>
           <div className="studio-preview__copy" style={{ opacity: sampled.motion.copy.opacity, translate: `0 ${sampled.motion.copy.y}px`, filter: `blur(${sampled.motion.copy.blur}px)` } as CSSProperties}>
@@ -145,14 +150,14 @@ export function StudioLivePreview({
           </div>
         </div>
       </div>
-      <div className="studio-preview__transport">
+      {!reviewMode && <div className="studio-preview__transport">
         <button type="button" onClick={() => setPlaying((value) => !value)}>{playing ? "Pause" : "Play"}</button>
         <output>{progress.toFixed(3)}</output>
         <input aria-label="Live preview progress" type="range" min="0" max="1" step="0.001" value={progress} onChange={(event) => { setPlaying(false); seek(Number(event.target.value)); }} />
-      </div>
-      <div className="studio-preview__scenes" role="list" aria-label="Preview scenes">
+      </div>}
+      {!reviewMode && <div className="studio-preview__scenes" role="list" aria-label="Preview scenes">
         {experience.scenes.map((scene, index) => <button role="listitem" type="button" key={scene.id} className={active === index ? "is-active" : ""} onClick={() => selectScene(index)}><small>{String(index + 1).padStart(2, "0")}</small>{scene.label}</button>)}
-      </div>
+      </div>}
     </section>
   );
 }

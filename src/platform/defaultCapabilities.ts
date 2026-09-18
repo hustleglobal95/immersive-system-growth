@@ -9,5 +9,6 @@ export function createDefaultCapabilityRegistry() {
   registry.register({ id: "interaction", version: 1, commands: ["interaction.add", "interaction.remove"], validators: ["interaction:validate"], runtimeSystems: ["interaction"] });
   registry.register({ id: "assets", version: 1, commands: ["asset.assign", "asset.remove"], validators: ["assets:audit", "bank:validate"], runtimeSystems: ["asset-loader"] });
   registry.register({ id: "typography", version: 1, commands: ["typography.applyPairing"], studioAdapters: ["TypeVaultWorkbench"] });
+  registry.register({ id: "autonomy", version: 1, commands: ["scene.adjustPresentation", "motion.applyArchetype", "camera.applyChoreography"], validators: ["autonomy:benchmark"], runtimeSystems: ["visual-review", "forced-optimization"] });
   return registry;
 }

@@ -46,6 +46,7 @@ export function planCreativeExecution(input: {
   experience: ExperienceConfig;
   manifest: AssetManifest;
   variation?: number;
+  preferredMedia?: CreativeMedium[];
 }): CreativeExecutionPlan {
   const { idea, experience, manifest } = input;
   const variation = input.variation ?? 0;
@@ -56,7 +57,7 @@ export function planCreativeExecution(input: {
   const hasRig = Boolean(experience.productRig?.nodes.length);
   const sceneCount = experience.scenes.length;
 
-  const medium = chooseMedium({ lower, modelCount, imageCount, videoCount, hasRig, variation });
+  const medium = chooseMedium({ lower, modelCount, imageCount, videoCount, hasRig, variation, preferredMedia: input.preferredMedia });
   const mediumCopy = mediumDescription(medium, { modelCount, imageCount, hasRig });
   const baseMoves = buildSceneMoves(experience, lower, medium, variation, hasRig);
   const signatureMoment = signatureFor(medium, lower, hasRig);
@@ -148,8 +149,10 @@ export function applyCreativeExecutionPlan(
   return parseExperience({ ...experience, scenes });
 }
 
-function chooseMedium(input: { lower: string; modelCount: number; imageCount: number; videoCount: number; hasRig: boolean; variation: number }): CreativeMedium {
+function chooseMedium(input: { lower: string; modelCount: number; imageCount: number; videoCount: number; hasRig: boolean; variation: number; preferredMedia?: CreativeMedium[] }): CreativeMedium {
   const { lower, modelCount, imageCount, hasRig, variation } = input;
+  const preferred = input.preferredMedia?.[variation % Math.max(1, input.preferredMedia.length)];
+  if (preferred) return preferred;
   if (lower.includes("image") || lower.includes("photo") || lower.includes("depth")) return variation % 3 === 1 && modelCount ? "hybrid" : "depth-image";
   if (lower.includes("3d") || lower.includes("model") || lower.includes("orbit") || lower.includes("explode") || lower.includes("assembly")) return modelCount || hasRig ? "real-3d" : "hybrid";
   if ((modelCount || hasRig) && imageCount) return variation % 3 === 0 ? "hybrid" : variation % 3 === 1 ? "real-3d" : "depth-image";
