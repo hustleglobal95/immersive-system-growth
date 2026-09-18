@@ -2418,6 +2418,38 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
     avoid: ["Unbounded video seeking used as a substitute for designed branch points.", "Choices that have no visible consequence beyond changing a label."],
   },
   {
+    id: "decoded-frame-bank-for-hard-scrub",
+    title: "Use a bounded decoded-frame bank only when hard random-access scrubbing earns the complexity",
+    signals: ["video", "scroll", "scrub", "webcodecs", "random access", "frame bank", "canvas", "decoder"],
+    composition: [
+      "Use frame-bank scrubbing only when the experience depends on exact visual states that ordinary delivery-video seeking cannot hit reliably.",
+      "Keep semantic copy and fallback media independent of the decoded-frame canvas so the narrative survives unsupported devices or CORS/decode failure.",
+    ],
+    motion: [
+      "Map normalized interaction progress to media time, then ease the displayed frame toward the target unless reduced motion requires direct state changes.",
+      "Select decoded frames by timestamp rather than assuming constant display cadence.",
+    ],
+    transitions: [
+      "Keep the ordinary video element as a fallback until the first decoded-frame canvas paint succeeds, then hand off without flashing or resetting progress.",
+    ],
+    interaction: [
+      "Use one interaction clock for scroll/drag progress and make frame selection deterministic in both directions.",
+    ],
+    implementation: [
+      "If WebCodecs is used, demux once, throttle decode work, bound ImageBitmap/frame caches and release decoded resources aggressively.",
+      "Treat cross-origin media permissions and browser decoder support as explicit prerequisites; fail back to ordinary video seeking rather than breaking the scene.",
+      "Prefer interaction-optimized encoding with short keyframe intervals before escalating to a full decoded-frame bank.",
+    ],
+    mobile: [
+      "Use a smaller cache and lower-resolution media on memory-constrained devices, and preserve a direct video-seek fallback.",
+    ],
+    avoid: [
+      "Decoding an entire long film into unbounded browser memory.",
+      "Using a custom frame bank when ordinary scrub-optimized video already meets the visual requirement.",
+      "Making the decoded canvas the only accessible representation of essential content.",
+    ],
+  },
+  {
     id: "prewarm-signature-systems",
     title: "Prewarm signature systems",
     signals: ["shader", "3d", "video", "particles", "postprocessing", "cinematic", "performance"],
