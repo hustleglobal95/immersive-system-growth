@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "projects": {
+    "heliot": {
+      "label": "HELIOT / Observatory for the unseen",
+      "baselineCommit": "08640d01628033fcd0ae0f88cd0d84be42224994",
+      "previewPolicy": "read-only-exact-repo-state",
+      "paths": {
+        "app/heliot": "772a30f35f3d6241a5669b6346b0ff740c898614",
+        "src/experiences/heliot": "a2be8d6a738781f0e9643160117c2a223aa29eea",
+        "clients/heliot": "01911ac8d94cc89c82403edb4167c46d78bd0f0d",
+        "public/models/heliot": "3b3fb33945bf140fab4791bc326e4d8e0319ab7f"
+      }
+    }
+  }
+}
