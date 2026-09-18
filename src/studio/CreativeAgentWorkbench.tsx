@@ -107,7 +107,7 @@ export function CreativeAgentWorkbench() {
 
   return <main className="creative-agent">
     <header className="creative-agent__topbar">
-      <div><span>FORGE</span><strong>Creative Agent</strong><em>V5 · HIERARCHY + ASSET CREATION</em></div>
+      <div><span>FORGE</span><strong>Creative Agent</strong></div>
       <nav><Link href="/studio/assets/create">Asset Creator</Link><Link href="/studio">Studio</Link><Link href="/director/intelligence">Director Intelligence</Link></nav>
     </header>
 
