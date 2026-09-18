@@ -164,3 +164,27 @@ test("every corpus pattern id resolves to executable construction knowledge", ()
   assert.equal(immersiveConstructionPatterns.length, 52);
   assert.equal(known.size, 52);
 });
+
+test("construction consensus ranks patterns by evidence across precedents", () => {
+  const treatment = directProject(brief);
+  const directives = buildConstructionDirectives(treatment, 7);
+
+  assert.ok(directives.patternEvidence.length > 0);
+  assert.ok(
+    directives.patternEvidence.every(
+      (item) =>
+        item.support > 0 &&
+        item.sourceCount >= 1 &&
+        item.referenceIds.length >= 1,
+    ),
+  );
+  for (let index = 1; index < directives.patternEvidence.length; index += 1) {
+    const previous = directives.patternEvidence[index - 1];
+    const current = directives.patternEvidence[index];
+    assert.ok(
+      previous.sourceCount > current.sourceCount ||
+        (previous.sourceCount === current.sourceCount &&
+          previous.support >= current.support),
+    );
+  }
+});
