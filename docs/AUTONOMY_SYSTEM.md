@@ -65,7 +65,7 @@ Unknown brand rules, product claims and final conversion actions remain explicit
 
 ## Decision-time guidance
 
-Do not load all 98 construction patterns and all technical doctrine into every decision.
+Do not load all 108 construction patterns and all technical doctrine into every decision.
 
 Route only the patterns relevant to the current problem:
 
