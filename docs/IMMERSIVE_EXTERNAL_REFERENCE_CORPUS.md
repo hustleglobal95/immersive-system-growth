@@ -4,9 +4,9 @@ Reviewed: **2026-09-18**
 
 This corpus expands Forge beyond GetLayers so Director does not overfit to one marketplace, one studio, one visual trend or one implementation style.
 
-It contains **35 public studio case studies and technical breakdowns** from Dogstudio, Lusion, makemepulse, Bonhomme, 14islands and Codrops.
+It contains **51 public studio case studies and technical breakdowns** from Dogstudio, Lusion, makemepulse, Bonhomme, 14islands and Codrops.
 
-Combined with the 49-template GetLayers corpus, Forge now has **84 immersive references** and **44 executable construction patterns**.
+Combined with the 49-template GetLayers corpus, Forge now has **100 immersive references** and **52 executable construction patterns**.
 
 ## What this corpus is for
 
@@ -77,10 +77,26 @@ The goal is **not** to copy a studio's exact visual identity, proprietary engine
 33. **The Spark** — experience begins as a short-film/story problem; motion, sound and rendering serve one emotional arc.
 34. **Podium** — page-based structure was abandoned in favor of a continuous sequence; Lenis/GSAP share rhythm; WebGL is used selectively.
 35. **Arnaud Rocca Portfolio** — one slider accepts scroll, keyboard, bullets and drag; project pages deliberately become quieter than the entrance.
+36. **HAOQI.DESIGN** — DOM, CSS and WebGL share one retro-futurist stage; material language and scroll sync are part of the identity.
+37. **Cerebrium** — complex serverless infrastructure becomes spatially tangible; interaction behavior mirrors product qualities.
+38. **Trionn** — GSAP, Three.js, Lenis and Web Audio operate as one connected motion framework.
+39. **The Sleepers** — lightweight fog, outlines and transition tricks maximize visual impact per implementation cost.
+40. **Stefanos Tsitsipas Digital Athlete** — photogrammetry is reduced into web-specific LOD, texture and geometry decisions while preserving authentic motion.
+41. **4WIDE** — distortion, blur and motion are treated as one language and constrained by clarity/performance.
+42. **False Earth** — huge repeated procedural fields justify GPU-scale generation because the narrative actually requires them.
+43. **They Call Me Giulio** — four cinematic scenes are built as one story instead of a trend checklist.
+44. **Susurrus** — watercolor NPR shading is both art direction and a performance strategy.
+45. **PX PUSH** — a persistent CRT device frames every page; repeated motion is centralized; native mobile scroll replaces unnecessary smooth scrolling.
+46. **MERSI** — editorial/architectural print discipline is extended into interaction without imitating print literally.
+47. **R—K ’26** — identity, layout, rhythm and motion are iterated together until they read as one presence.
+48. **Ridgeline** — performance is profiled by scroll depth; static shadow work is frozen; known stalls are scheduled behind intentional covers.
+49. **Better Off® Lookback** — an archive is designed for scalable wandering rather than funnel conversion.
+50. **Exat Typeface Microsite** — typography itself is the interface; reversible scroll and proximity reveal variable-font behavior.
+51. **Chems.Studio Archive** — heterogeneous film/creative work shares one navigation grammar without being flattened into identical case studies.
 
 ## New construction intelligence extracted
 
-This expansion added 15 patterns on top of the original 29:
+This expansion first added 15 patterns on top of the original 29, then the second research pass added 8 more. The current library contains **52 patterns**:
 
 1. **interaction-as-thesis**
 2. **multi-subscene-transition-budget**
@@ -97,6 +113,14 @@ This expansion added 15 patterns on top of the original 29:
 13. **scroll-velocity-material-response**
 14. **mobile-medium-substitution**
 15. **immersive-rational-duality**
+16. **effect-strength-vs-clarity**
+17. **hero-scan-optimization**
+18. **stylization-as-performance**
+19. **persistent-device-metaphor**
+20. **identity-rhythm-unification**
+21. **freeze-static-render-work**
+22. **archive-as-exploration**
+23. **type-is-interface**
 
 These are executable in `src/platform/director-intelligence/constructionKnowledge.ts`.
 
@@ -190,7 +214,7 @@ from the same Director process.
 
 ## Retrieval policy
 
-Director now retrieves from the combined **84-reference corpus**, not the GetLayers set alone.
+Director now retrieves from the combined **100-reference corpus**, not the GetLayers set alone.
 
 Retrieval deliberately limits source monoculture: when enough candidates exist, no single source host can dominate the selected precedent set. The Director can therefore combine, for example:
 
