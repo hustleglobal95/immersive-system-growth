@@ -4,7 +4,7 @@ Forge already has the runtime systems required to build high-end immersive websi
 
 The objective is not to add another animation library or replace Forge's cinematic architecture. The objective is to make Director understand how strong immersive sites are composed so it can choose the right existing Forge systems with much less trial and error.
 
-The current research base contains **196 evidence-graded references** and **98 executable construction patterns**. Reference selection is source-diversified and recurring patterns are ranked by evidence strength plus independent source support rather than by a single favorite studio.
+The current research base contains **236 evidence-graded references** and **108 executable construction patterns**. Reference selection is source-diversified and recurring patterns are ranked by evidence strength plus independent source support rather than by a single favorite studio.
 
 ## Operating rule
 
@@ -248,24 +248,33 @@ The executable doctrine lives in:
 
 `src/platform/director-intelligence/technicalDoctrine.ts`
 
-The current sixteen doctrine groups cover:
+The current 25 doctrine groups cover:
 
-1. Three.js shader compilation and GPU resource initialization before first-use.
-2. React Three Fiber demand rendering and explicit invalidation.
-3. Browser video-frame synchronization with `requestVideoFrameCallback`.
-4. OffscreenCanvas/worker isolation for measured main-thread rendering contention.
-5. A shared GSAP ticker/heartbeat for systems that must remain phase-locked.
-6. Prepared high-frequency setters for measured hot paths.
+1. Precompile shaders and initialize GPU resources before first-use.
+2. Demand rendering when visible pixels can come to rest.
+3. Synchronization to actual presented video frames.
+4. OffscreenCanvas isolation only for measured main-thread contention.
+5. One animation heartbeat for coordinated high-frequency motion.
+6. Prepared high-frequency property writes only on measured hot paths.
 7. Refresh-rate-independent elapsed-time motion.
-8. GPU-friendly texture and mesh compression with decode cost considered alongside transfer size.
-9. Draw-call reduction through instancing/batching when object independence allows it.
-10. Cinematic media capability selection based on expected decode quality rather than codec support alone.
-11. Page-visibility suspension when the document cannot produce visible pixels.
+8. GPU-friendly texture/mesh compression with decode cost considered.
+9. Draw-call reduction through instancing or batching.
+10. Cinematic media variant selection by expected decode quality.
+11. Page-visibility suspension.
 12. Reduced-motion substitution that preserves information and causality.
-13. Smoothed audio analysis before audio energy becomes visual motion.
-14. Browser view-transition lifecycle treated as a readiness transaction.
-15. Renderer-info budgeting for memory and draw work at the exact narrative frame that matters.
-16. GSAP responsive motion creation/cleanup as one lifecycle.
+13. Smoothed audio analysis before visual mapping.
+14. Browser view-transition readiness transactions.
+15. Renderer memory/draw budgeting at the narrative frame that matters.
+16. Responsive GSAP creation/cleanup as one lifecycle.
+17. Intersection/visibility activation and prewarm windows.
+18. Critical image decode before visual swaps.
+19. Network/save-data signals treated as hints rather than sole quality detectors.
+20. Explicit glTF resource disposal contracts.
+21. Manual transform updates for truly static scene nodes.
+22. Video-dependent work synchronized to decoded/composited frames.
+23. ResizeObserver-driven spatial-layout invalidation.
+24. `content-visibility` for long semantic pages.
+25. Asynchronous image/bitmap preparation with explicit resource release.
 
 When a selected construction pattern overlaps one of these doctrines, its principles are injected into Director implementation rules and its verification checks are compiled into the production performance rules. This means technical research changes the build plan instead of remaining documentation.
 

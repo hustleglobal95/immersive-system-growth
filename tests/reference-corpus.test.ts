@@ -101,8 +101,8 @@ test("construction directives are grounded in both patterns and corpus precedent
 });
 
 
-test("broader immersive corpus adds 147 public studio and technical/source studies", () => {
-  assert.equal(broaderImmersiveReferenceCorpus.length, 147);
+test("broader immersive corpus adds 187 public studio and technical/source studies", () => {
+  assert.equal(broaderImmersiveReferenceCorpus.length, 187);
   assert.ok(
     broaderImmersiveReferenceCorpus.every(
       (reference) =>
@@ -110,7 +110,7 @@ test("broader immersive corpus adds 147 public studio and technical/source studi
         reference.evidenceLevel === "technical-reference",
     ),
   );
-  assert.equal(immersiveReferenceCorpus.length, 196);
+  assert.equal(immersiveReferenceCorpus.length, 236);
 });
 
 test("broader corpus teaches implementation-shaping lessons rather than only visual style", () => {
@@ -161,8 +161,8 @@ test("every corpus pattern id resolves to executable construction knowledge", ()
   const missing = Array.from(referenced).filter((id) => !known.has(id));
 
   assert.deepEqual(missing, []);
-  assert.equal(immersiveConstructionPatterns.length, 98);
-  assert.equal(known.size, 98);
+  assert.equal(immersiveConstructionPatterns.length, 108);
+  assert.equal(known.size, 108);
 });
 
 test("construction consensus ranks patterns by evidence across precedents", () => {
