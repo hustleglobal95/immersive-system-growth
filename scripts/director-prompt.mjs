@@ -1,11 +1,13 @@
 import fs from "node:fs/promises";
 import { parseDirectorBrief } from "../src/platform/directorSchema.ts";
 import { directProject } from "../src/platform/directorEngine.ts";
+import { buildConstructionDirectives } from "../src/platform/director-intelligence/constructionKnowledge.ts";
 import { retrieveImmersiveReferences } from "../src/platform/director-intelligence/referenceCorpus.ts";
 
 const inputPath = process.argv[2] || "config/director-brief.example.json";
 const brief = parseDirectorBrief(JSON.parse(await fs.readFile(inputPath, "utf8")));
 const baseline = directProject(brief);
+const constructionResearch = buildConstructionDirectives(baseline);
 const immersiveReferences = retrieveImmersiveReferences(baseline, 5).map(({ reference, reasons }) => ({
   id: reference.id,
   title: reference.title,
@@ -39,6 +41,13 @@ ${JSON.stringify(brief, null, 2)}
 These are evidence-scored construction precedents from Forge's reviewed corpus. Use the transferable lessons only. Do not reproduce the reference's surface styling or branded execution.
 
 ${JSON.stringify(immersiveReferences, null, 2)}
+
+## FORGE CONSTRUCTION RESEARCH
+The following is retrieved from Forge's evidence-graded immersive reference corpus for this brief. Treat it as precedent knowledge, not a style recipe.
+
+${JSON.stringify({\n  references: constructionResearch.referenceIds,\n  lessons: constructionResearch.referenceLessons,\n  patternEvidence: constructionResearch.patternEvidence.slice(0, 12),\n  compositionRules: constructionResearch.compositionRules.slice(0, 12),\n  motionRules: constructionResearch.motionRules.slice(0, 12),\n  transitionRules: constructionResearch.transitionRules.slice(0, 10),\n  interactionRules: constructionResearch.interactionRules.slice(0, 10),\n  implementationRules: constructionResearch.implementationRules.slice(0, 12),\n  mobileRules: constructionResearch.mobileRules.slice(0, 10),\n  avoid: constructionResearch.forbiddenPatterns.slice(0, 12),\n}, null, 2)}
+
+Use these principles to sharpen the treatment, but do not mention precedent names in client-facing creative concepts unless explicitly asked. Combine principles into a new client-specific direction rather than imitating any single reference.
 
 ## NON-NEGOTIABLE CREATIVE STANDARD
 1. The project must have one controlling thesis that can govern camera, motion, typography, composition, transitions, interaction and asset decisions.
