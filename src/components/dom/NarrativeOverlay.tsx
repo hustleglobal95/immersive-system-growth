@@ -9,18 +9,18 @@ import { SceneBlocks } from "./SceneBlocks";
  * each carry a different treatment, and `pace` sets how quickly that chapter's copy lands.
  * Chapters not listed here fall back to the last entry's shape.
  */
-const CHAPTER_MOTION: Record<string, { label: CinematicPreset; headline: CinematicPreset; lede: CinematicPreset; pace?: number; lead?: number; rows?: CinematicPreset; plates?: CinematicPreset;
+const CHAPTER_MOTION: Record<string, { headline: CinematicPreset; lede: CinematicPreset; pace?: number; lead?: number; rows?: CinematicPreset; plates?: CinematicPreset;
   collapse?: CinematicPreset; collapseAt?: readonly [number, number] }> = {
   // 01 Position clears its words early and upward, leaving the carousel alone in the frame
   // for a beat before the ring itself goes.
-  parti: { label: "label-track", headline: "headline-words", lede: "lede-words" },
-  threshold: { label: "text-settle", headline: "headline-unfold", lede: "copy-drift" },
-  living: { label: "label-track", headline: "headline-drop", lede: "lede-words", rows: "list-unfold", plates: "plate-rise" },
-  material: { label: "label-track", headline: "headline-fracture", lede: "lede-scatter", rows: "list-unfold" },
-  wellness: { label: "label-track", headline: "headline-swing", lede: "copy-drift" },
-  studio: { label: "text-settle", headline: "headline-words", lede: "lede-scatter" },
-  horizon: { label: "label-track", headline: "headline-converge", lede: "lede-words" },
-  inquiry: { label: "text-settle", headline: "headline-slide", lede: "copy-drift" },
+  parti: { headline: "headline-words", lede: "lede-words" },
+  threshold: { headline: "headline-unfold", lede: "copy-drift" },
+  living: { headline: "headline-drop", lede: "lede-words", rows: "list-unfold", plates: "plate-rise" },
+  material: { headline: "headline-fracture", lede: "lede-scatter", rows: "list-unfold" },
+  wellness: { headline: "headline-swing", lede: "copy-drift" },
+  studio: { headline: "headline-words", lede: "lede-scatter" },
+  horizon: { headline: "headline-converge", lede: "lede-words" },
+  inquiry: { headline: "headline-slide", lede: "copy-drift" },
 };
 
 /**
@@ -41,7 +41,7 @@ const CHAPTER_MOTION: Record<string, { label: CinematicPreset; headline: Cinemat
 // the chapter stops being readable, which is what left 02 into 03 a third longer than its
 // neighbours: the disperse was ending at 0.76 while the track ran on to 0.86.
 const RHYTHM = { lead: 0, pace: 1, entrance: .62, collapseAt: [.82, .92] as const };
-const FALLBACK_MOTION = { label: "label-track", headline: "headline-words", lede: "lede-words" } as const;
+const FALLBACK_MOTION = { headline: "headline-words", lede: "lede-words" } as const;
 
 // Every cue is seeked by the one scroll clock, so scrubbing backwards reconstructs the same frame.
 const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
@@ -66,8 +66,6 @@ const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
   // less scroll, still starting and settling at rest.
   const ent = (fraction: number) => at(lead + fraction * RHYTHM.entrance * pace);
   return [
-    { selector: scope + "[data-motion-index]", range: [ent(0), ent(.05)], preset: motion.label },
-    { selector: scope + "[data-motion-copy]", range: [ent(.01), ent(.07)], preset: motion.label },
     { selector: scope + "[data-motion-headline]", range: [ent(0), ent(.11)], preset: motion.headline },
     { selector: scope + "[data-motion-lede]", range: [ent(.03), ent(.13)], preset: motion.lede },
     { selector: scope + "[data-motion-block]", range: [ent(.02), ent(.12)], preset: "copy-drift" },
@@ -114,12 +112,10 @@ export function NarrativeOverlay() {
         >
           {scene.media && <img className="story-media-static" src={scene.media.poster ?? scene.media.src} alt={scene.media.alt} loading={index===0?"eager":"lazy"} />}
           <div className="story-panel" data-motion-panel>
-            <div className="narrative-panel__index" data-motion-index>
-              {String(index + 1).padStart(2, "0")}
-            </div>
-            {scene.copy.eyebrow && (
-              <p className="eyebrow" data-motion-copy>{scene.copy.eyebrow}</p>
-            )}
+            {/* The chapter number and its "NN / NAME" label are no longer printed above the
+                headline. The eyebrow stays on the scene in config, because the Studio editors
+                and the Heliot experience both read it; this layout simply opens on its own
+                headline. The progress rail still carries the chapter count. */}
             {index === 0 ? (
               <h1 id={`${scene.id}-heading`} data-motion-headline>{scene.copy.headline}</h1>
             ) : (
