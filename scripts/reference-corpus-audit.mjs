@@ -4,10 +4,24 @@ import {
 import {
   immersiveConstructionPatterns,
 } from "../src/platform/director-intelligence/constructionKnowledge.ts";
+import {
+  immersiveTechnicalDoctrine,
+} from "../src/platform/director-intelligence/technicalDoctrine.ts";
 
 const errors = [];
 const ids = new Set();
 const knownPatterns = new Set(immersiveConstructionPatterns.map((pattern) => pattern.id));
+
+for (const doctrine of immersiveTechnicalDoctrine) {
+  if (!doctrine.source.startsWith("https://")) {
+    errors.push(`Technical doctrine ${doctrine.id} has a non-HTTPS source.`);
+  }
+  for (const patternId of doctrine.patternIds) {
+    if (!knownPatterns.has(patternId)) {
+      errors.push(`Technical doctrine ${doctrine.id} points to unknown doctrine pattern ${patternId}.`);
+    }
+  }
+}
 
 for (const reference of immersiveReferenceCorpus) {
   if (ids.has(reference.id)) errors.push(`Duplicate reference id: ${reference.id}`);
@@ -63,6 +77,7 @@ const underSupported = immersiveConstructionPatterns
 console.log("Forge immersive reference corpus audit");
 console.log(`references: ${immersiveReferenceCorpus.length}`);
 console.log(`construction patterns: ${immersiveConstructionPatterns.length}`);
+console.log(`primary technical doctrines: ${immersiveTechnicalDoctrine.length}`);
 console.log("\nevidence levels:");
 printCounts(evidenceCounts);
 console.log("\nsource hosts:");
@@ -81,6 +96,9 @@ if (immersiveReferenceCorpus.length < 144) {
 }
 if (immersiveConstructionPatterns.length < 81) {
   errors.push(`Expected at least 81 construction patterns; found ${immersiveConstructionPatterns.length}.`);
+}
+if (immersiveTechnicalDoctrine.length < 7) {
+  errors.push(`Expected at least 7 technical doctrines; found ${immersiveTechnicalDoctrine.length}.`);
 }
 
 if (errors.length) {
