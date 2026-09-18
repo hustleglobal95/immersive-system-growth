@@ -905,7 +905,7 @@ export function retrieveImmersiveReferences(
     .join(" ")
     .toLowerCase();
 
-  return immersiveReferenceCorpus
+  const candidates = immersiveReferenceCorpus
     .filter((reference) => reference.transferableLessons.length > 0)
     .map((reference) => {
       let score = reference.confidence * 0.35;
@@ -932,6 +932,7 @@ export function retrieveImmersiveReferences(
 
       if (
         reference.evidenceLevel === "public-description" ||
+        reference.evidenceLevel === "public-case-study" ||
         reference.evidenceLevel === "technical-reference"
       ) {
         score += 0.2;
@@ -950,8 +951,44 @@ export function retrieveImmersiveReferences(
         reasons,
       };
     })
-    .sort((a, b) => b.score - a.score || a.reference.id.localeCompare(b.reference.id))
-    .slice(0, limit);
+    .sort((a, b) => b.score - a.score || a.reference.id.localeCompare(b.reference.id));
+
+  return diverseReferenceSelection(candidates, limit);
+}
+
+function diverseReferenceSelection(
+  candidates: RetrievedImmersiveReference[],
+  limit: number,
+) {
+  const chosen: RetrievedImmersiveReference[] = [];
+  const hostCounts = new Map<string, number>();
+  const maxPerHost = limit >= 5 ? 2 : 1;
+
+  for (const candidate of candidates) {
+    if (chosen.length >= limit) break;
+    const host = sourceHost(candidate.reference.source);
+    if ((hostCounts.get(host) ?? 0) >= maxPerHost) continue;
+    chosen.push(candidate);
+    hostCounts.set(host, (hostCounts.get(host) ?? 0) + 1);
+  }
+
+  // Fill any remaining slots after the diversity pass so a narrow query can
+  // still return the requested number of supported precedents.
+  for (const candidate of candidates) {
+    if (chosen.length >= limit) break;
+    if (chosen.some((item) => item.reference.id === candidate.reference.id)) continue;
+    chosen.push(candidate);
+  }
+
+  return chosen;
+}
+
+function sourceHost(source: string) {
+  try {
+    return new URL(source).hostname.replace(/^www\./, "");
+  } catch {
+    return source;
+  }
 }
 
 function mergeUnique(...groups: string[][]) {
