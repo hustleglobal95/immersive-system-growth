@@ -1806,6 +1806,76 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
     avoid: ["Unbounded user data directly driving shaders/layout.", "Requiring account connection when a meaningful fallback can exist."],
   },
   {
+    id: "teach-nonstandard-navigation",
+    title: "Teach unfamiliar navigation before demanding it",
+    signals: ["horizontal", "drag", "unusual", "navigation", "scroll", "gesture", "affordance"],
+    composition: [
+      "Use the opening frame to make the available movement direction or interaction surface visually inferable before hiding conventional page cues.",
+    ],
+    motion: [
+      "A short first-load demonstration may move the interface in the intended direction, then return control immediately to the visitor.",
+    ],
+    transitions: [],
+    interaction: [
+      "Pair nonstandard navigation with an obvious alternate control path or persistent orientation cue until the behavior is learned.",
+    ],
+    implementation: [
+      "Store the tutorial/first-run state separately from the navigation state so teaching motion never corrupts actual progress.",
+    ],
+    mobile: [
+      "Retune the teaching gesture for touch and avoid demonstrating hover-only behavior.",
+    ],
+    avoid: ["Novel navigation with no initial affordance.", "Long forced tutorials before visitors can interact."],
+  },
+  {
+    id: "entry-ritual-earns-its-wait",
+    title: "Make the entry ritual perform real jobs",
+    signals: ["preloader", "loader", "enter", "audio", "permission", "intro", "ritual", "opening"],
+    composition: [
+      "The loading/entry composition should introduce the world's visual hierarchy or tone rather than present generic progress chrome.",
+    ],
+    motion: [
+      "Use the entry sequence to establish the motion language that the rest of the experience will reuse.",
+    ],
+    transitions: [
+      "The final loader state should become or reveal the first real composition so the wait reads as a prologue, not an interruption.",
+    ],
+    interaction: [
+      "If user activation is required for audio or another browser permission, make the enter action meaningful and combine it with that permission point.",
+    ],
+    implementation: [
+      "Only hold the visitor for work that is genuinely critical to the first meaningful state; defer later assets.",
+    ],
+    mobile: [
+      "Shorten the ritual and critical asset set on constrained devices while preserving the same introduction.",
+    ],
+    avoid: ["Decorative loaders that add delay after the page is ready.", "Requesting audio permission with no contextual reason."],
+  },
+  {
+    id: "mode-switch-preserves-context",
+    title: "Switch presentation modes without losing selection or story context",
+    signals: ["mode", "slider", "list", "grid", "view", "toggle", "archive", "switch"],
+    composition: [
+      "Different views may optimize for mood, scanning or detail, but they must map to the same underlying content/selection model.",
+    ],
+    motion: [
+      "Fade or transform the outgoing mode, rebuild/reposition the destination invisibly, then reveal it at the equivalent content position.",
+    ],
+    transitions: [
+      "Use a persistent backdrop, media subject or other anchor through the mode change so DOM reconstruction does not feel like navigation to a different site.",
+    ],
+    interaction: [
+      "Keep current item, focus and navigation meaning stable across view changes.",
+    ],
+    implementation: [
+      "Model mode and selection separately; create an explicit transition transaction so teardown/rebuild cannot expose half-ready UI.",
+    ],
+    mobile: [
+      "Offer the mode that best suits touch by default while preserving direct access to the same content.",
+    ],
+    avoid: ["Resetting to item one when switching views.", "Animating out before the destination mode is ready."],
+  },
+  {
     id: "prewarm-signature-systems",
     title: "Prewarm signature systems",
     signals: ["shader", "3d", "video", "particles", "postprocessing", "cinematic", "performance"],
