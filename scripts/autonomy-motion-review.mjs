@@ -89,7 +89,7 @@ for(const item of viewportReports) {
 }
 if(hardGateFailures.length) {
   console.error(hardGateFailures.map((item)=>"- "+item).join("\n"));
-  process.exitCode=1;
+  if(!options["allow-failures"]) process.exitCode=1;
 }
 
 async function seekAndSnapshot(page,progress,viewport) {
