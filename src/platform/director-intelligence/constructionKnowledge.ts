@@ -1151,6 +1151,159 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
     avoid: ["Decorative type motion that does not teach anything about the type system.", "Replicating cursor-proximity behavior poorly on touch."],
   },
   {
+    id: "prioritized-frame-pipeline",
+    title: "Run immersive systems in an explicit frame pipeline",
+    signals: ["ticker", "frame", "physics", "camera", "render", "audio", "input", "world"],
+    composition: [],
+    motion: [
+      "Update systems in causal order so visual output reflects one coherent frame state: input before simulation, simulation before camera/world presentation, rendering after state settles.",
+    ],
+    transitions: [],
+    interaction: [
+      "Input sampling should precede systems that consume those actions; presentation feedback should use the resulting stable state.",
+    ],
+    implementation: [
+      "Give frame systems explicit priorities or phases instead of relying on component mount order or independent requestAnimationFrame loops.",
+      "Reserve the final phases for rendering and monitoring so diagnostics measure the completed frame.",
+    ],
+    mobile: [
+      "Keep the same causal order across device tiers even when some phases are skipped or simplified.",
+    ],
+    avoid: ["Multiple unrelated frame clocks.", "Camera sampling state before physics or interaction updates that should affect the same frame."],
+  },
+  {
+    id: "staged-resource-boot",
+    title: "Boot the first meaningful experience before the whole world",
+    signals: ["loader", "boot", "resource", "asset", "intro", "world", "loading", "startup"],
+    composition: [
+      "Design an opening state that can exist with a deliberately small critical resource set.",
+    ],
+    motion: [
+      "Begin only the intro motion that the critical batch can support; defer later-world choreography until its assets are ready.",
+    ],
+    transitions: [
+      "Use the transition out of the intro as the handoff point from critical resources to the fully initialized world.",
+    ],
+    interaction: [],
+    implementation: [
+      "Split resources into a critical first batch and later world batches instead of waiting for every asset before first meaningful paint.",
+      "Initialize dependent systems only after the resources they require resolve.",
+    ],
+    mobile: [
+      "Shrink the critical batch further and prioritize the exact portrait/mobile assets needed for the opening.",
+    ],
+    avoid: ["One monolithic preload for the entire experience.", "Starting systems before their required assets are available."],
+  },
+  {
+    id: "authored-spatial-activation-zones",
+    title: "Author spatial activation zones with the scene",
+    signals: ["zone", "frustum", "area", "world", "visibility", "camera", "spatial", "level"],
+    composition: [
+      "Large worlds should define intentional areas of relevance rather than assuming the entire environment is equally active at all times.",
+    ],
+    motion: [],
+    transitions: [
+      "Crossing an authored zone may preload, reveal or activate the next local system before it enters the camera.",
+    ],
+    interaction: [
+      "Proximity-driven interactions should activate only when the visitor enters a meaningful local area.",
+    ],
+    implementation: [
+      "Encode bounds, frustum hints or activation markers in the DCC scene and parse them into runtime visibility/update rules.",
+      "Skip per-frame updates for an area when the authored visibility region cannot intersect the current camera/view volume.",
+    ],
+    mobile: [
+      "Use tighter activation ranges and fewer simultaneous active areas while preserving world continuity.",
+    ],
+    avoid: ["Updating every world subsystem globally.", "Hardcoded runtime zones that drift away from the authored scene geometry."],
+  },
+  {
+    id: "semantic-input-actions",
+    title: "Map device inputs onto semantic actions",
+    signals: ["input", "keyboard", "gamepad", "touch", "pointer", "wheel", "control", "interaction"],
+    composition: [],
+    motion: [],
+    transitions: [],
+    interaction: [
+      "Define actions such as navigate, inspect, interact, accelerate or reveal independently from the keyboard, pointer, touch or gamepad signal that triggers them.",
+      "Let active input mode change affordances and prompts without changing the meaning of the action.",
+    ],
+    implementation: [
+      "Route device-specific input through one semantic action layer so interaction systems do not branch independently for every device.",
+      "Support temporary action/category filters when modals, intro states or focused experiences need to restrict available controls.",
+    ],
+    mobile: [
+      "Map touch controls to the same semantic actions and show touch-specific affordances only while touch is the active mode.",
+    ],
+    avoid: ["Duplicated interaction logic per device.", "Desktop key prompts shown on touch-only devices."],
+  },
+  {
+    id: "responsive-authored-compositions",
+    title: "Author responsive compositions, not only responsive scales",
+    signals: ["mobile", "desktop", "responsive", "composition", "crop", "position", "editorial"],
+    composition: [
+      "When the visual hierarchy changes across aspect ratios, author separate mobile and desktop positions, crops, measures and negative-space relationships instead of scaling one coordinate system.",
+      "Preserve the same concept while allowing the actual composition to move substantially between breakpoints.",
+    ],
+    motion: [
+      "Responsive choreography may use different travel distances or layer relationships if that is required to preserve the same visual intent.",
+    ],
+    transitions: [
+      "Re-author transition geometry for portrait layouts rather than stretching desktop masks or paths.",
+    ],
+    interaction: [],
+    implementation: [
+      "Store responsive direction as explicit authored values or viewport-specific tracks, not scattered one-off CSS exceptions.",
+    ],
+    mobile: [
+      "Treat portrait layout as a directed composition with its own focal points and spacing.",
+    ],
+    avoid: ["Uniformly scaling a desktop canvas until it technically fits.", "Using dozens of emergency breakpoint patches instead of an authored mobile composition."],
+  },
+  {
+    id: "motion-grammar-primitives",
+    title: "Build variation from a small motion grammar",
+    signals: ["gsap", "motion", "ease", "stagger", "reveal", "type", "timeline", "rhythm"],
+    composition: [],
+    motion: [
+      "Centralize a small set of timing, easing, stagger and reveal principles so different sections can vary execution while feeling authored by the same motion language.",
+      "Separate entrance, exit and emphasis behaviors so a section can combine them without inventing timing from scratch.",
+    ],
+    transitions: [
+      "Transitions should reuse the project's motion grammar while changing amplitude and direction to fit the chapter.",
+    ],
+    interaction: [],
+    implementation: [
+      "Encode motion grammar as Forge-native presets/track-generation rules rather than copy-pasted timelines.",
+    ],
+    mobile: [
+      "Retain timing character while reducing stagger length, transform distance and simultaneous targets.",
+    ],
+    avoid: ["Every section inventing unrelated eases.", "One universal reveal preset applied identically to all content."],
+  },
+  {
+    id: "feature-difference-as-motion",
+    title: "Use motion to demonstrate a feature difference",
+    signals: ["specimen", "feature", "variant", "alternate", "glyph", "compare", "product", "motion"],
+    composition: [
+      "Place variants close enough that visitors can compare them while movement reveals how they differ.",
+    ],
+    motion: [
+      "Assign controlled differences in speed, offset, deformation or timing to variants when those differences help explain the feature itself.",
+    ],
+    transitions: [],
+    interaction: [
+      "Let the visitor manipulate the feature directly when interaction teaches the distinction more clearly than labels.",
+    ],
+    implementation: [
+      "Tie motion parameters to real variant metadata or authored feature groups when available.",
+    ],
+    mobile: [
+      "Reduce simultaneous variants but keep at least one direct comparison state.",
+    ],
+    avoid: ["Random per-item parallax that communicates no difference.", "Motion that makes comparison harder than a static specimen."],
+  },
+  {
     id: "prewarm-signature-systems",
     title: "Prewarm signature systems",
     signals: ["shader", "3d", "video", "particles", "postprocessing", "cinematic", "performance"],
