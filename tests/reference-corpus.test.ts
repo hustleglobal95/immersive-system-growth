@@ -101,8 +101,8 @@ test("construction directives are grounded in both patterns and corpus precedent
 });
 
 
-test("broader immersive corpus adds 53 public studio and technical/source studies", () => {
-  assert.equal(broaderImmersiveReferenceCorpus.length, 53);
+test("broader immersive corpus adds 84 public studio and technical/source studies", () => {
+  assert.equal(broaderImmersiveReferenceCorpus.length, 84);
   assert.ok(
     broaderImmersiveReferenceCorpus.every(
       (reference) =>
@@ -110,7 +110,7 @@ test("broader immersive corpus adds 53 public studio and technical/source studie
         reference.evidenceLevel === "technical-reference",
     ),
   );
-  assert.equal(immersiveReferenceCorpus.length, 102);
+  assert.equal(immersiveReferenceCorpus.length, 133);
 });
 
 test("broader corpus teaches implementation-shaping lessons rather than only visual style", () => {
@@ -161,8 +161,8 @@ test("every corpus pattern id resolves to executable construction knowledge", ()
   const missing = Array.from(referenced).filter((id) => !known.has(id));
 
   assert.deepEqual(missing, []);
-  assert.equal(immersiveConstructionPatterns.length, 59);
-  assert.equal(known.size, 59);
+  assert.equal(immersiveConstructionPatterns.length, 78);
+  assert.equal(known.size, 78);
 });
 
 test("construction consensus ranks patterns by evidence across precedents", () => {
@@ -185,6 +185,46 @@ test("construction consensus ranks patterns by evidence across precedents", () =
       previous.sourceCount > current.sourceCount ||
         (previous.sourceCount === current.sourceCount &&
           previous.support >= current.support),
+    );
+  }
+});
+
+test("aggressive research adds media, audio, camera, DCC and interaction knowledge", () => {
+  const patterns = new Set(immersiveConstructionPatterns.map((pattern) => pattern.id));
+
+  for (const id of [
+    "scrubbable-media-delivery",
+    "depth-map-volumetric-reconstruction",
+    "offscreen-render-worker",
+    "progressive-fidelity-stack",
+    "audio-reactive-semantic-band",
+    "scroll-distance-pacing",
+    "directional-cut-continuity",
+    "spatial-metaphor-compression",
+    "dcc-semantic-naming-contract",
+    "static-geometry-batching",
+    "input-work-on-demand",
+    "orthographic-diorama-staging",
+    "gamified-progress-with-skip",
+  ]) {
+    assert.ok(patterns.has(id), `Missing aggressive-research pattern: ${id}`);
+  }
+
+  for (const referenceId of [
+    "codrops-kai-design-dept",
+    "codrops-phantom-land",
+    "codrops-until-labs",
+    "codrops-aether-1",
+    "codrops-crosswire",
+    "codrops-windland",
+    "codrops-kode-immersive",
+    "codrops-forged-build",
+    "source-bruno-simon-folio-2019",
+    "source-abigail-bloom-room",
+  ]) {
+    assert.ok(
+      immersiveReferenceCorpus.some((reference) => reference.id === referenceId),
+      `Missing aggressive-research reference: ${referenceId}`,
     );
   }
 });
