@@ -21,7 +21,9 @@ const candidateId=String(options["candidate-id"] || "candidate");
 const judgments=[];
 const incumbentById=new Map((incumbent.captures ?? []).map((item)=>[item.id,item]));
 const candidateById=new Map((candidate.captures ?? []).map((item)=>[item.id,item]));
+const expectedIds=[...new Set((candidate.plan?.captures ?? []).map((item)=>item.id))].sort();
 const common=[...incumbentById.keys()].filter((id)=>candidateById.has(id)).sort();
+const missingMatchedCaptures=expectedIds.filter((id)=>!incumbentById.has(id) || !candidateById.has(id));
 
 for(const captureId of common) {
   const left=incumbentById.get(captureId);
@@ -54,10 +56,14 @@ for(const captureId of common) {
   }
 }
 
-const candidateHardGateFailures=[...new Set([...hardGateFailures(candidate),...judgments.flatMap((item)=>item.hardGateFailures)])];
+const candidateHardGateFailures=[...new Set([
+  ...hardGateFailures(candidate),
+  ...judgments.flatMap((item)=>item.hardGateFailures),
+  ...missingMatchedCaptures.map((id)=>id + ": missing matched A/B capture"),
+])];
 const decision=forcedOptimizationDecision({ incumbentId,candidateId,judgments,candidateHardGateFailures });
 await fs.mkdir(path.dirname(outputPath),{ recursive:true });
-await fs.writeFile(outputPath,JSON.stringify({ version:1,projectContext,commonCaptureCount:common.length,candidateHardGateFailures,decision },null,2)+"\n");
+await fs.writeFile(outputPath,JSON.stringify({ version:1,projectContext,expectedCaptureCount:expectedIds.length,commonCaptureCount:common.length,missingMatchedCaptures,candidateHardGateFailures,decision },null,2)+"\n");
 console.log("Pairwise decision: " + decision.winner + " / accepted=" + decision.accepted + " / agreement=" + decision.agreement);
 console.log(decision.reason);
 if(!decision.accepted) process.exitCode=1;
