@@ -66,86 +66,141 @@ The executable observations live in `src/platform/director-intelligence/referenc
 
 The public GetLayers template library exposed 49 templates on the review date.
 
+### Coverage status
+
+All entries below except **Northwall** have direct visual-preview evidence in the executable corpus. Some also carry a stronger public-description, case-study or technical-reference layer. The stronger evidence augments the visual review; it does not replace it.
+
 ### Agency / Studio
 
-- Lumora — free; public case-study evidence
-- Northwall — premium; catalog evidence
-- House — premium; catalog evidence
-- Longplay — premium; catalog evidence
-- Codescan — premium; catalog evidence
-- Auralis — premium; catalog evidence
-- Forma — premium; catalog evidence
-- Lumea — premium; catalog evidence
-- Fromzero — premium; catalog evidence
-- Noema — premium; catalog evidence
-- Helion — premium; technical-reference evidence
-- Dringle — premium; catalog evidence
-- Creative Studio — premium; catalog evidence
-- Gravity — free; catalog evidence
+- Lumora — free; visual preview + public case-study evidence
+- Northwall — premium; catalog-only pending a usable public preview
+- House — premium; visual-preview evidence
+- Longplay — premium; visual-preview evidence
+- Codescan — premium; visual-preview evidence
+- Auralis — premium; visual-preview evidence
+- Forma — premium; visual-preview evidence
+- Lumea — premium; visual-preview evidence
+- Fromzero — premium; visual-preview evidence
+- Noema — premium; visual-preview evidence
+- Helion — premium; visual preview + technical-reference evidence
+- Dringle — premium; visual-preview evidence
+- Creative Studio — premium; visual-preview evidence
+- Gravity — free; visual-preview evidence
 
 ### AI / Tech
 
-- AI Studio — premium; catalog evidence
-- AI Creator — premium; catalog evidence
-- Evolve — premium; catalog evidence
-- Clarix — premium; technical-reference evidence
-- GringX — premium; catalog evidence
-- Vexon — premium; catalog evidence
-- Cortex — premium; catalog evidence
-- Clair — premium; catalog evidence
+- AI Studio — premium; visual-preview evidence
+- AI Creator — premium; visual-preview evidence
+- Evolve — premium; visual-preview evidence
+- Clarix — premium; visual preview + technical-reference evidence
+- GringX — premium; visual-preview evidence
+- Vexon — premium; visual-preview evidence
+- Cortex — premium; visual-preview evidence
+- Clair — premium; visual-preview evidence
 
 ### SaaS
 
-- Vesper — premium; catalog evidence
-- Ascend — free; public-description evidence
-- Flowstate — free; catalog evidence
+- Vesper — premium; visual-preview evidence
+- Ascend — free; visual preview + public-description evidence
+- Flowstate — free; visual-preview evidence
 
 ### Portfolio
 
-- Creative Director — premium; catalog evidence
-- Laocoon — free; catalog evidence
-- Marcus Vane — free; catalog evidence
-- Kai Nomura — free; catalog evidence
+- Creative Director — premium; visual-preview evidence
+- Laocoon — free; visual-preview evidence
+- Marcus Vane — free; visual-preview evidence
+- Kai Nomura — free; visual-preview evidence
 
 ### Fintech
 
-- Stride — premium; technical-reference evidence
-- Lumen — premium; catalog evidence
-- Stackside — premium; catalog evidence
+- Stride — premium; visual preview + technical-reference evidence
+- Lumen — premium; visual-preview evidence
+- Stackside — premium; visual-preview evidence
 
 ### Health / Science
 
-- New Era — premium; catalog evidence
-- Dantora — premium; catalog evidence
-- Negantropy — premium; catalog evidence
-- Neural Monitor — premium; catalog evidence
+- New Era — premium; visual-preview evidence
+- Dantora — premium; visual-preview evidence
+- Negantropy — premium; visual-preview evidence
+- Neural Monitor — premium; visual-preview evidence
 
 ### E-commerce
 
-- Soda — free; catalog evidence
-- Halden — premium; catalog evidence
-- Artefakt — premium; catalog evidence
-- Halcyon — premium; catalog evidence
+- Soda — free; visual-preview evidence
+- Halden — premium; visual-preview evidence
+- Artefakt — premium; visual-preview evidence
+- Halcyon — premium; visual-preview evidence
 
 ### Hospitality / Travel
 
-- Brewns — premium; catalog evidence
-- Wanderlust — premium; catalog evidence
-- Aerra — premium; catalog evidence
-- Altitude — premium; catalog evidence
+- Brewns — premium; visual-preview evidence
+- Wanderlust — premium; visual-preview evidence
+- Aerra — premium; visual-preview evidence
+- Altitude — premium; visual-preview evidence
 
 ### Sports / Education
 
-- Kimi — free; catalog evidence
-- Baseline — free; public-description evidence
-- Stride Nine — premium; catalog evidence
-- Voxelia — premium; catalog evidence
+- Kimi — free; visual-preview evidence
+- Baseline — free; visual preview + public-description evidence
+- Stride Nine — premium; visual-preview evidence
+- Voxelia — premium; visual-preview evidence
 
 ### Hero / uncategorized template
 
-- Loopstack — free; public-description evidence
+- Loopstack — free; visual preview + public-description evidence
 
 The executable list is `src/platform/director-intelligence/referenceCorpus.ts`.
+
+
+## Corpus-scale synthesis
+
+The purpose of reviewing dozens of references is to stop treating a single successful composition as a universal recipe.
+
+Across the 48 visually reviewed previews, Forge now recognizes **29 reusable construction patterns**. The important shift is from "copy this website" to "identify which construction family solves this brief."
+
+### Repeating composition families
+
+1. **Central spectacle + edge utility** — one object/field owns the center while copy, proof and controls stay at the perimeter.
+2. **Subject occluding display type** — large typography creates scale while a portrait/object interrupts it and establishes depth.
+3. **Quiet information plane + energetic visual plane** — a split composition preserves clarity beside a high-intensity spatial treatment.
+4. **Atmosphere as layout** — landscape, material field, light or environmental geometry determines where copy can live.
+5. **Small subject in a large world** — environmental scale creates drama without forcing the subject to fill the viewport.
+6. **Object + supporting props** — one authority object stays dominant while a few lower-weight props establish depth and story.
+7. **Procedural field as hero** — one coherent particle/fluid/energy structure replaces a collection of unrelated effects.
+8. **Immersion without WebGL** — typography, crop, whitespace, image scale and pacing can create premium immersion with little or no 3D.
+
+### Repeating hierarchy rules
+
+- One visual usually owns the frame.
+- UI becomes quieter as the signature visual becomes stronger.
+- Proof is often embedded near the hero rather than postponed into a generic metrics grid.
+- Large type is used as spatial structure, not only as a heading.
+- Negative space is treated as an authored element.
+- Repeated technical/HUD details work when they form one world language; isolated sci-fi decorations do not.
+
+### Repeating motion implications
+
+Static previews do not prove motion, so motion rules are only promoted when supported by public descriptions or technical evidence. Where that evidence exists, the recurring principles are:
+
+- move/reframe a persistent subject rather than reset it between sections;
+- use one normalized progress value for large repeated GPU systems;
+- keep cursor response coherent and damped;
+- render expensive scenes only when useful;
+- prewarm critical 3D/shader states before the signature moment;
+- tier fidelity on mobile rather than deleting the concept.
+
+### Director consequence
+
+Director should retrieve several relevant precedents for every treatment, including at least one cross-domain precedent when the production tier is signature/flagship. It should then combine **principles**, not blend visual identities.
+
+For example, a product brief may retrieve:
+
+- Soda for authority-object + prop depth;
+- AI Studio for subject/type occlusion;
+- Lumen for coherent material world;
+- Baseline for pacing restraint.
+
+The resulting site should not look like any one of them. It should use the construction logic that best serves the client's own subject, assets and thesis.
 
 ## Deep construction evidence
 
