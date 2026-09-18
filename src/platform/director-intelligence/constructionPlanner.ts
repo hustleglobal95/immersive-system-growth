@@ -60,6 +60,7 @@ export function planImmersiveConstruction(
   const patternSet = new Set(directives.patternIds);
   const persistentWorld =
     patternSet.has("single-world-under-interface") ||
+    patternSet.has("orthographic-diorama-staging") ||
     (
       patternSet.has("continuous-visual-anchor") &&
       hasModel &&
@@ -317,6 +318,9 @@ function motionStrategy(
 }
 
 function interactionStrategy(patterns: Set<string>, interactionLevel: number) {
+  if (patterns.has("gamified-progress-with-skip") && interactionLevel >= 6) {
+    return "Track explicit progression/unlock state, make rewards visibly consequential, and keep a direct skip route available for high-intent visitors.";
+  }
   if (interactionLevel >= 7 && patterns.has("interaction-as-thesis")) {
     return "Use one causal interaction that changes subject/world/content state and expresses the thesis; route it through semantic action state.";
   }
@@ -352,6 +356,18 @@ function performancePolicy(
   }
   if (patterns.has("single-canvas-multi-view")) {
     rules.push("Use one shared renderer for section-scoped 3D views and render only active view rectangles.");
+  }
+  if (patterns.has("scrubbable-media-delivery") && medium === "media") {
+    rules.push("Use interaction-optimized media encoding with short keyframe intervals and verify browser seek latency before production lock.");
+  }
+  if (patterns.has("offscreen-render-worker") && ["3d", "hybrid", "shader"].includes(medium)) {
+    rules.push("If profiling shows main-thread contention, isolate the heavy canvas behind a narrow OffscreenCanvas/worker state protocol.");
+  }
+  if (patterns.has("progressive-fidelity-stack")) {
+    rules.push("Promote only the active/nearby visual stack to full fidelity and simplify deeper layers until they approach focus.");
+  }
+  if (patterns.has("input-work-on-demand")) {
+    rules.push("Gate expensive pointer hit testing/raycast work on dirty input or changed scene/camera state.");
   }
   return rules;
 }
@@ -435,6 +451,21 @@ function globalRules(
   }
   if (patterns.has("composable-rendering-systems")) {
     rules.push("Build scene variety from composable render/material/particle/transition capabilities instead of duplicating whole pipelines.");
+  }
+  if (patterns.has("scroll-distance-pacing")) {
+    rules.push("Store chapter travel distance as an explicit pacing variable; tune view-height distance independently from easing and camera geometry.");
+  }
+  if (patterns.has("directional-cut-continuity")) {
+    rules.push("Use deterministic film cuts when a one-axis scroll journey would become less legible by physically curving through every space; preserve the dominant motion direction across the cut.");
+  }
+  if (patterns.has("dcc-semantic-naming-contract")) {
+    rules.push("Treat DCC node names as validated runtime semantics for materials, pivots, collision, zones and behavior groups.");
+  }
+  if (patterns.has("static-geometry-batching")) {
+    rules.push("Batch static same-material geometry after authored transforms, while keeping independently interactive/animated objects separate.");
+  }
+  if (patterns.has("audio-reactive-semantic-band")) {
+    rules.push("Smooth and bound meaningful audio energy before it modulates visuals; audio response must reinforce the subject rather than shake the interface.");
   }
   if (patterns.has("prototype-prune-converge")) {
     rules.push("Prototype signature ideas modularly and cut any effect that no longer strengthens the final thesis.");
