@@ -6,7 +6,7 @@ This corpus expands Forge beyond GetLayers so Director does not overfit to one m
 
 It contains **121 public studio case studies, technical breakdowns and source studies** from Dogstudio, Lusion, makemepulse, Bonhomme, 14islands and Codrops.
 
-Combined with the 49-template GetLayers corpus, Forge now has **170 immersive references** and **92 executable construction patterns**.
+Combined with the 49-template GetLayers corpus, Forge now has **196 immersive references** and **98 executable construction patterns**.
 
 ## What this corpus is for
 
@@ -98,7 +98,7 @@ The goal is **not** to copy a studio's exact visual identity, proprietary engine
 
 ## New construction intelligence extracted
 
-This expansion first added 15 patterns on top of the original 29, then the second research pass added 8 more. The current library contains **92 patterns**:
+This expansion first added 15 patterns on top of the original 29, then the second research pass added 8 more. The current library contains **98 patterns**:
 
 1. **interaction-as-thesis**
 2. **multi-subscene-transition-budget**
@@ -306,7 +306,7 @@ This is exactly the level Forge should keep accumulating: not another dependency
 
 ## Retrieval policy
 
-Director now retrieves from the combined **170-reference corpus**, not the GetLayers set alone.
+Director now retrieves from the combined **196-reference corpus**, not the GetLayers set alone.
 
 Retrieval deliberately limits source monoculture: when enough candidates exist, no single source host can dominate the selected precedent set. The Director can therefore combine, for example:
 
