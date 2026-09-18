@@ -30,6 +30,8 @@ export function SiteFooter() {
             <li><a href="mailto:studio@ateliermaris.example">studio@ateliermaris.example</a></li>
             <li><a href="tel:+34972000000">+34 972 00 00 00</a></li>
             <li><Link href="#inquiry">New commissions</Link></li>
+            <li><Link href="/work">Selected work</Link></li>
+            <li><Link href="/about">The studio</Link></li>
           </ul>
         </section>
         <section aria-labelledby="footer-chapters">

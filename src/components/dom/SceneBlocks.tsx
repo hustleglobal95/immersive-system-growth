@@ -31,6 +31,9 @@ function MenuGrid({ block }: { block: Extract<SceneBlock, { type: "menu-grid" }>
       <ul>
         {block.items.map((item) => (
           <li key={item.name} data-motion-row>
+            {item.href
+              ? <Link className="menu-row__link" href={item.href} aria-label={`${item.name}, ${item.description}`}><span /></Link>
+              : null}
             <div>
               {item.thumb && <img className="menu-thumb" src={item.thumb} alt="" data-motion-plate decoding="async" loading="lazy" />}
               {item.badge && <span className="menu-badge">{item.badge}</span>}

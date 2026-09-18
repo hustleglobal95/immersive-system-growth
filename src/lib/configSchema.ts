@@ -158,6 +158,7 @@ const sceneBlockSchema = z.discriminatedUnion("type", [
       badge: z.string().max(40).optional(),
       // A square plate beside an index row. Optional, so existing indexes stay valid.
       thumb: assetUrl.optional(),
+      href: z.string().min(1).max(200).optional(),
     }).strict()).min(2).max(8),
   }).strict(),
   z.object({

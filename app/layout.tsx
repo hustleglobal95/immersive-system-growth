@@ -8,6 +8,7 @@ import "./experience-modes.css";
 import "./design-system.css";
 import "./nocterra.css";
 import "./atelier-maris.css";
+import "./pages.css";
 
 export const metadata: Metadata = {
   title: experience.meta.name,
