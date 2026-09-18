@@ -6,7 +6,8 @@ import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig } from "@/src/types/experience";
 import type { StudioProject } from "@/src/platform/studioSchema";
 
-const BRIEF_KEY = "forge-studio-guide-brief-v1";
+export const STUDIO_GUIDE_BRIEF_KEY = "forge-studio-guide-brief-v1";
+const BRIEF_KEY = STUDIO_GUIDE_BRIEF_KEY;
 
 type StepId = "idea" | "assets" | "structure" | "motion" | "review" | "ship";
 
@@ -120,8 +121,8 @@ export function StudioWorkflowGuide({
           <button type="button" onClick={onOpenCreate}>Review live preview</button>
         </GuideStep>
 
-        <GuideStep number="06" done={false} title="Publish when it is ready" description="Deployment lives behind one final workspace. You should not need to know the underlying build commands to finish the project.">
-          <button type="button" className="workflow-guide__primary" onClick={onOpenShip}>Open publish</button>
+        <GuideStep number="06" done={false} title="Publish when it is ready" description="Finish through Guided Ship. Workspace setup and engineering controls stay behind Advanced so authors can review and hand off without learning build commands or deployment internals.">
+          <button type="button" className="workflow-guide__primary" onClick={onOpenShip}>Review & publish</button>
         </GuideStep>
       </div>
 
