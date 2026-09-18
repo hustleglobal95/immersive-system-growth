@@ -136,3 +136,30 @@ test("motion-sequence critic requests and responses stay schema constrained",()=
   assert.equal(parsed.findings[0].dimension,"camera");
   assert.equal(parsed.findings[0].severity,"major");
 });
+
+
+test("motion analysis surfaces severe runtime camera hysteresis",()=>{
+  const point:MotionReviewPoint={ id:"a-sample-00",progress:0.2,sceneId:"a",kind:"sample" };
+  const plan={ version:1 as const,samplesPerScene:5,points:[point] };
+  const base:MotionSnapshot={
+    progress:0.2,
+    viewport:"desktop",
+    sceneIndex:0,
+    sceneId:"a",
+    localProgress:0.2,
+    camera:{ position:[0,0,8],target:[0,0,0],fov:42 },
+    runtimeCamera:{ position:[0,0,8],target:[0,0,0],fov:42 },
+    hero:{ position:[0,0,0],rotation:[0,0,0],scale:1 },
+    renderer:{ frameMs:16.7,webglStatus:"ready",quality:"high" },
+  };
+  const reverse=structuredClone(base);
+  reverse.runtimeCamera={ position:[5,0,8],target:[0,0,0],fov:42 };
+  const report=analyzeMotionQuality({
+    plan,
+    forward:[{ point,snapshot:base }],
+    reverse:[{ point,snapshot:reverse }],
+    viewport:"desktop",
+  });
+  assert.ok(report.hardGateFailures.some((failure)=>failure.includes("actual damped camera")));
+  assert.ok(report.metrics.maxRuntimeCameraDrift>3);
+});
