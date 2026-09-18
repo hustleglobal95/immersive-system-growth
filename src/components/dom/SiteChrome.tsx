@@ -14,7 +14,8 @@ export function SiteChrome() {
         <nav className="atelier-maris-nav" aria-label="Project chapters">
           <Link href="#parti">Project</Link>
           <Link href="#material">Material</Link>
-          <Link href="#studio">Studio</Link>
+          <Link href="/work">Work</Link>
+          <Link href="/about">Studio</Link>
           <Link href="#inquiry">Inquire</Link>
         </nav>
         <div className="atelier-maris-meta">

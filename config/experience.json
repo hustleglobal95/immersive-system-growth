@@ -6,7 +6,7 @@
     "backgroundColor": "#171310"
   },
   "runtime": {
-    "sceneHeightVh": 440,
+    "sceneHeightVh": 320,
     "cameraDamping": 7.4,
     "objectDamping": 8.6,
     "pointerInfluence": 0.08,
@@ -32,9 +32,7 @@
       "lowUrl": "/models/reference/pavilion-low.glb",
       "scenes": [
         "threshold",
-        "living",
-        "material",
-        "studio"
+        "material"
       ],
       "persist": false,
       "position": [
@@ -55,8 +53,8 @@
       "id": "approach",
       "label": "Coastal Approach",
       "range": [
-        0,
-        0.115
+        0.0,
+        0.142857
       ],
       "easing": "cinematic",
       "camera": {
@@ -664,8 +662,8 @@
       "id": "parti",
       "label": "Position",
       "range": [
-        0.115,
-        0.225
+        0.142857,
+        0.285714
       ],
       "easing": "cinematic",
       "camera": {
@@ -1273,8 +1271,8 @@
       "id": "threshold",
       "label": "Threshold",
       "range": [
-        0.225,
-        0.34
+        0.285714,
+        0.428571
       ],
       "easing": "cinematic",
       "camera": {
@@ -1328,16 +1326,16 @@
         },
         "to": {
           "position": [
-            0,
-            0.58,
-            -0.1
+            3.1,
+            1.12,
+            -2.3
           ],
           "target": [
-            0,
+            0.2,
             0.15,
-            -3
+            -3.8
           ],
-          "fov": 39
+          "fov": 44
         }
       },
       "mobileCamera": {
@@ -1357,16 +1355,16 @@
         },
         "to": {
           "position": [
-            0,
-            0.92,
-            1
+            3.8,
+            1.7,
+            -1.2
           ],
           "target": [
-            0,
             0.2,
-            -3
+            0.18,
+            -3.8
           ],
-          "fov": 52
+          "fov": 56
         }
       },
       "motionTracks": [
@@ -1872,632 +1870,11 @@
       }
     },
     {
-      "id": "living",
-      "label": "Selected Work",
-      "range": [
-        0.34,
-        0.455
-      ],
-      "easing": "cinematic",
-      "camera": {
-        "path": "arc",
-        "from": {
-          "position": [
-            0,
-            0.58,
-            -0.1
-          ],
-          "target": [
-            0,
-            0.15,
-            -3
-          ],
-          "fov": 39
-        },
-        "to": {
-          "position": [
-            3.1,
-            1.12,
-            -2.3
-          ],
-          "target": [
-            0.2,
-            0.15,
-            -3.8
-          ],
-          "fov": 44
-        }
-      },
-      "mobileCamera": {
-        "path": "arc",
-        "from": {
-          "position": [
-            0,
-            0.92,
-            1
-          ],
-          "target": [
-            0,
-            0.2,
-            -3
-          ],
-          "fov": 52
-        },
-        "to": {
-          "position": [
-            3.8,
-            1.7,
-            -1.2
-          ],
-          "target": [
-            0.2,
-            0.18,
-            -3.8
-          ],
-          "fov": 56
-        }
-      },
-      "motionTracks": [
-        {
-          "id": "maris-living-copy-opacity-desktop",
-          "label": "Chapter copy fade",
-          "viewport": "desktop",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "copy.opacity",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-living-copy-opacity-desktop-0",
-              "at": 0,
-              "value": 1.0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-living-copy-opacity-desktop-1",
-              "at": 0.6,
-              "value": 1.0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-living-copy-opacity-desktop-2",
-              "at": 0.74,
-              "value": 0.0,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-living-copy-opacity-desktop-3",
-              "at": 1,
-              "value": 0.0,
-              "easing": "linear"
-            }
-          ]
-        },
-        {
-          "id": "maris-living-copy-y-desktop",
-          "label": "Chapter copy lift",
-          "viewport": "desktop",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "copy.y",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-living-copy-y-desktop-0",
-              "at": 0,
-              "value": 22,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-living-copy-y-desktop-1",
-              "at": 0.16,
-              "value": 0,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-living-copy-y-desktop-2",
-              "at": 0.6,
-              "value": 0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-living-copy-y-desktop-3",
-              "at": 0.74,
-              "value": -11,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-living-copy-y-desktop-4",
-              "at": 1,
-              "value": -11,
-              "easing": "linear"
-            }
-          ]
-        },
-        {
-          "id": "maris-living-copy-blur-desktop",
-          "label": "Chapter focus pull",
-          "viewport": "desktop",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "copy.blur",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-living-copy-blur-desktop-0",
-              "at": 0,
-              "value": 5,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-living-copy-blur-desktop-1",
-              "at": 0.16,
-              "value": 0,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-living-copy-blur-desktop-2",
-              "at": 0.6,
-              "value": 0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-living-copy-blur-desktop-3",
-              "at": 0.74,
-              "value": 4,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-living-copy-blur-desktop-4",
-              "at": 1,
-              "value": 4,
-              "easing": "linear"
-            }
-          ]
-        },
-        {
-          "id": "maris-living-copy-opacity-mobile",
-          "label": "Chapter copy fade",
-          "viewport": "mobile",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "copy.opacity",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-living-copy-opacity-mobile-0",
-              "at": 0,
-              "value": 1.0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-living-copy-opacity-mobile-1",
-              "at": 0.6,
-              "value": 1.0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-living-copy-opacity-mobile-2",
-              "at": 0.74,
-              "value": 0.0,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-living-copy-opacity-mobile-3",
-              "at": 1,
-              "value": 0.0,
-              "easing": "linear"
-            }
-          ]
-        },
-        {
-          "id": "maris-living-copy-y-mobile",
-          "label": "Chapter copy lift",
-          "viewport": "mobile",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "copy.y",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-living-copy-y-mobile-0",
-              "at": 0,
-              "value": 13.2,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-living-copy-y-mobile-1",
-              "at": 0.16,
-              "value": 0.0,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-living-copy-y-mobile-2",
-              "at": 0.6,
-              "value": 0.0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-living-copy-y-mobile-3",
-              "at": 0.74,
-              "value": -6.6,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-living-copy-y-mobile-4",
-              "at": 1,
-              "value": -6.6,
-              "easing": "linear"
-            }
-          ]
-        },
-        {
-          "id": "maris-living-copy-blur-mobile",
-          "label": "Chapter focus pull",
-          "viewport": "mobile",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "copy.blur",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-living-copy-blur-mobile-0",
-              "at": 0,
-              "value": 3.0,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-living-copy-blur-mobile-1",
-              "at": 0.16,
-              "value": 0.0,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-living-copy-blur-mobile-2",
-              "at": 0.6,
-              "value": 0.0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-living-copy-blur-mobile-3",
-              "at": 0.74,
-              "value": 2.4,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-living-copy-blur-mobile-4",
-              "at": 1,
-              "value": 2.4,
-              "easing": "linear"
-            }
-          ]
-        },
-        {
-          "id": "maris-atmos-living-vignette",
-          "label": "Chapter vignette breathe",
-          "viewport": "all",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "post.vignette",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-atmos-living-vignette-0",
-              "at": 0,
-              "value": 0.1736,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-living-vignette-1",
-              "at": 0.46,
-              "value": 0.0924,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-living-vignette-2",
-              "at": 1,
-              "value": 0.168,
-              "easing": "smooth"
-            }
-          ]
-        },
-        {
-          "id": "maris-atmos-living-exposure",
-          "label": "Chapter exposure lift",
-          "viewport": "all",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "world.exposure",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-atmos-living-exposure-0",
-              "at": 0,
-              "value": 1.0396,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-living-exposure-1",
-              "at": 0.38,
-              "value": 1.13,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-living-exposure-2",
-              "at": 0.82,
-              "value": 1.2091,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-atmos-living-exposure-3",
-              "at": 1,
-              "value": 1.0848,
-              "easing": "smooth"
-            }
-          ]
-        },
-        {
-          "id": "maris-atmos-living-fog",
-          "label": "Chapter haze clearing",
-          "viewport": "all",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "world.fogDensity",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-atmos-living-fog-0",
-              "at": 0,
-              "value": 0.0062,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-living-fog-1",
-              "at": 0.44,
-              "value": 0.0028,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-living-fog-2",
-              "at": 1,
-              "value": 0.0053,
-              "easing": "smooth"
-            }
-          ]
-        },
-        {
-          "id": "maris-atmos-living-bloom-desktop",
-          "label": "Chapter bloom swell",
-          "viewport": "desktop",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "post.bloom",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-atmos-living-bloom-desktop-0",
-              "at": 0,
-              "value": 0.08,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-living-bloom-desktop-1",
-              "at": 0.5,
-              "value": 0.245,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-living-bloom-desktop-2",
-              "at": 0.86,
-              "value": 0.112,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-atmos-living-bloom-desktop-3",
-              "at": 1,
-              "value": 0.084,
-              "easing": "smooth"
-            }
-          ]
-        },
-        {
-          "id": "maris-atmos-living-bloom-mobile",
-          "label": "Chapter bloom swell",
-          "viewport": "mobile",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "post.bloom",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-atmos-living-bloom-mobile-0",
-              "at": 0,
-              "value": 0.08,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-living-bloom-mobile-1",
-              "at": 0.5,
-              "value": 0.2,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-living-bloom-mobile-2",
-              "at": 0.86,
-              "value": 0.112,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-atmos-living-bloom-mobile-3",
-              "at": 1,
-              "value": 0.084,
-              "easing": "smooth"
-            }
-          ]
-        }
-      ],
-      "media": {
-        "kind": "color",
-        "alt": "Flat field for the gallery chapter",
-        "transition": "mask",
-        "blendColor": "#171310",
-        "maskSoftness": 22,
-        "layers": [],
-        "position": [
-          55,
-          50
-        ],
-        "mobilePosition": [
-          64,
-          50
-        ],
-        "overlap": 0.26,
-        "direction": "up",
-        "zoom": 1,
-        "textEnd": 0.22,
-        "fill": "#cec1a8",
-        "mask": {
-          "preset": "linear-soft",
-          "renderer": "auto",
-          "direction": "down",
-          "origin": [
-            50,
-            40
-          ],
-          "softness": 36,
-          "scale": 1.02,
-          "rotation": 0,
-          "intensity": 0.62,
-          "seed": 333,
-          "invert": false,
-          "edgeColor": "#eadbc5",
-          "edgeWidth": 0.18
-        }
-      },
-      "blocks": [
-        {
-          "id": "work-index",
-          "type": "menu-grid",
-          "title": "Selected work",
-          "items": [
-            {
-              "name": "Casa Lumen",
-              "description": "Private residence, new build",
-              "price": "2024 / Begur",
-              "badge": "01",
-              "thumb": "https://images.unsplash.com/photo-1770970831074-6e88b6cc260b?auto=format&fit=crop&fm=jpg&q=86&w=2200",
-              "href": "/work/casa-lumen"
-            },
-            {
-              "name": "Casa Vent",
-              "description": "Cliff house, section study",
-              "price": "2023 / Llafranc",
-              "badge": "02",
-              "thumb": "https://images.unsplash.com/photo-1762337018404-052afb0e3370?auto=format&fit=crop&fm=jpg&q=86&w=2400",
-              "href": "/work/casa-vent"
-            },
-            {
-              "name": "Casa Sal",
-              "description": "Interior transformation",
-              "price": "2023 / Cadaques",
-              "badge": "03",
-              "thumb": "https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=84&w=2400",
-              "href": "/work/casa-sal"
-            },
-            {
-              "name": "Casa Pedra",
-              "description": "Coastal retreat, two courts",
-              "price": "2022 / Begur",
-              "badge": "04",
-              "thumb": "https://images.unsplash.com/photo-1763485956343-61b0163a3e7e?auto=format&fit=crop&fm=jpg&q=86&w=2200",
-              "href": "/work/casa-pedra"
-            },
-            {
-              "name": "Casa Nord",
-              "description": "Residence and studio",
-              "price": "2021 / Palafrugell",
-              "badge": "05",
-              "thumb": "https://images.unsplash.com/photo-1774423864869-702b21c2490a?auto=format&fit=crop&fm=jpg&q=86&w=2400",
-              "href": "/work/casa-nord"
-            }
-          ]
-        }
-      ],
-      "hero": {
-        "motion": "linear",
-        "from": {
-          "position": [
-            0,
-            0,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": 1
-        },
-        "to": {
-          "position": [
-            0,
-            0,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": 1
-        }
-      },
-      "world": {
-        "background": "#13100c",
-        "fog": "#18140f",
-        "fogDensity": 0.004,
-        "ambient": 0.78,
-        "key": 4.65,
-        "rim": 1.5,
-        "keyColor": "#efd9b8",
-        "rimColor": "#a8c2ce",
-        "exposure": 1.13
-      },
-      "material": {
-        "tint": "#fffaf3",
-        "tintStrength": 0.02,
-        "metalness": null,
-        "roughness": null,
-        "clearcoat": null
-      },
-      "post": {
-        "bloom": 0.1,
-        "vignette": 0.14
-      },
-      "copy": {
-        "eyebrow": "03 / SELECTED WORK",
-        "headline": "Nine houses on this coast.",
-        "body": "Each drawn from the section outward. The list is short on purpose.",
-        "align": "right"
-      }
-    },
-    {
       "id": "material",
       "label": "Material",
       "range": [
-        0.455,
-        0.565
+        0.428571,
+        0.571429
       ],
       "easing": "cinematic",
       "camera": {
@@ -3137,8 +2514,8 @@
       "id": "wellness",
       "label": "Wellness Court",
       "range": [
-        0.565,
-        0.675
+        0.571429,
+        0.714286
       ],
       "easing": "cinematic",
       "camera": {
@@ -3158,16 +2535,16 @@
         },
         "to": {
           "position": [
-            -3.4,
-            1.3,
-            -4.7
+            1.6,
+            2.05,
+            5.1
           ],
           "target": [
             0,
-            0,
-            -5.8
+            0.2,
+            0
           ],
-          "fov": 43
+          "fov": 48
         }
       },
       "mobileCamera": {
@@ -3187,16 +2564,16 @@
         },
         "to": {
           "position": [
-            -4.1,
-            1.9,
-            -3.9
+            2.2,
+            2.7,
+            7.2
           ],
           "target": [
             0,
-            0,
-            -5.8
+            0.2,
+            0
           ],
-          "fov": 55
+          "fov": 60
         }
       },
       "motionTracks": [
@@ -3702,644 +3079,11 @@
       }
     },
     {
-      "id": "studio",
-      "label": "How We Work",
-      "range": [
-        0.675,
-        0.79
-      ],
-      "easing": "cinematic",
-      "camera": {
-        "path": "pullback",
-        "from": {
-          "position": [
-            -3.4,
-            1.3,
-            -4.7
-          ],
-          "target": [
-            0,
-            0,
-            -5.8
-          ],
-          "fov": 43
-        },
-        "to": {
-          "position": [
-            1.6,
-            2.05,
-            5.1
-          ],
-          "target": [
-            0,
-            0.2,
-            0
-          ],
-          "fov": 48
-        }
-      },
-      "mobileCamera": {
-        "path": "pullback",
-        "from": {
-          "position": [
-            -4.1,
-            1.9,
-            -3.9
-          ],
-          "target": [
-            0,
-            0,
-            -5.8
-          ],
-          "fov": 55
-        },
-        "to": {
-          "position": [
-            2.2,
-            2.7,
-            7.2
-          ],
-          "target": [
-            0,
-            0.2,
-            0
-          ],
-          "fov": 60
-        }
-      },
-      "motionTracks": [
-        {
-          "id": "maris-studio-copy-opacity-desktop",
-          "label": "Chapter copy fade",
-          "viewport": "desktop",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "copy.opacity",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-studio-copy-opacity-desktop-0",
-              "at": 0,
-              "value": 1.0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-studio-copy-opacity-desktop-1",
-              "at": 0.6,
-              "value": 1.0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-studio-copy-opacity-desktop-2",
-              "at": 0.74,
-              "value": 0.0,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-studio-copy-opacity-desktop-3",
-              "at": 1,
-              "value": 0.0,
-              "easing": "linear"
-            }
-          ]
-        },
-        {
-          "id": "maris-studio-copy-y-desktop",
-          "label": "Chapter copy lift",
-          "viewport": "desktop",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "copy.y",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-studio-copy-y-desktop-0",
-              "at": 0,
-              "value": 22,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-studio-copy-y-desktop-1",
-              "at": 0.16,
-              "value": 0,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-studio-copy-y-desktop-2",
-              "at": 0.6,
-              "value": 0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-studio-copy-y-desktop-3",
-              "at": 0.74,
-              "value": -11,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-studio-copy-y-desktop-4",
-              "at": 1,
-              "value": -11,
-              "easing": "linear"
-            }
-          ]
-        },
-        {
-          "id": "maris-studio-copy-blur-desktop",
-          "label": "Chapter focus pull",
-          "viewport": "desktop",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "copy.blur",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-studio-copy-blur-desktop-0",
-              "at": 0,
-              "value": 5,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-studio-copy-blur-desktop-1",
-              "at": 0.16,
-              "value": 0,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-studio-copy-blur-desktop-2",
-              "at": 0.6,
-              "value": 0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-studio-copy-blur-desktop-3",
-              "at": 0.74,
-              "value": 4,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-studio-copy-blur-desktop-4",
-              "at": 1,
-              "value": 4,
-              "easing": "linear"
-            }
-          ]
-        },
-        {
-          "id": "maris-studio-copy-opacity-mobile",
-          "label": "Chapter copy fade",
-          "viewport": "mobile",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "copy.opacity",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-studio-copy-opacity-mobile-0",
-              "at": 0,
-              "value": 1.0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-studio-copy-opacity-mobile-1",
-              "at": 0.6,
-              "value": 1.0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-studio-copy-opacity-mobile-2",
-              "at": 0.74,
-              "value": 0.0,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-studio-copy-opacity-mobile-3",
-              "at": 1,
-              "value": 0.0,
-              "easing": "linear"
-            }
-          ]
-        },
-        {
-          "id": "maris-studio-copy-y-mobile",
-          "label": "Chapter copy lift",
-          "viewport": "mobile",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "copy.y",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-studio-copy-y-mobile-0",
-              "at": 0,
-              "value": 13.2,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-studio-copy-y-mobile-1",
-              "at": 0.16,
-              "value": 0.0,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-studio-copy-y-mobile-2",
-              "at": 0.6,
-              "value": 0.0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-studio-copy-y-mobile-3",
-              "at": 0.74,
-              "value": -6.6,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-studio-copy-y-mobile-4",
-              "at": 1,
-              "value": -6.6,
-              "easing": "linear"
-            }
-          ]
-        },
-        {
-          "id": "maris-studio-copy-blur-mobile",
-          "label": "Chapter focus pull",
-          "viewport": "mobile",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "copy.blur",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-studio-copy-blur-mobile-0",
-              "at": 0,
-              "value": 3.0,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-studio-copy-blur-mobile-1",
-              "at": 0.16,
-              "value": 0.0,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-studio-copy-blur-mobile-2",
-              "at": 0.6,
-              "value": 0.0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-studio-copy-blur-mobile-3",
-              "at": 0.74,
-              "value": 2.4,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-studio-copy-blur-mobile-4",
-              "at": 1,
-              "value": 2.4,
-              "easing": "linear"
-            }
-          ]
-        },
-        {
-          "id": "maris-atmos-studio-vignette",
-          "label": "Chapter vignette breathe",
-          "viewport": "all",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "post.vignette",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-atmos-studio-vignette-0",
-              "at": 0,
-              "value": 0.2232,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-studio-vignette-1",
-              "at": 0.46,
-              "value": 0.1188,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-studio-vignette-2",
-              "at": 1,
-              "value": 0.216,
-              "easing": "smooth"
-            }
-          ]
-        },
-        {
-          "id": "maris-atmos-studio-exposure",
-          "label": "Chapter exposure lift",
-          "viewport": "all",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "world.exposure",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-atmos-studio-exposure-0",
-              "at": 0,
-              "value": 0.9752,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-studio-exposure-1",
-              "at": 0.38,
-              "value": 1.06,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-studio-exposure-2",
-              "at": 0.82,
-              "value": 1.1342,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-atmos-studio-exposure-3",
-              "at": 1,
-              "value": 1.0176,
-              "easing": "smooth"
-            }
-          ]
-        },
-        {
-          "id": "maris-atmos-studio-fog",
-          "label": "Chapter haze clearing",
-          "viewport": "all",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "world.fogDensity",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-atmos-studio-fog-0",
-              "at": 0,
-              "value": 0.0093,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-studio-fog-1",
-              "at": 0.44,
-              "value": 0.0042,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-studio-fog-2",
-              "at": 1,
-              "value": 0.0079,
-              "easing": "smooth"
-            }
-          ]
-        },
-        {
-          "id": "maris-atmos-studio-bloom-desktop",
-          "label": "Chapter bloom swell",
-          "viewport": "desktop",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "post.bloom",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-atmos-studio-bloom-desktop-0",
-              "at": 0,
-              "value": 0.08,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-studio-bloom-desktop-1",
-              "at": 0.5,
-              "value": 0.245,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-studio-bloom-desktop-2",
-              "at": 0.86,
-              "value": 0.112,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-atmos-studio-bloom-desktop-3",
-              "at": 1,
-              "value": 0.084,
-              "easing": "smooth"
-            }
-          ]
-        },
-        {
-          "id": "maris-atmos-studio-bloom-mobile",
-          "label": "Chapter bloom swell",
-          "viewport": "mobile",
-          "muted": false,
-          "locked": false,
-          "type": "number",
-          "target": "post.bloom",
-          "blend": "absolute",
-          "keyframes": [
-            {
-              "id": "maris-atmos-studio-bloom-mobile-0",
-              "at": 0,
-              "value": 0.08,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-studio-bloom-mobile-1",
-              "at": 0.5,
-              "value": 0.2,
-              "easing": "smooth"
-            },
-            {
-              "id": "maris-atmos-studio-bloom-mobile-2",
-              "at": 0.86,
-              "value": 0.112,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-atmos-studio-bloom-mobile-3",
-              "at": 1,
-              "value": 0.084,
-              "easing": "smooth"
-            }
-          ]
-        }
-      ],
-      "media": {
-        "kind": "color",
-        "alt": "Flat field for the process chapter",
-        "transition": "mask",
-        "blendColor": "#171310",
-        "maskSoftness": 22,
-        "layers": [],
-        "position": [
-          50,
-          48
-        ],
-        "mobilePosition": [
-          55,
-          50
-        ],
-        "overlap": 0.26,
-        "direction": "up",
-        "zoom": 1,
-        "textEnd": 0.32,
-        "fill": "#4d2a1e",
-        "mask": {
-          "preset": "linear-soft",
-          "renderer": "auto",
-          "direction": "down",
-          "origin": [
-            50,
-            44
-          ],
-          "softness": 38,
-          "scale": 1.02,
-          "rotation": 0,
-          "intensity": 0.6,
-          "seed": 655,
-          "invert": false,
-          "edgeColor": "#eadbc5",
-          "edgeWidth": 0.18
-        }
-      },
-      "blocks": [
-        {
-          "id": "stage-site",
-          "type": "statement",
-          "accent": "01",
-          "title": "Site and feasibility",
-          "body": "Six to ten weeks. Survey, orientation, planning envelope and the first section."
-        },
-        {
-          "id": "stage-concept",
-          "type": "statement",
-          "accent": "02",
-          "title": "Concept and section",
-          "body": "Ten to fourteen weeks. The house is resolved in section before any finish is chosen."
-        },
-        {
-          "id": "stage-technical",
-          "type": "statement",
-          "accent": "03",
-          "title": "Technical design",
-          "body": "Sixteen to twenty-four weeks. Construction drawings, schedules and specification."
-        },
-        {
-          "id": "stage-site-work",
-          "type": "statement",
-          "accent": "04",
-          "title": "Construction oversight",
-          "body": "To completion. Weekly on site, with the same people who drew it."
-        },
-        {
-          "id": "studio-roll",
-          "type": "image-roll",
-          "direction": "right",
-          "travel": 44,
-          "lift": 5,
-          "images": [
-            {
-              "src": "https://images.unsplash.com/photo-1763485956343-61b0163a3e7e?auto=format&fit=crop&fm=jpg&q=86&w=2200",
-              "alt": "Travertine bathing court"
-            },
-            {
-              "src": "https://images.unsplash.com/photo-1770970831074-6e88b6cc260b?auto=format&fit=crop&fm=jpg&q=86&w=2200",
-              "alt": "Material samples on a studio table"
-            },
-            {
-              "src": "https://images.unsplash.com/photo-1769737122085-97b1ee5ab104?auto=format&fit=crop&fm=jpg&q=86&w=2400",
-              "alt": "Interior toward the sea"
-            },
-            {
-              "src": "https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=84&w=2400",
-              "alt": "Sunlit atrium"
-            },
-            {
-              "src": "https://images.unsplash.com/photo-1774423864869-702b21c2490a?auto=format&fit=crop&fm=jpg&q=86&w=2400",
-              "alt": "Room open to the horizon"
-            }
-          ],
-          "sweep": 0.34,
-          "exit": 0.6
-        }
-      ],
-      "hero": {
-        "motion": "linear",
-        "from": {
-          "position": [
-            0,
-            0,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": 1
-        },
-        "to": {
-          "position": [
-            0,
-            0,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": 1
-        }
-      },
-      "world": {
-        "background": "#0f0d0a",
-        "fog": "#15120e",
-        "fogDensity": 0.006,
-        "ambient": 0.62,
-        "key": 4.4,
-        "rim": 1.35,
-        "keyColor": "#ebd5b8",
-        "rimColor": "#9fb9c5",
-        "exposure": 1.06
-      },
-      "material": {
-        "tint": "#fff8ef",
-        "tintStrength": 0.02,
-        "metalness": null,
-        "roughness": null,
-        "clearcoat": null
-      },
-      "post": {
-        "bloom": 0.1,
-        "vignette": 0.18
-      },
-      "copy": {
-        "eyebrow": "06 / HOW WE WORK",
-        "headline": "One studio, four stages, no handover.",
-        "body": "The people who draw the section run the site. Nothing is passed to a delivery team.",
-        "align": "left"
-      }
-    },
-    {
       "id": "horizon",
       "label": "Landscape",
       "range": [
-        0.79,
-        0.895
+        0.714286,
+        0.857143
       ],
       "easing": "cinematic",
       "camera": {
@@ -4923,8 +3667,8 @@
       "id": "inquiry",
       "label": "Private Inquiry",
       "range": [
-        0.895,
-        1
+        0.857143,
+        1.0
       ],
       "easing": "cinematic",
       "camera": {

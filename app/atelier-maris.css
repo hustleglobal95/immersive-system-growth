@@ -33,89 +33,8 @@ body[data-project="atelier-maris"] .story-section--blocks .narrative-body {
 body[data-project="atelier-maris"] .scene-blocks { gap: 0; margin-top: 8vh; }
 
 /* 03 / Selected work -- an index, read as a contents page rather than a card wall */
-body[data-project="atelier-maris"] [data-scene-id="living"] .story-panel { color: #171310; }
-body[data-project="atelier-maris"] [data-scene-id="living"] .eyebrow { color: #7a5c3a; text-shadow: none; }
-body[data-project="atelier-maris"] [data-scene-id="living"] .narrative-body { color: rgba(23, 19, 16, .72); }
-body[data-project="atelier-maris"] [data-scene-id="living"] .narrative-panel__index { color: rgba(23, 19, 16, .45); }
-body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu {
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  backdrop-filter: none;
-}
-body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu > h3 {
-  margin-bottom: 0;
-  padding-bottom: 14px;
-  font: 500 11px/1 var(--font-dm-sans), Arial, sans-serif;
-  letter-spacing: .24em;
-  color: rgba(23, 19, 16, .55);
-}
-body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu ul {
-  grid-template-columns: 1fr;
-  gap: 0;
-  background: none;
-}
-body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li {
-  min-height: 0;
-  align-items: baseline;
-  padding: 22px 0;
-  background: none;
-  border-top: 1px solid rgba(23, 19, 16, .22);
-}
-body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li:last-child {
-  border-bottom: 1px solid rgba(23, 19, 16, .22);
-}
-body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li > div {
-  display: grid;
-  grid-template-columns: 3.5ch minmax(0, 20ch) minmax(0, 1fr);
-  align-items: baseline;
-  gap: 8px 34px;
-  flex: 1;
-}
-body[data-project="atelier-maris"] [data-scene-id="living"] .menu-badge {
-  color: rgba(23, 19, 16, .45);
-  font: 500 11px/1 var(--font-dm-sans), Arial, sans-serif;
-  letter-spacing: .14em;
-}
-body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li p {
-  grid-column: 3;
-  margin: 0;
-  color: rgba(23, 19, 16, .62);
-  font-size: 14px;
-  line-height: 1.5;
-}
-body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu strong {
-  color: rgba(23, 19, 16, .78);
-  font: 500 12px/1 var(--font-dm-sans), Arial, sans-serif;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
 
 /* 06 / Process -- four stages as one band, numbers over hairlines */
-body[data-project="atelier-maris"] [data-scene-id="studio"] .scene-blocks {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  column-gap: 38px;
-  margin-top: 9vh;
-}
-body[data-project="atelier-maris"] [data-scene-id="studio"] .scene-block--statement {
-  max-width: none;
-  padding-top: 22px;
-  border-top: 1px solid rgba(244, 234, 215, .34);
-}
-body[data-project="atelier-maris"] [data-scene-id="studio"] .scene-block--statement > p:last-child {
-  margin-top: 12px;
-  color: rgba(244, 234, 215, .72);
-  font-size: 14px;
-  line-height: 1.58;
-}
-body[data-project="atelier-maris"] [data-scene-id="studio"] .scene-block__accent {
-  margin-bottom: 0 !important;
-  color: #e3aa7c;
-  font: 500 11px/1 var(--font-dm-sans), Arial, sans-serif;
-  letter-spacing: .22em;
-}
 
 /* ---------------------------------------------------------------------------
    Footer. The site has to end somewhere: navigation, contact and legal in
@@ -181,10 +100,6 @@ body[data-project="atelier-maris"] [data-scene-id="studio"] .scene-block__accent
 .maris-footer__base p { margin: 0; }
 @media (max-width: 900px) {
   body[data-project="atelier-maris"] .story-section--blocks .story-panel { width: 100%; height: auto; min-height: 100vh; padding: 14vh 0 8vh; }
-  body[data-project="atelier-maris"] [data-scene-id="studio"] .scene-blocks { grid-template-columns: 1fr; row-gap: 30px; }
-  body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li { flex-direction: column; gap: 10px; }
-  body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li > div { grid-template-columns: 3.5ch 1fr; gap: 6px 18px; }
-  body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li p { grid-column: 2; }
   .maris-footer__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 34px; }
   .maris-footer__base { flex-direction: column; gap: 10px; }
 }
@@ -235,22 +150,6 @@ body[data-project="atelier-maris"] .story-section--blocks .narrative-body {
   line-height: 1.55;
   letter-spacing: -.005em;
 }
-body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu h4,
-body[data-project="atelier-maris"] [data-scene-id="studio"] .scene-block--statement h3 {
-  font-family: var(--font-manrope), Arial, sans-serif;
-  letter-spacing: -.032em;
-  hyphens: none;
-}
-body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu h4 {
-  margin: 0;
-  font-size: clamp(21px, 2.1vw, 34px);
-  font-weight: 600;
-}
-body[data-project="atelier-maris"] [data-scene-id="studio"] .scene-block--statement h3 {
-  font-size: clamp(18px, 1.6vw, 25px);
-  font-weight: 600;
-  line-height: 1.12;
-}
 body[data-project="atelier-maris"] .story-section--blocks .scene-block--menu > h3,
 body[data-project="atelier-maris"] .story-section--blocks .scene-block__accent,
 body[data-project="atelier-maris"] .story-section--blocks .menu-badge,
@@ -261,20 +160,6 @@ body[data-project="atelier-maris"] .story-section--blocks .scene-block--menu str
 }
 
 /* Square plate against each index row */
-.menu-thumb {
-  grid-row: span 2;
-  width: 62px;
-  height: 62px;
-  object-fit: cover;
-  display: block;
-  filter: saturate(.92) contrast(1.04);
-}
-body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li > div {
-  grid-template-columns: 62px 3.5ch minmax(0, 18ch) minmax(0, 1fr);
-  gap: 4px 26px;
-  align-items: center;
-}
-body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li p { grid-column: 4; }
 
 /* ---------------------------------------------------------------------------
    Levitating image roll: a rank of squares carried sideways by scroll, each
@@ -314,8 +199,6 @@ body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu l
   filter: saturate(.9) contrast(1.05);
 }
 body[data-project="atelier-maris"] [data-scene-id="parti"] .scene-blocks { margin-top: 7vh; }
-body[data-project="atelier-maris"] [data-scene-id="studio"] .scene-blocks { align-items: start; }
-body[data-project="atelier-maris"] [data-scene-id="studio"] .image-roll { margin-top: 6vh; }
 @media (prefers-reduced-motion: reduce) {
   .image-roll { overflow: hidden; }
   .image-roll__stage { display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; height: auto; }
@@ -323,12 +206,6 @@ body[data-project="atelier-maris"] [data-scene-id="studio"] .image-roll { margin
 }
 @media (max-width: 900px) {
   .image-roll { --roll-plate: clamp(104px, 30vw, 140px); }
-  .menu-thumb { width: 48px; height: 48px; }
-  body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li > div {
-    grid-template-columns: 48px 1fr;
-    gap: 4px 14px;
-  }
-  body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li p { grid-column: 2; }
 }
 
 /* Cormorant sets much wider per character than the Georgia fallback did, so the display
@@ -344,15 +221,6 @@ body[data-project="atelier-maris"] .story-section--center h2 { max-width: 14ch; 
 
 /* The process section carries four columns and a roll inside one viewport, so its plates and
    its column text run smaller than the manifesto's. */
-body[data-project="atelier-maris"] [data-scene-id="studio"] .image-roll { padding: 3.6vh 0; }
-body[data-project="atelier-maris"] [data-scene-id="studio"] .image-roll {
-  --roll-plate: clamp(112px, 11.2vw, 176px);
-}
-body[data-project="atelier-maris"] [data-scene-id="studio"] .scene-block--statement > p:last-child {
-  font-size: 13px;
-  line-height: 1.5;
-}
-body[data-project="atelier-maris"] [data-scene-id="studio"] .story-panel { padding: 3vh 0; }
 
 /* 01 / Position carries the rank as the section's main image event, so its plates run large.
    The process section keeps its smaller plates, since four columns share that viewport. */
@@ -372,7 +240,6 @@ body[data-project="atelier-maris"] [data-scene-id="parti"] h2 {
     --roll-plate: clamp(140px, 42vw, 210px);
   }
   body[data-project="atelier-maris"] [data-scene-id="parti"] .image-roll { padding: 4.6vh 0; }
-  body[data-project="atelier-maris"] [data-scene-id="studio"] .image-roll { padding: 3.2vh 0; }
 }
 
 /* The rank can be moved by hand. Horizontal drags belong to it; vertical scrolling stays with
@@ -484,52 +351,13 @@ body[data-project="atelier-maris"] [data-scene-id="material"] .scene-block--menu
    03 / Selected work, on the bone field. Display line at the top of the scale,
    with the index built row by row and a square plate rising against each name.
    --------------------------------------------------------------------------- */
-body[data-project="atelier-maris"] [data-scene-id="living"] h2 {
-  font-size: clamp(64px, 9vw, 176px);
-  line-height: .84;
-  letter-spacing: -.05em;
-  max-width: 12ch;
-}
-body[data-project="atelier-maris"] [data-scene-id="living"] .narrative-body {
-  max-width: 560px;
-  margin-top: 26px;
-  font-size: 18px;
-}
-body[data-project="atelier-maris"] [data-scene-id="living"] .scene-blocks { margin-top: 5vh; }
-body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li {
-  padding: 15px 0;
-  will-change: transform, clip-path, opacity;
-}
-body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu h4 {
-  font-size: clamp(22px, 2.3vw, 38px);
-  font-weight: 600;
-}
-body[data-project="atelier-maris"] [data-scene-id="living"] .menu-thumb {
-  width: 74px;
-  height: 74px;
-  will-change: transform, clip-path;
-}
-body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li > div {
-  grid-template-columns: 74px 3.5ch minmax(0, 21ch) minmax(0, 1fr);
-  gap: 4px 26px;
-}
-body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu h4 { white-space: nowrap; }
 @media (max-width: 900px) {
-  body[data-project="atelier-maris"] [data-scene-id="living"] h2 { font-size: clamp(50px, 15vw, 82px); }
-  body[data-project="atelier-maris"] [data-scene-id="living"] .menu-thumb { width: 52px; height: 52px; }
-  body[data-project="atelier-maris"] [data-scene-id="living"] .scene-block--menu li > div {
-    grid-template-columns: 52px 1fr;
-  }
 }
 
 
 /* An index row is a link to its record: the anchor covers the row without disturbing the
    grid the row's own columns are laid out on. */
 body[data-project="atelier-maris"] .scene-block--menu li { position: relative; }
-.menu-row__link { position: absolute; inset: 0; z-index: 2; }
-.menu-row__link span { position: absolute; inset: auto 0 0; height: 1px; background: #d7c2a3; transform: scaleX(0); transform-origin: 0 50%; transition: transform .45s cubic-bezier(.16,1,.3,1); }
-.menu-row__link:hover span, .menu-row__link:focus-visible span { transform: scaleX(1); }
-.menu-row__link:focus-visible { outline: 2px solid #d7c2a3; outline-offset: 4px; }
 
 /* A contact address is one long unbreakable token; on a narrow column it pushed the footer
    grid past the viewport. Nothing in the footer may exceed its track. */
