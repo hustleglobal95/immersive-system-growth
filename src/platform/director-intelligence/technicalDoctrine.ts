@@ -24,6 +24,8 @@ export const immersiveTechnicalDoctrine: ImmersiveTechnicalDoctrine[] = [
     patternIds: [
       "prewarm-signature-systems",
       "transition-readiness-gate",
+      "transition-preload-race",
+      "scene-neighborhood-window",
       "staged-resource-boot",
     ],
     principles: [
@@ -123,6 +125,7 @@ export const immersiveTechnicalDoctrine: ImmersiveTechnicalDoctrine[] = [
       "interactive-field-restraint",
       "motion-grammar-primitives",
       "input-work-on-demand",
+      "imperative-hot-path-state",
     ],
     principles: [
       "For extremely frequent writes to the same transform/style property, use a prepared setter path rather than repeatedly invoking general-purpose convenience work.",
