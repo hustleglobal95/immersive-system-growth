@@ -1,6 +1,6 @@
 # Repository Manifest
 
-Immersive Site Forge 5.0 is organized as a multi-project production platform rather than a one-off demo.
+Immersive Site Forge 6.0 is organized as a multi-project production platform rather than a one-off demo.
 
 ## Runtime
 
