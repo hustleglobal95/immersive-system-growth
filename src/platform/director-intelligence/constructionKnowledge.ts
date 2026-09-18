@@ -1730,6 +1730,81 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
     avoid: ["Mandatory novelty interactions blocking high-intent visitors.", "Hidden progress state with no feedback or recovery."],
   },
   {
+    id: "pre-rendered-sequence-for-fidelity",
+    title: "Use pre-rendered sequences when visual fidelity matters more than free viewpoint",
+    signals: ["sequence", "rendered", "frames", "fidelity", "scroll", "luxury", "product", "cgi"],
+    composition: [
+      "Treat the pre-rendered subject as authored cinematography: reserve a stable readable plane for copy and let framing/light/material quality carry the premium impression.",
+    ],
+    motion: [
+      "Tie frame selection to normalized progress with smoothing and prefetch around the active range so the sequence feels directly controlled.",
+    ],
+    transitions: [
+      "Blend from pre-rendered sequence to realtime interaction only where the visitor gains a capability that the sequence cannot provide.",
+    ],
+    interaction: [
+      "Use scroll/drag to control authored time; do not imply free camera control when only frame selection is available.",
+    ],
+    implementation: [
+      "Choose image/video sequence rendering when offline lighting/material fidelity produces more value than realtime viewpoint freedom.",
+      "Budget decode/cache memory explicitly and load a neighborhood around current progress rather than the entire sequence blindly.",
+    ],
+    mobile: [
+      "Use a smaller frame set/resolution while preserving shot continuity and material quality.",
+    ],
+    avoid: ["Rebuilding fixed cinematography as expensive realtime 3D without interaction benefit.", "Loading hundreds of full-resolution frames before first paint."],
+  },
+  {
+    id: "cross-device-companion-control",
+    title: "Use a companion device as a semantic controller",
+    signals: ["phone", "second screen", "websocket", "gyroscope", "device motion", "companion", "remote"],
+    composition: [
+      "Keep the primary display responsible for the shared visual world and the companion screen focused on control, feedback or a complementary private view.",
+    ],
+    motion: [
+      "Filter and bound sensor input before mapping it to the primary scene so latency/noise does not destabilize the world.",
+    ],
+    transitions: [
+      "Connection, calibration and disconnect states must have explicit visual feedback before the cinematic sequence depends on the companion.",
+    ],
+    interaction: [
+      "Map companion sensors/actions onto the same semantic action model used by local input so the experience has one interaction language.",
+    ],
+    implementation: [
+      "Use a low-latency realtime channel for small control state; do not stream heavy scene state between devices.",
+      "Provide a local fallback path when pairing fails or a second device is unavailable.",
+    ],
+    mobile: [
+      "Treat the phone as controller only when that role adds meaning; otherwise preserve a complete single-device path.",
+    ],
+    avoid: ["Second-screen novelty with no narrative/product reason.", "Hard dependency on a companion device without recovery."],
+  },
+  {
+    id: "personalization-to-render-state",
+    title: "Translate user data into bounded visual identity",
+    signals: ["personalization", "profile", "spotify", "user data", "avatar", "generated", "preferences", "mood"],
+    composition: [
+      "Personalized output should still live inside a stable brand composition so user variance does not destroy hierarchy.",
+    ],
+    motion: [
+      "Map data dimensions to a controlled set of visual/motion parameters with explicit ranges and art-directed combinations.",
+    ],
+    transitions: [
+      "Reveal personalization as a causal transformation from input/profile to output rather than presenting a random result.",
+    ],
+    interaction: [
+      "Explain or imply which user choices/data dimensions affect the result when that transparency improves trust and play.",
+    ],
+    implementation: [
+      "Normalize external/user data before mapping it to rendering state and keep a non-connected/manual input path when account access is unavailable.",
+      "Separate deterministic identity parameters from ephemeral animation noise so personalized results remain recognizable and shareable.",
+    ],
+    mobile: [
+      "Keep personalization and shareability intact even if the realtime rendering path is simplified.",
+    ],
+    avoid: ["Unbounded user data directly driving shaders/layout.", "Requiring account connection when a meaningful fallback can exist."],
+  },
+  {
     id: "prewarm-signature-systems",
     title: "Prewarm signature systems",
     signals: ["shader", "3d", "video", "particles", "postprocessing", "cinematic", "performance"],
