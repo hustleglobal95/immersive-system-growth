@@ -38,6 +38,9 @@ test("advanced Director runs full intelligence pipeline", () => {
   assert.ok(result.productionPlan.creativePlan.scenes.length >= 5);
   assert.ok(result.construction.patternIds.includes("continuous-visual-anchor"));
   assert.ok(result.construction.implementationRules.length > 0);
+  assert.equal(result.constructionPlan.sceneDecisions.length, result.report.treatment.emotionalArc.length);
+  assert.ok(result.constructionPlan.sceneDecisions.every((scene) => scene.continuityAnchor.length > 0));
+  assert.ok(result.constructionPlan.criticalBootStrategy.length > 0);
   assert.ok(["LOCK", "REVISE", "RESEARCH REQUIRED", "ASSET BLOCKED", "REJECT"].includes(result.report.verdict));
 });
 
