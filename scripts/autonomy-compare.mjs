@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { buildPairwiseCriticRequests, pairwiseJudgmentFromResponse } from "../src/platform/autonomy/visualDirector.ts";
 import { forcedOptimizationDecision } from "../src/platform/autonomy/forcedOptimization.ts";
+import { evaluateCandidateGates } from "../src/platform/autonomy/candidateGates.ts";
 
 const options=args(process.argv.slice(2));
 const incumbentReportPath=String(options.incumbent || "test-results/autonomy/review-report.json");
@@ -62,17 +63,17 @@ for(const captureId of common) {
   }
 }
 
-const motionRegression=incumbentMotion && candidateMotion && Number(candidateMotion.qualityScore) < Number(incumbentMotion.qualityScore)-3
-  ? ["motion quality regressed from "+incumbentMotion.qualityScore+" to "+candidateMotion.qualityScore]
-  : [];
-const candidateHardGateFailures=[...new Set([
-  ...hardGateFailures(candidate),
-  ...judgments.flatMap((item)=>item.hardGateFailures),
-  ...missingMatchedCaptures.map((id)=>id + ": missing matched A/B capture"),
-  ...(functional?.hardGateFailures ?? []),
-  ...(candidateMotion?.hardGateFailures ?? []),
-  ...motionRegression,
-])];
+const gateReport=evaluateCandidateGates({
+  visualHardGateFailures:hardGateFailures(candidate),
+  judgeHardGateFailures:judgments.flatMap((item)=>item.hardGateFailures),
+  missingMatchedCaptures,
+  functionalHardGateFailures:functional?.hardGateFailures ?? [],
+  candidateMotionHardGateFailures:candidateMotion?.hardGateFailures ?? [],
+  incumbentMotionScore:incumbentMotion?.qualityScore ?? null,
+  candidateMotionScore:candidateMotion?.qualityScore ?? null,
+});
+const candidateHardGateFailures=gateReport.failures;
+const motionRegression=gateReport.motionRegression;
 const decision=forcedOptimizationDecision({ incumbentId,candidateId,judgments,candidateHardGateFailures });
 await fs.mkdir(path.dirname(outputPath),{ recursive:true });
 await fs.writeFile(outputPath,JSON.stringify({
