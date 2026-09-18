@@ -141,3 +141,14 @@ test("Director retrieval can pull non-GetLayers precedents", () => {
     ),
   );
 });
+
+test("precedent retrieval avoids one-source monoculture", () => {
+  const treatment = directProject(brief);
+  const retrieved = retrieveImmersiveReferences(treatment, 8);
+  const hosts = retrieved.map(({ reference }) => new URL(reference.source).hostname.replace(/^www\./, ""));
+  const counts = new Map<string, number>();
+  for (const host of hosts) counts.set(host, (counts.get(host) ?? 0) + 1);
+
+  assert.ok(new Set(hosts).size >= 3);
+  assert.ok(Array.from(counts.values()).every((count) => count <= 2));
+});
