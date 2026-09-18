@@ -25,6 +25,7 @@ import { detectCouncilInflation } from "@/src/platform/director-intelligence/cal
 import { evaluateHumanGates } from "@/src/platform/director-intelligence/humanGates";
 import { applyTasteCalibration, inferTasteTraits, tasteAdjustment } from "@/src/platform/director-intelligence/taste";
 import { buildConstructionDirectives } from "@/src/platform/director-intelligence/constructionKnowledge";
+import { planImmersiveConstruction } from "@/src/platform/director-intelligence/constructionPlanner";
 
 export function runDirectorIntelligence(input: DirectorIntelligenceInput & { approvals?: DirectorHumanApprovals; finalCutRequested?: boolean }) {
   const brief = parseDirectorBrief(input.brief);
@@ -76,6 +77,7 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
   const cliches = clicheByTerritory.get(selectedTerritory.id)!;
   const selectedTaste = tasteByTerritory.get(selectedTerritory.id)!;
   const construction = buildConstructionDirectives(treatment);
+  const constructionPlan = planImmersiveConstruction(treatment, construction);
   const assetGap = analyzeAssetGap(brief, treatment);
   const ceiling = estimateCreativeCeiling(brief, treatment, selectedEvaluation, assetGap, stress);
   const leverage = rankProductionLeverage(treatment, selectedEvaluation, assetGap);
@@ -113,7 +115,7 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
       readyForProduction: baseProductionPlan.readiness.readyForProduction && report.verdict === "LOCK" && humanGates.authorizedForProduction,
     },
   };
-  return { report, productionPlan, debate, audience, brandAssets, referenceDeconstructions, construction, divergence: diverged.diversity, councilCalibration: inflation, humanGates, tasteCalibration: selectedTaste };
+  return { report, productionPlan, debate, audience, brandAssets, referenceDeconstructions, construction, constructionPlan, divergence: diverged.diversity, councilCalibration: inflation, humanGates, tasteCalibration: selectedTaste };
 }
 
 function selectTerritory(treatment: DirectorTreatment, territoryId: string) {
