@@ -169,7 +169,7 @@ export function AssetCreationWorkbench() {
 
   return <main className="asset-creator">
     <header className="asset-creator__topbar">
-      <div><Link href="/studio">FORGE</Link><strong>Asset Creator</strong><span>BETA</span></div>
+      <div><Link href="/studio">FORGE</Link><strong>Asset Creator</strong></div>
       <nav><Link href="/studio/agent">Creative Agent</Link><Link href="/studio">Studio</Link></nav>
     </header>
 
