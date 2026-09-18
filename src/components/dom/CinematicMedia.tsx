@@ -198,7 +198,12 @@ export function CinematicMedia() {
       // those chapters painting nothing at all on a high-quality device.
       const drawn = !!media?.src && media.kind !== "color" && media.kind !== "shader";
       if (drawn && mask && resolveMaskBackend(mask, { quality, webglStatus, reducedMotion: reduced }) === "webgl") return null;
-      return <div key={`${scene.id}-${preview}`} className="media-panel" data-media-panel={index} style={{ zIndex: index }}>
+      // The scrim follows the copy: its centre sits on the side this chapter's words are on, and
+      // its weight is authored per chapter against how bright that photograph actually is.
+      const align = scene.copy.align ?? "left";
+      const scrimX = align === "right" ? "76%" : align === "center" ? "50%" : "24%";
+      return <div key={`${scene.id}-${preview}`} className="media-panel" data-media-panel={index}
+        style={{ zIndex: index, "--scrim": media?.scrim ?? 0.62, "--scrim-x": scrimX } as CSSProperties}>
         <div
           className="media-panel__inner"
           data-transition={media?.transition ?? "slide"}

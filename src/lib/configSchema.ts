@@ -278,6 +278,10 @@ export const sceneMediaSchema = z.object({
   shaderTint: color.optional(),
   src: assetUrl.optional(),
   fill: color.optional(),
+  // How strongly this chapter's frame is held back behind its copy. The scrim's side is derived
+  // from copy.align rather than authored, so it always covers the words; only the weight varies,
+  // because a bright wall needs more than dark water does.
+  scrim: finite.min(0).max(1).optional(),
   poster: assetUrl.optional(),
   alt: z.string().min(1).max(300),
   transition: z.enum(["slide", "curtain", "zoom", "dissolve", "wipe", "mask", "cut"]).default("slide"),

@@ -73,6 +73,24 @@ test("a reveal is closed at the start and open at the end, feather included", ()
   assert.match(maskRevealFragmentShader, /float swept = -feather \+ progress \* \(1\.0 \+ feather \* 2\.0\);/);
 });
 
+test("every photographic chapter holds its frame back behind its copy", () => {
+  const config = parseExperience(experience);
+  for (const scene of config.scenes) {
+    if (!scene.media) continue;
+    // Measured against the brightest pixel behind each headline, six of seven chapters failed
+    // WCAG AA before this was authored -- chapter 04 at 1.28:1 against a 3:1 floor. The weight
+    // is per chapter because it answers to that photograph, so it is required rather than
+    // defaulted: a new chapter over a bright frame would inherit a number chosen for another.
+    assert.equal(typeof scene.media.scrim, "number", `${scene.id} has no authored scrim`);
+    assert.ok(scene.media.scrim! >= 0 && scene.media.scrim! <= 1, `${scene.id} scrim out of range`);
+    // A photograph needs real cover; a controlled field of our own does not.
+    if (scene.media.kind === "image")
+      assert.ok(scene.media.scrim! >= 0.6, `${scene.id} is a photograph with only ${scene.media.scrim} of cover`);
+    if (scene.media.kind === "shader")
+      assert.ok(scene.media.scrim! <= 0.4, `${scene.id} is our own field and needs little cover`);
+  }
+});
+
 test("every authored handover arrives at rest", () => {
   const config = parseExperience(experience);
   config.scenes.forEach((scene, index) => {
