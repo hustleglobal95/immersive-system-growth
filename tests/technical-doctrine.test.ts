@@ -9,7 +9,7 @@ import {
 } from "../src/platform/director-intelligence/technicalDoctrine";
 
 test("primary-source technical doctrine covers critical immersive runtime concerns", () => {
-  assert.equal(immersiveTechnicalDoctrine.length, 16);
+  assert.equal(immersiveTechnicalDoctrine.length, 25);
   const ids = new Set(immersiveTechnicalDoctrine.map((item) => item.id));
 
   for (const id of [
@@ -29,6 +29,11 @@ test("primary-source technical doctrine covers critical immersive runtime concer
     "view-transition-lifecycle",
     "renderer-info-budgeting",
     "gsap-responsive-lifecycle",
+    "three-static-transform-control",
+    "video-frame-callback-sync",
+    "resize-observer-layout-sync",
+    "content-visibility-long-page",
+    "imagebitmap-worker-preparation",
   ]) {
     assert.ok(ids.has(id), `Missing doctrine: ${id}`);
   }

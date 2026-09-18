@@ -4,9 +4,9 @@ Reviewed: **2026-09-18**
 
 This corpus expands Forge beyond GetLayers so Director does not overfit to one marketplace, one studio, one visual trend or one implementation style.
 
-It contains **121 public studio case studies, technical breakdowns and source studies** from Dogstudio, Lusion, makemepulse, Bonhomme, 14islands and Codrops.
+It contains **187 public studio case studies, technical breakdowns and source studies** from Dogstudio, Lusion, makemepulse, Bonhomme, 14islands and Codrops.
 
-Combined with the 49-template GetLayers corpus, Forge now has **196 immersive references** and **98 executable construction patterns**.
+Combined with the 49-template GetLayers corpus, Forge now has **236 immersive references** and **108 executable construction patterns**.
 
 ## What this corpus is for
 
@@ -98,7 +98,7 @@ The goal is **not** to copy a studio's exact visual identity, proprietary engine
 
 ## New construction intelligence extracted
 
-This expansion first added 15 patterns on top of the original 29, then the second research pass added 8 more. The current library contains **98 patterns**:
+This expansion first added 15 patterns on top of the original 29, then the second research pass added 8 more. The current library contains **108 patterns**:
 
 1. **interaction-as-thesis**
 2. **multi-subscene-transition-budget**

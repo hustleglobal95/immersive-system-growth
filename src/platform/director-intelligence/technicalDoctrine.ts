@@ -423,6 +423,108 @@ export const immersiveTechnicalDoctrine: ImmersiveTechnicalDoctrine[] = [
       "Repeated forward/backward traversal through scene windows does not produce monotonically increasing renderer.info memory counts.",
       "Disposed scenes release scene-owned GPU resources while shared resources remain valid.",
     ],
+  },
+  {
+    id: "three-static-transform-control",
+    title: "Stop recomputing transforms for scene nodes that truly do not move",
+    source: "https://threejs.org/docs/pages/Object3D.html",
+    authority: "official-docs",
+    patternIds: [
+      "freeze-static-render-work",
+      "static-geometry-batching",
+      "scene-neighborhood-window",
+    ],
+    principles: [
+      "For scene nodes whose local/world transforms are genuinely static, matrixAutoUpdate and matrixWorldAutoUpdate can be disabled and matrices updated explicitly when state changes.",
+      "Use manual matrix control surgically; dynamic hierarchies still need correct parent/child world updates.",
+      "Frustum visibility, animation, physics or interaction may invalidate the assumption that a node is static.",
+    ],
+    verification: [
+      "Static scene groups no longer recompute transforms continuously, while moved parents/children still receive correct explicit matrix updates.",
+      "Visual and raycast results remain correct after any authored state change that repositions a manually-managed node.",
+    ],
+  },
+  {
+    id: "video-frame-callback-sync",
+    title: "Synchronize video-dependent visual work to decoded/composited frames",
+    source: "https://developer.mozilla.org/en-US/docs/Web/API/HTMLVideoElement/requestVideoFrameCallback",
+    authority: "web-standard",
+    patternIds: [
+      "scrubbable-media-delivery",
+      "decoded-frame-bank-for-hard-scrub",
+      "shared-media-source-mapping",
+      "layered-video-state-machine",
+    ],
+    principles: [
+      "Use requestVideoFrameCallback when canvas/WebGL work must respond to actual presented video frames rather than polling currentTime from the display refresh loop.",
+      "Video-frame callbacks follow the lower of media frame rate and browser paint rate, so avoid redundant processing at 60/120Hz when source footage is slower.",
+      "Cancel callbacks when the media/scene is inactive.",
+    ],
+    verification: [
+      "Video-driven canvas/WebGL updates occur only when a new presented frame is available.",
+      "Inactive or disposed media cancels its outstanding callback loop.",
+    ],
+  },
+  {
+    id: "resize-observer-layout-sync",
+    title: "Invalidate spatial layout from element resize events instead of polling geometry",
+    source: "https://developer.mozilla.org/en-US/docs/Web/API/Resize_Observer_API",
+    authority: "web-standard",
+    patternIds: [
+      "dom-proxy-spatial-alignment",
+      "design-grid-runtime-contract",
+      "physics-proxy-dom",
+      "responsive-authored-compositions",
+    ],
+    principles: [
+      "Use ResizeObserver for element-size changes that can invalidate WebGL proxy bounds, physics colliders or authored layout measurements.",
+      "Keep continuous scroll motion separate from layout measurement; resize/reflow events update stable geometry, while the shared scroll coordinate handles movement.",
+    ],
+    verification: [
+      "Font, CMS content and container-size changes trigger a bounded reflow/update without a permanent getBoundingClientRect polling loop.",
+      "DOM/WebGL and DOM/physics alignment remains correct after responsive content changes.",
+    ],
+  },
+  {
+    id: "content-visibility-long-page",
+    title: "Let the browser skip offscreen DOM layout/paint work on long semantic pages",
+    source: "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/content-visibility",
+    authority: "web-standard",
+    patternIds: [
+      "freeze-static-render-work",
+      "content-intensity-render-mode",
+      "context-layer-over-world",
+    ],
+    principles: [
+      "content-visibility:auto can allow long offscreen semantic sections to skip layout/paint work while remaining available to accessibility and find-in-page behavior.",
+      "Pair skipped content with appropriate intrinsic sizing so scroll geometry does not jump as sections become relevant.",
+      "Use contentvisibilityautostatechange as an optional signal to suspend matching canvas/process work when a section is skipped.",
+    ],
+    verification: [
+      "Long editorial pages preserve stable scroll geometry and keyboard/find accessibility while offscreen rendering work decreases.",
+      "Canvas or simulation processes tied to skipped sections stop and restart without losing semantic state.",
+    ],
+  },
+  {
+    id: "imagebitmap-worker-preparation",
+    title: "Prepare image data asynchronously and release bitmap resources explicitly",
+    source: "https://developer.mozilla.org/en-US/docs/Web/API/ImageBitmap",
+    authority: "web-standard",
+    patternIds: [
+      "offscreen-render-worker",
+      "source-structure-to-runtime-format",
+      "shared-media-source-mapping",
+      "staged-resource-boot",
+    ],
+    principles: [
+      "ImageBitmap provides an asynchronous, transferable path for preparing image data for canvas/WebGL and can be created in workers.",
+      "Use bitmap cropping/resizing when preprocessing atlases or texture inputs off the main thread is beneficial.",
+      "Call ImageBitmap.close when a prepared bitmap is no longer needed so associated graphics resources can be released.",
+    ],
+    verification: [
+      "Worker-prepared image assets do not duplicate large decode work on the main thread.",
+      "Disposed scene/media batches close temporary ImageBitmap resources they own.",
+    ],
   }
 ];
 

@@ -60,6 +60,11 @@ ${JSON.stringify({
   technicalVerification: constructionResearch.technicalVerification.slice(0, 12),
   failureLessons: constructionResearch.failureLessonIds,
   failureAvoidance: constructionResearch.failureAvoidance.slice(0, 14),
+  referenceLensCoverage: constructionResearch.referenceLensCoverage.map((item) => ({
+    lens: item.lens,
+    referenceCount: item.referenceIds.length,
+    patterns: item.patternIds.slice(0, 8),
+  })),
   mobileRules: constructionResearch.mobileRules.slice(0, 10),
   avoid: constructionResearch.forbiddenPatterns.slice(0, 12),
   experienceMode: constructionPlan.mode,
