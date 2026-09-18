@@ -451,6 +451,7 @@ export const immersiveTechnicalDoctrine: ImmersiveTechnicalDoctrine[] = [
     authority: "web-standard",
     patternIds: [
       "scrubbable-media-delivery",
+      "decoded-frame-bank-for-hard-scrub",
       "shared-media-source-mapping",
       "layered-video-state-machine",
     ],
