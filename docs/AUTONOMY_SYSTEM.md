@@ -125,13 +125,21 @@ The benchmark currently measures short-prompt interpretation across at least 30 
 
 Future benchmark revisions should add rendered pairwise quality, browser task success, repair monotonicity, performance and human preference rather than collapsing everything into one aesthetic score.
 
+## Visual Director and repair loop
+
+Autonomy v2 adds the rendered-output repair path documented in [VISUAL_DIRECTOR.md](VISUAL_DIRECTOR.md): specialist visual findings, bounded reversible repairs, isolated incumbent/candidate preview rendering, reversed-order pairwise judging and fail-closed forced optimization.
+
+Run the full local loop with:
+
+npm run autonomy:repair-loop
+
+The accepted candidate is written as an artifact; the loop never overwrites the checked-in production experience automatically.
+
 ## Next implementation stages
 
-1. Browser verifier executor.
-2. Screenshot and fixed-timeline capture runner.
-3. Multimodal specialist Visual Director.
-4. Blinded/order-reversed pairwise candidate judge.
-5. Automated targeted repair executor.
-6. Multi-candidate asset generation and selection.
-7. Pairwise studio-taste learning.
-8. Production-trace clustering and failure-pattern mining.
+1. Browser execution of the full functional-verification plan against accepted candidates.
+2. Fixed-timestep motion/video comparison.
+3. Multi-candidate repair search and tournament selection.
+4. Multi-candidate asset generation and selection.
+5. Pairwise studio-taste learning.
+6. Production-trace clustering and failure-pattern mining.
