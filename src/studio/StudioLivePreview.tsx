@@ -129,7 +129,7 @@ export function StudioLivePreview({
   };
 
   return (
-    <section className="studio-card studio-preview" aria-labelledby="live-preview-title">
+    <section className="studio-card studio-preview" aria-labelledby={reviewMode ? undefined : "live-preview-title"} aria-label={reviewMode ? "Autonomy visual review" : undefined}>
       {!reviewMode && <div className="studio-card__head">
         <div><span>PRODUCTION RUNTIME</span><h2 id="live-preview-title">Live experience preview</h2></div>
         <output data-status={webgl}>{webgl}</output>
