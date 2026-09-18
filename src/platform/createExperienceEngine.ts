@@ -45,19 +45,19 @@ export function createExperienceEngine(initialState: ExperienceConfig, options: 
       type: "object", required: ["sceneId"],
       properties: {
         sceneId: sceneIdField,
-        exposureDelta: { type: "number", minimum: -0.4, maximum: 0.4 },
-        ambientDelta: { type: "number", minimum: -2, maximum: 2 },
-        keyDelta: { type: "number", minimum: -5, maximum: 5 },
-        rimDelta: { type: "number", minimum: -5, maximum: 5 },
-        bloomDelta: { type: "number", minimum: -0.5, maximum: 0.5 },
-        vignetteDelta: { type: "number", minimum: -0.3, maximum: 0.3 },
-        heroScaleMultiplier: { type: "number", minimum: 0.75, maximum: 1.25 },
-        heroXDelta: { type: "number", minimum: -1.5, maximum: 1.5 },
-        heroYDelta: { type: "number", minimum: -1.5, maximum: 1.5 },
-        mediaXDelta: { type: "number", minimum: -20, maximum: 20 },
-        mediaYDelta: { type: "number", minimum: -20, maximum: 20 },
-        mobileMediaXDelta: { type: "number", minimum: -20, maximum: 20 },
-        mobileMediaYDelta: { type: "number", minimum: -20, maximum: 20 }
+        exposureDelta: { type: "number", minimum: -0.4, maximum: 0.4 , description: "Offsets scene world exposure, clamped into 0.25-3. Negative darkens the frame." },
+        ambientDelta: { type: "number", minimum: -2, maximum: 2 , description: "Offsets scene world ambient light, clamped into 0-20. Raises or lowers overall fill." },
+        keyDelta: { type: "number", minimum: -5, maximum: 5 , description: "Offsets scene world key light, clamped into 0-50. Drives the dominant directional light." },
+        rimDelta: { type: "number", minimum: -5, maximum: 5 , description: "Offsets scene world rim light, clamped into 0-50. Separates the subject from its ground." },
+        bloomDelta: { type: "number", minimum: -0.5, maximum: 0.5 , description: "Offsets postprocessing bloom, clamped into 0-2. Raise only when highlights should smear." },
+        vignetteDelta: { type: "number", minimum: -0.3, maximum: 0.3 , description: "Offsets postprocessing vignette, clamped into 0-1. Positive darkens the frame edges." },
+        heroScaleMultiplier: { type: "number", minimum: 0.75, maximum: 1.25 , description: "Multiplies hero scale at both ends of the scene, result clamped into 0.001-100. 1 leaves it unchanged." },
+        heroXDelta: { type: "number", minimum: -1.5, maximum: 1.5 , description: "Shifts hero X position in world units at both ends of the scene. Positive moves right." },
+        heroYDelta: { type: "number", minimum: -1.5, maximum: 1.5 , description: "Shifts hero Y position in world units at both ends of the scene. Positive moves up." },
+        mediaXDelta: { type: "number", minimum: -20, maximum: 20 , description: "Shifts the media plate's horizontal focal point in percent. Positive moves the framing right." },
+        mediaYDelta: { type: "number", minimum: -20, maximum: 20 , description: "Shifts the media plate's vertical focal point in percent. Positive moves the framing down." },
+        mobileMediaXDelta: { type: "number", minimum: -20, maximum: 20 , description: "Shifts the mobile media focal point in percent, independent of desktop framing." },
+        mobileMediaYDelta: { type: "number", minimum: -20, maximum: 20 , description: "Shifts the mobile media focal point in percent, independent of desktop framing." }
       }
     }
   });

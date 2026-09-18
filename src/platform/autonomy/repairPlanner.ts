@@ -241,7 +241,9 @@ function mergePresentation(a:ScenePresentationAdjustment,b:ScenePresentationAdju
     const right=b[key];
     if(typeof left==="number" || typeof right==="number") {
       const range=limits[key] ?? [-Infinity,Infinity];
-      (result as Record<string,unknown>)[key]=Math.max(range[0],Math.min(range[1],Number(left ?? 0)+Number(right ?? 0)));
+      // ScenePresentationAdjustment has no index signature, so the widening needs the explicit
+      // two-step the compiler asks for rather than a direct assertion.
+      (result as unknown as Record<string,unknown>)[key]=Math.max(range[0],Math.min(range[1],Number(left ?? 0)+Number(right ?? 0)));
     }
   }
   const scaleA=a.heroScaleMultiplier ?? 1;
