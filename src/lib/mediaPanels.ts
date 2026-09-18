@@ -13,7 +13,7 @@ const clamp = (n: number) => Math.max(0, Math.min(1, n));
  * frame started and stopped changing at full rate. Easing both ends lets a handover begin and
  * settle rather than switch on.
  */
-const ease = (n: number) => { const t = clamp(n); return t * t * t * (t * (t * 6 - 15) + 10); };
+const ease = (n: number) => { const t = clamp(n); return t * t * (3 - 2 * t); };
 export function getMediaPanelWindow(scenes: readonly SceneDefinition[], index: number): PanelWindow {
   const scene = scenes[index], prior = scenes[index - 1], next = scenes[index + 1];
   return {
@@ -37,8 +37,12 @@ export function sampleMediaPanel(p: number, w: PanelWindow, compact = false) {
   // A cut ignores the overlap window entirely: the frame is simply there from its own boundary,
   // with no blend, no drift and no reveal. Authored slides use it to change hard.
   const isCut = w.transition === "cut";
-  const enter = w.first || (isCut && p >= w.start) ? 1 : isCut ? 0
-    : ease((p - w.enterStart) / Math.max(.000001,w.start-w.enterStart));
+  // The mask builder eases the reveal itself, so it is handed the raw ratio. Easing here as
+  // well stacked two smoothsteps and packed the whole image change into the middle of the
+  // window -- which is what read as an abrupt swap however long the handover was.
+  const enterRaw = w.first || (isCut && p >= w.start) ? 1 : isCut ? 0
+    : clamp((p - w.enterStart) / Math.max(.000001,w.start-w.enterStart));
+  const enter = w.first || (isCut && p >= w.start) ? 1 : isCut ? 0 : ease(enterRaw);
   const leave = w.last ? 0 : ease((p-w.exitStart)/Math.max(.000001,w.end-w.exitStart));
   const exitDirection = w.exitDirection ?? w.direction;
   const axis = axisOf(w.direction), exitAxis = axisOf(exitDirection);
@@ -76,7 +80,7 @@ export function sampleMediaPanel(p: number, w: PanelWindow, compact = false) {
     clip: transition === "curtain" || transition === "wipe" ? (1 - enter) * 100 : 0,
     clipAxis: axis,
     clipSign: sign,
-    reveal: enter,
+    reveal: enterRaw,
     transition,
   };
 }

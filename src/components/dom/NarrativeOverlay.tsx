@@ -15,7 +15,7 @@ const CHAPTER_MOTION: Record<string, { label: CinematicPreset; headline: Cinemat
   // for a beat before the ring itself goes.
   parti: {
     label: "label-track", headline: "headline-words", lede: "lede-words", pace: .9,
-    collapse: "section-lift", collapseAt: [.56, .64],
+    collapse: "section-lift", collapseAt: [.5, .62],
   },
   threshold: { label: "text-settle", headline: "headline-unfold", lede: "copy-drift", pace: 1, lead: .04 },
   living: { label: "label-track", headline: "headline-drop", lede: "lede-words", pace: 1, lead: .1, rows: "list-unfold", plates: "plate-rise" },
@@ -55,12 +55,12 @@ const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
     { selector: scope + "[data-motion-cta]", range: [at(lead + .06), at(lead + .14)], preset: "copy-drift" },
     {
       selector: scope + "[data-motion-headline] .forge-split",
-      range: [at((motion.collapseAt?.[0] ?? .72) - .06), at((motion.collapseAt?.[1] ?? .8) - .05)],
+      range: [at((motion.collapseAt?.[0] ?? .6) - .04), at((motion.collapseAt?.[1] ?? .74) - .06)],
       preset: "type-disperse",
     },
     {
       selector: scope + "[data-motion-panel]",
-      range: [at(motion.collapseAt?.[0] ?? .72), at(motion.collapseAt?.[1] ?? .8)],
+      range: [at(motion.collapseAt?.[0] ?? .6), at(motion.collapseAt?.[1] ?? .74)],
       preset: motion.collapse ?? "section-collapse",
     },
   ];

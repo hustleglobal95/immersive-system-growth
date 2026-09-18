@@ -35,8 +35,8 @@ export function CinematicDomMotion({ children, cues, experience }: { children: R
       const authored = scene.media?.mask;
       return {
         index,
-        from: prior.range[0] + priorSpan * 0.86,
-        to: scene.range[0] + span * 0.02,
+        from: prior.range[0] + priorSpan * 0.78,
+        to: scene.range[0] + span * 0.08,
         mask: createMaskReveal(authored?.preset ?? "linear-soft", {
           ...authored,
           direction: "down",
