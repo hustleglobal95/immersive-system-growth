@@ -166,7 +166,7 @@ export function PublishPanel({ project, setProject, experience, assetManifest, v
         <label>What changed<textarea rows={3} value={summary} maxLength={600} onChange={(event) => setSummary(event.target.value)} /></label>
         <button type="button" className="studio-primary studio-publish-action" disabled={!ready || publishing} onClick={() => void publish()}>{publishing ? "Creating review…" : "Create review"}</button>
         {!ready && <p className="studio-muted">{!backendReady ? "Publishing is not connected for this Forge workspace yet." : !sessionReady ? "This browser needs a one-time owner unlock before it can publish." : !destinationReady ? "Complete the destination in Advanced setup." : "Resolve the project issues above before publishing."}</p>}
-        {result && <p className="studio-message" role="status">{result.url ? <><a href={result.url} target="_blank" rel="noreferrer">Open review</a><span> · {result.message}</span></> : result.message}</p>}
+        {result && <div className="studio-message" role="status">{result.url ? <><strong>Done — the review is ready.</strong><span> {result.message}</span><a href={result.url} target="_blank" rel="noreferrer">Open review</a></> : result.message}</div>}
       </section>
 
       <section className="studio-card studio-card--wide studio-publish-advanced">
