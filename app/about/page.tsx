@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: "Studio — Atelier Maris",
   description:
     "A coastal architecture practice working between section, light and restraint. One studio, four stages, no handover.",
+  alternates: { canonical: "/about" },
 };
 
 const STAGES = [

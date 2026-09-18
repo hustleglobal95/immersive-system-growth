@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { siteUrl } from "@/src/lib/siteUrl";
 import type { ReactNode } from "react";
 import { experience } from "@/src/lib/experience";
 import { architecturalFont, bodyFont, editorialFont } from "@/src/design/fonts";
@@ -11,8 +12,18 @@ import "./atelier-maris.css";
 import "./pages.css";
 
 export const metadata: Metadata = {
+  // metadataBase is what makes Open Graph and canonical URLs absolute. Without it a social
+  // scraper resolves them against the request and sees localhost.
+  metadataBase: new URL(siteUrl()),
   title: experience.meta.name,
   description: experience.meta.description,
+  openGraph: {
+    type: "website",
+    siteName: "Atelier Maris",
+    title: experience.meta.name,
+    description: experience.meta.description,
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {

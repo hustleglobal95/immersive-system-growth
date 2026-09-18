@@ -8,6 +8,7 @@ import { projects } from "@/src/lib/projects";
 export const metadata: Metadata = {
   title: "Work — Atelier Maris",
   description: "Five houses on the Costa Brava, each resolved in section before a material was chosen.",
+  alternates: { canonical: "/work" },
 };
 
 export default function WorkIndexPage() {
