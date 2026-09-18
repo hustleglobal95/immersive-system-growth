@@ -94,8 +94,8 @@ export default function AboutPage() {
             We are taking enquiries for 2026. A first conversation is usually an hour, on site if
             the plot exists and over a table if it does not.
           </p>
-          <a className="forge-button" href="mailto:studio@ateliermaris.example">
-            Begin a private conversation
+          <a className="forge-button" href="mailto:studio@ateliermaris.es">
+            Enquire about a commission
           </a>
         </section>
       </main>

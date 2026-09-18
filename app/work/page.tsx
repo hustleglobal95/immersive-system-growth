@@ -6,7 +6,7 @@ import { projects } from "@/src/lib/projects";
 
 export const metadata: Metadata = {
   title: "Work — Atelier Maris",
-  description: "Nine houses on the Costa Brava. Each drawn from the section outward.",
+  description: "Five houses on the Costa Brava, each resolved in section before a material was chosen.",
 };
 
 export default function WorkIndexPage() {
@@ -16,7 +16,7 @@ export default function WorkIndexPage() {
       <main className="page" id="main">
         <header className="page__head">
           <p className="page__eyebrow">Selected work</p>
-          <h1 className="page__title">Nine houses on this coast.</h1>
+          <h1 className="page__title">Five houses on this coast.</h1>
           <p className="page__lede">
             Each drawn from the section outward. The list is short on purpose.
           </p>

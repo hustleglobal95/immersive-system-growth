@@ -4,29 +4,152 @@
   "concept": "Direct a coastal residence as an architectural film controlled by scroll, moving from site and massing through threshold, interior, material, ritual and horizon.",
   "audience": "Design-conscious private clients, architects, developers and premium creative agencies evaluating a high-end immersive digital experience.",
   "promise": "The website behaves like an architectural walkthrough with editorial restraint, not a conventional portfolio grid.",
-  "emotionalArc": ["Anticipation", "Orientation", "Compression", "Release", "Tactility", "Stillness", "Intelligence", "Expansion", "Desire"],
-  "cta": "Begin a private conversation",
+  "emotionalArc": [
+    "Anticipation",
+    "Orientation",
+    "Compression",
+    "Release",
+    "Tactility",
+    "Stillness",
+    "Intelligence",
+    "Expansion",
+    "Desire"
+  ],
+  "cta": "Enquire about a commission",
   "visual": {
-    "palette": ["#0B0A08", "#D7C2A3", "#F2EDE5", "#234F5D"],
-    "typography": ["Cormorant Garamond", "DM Sans"],
-    "materials": ["honed travertine", "quarter-sawn oak", "low-iron glass", "linen", "dark water", "olive foliage"],
-    "motion": ["coastal dolly", "massing crane", "architectural threshold", "interior arc", "material macro", "wellness swoop", "studio pullback", "horizon release"],
+    "palette": [
+      "#0B0A08",
+      "#D7C2A3",
+      "#F2EDE5",
+      "#234F5D"
+    ],
+    "typography": [
+      "Cormorant Garamond",
+      "DM Sans"
+    ],
+    "materials": [
+      "honed travertine",
+      "quarter-sawn oak",
+      "low-iron glass",
+      "linen",
+      "dark water",
+      "olive foliage"
+    ],
+    "motion": [
+      "coastal dolly",
+      "massing crane",
+      "architectural threshold",
+      "interior arc",
+      "material macro",
+      "wellness swoop",
+      "studio pullback",
+      "horizon release"
+    ],
     "sound": []
   },
   "constraints": {
-    "approved": ["architecture remains the hero", "continuous reversible camera logic", "natural Mediterranean light", "geometry-led reveals", "large negative space", "mobile-specific cinematography", "material information tied to physical detail"],
-    "prohibited": ["generic luxury tropes", "neon futurism", "random particles as transitions", "dashboard UI", "card grids", "fake awards", "fake built-project claims", "motion without architectural purpose"]
+    "approved": [
+      "architecture remains the hero",
+      "continuous reversible camera logic",
+      "natural Mediterranean light",
+      "geometry-led reveals",
+      "large negative space",
+      "mobile-specific cinematography",
+      "material information tied to physical detail"
+    ],
+    "prohibited": [
+      "generic luxury tropes",
+      "neon futurism",
+      "random particles as transitions",
+      "dashboard UI",
+      "card grids",
+      "fake awards",
+      "fake built-project claims",
+      "motion without architectural purpose"
+    ]
   },
   "scenes": [
-    {"id":"approach","purpose":"Establish site and architectural authority","subject":"Coastal topography, house and sea","copy":"Architecture shaped by sea, light, and restraint.","interaction":"Scroll toward the residence","transitionIn":"open on the coast","transitionOut":"lens compresses toward the building"},
-    {"id":"parti","purpose":"Explain massing through camera position","subject":"Primary stone planes and central court","copy":"A house drawn around the horizon.","interaction":"Crane across the parti","transitionIn":"architecture takes the frame","transitionOut":"camera commits to the entry axis"},
-    {"id":"threshold","purpose":"Make entry spatial and physical","subject":"Stone wall, timber screen and glass opening","copy":"The entry compresses. The view releases.","interaction":"Cross or reverse through the threshold","transitionIn":"frame narrows","transitionOut":"living volume resolves"},
-    {"id":"living","purpose":"Prove spatial restraint","subject":"Low living volume and horizon datum","copy":"Stillness is designed, not decorated.","interaction":"Arc through the principal room","transitionIn":"interior opens","transitionOut":"camera compresses toward material detail"},
-    {"id":"material","purpose":"Demonstrate tactile intelligence","subject":"Travertine, oak and linen","copy":"Stone carries time. Timber carries touch.","interaction":"Inspect material hotspot","transitionIn":"macro study","transitionOut":"detail dissolves into bathing court"},
-    {"id":"wellness","purpose":"Shift from object to ritual","subject":"Bathing court, water and framed sky","copy":"Ritual spaces designed for stillness.","interaction":"Swoop through the wellness court","transitionIn":"warm dissolve","transitionOut":"pull out toward practice"},
-    {"id":"studio","purpose":"Show the intelligence behind the aesthetic","subject":"Models, samples and architectural process","copy":"Architecture begins with material intelligence.","interaction":"Move from detail back to system","transitionIn":"studio resolves","transitionOut":"world opens back to landscape"},
-    {"id":"horizon","purpose":"Deliver the largest visual release","subject":"Pool, sea and coast","copy":"The horizon becomes the final room.","interaction":"Pull back to the full site","transitionIn":"wide landscape reveal","transitionOut":"settle into inquiry composition"},
-    {"id":"inquiry","purpose":"Convert after the visual climax","subject":"Residence at golden hour","copy":"Let us shape your next residence.","interaction":"Begin a private conversation","transitionIn":"film-burn handoff","transitionOut":"none"}
+    {
+      "id": "approach",
+      "purpose": "Establish site and architectural authority",
+      "subject": "Coastal topography, house and sea",
+      "copy": "Architecture shaped by sea, light, and restraint.",
+      "interaction": "Scroll toward the residence",
+      "transitionIn": "open on the coast",
+      "transitionOut": "lens compresses toward the building"
+    },
+    {
+      "id": "parti",
+      "purpose": "Explain massing through camera position",
+      "subject": "Primary stone planes and central court",
+      "copy": "A house drawn around the horizon.",
+      "interaction": "Crane across the parti",
+      "transitionIn": "architecture takes the frame",
+      "transitionOut": "camera commits to the entry axis"
+    },
+    {
+      "id": "threshold",
+      "purpose": "Make entry spatial and physical",
+      "subject": "Stone wall, timber screen and glass opening",
+      "copy": "The entry compresses. The view releases.",
+      "interaction": "Cross or reverse through the threshold",
+      "transitionIn": "frame narrows",
+      "transitionOut": "living volume resolves"
+    },
+    {
+      "id": "living",
+      "purpose": "Prove spatial restraint",
+      "subject": "Low living volume and horizon datum",
+      "copy": "Stillness is designed, not decorated.",
+      "interaction": "Arc through the principal room",
+      "transitionIn": "interior opens",
+      "transitionOut": "camera compresses toward material detail"
+    },
+    {
+      "id": "material",
+      "purpose": "Demonstrate tactile intelligence",
+      "subject": "Travertine, oak and linen",
+      "copy": "Stone carries time. Timber carries touch.",
+      "interaction": "Inspect material hotspot",
+      "transitionIn": "macro study",
+      "transitionOut": "detail dissolves into bathing court"
+    },
+    {
+      "id": "wellness",
+      "purpose": "Shift from object to ritual",
+      "subject": "Bathing court, water and framed sky",
+      "copy": "Ritual spaces designed for stillness.",
+      "interaction": "Swoop through the wellness court",
+      "transitionIn": "warm dissolve",
+      "transitionOut": "pull out toward practice"
+    },
+    {
+      "id": "studio",
+      "purpose": "Show the intelligence behind the aesthetic",
+      "subject": "Models, samples and architectural process",
+      "copy": "Architecture begins with material intelligence.",
+      "interaction": "Move from detail back to system",
+      "transitionIn": "studio resolves",
+      "transitionOut": "world opens back to landscape"
+    },
+    {
+      "id": "horizon",
+      "purpose": "Deliver the largest visual release",
+      "subject": "Pool, sea and coast",
+      "copy": "The horizon becomes the final room.",
+      "interaction": "Pull back to the full site",
+      "transitionIn": "wide landscape reveal",
+      "transitionOut": "settle into inquiry composition"
+    },
+    {
+      "id": "inquiry",
+      "purpose": "Convert after the visual climax",
+      "subject": "Residence at golden hour",
+      "copy": "We take four projects a year.",
+      "interaction": "Enquire about a commission",
+      "transitionIn": "film-burn handoff",
+      "transitionOut": "none"
+    }
   ],
   "successEvent": "private-residence-inquiry"
 }
