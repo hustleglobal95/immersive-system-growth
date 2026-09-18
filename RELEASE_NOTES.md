@@ -2,11 +2,12 @@
 
 ## 6.0.0
 
+- Reconciled all identified residual branch work: recovered 26 public references, five construction patterns, six failure lessons, five technical doctrines, cross-industry construction lenses and current-state project-preservation guards; superseded standalone scroll-video code was distilled into Forge-native construction knowledge.
 - Added Forge Visual Director v1: specialist rendered-frame critique, bounded reversible presentation repair, isolated A/B preview rendering, reversed-order pairwise judging and fail-closed forced optimization.
 - Added the end-to-end `autonomy:repair-loop` workflow; accepted candidates are emitted as artifacts rather than silently replacing production config.
 - Added Forge Autonomy v1: evidence-aware short-prompt inference, decision-time guidance routing, five autonomy levels, deterministic render/functional review contracts and forced-optimization candidate acceptance.
 - Added a 30-case commercial one-line prompt benchmark and made it part of the full Forge check gate.
-- Added Forge Director immersive construction intelligence with 196 evidence-graded references, 98 executable construction patterns and 16 primary technical doctrine groups.
+- Added Forge Director immersive construction intelligence with 236 evidence-graded references, 108 executable construction patterns, 25 primary technical doctrine groups and 18 evidence-backed failure lessons.
 - Added an eight-layer Hierarchy Engine that can block production when strategy, narrative, visual, interaction, motion/spatial or semantic priorities compete.
 - Added Guided Build inside Studio plus direct Asset Creator handoffs from Creative Agent, including Meshy 3D and Higgsfield image/video generation paths with server-only credentials.
 - Added a deterministic visual interaction graph with trigger, condition, action and state nodes, bounded execution, cycle guards, variables, branch priorities, mobile substitutions and Studio simulation.
