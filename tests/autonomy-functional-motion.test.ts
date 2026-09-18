@@ -4,6 +4,8 @@ import raw from "../config/experience.json";
 import { parseExperience } from "../src/lib/configSchema";
 import { sampleExperience } from "../src/lib/sampleExperience";
 import { analyzeMotionQuality, buildMotionReviewPlan, type MotionReviewPoint, type MotionSnapshot } from "../src/platform/autonomy/motionQuality";
+import { evaluateCandidateGates } from "../src/platform/autonomy/candidateGates";
+import { buildMotionSequenceCriticRequest, parseMotionSequenceResponse } from "../src/platform/autonomy/motionDirector";
 
 const experience=parseExperience(raw);
 
@@ -75,4 +77,61 @@ test("motion analysis blocks severe scene-boundary discontinuity",()=>{
   const report=analyzeMotionQuality({ plan,forward,reverse,viewport:"desktop" });
   assert.ok(report.hardGateFailures.length>0);
   assert.ok(report.findings.some((finding)=>finding.code==="motion.boundary.discontinuity" && finding.severity==="blocker"));
+});
+
+
+test("candidate gates reject browser failures and material motion regression",()=>{
+  const report=evaluateCandidateGates({
+    functionalHardGateFailures:["mobile: final scene unreachable"],
+    incumbentMotionScore:94,
+    candidateMotionScore:88,
+  });
+  assert.equal(report.passed,false);
+  assert.ok(report.failures.some((item)=>item.includes("mobile")));
+  assert.ok(report.motionRegression.some((item)=>item.includes("94") && item.includes("88")));
+});
+
+test("candidate gates allow small motion-score noise when all hard gates pass",()=>{
+  const report=evaluateCandidateGates({
+    incumbentMotionScore:94,
+    candidateMotionScore:92,
+    maxMotionRegression:3,
+  });
+  assert.equal(report.passed,true);
+  assert.deepEqual(report.failures,[]);
+});
+
+test("motion-sequence critic requests and responses stay schema constrained",()=>{
+  const request=buildMotionSequenceCriticRequest({
+    sceneId:"approach",
+    viewport:"desktop",
+    projectContext:"Cinematic architecture arrival.",
+    progresses:[0.01,0.04,0.07,0.1,0.13],
+    deterministicMetrics:{
+      sampleCount:20,
+      boundaryCount:6,
+      maxFrameMs:18,
+      medianFrameMs:16.7,
+      maxCameraStep:0.4,
+      maxHeroStep:0.2,
+      maxCameraVelocityRatio:1.8,
+      maxHeroVelocityRatio:1.5,
+    },
+  });
+  assert.equal(request.mode,"motion-sequence");
+  assert.equal(request.progresses.length,5);
+  const parsed=parseMotionSequenceResponse({
+    findings:[{
+      dimension:"camera",
+      severity:"major",
+      sceneId:"approach",
+      finding:"The camera accelerates too abruptly near the midpoint.",
+      evidence:["Frame spacing compresses visibly between the third and fourth samples."],
+      repair:"Reduce the midpoint acceleration and lengthen the settle before the handoff.",
+      confidence:0.88,
+    }],
+    summary:"One visible camera cadence issue.",
+  });
+  assert.equal(parsed.findings[0].dimension,"camera");
+  assert.equal(parsed.findings[0].severity,"major");
 });
