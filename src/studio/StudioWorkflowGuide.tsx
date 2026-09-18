@@ -38,8 +38,8 @@ export function StudioWorkflowGuide({
   // never renders an empty textarea for a frame and then replaces it.
   const storedBrief = useClientValue(() => readStored(BRIEF_KEY), "");
   const dialogRef = useRef<HTMLElement>(null);
+  useEffect(() => { dialogRef.current?.focus(); }, []);
   useEffect(() => {
-    dialogRef.current?.focus();
     const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") onClose(); };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
