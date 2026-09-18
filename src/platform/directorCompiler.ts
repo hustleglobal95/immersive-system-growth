@@ -1,6 +1,7 @@
 import { parseCreativePlan, type CreativePlan, type CreativeMotionArchetype, type CreativeMotionPreset } from "@/src/platform/creativePlanSchema";
 import { parseDirectorTreatment, type DirectorTreatment } from "@/src/platform/directorSchema";
 import { buildConstructionDirectives } from "@/src/platform/director-intelligence/constructionKnowledge";
+import { planImmersiveConstruction } from "@/src/platform/director-intelligence/constructionPlanner";
 
 const archetypeByProject: Partial<Record<DirectorTreatment["projectType"], CreativeMotionArchetype>> = {
   property: "architectural-build",
@@ -35,6 +36,7 @@ export function compileDirectorTreatment(input: unknown): DirectorCompilation {
   const selected = treatment.territories.find((territory) => territory.id === treatment.selectedTerritoryId)!;
   const primaryArchetype = archetypeByProject[treatment.projectType] ?? "editorial-reveal";
   const construction = buildConstructionDirectives(treatment);
+  const constructionPlan = planImmersiveConstruction(treatment, construction);
 
   const scenes = treatment.emotionalArc.map((beat, index) => {
     const shot = treatment.shotBible.find((candidate) => candidate.chapterId === beat.id) ?? treatment.shotBible[index % treatment.shotBible.length];
@@ -42,6 +44,7 @@ export function compileDirectorTreatment(input: unknown): DirectorCompilation {
     const runtimeArchetype = signature ? primaryArchetype : undefined;
     const runtimePreset = presetForIntensity(beat.intensity);
     const id = slug(beat.id || beat.label);
+    const constructionScene = constructionPlan.sceneDecisions.find((decision) => decision.sceneId === beat.id)!;
     provenance[`scenes.${index}.purpose`] = `director.emotionalArc[${index}]`;
     provenance[`scenes.${index}.direction`] = `director.shotBible:${shot.id}`;
     provenance[`scenes.${index}.runtime`] = signature ? "director.signatureMoment" : `director.intensity:${beat.intensity}`;
@@ -94,12 +97,17 @@ export function compileDirectorTreatment(input: unknown): DirectorCompilation {
             `Interaction level: ${beat.interactionLevel}/10.`,
             `Construction patterns: ${construction.patternIds.join(", ")}.`,
             `Reference precedents: ${construction.referenceIds.join(", ")}.`,
+            `Construction medium: ${constructionScene.medium}. ${constructionScene.rationale}`,
+            `Continuity anchor: ${constructionScene.continuityAnchor}`,
+            `Depth strategy: ${constructionScene.depthStrategy}`,
             ...(signature ? [`Protected signature moment: ${treatment.signatureMoment.name}.`] : []),
           ],
-          construction.implementationRules.slice(0, 5),
-          construction.referenceLessons.slice(0, 3),
+          [constructionScene.motionStrategy, constructionScene.interactionStrategy],
+          constructionScene.performancePolicy,
+          construction.implementationRules.slice(0, 4),
+          construction.referenceLessons.slice(0, 2),
         ),
-        mobileNotes: directiveList(treatment.mobileInterpretation, construction.mobileRules.slice(0, 5)),
+        mobileNotes: directiveList(treatment.mobileInterpretation, constructionScene.mobileTranslation, construction.mobileRules.slice(0, 4)),
         negativeDirectives: directiveList(treatment.noGoRules, construction.forbiddenPatterns.slice(0, 6)),
       },
       runtime: {
@@ -168,6 +176,7 @@ export function compileDirectorTreatment(input: unknown): DirectorCompilation {
         construction.patternIds.includes("prewarm-signature-systems")
           ? ["Prewarm signature visual states before first scroll and compare cold-scroll against warm-scroll before calling the experience smooth."]
           : [],
+        constructionPlan.criticalBootStrategy,
       ),
       accessibilityRules: [
         "Narrative meaning must remain available with reduced motion.",
@@ -190,7 +199,7 @@ export function compileDirectorTreatment(input: unknown): DirectorCompilation {
   provenance.concept = "director.thesis";
   provenance.artDirection = "director.artBible + director.grammar";
   provenance.scenes = "director.emotionalArc + director.shotBible";
-  provenance.construction = "director-intelligence.constructionKnowledge";
+  provenance.construction = "director-intelligence.constructionKnowledge + constructionPlanner";
   return { treatment, creativePlan, provenance };
 }
 
