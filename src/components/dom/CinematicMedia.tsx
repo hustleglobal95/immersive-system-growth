@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import gsap from "gsap";
 import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { getSceneIndex } from "@/src/lib/experience";
@@ -11,6 +11,8 @@ import { remap01 } from "@/src/lib/math";
 import { sampleSceneMotion } from "@/src/lib/motionSequencer";
 import { dispatchForgeInteraction } from "@/src/runtime/interactionEvents";
 import { MediaShader } from "@/src/components/dom/MediaShader";
+
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 export function CinematicMedia() {
   const experience = useExperienceConfig();
@@ -40,7 +42,11 @@ export function CinematicMedia() {
     };
   }, [experience, reduced]);
 
-  useEffect(() => {
+  // Before paint, not after. This effect re-runs whenever the active chapter changes, which is
+  // exactly when a panel mounts: with useEffect the browser painted one frame of the new panel
+  // at its CSS defaults -- fully opaque, unmasked, untransformed -- which measured as an
+  // isolated jump nearly ten times its neighbouring frames.
+  useIsomorphicLayoutEffect(() => {
     const element = root.current;
     if (!element || reduced) return;
     const compact = matchMedia("(max-width: 760px)");
@@ -49,6 +55,13 @@ export function CinematicMedia() {
       const index = Number(panel.dataset.mediaPanel);
       const scene = experience.scenes[index];
       const image = panel.querySelector<HTMLElement>(".media-panel__inner")!;
+      // The shade is a full-frame vignette sitting over the image for legibility. It is a
+      // sibling of the masked element, so it used to arrive at full strength the moment the
+      // panel became visible, while the photograph behind it was still entirely masked: a dark
+      // overlay snapping on ahead of every handover. It now carries the same mask, so it
+      // reveals in the same shape. It is deliberately not transformed -- the vignette belongs
+      // to the frame, not to the drifting image.
+      const shade = panel.querySelector<HTMLElement>(".media-panel__shade");
       const video = panel.querySelector("video");
       let playing = false;
       const mask = scene.media?.transition === "mask"
@@ -57,6 +70,7 @@ export function CinematicMedia() {
       return {
         panel,
         image,
+        shade,
         video,
         mask,
         scene,
@@ -125,20 +139,26 @@ export function CinematicMedia() {
           const size = String(css.maskSize ?? "100% 100%");
           const repeat = String(css.maskRepeat ?? "no-repeat");
           const position = String(css.maskPosition ?? "center");
-          track.image.style.webkitMaskImage = image;
-          track.image.style.maskImage = image;
-          track.image.style.webkitMaskSize = size;
-          track.image.style.maskSize = size;
-          track.image.style.webkitMaskRepeat = repeat;
-          track.image.style.maskRepeat = repeat;
-          track.image.style.webkitMaskPosition = position;
-          track.image.style.maskPosition = position;
+          for (const target of [track.image, track.shade]) {
+            if (!target) continue;
+            target.style.webkitMaskImage = image;
+            target.style.maskImage = image;
+            target.style.webkitMaskSize = size;
+            target.style.maskSize = size;
+            target.style.webkitMaskRepeat = repeat;
+            target.style.maskRepeat = repeat;
+            target.style.webkitMaskPosition = position;
+            target.style.maskPosition = position;
+          }
           track.panel.dataset.maskPreset = track.mask.preset;
           track.panel.style.setProperty("--mask-edge-color", track.mask.edgeColor);
           track.panel.style.setProperty("--mask-edge-width", `${track.mask.edgeWidth}%`);
         } else {
-          track.image.style.webkitMaskImage = "";
-          track.image.style.maskImage = "";
+          for (const target of [track.image, track.shade]) {
+            if (!target) continue;
+            target.style.webkitMaskImage = "";
+            target.style.maskImage = "";
+          }
           delete track.panel.dataset.maskPreset;
         }
         track.panelY(state.panelY);
@@ -161,11 +181,7 @@ export function CinematicMedia() {
       compact.removeEventListener("change", refresh);
       document.removeEventListener("visibilitychange", refresh);
       videoListeners.forEach(({ video, onTime }) => video.removeEventListener("timeupdate", onTime));
-      tracks.forEach((track) => {
-        track.video?.pause();
-        gsap.set(track.panel, { clearProps: "transform,visibility" });
-        gsap.set(track.panel.querySelector(".media-panel__inner"), { clearProps: "transform" });
-      });
+      tracks.forEach((track) => track.video?.pause());
     };
   }, [active, experience, preview, reduced, quality, webglStatus]);
 

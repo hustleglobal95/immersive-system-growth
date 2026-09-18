@@ -73,9 +73,16 @@ export function isShaderPreset(preset: MaskPreset) {
 }
 
 const clamp01 = (value: number) => Math.max(0, Math.min(1, Number.isFinite(value) ? value : 0));
+// Spatial: the softness band across the mask edge. Cubic, because the shader softens the same
+// band with GLSL's smoothstep builtin and the two paths must agree on edge shape.
 const smooth = (value: number) => {
   const p = clamp01(value);
   return p * p * (3 - 2 * p);
+};
+// Timing: how the reveal advances with scroll. Quintic, matched exactly in maskShader.ts.
+const smoother = (value: number) => {
+  const p = clamp01(value);
+  return p * p * p * (p * (p * 6 - 15) + 10);
 };
 const pct = (value: number) => `${Math.max(0, Math.min(100, value)).toFixed(3)}%`;
 
@@ -83,11 +90,18 @@ export function createCssMaskStyle(
   progress: number,
   mask: MaskRevealDefinition,
 ): CSSProperties {
-  const p = smooth(progress);
+  const p = smoother(progress);
   if (p <= 0) return maskStyle("linear-gradient(transparent, transparent)");
   if (p >= 1) return maskStyle("linear-gradient(black, black)");
   const soft = mask.softness * 0.5;
-  const edge = p * 100;
+  // The sweep has to carry its own feather, or the band is already inside the frame at the
+  // start and still short of the far edge at the end. Travelling from -soft to 100 + soft means
+  // progress 0 is genuinely closed and progress 1 genuinely open, with the midpoint unchanged.
+  // Every preset's geometry has to travel a range extended by its own feather at both ends, or
+  // the reveal starts with a band already inside the frame and finishes a band short of the far
+  // edge. The midpoint of each sweep is unchanged.
+  const sweep = (range: number, feather: number) => -feather + p * (range + feather * 2);
+  const edge = sweep(100, soft);
   const [x, y] = mask.origin;
   const direction = directionCss(mask.direction);
   const reverse = mask.direction === "left" || mask.direction === "up";
@@ -103,7 +117,7 @@ export function createCssMaskStyle(
 
   switch (mask.preset) {
     case "radial-iris": {
-      const radius = (p * 145) / mask.scale;
+      const radius = sweep(145, soft) / mask.scale;
       image = `radial-gradient(circle at ${pct(x)} ${pct(y)}, black 0 ${pct(radius - soft)}, transparent ${pct(radius + soft)} 100%)`;
       break;
     }
@@ -111,7 +125,7 @@ export function createCssMaskStyle(
       image = `linear-gradient(${direction + mask.rotation}deg, ${visible})`;
       break;
     case "split-center": {
-      const half = (p * 50) / mask.scale;
+      const half = sweep(50, soft) / mask.scale;
       image = `linear-gradient(90deg, transparent 0 ${pct(x - half - soft)}, black ${pct(x - half + soft)} ${pct(x + half - soft)}, transparent ${pct(x + half + soft)} 100%)`;
       break;
     }
@@ -124,17 +138,17 @@ export function createCssMaskStyle(
       break;
     }
     case "noise-dissolve": {
-      const radius = (p * 150) / mask.scale;
+      const radius = sweep(150, soft) / mask.scale;
       image = blobMask(x, y, radius, soft, mask.seed, 4, mask.intensity);
       break;
     }
     case "ink-spread": {
-      const radius = (p * 162) / mask.scale;
+      const radius = sweep(162, soft * 1.4) / mask.scale;
       image = blobMask(x, y, radius, soft * 1.4, mask.seed, 7, mask.intensity);
       break;
     }
     case "film-burn":
-      image = `linear-gradient(${direction + mask.rotation}deg, ${visible}), ${blobMask(x, y, p * 120, soft, mask.seed, 3, mask.intensity)}`;
+      image = `linear-gradient(${direction + mask.rotation}deg, ${visible}), ${blobMask(x, y, sweep(120, soft), soft, mask.seed, 3, mask.intensity)}`;
       break;
     case "linear-soft":
     default:
@@ -224,11 +238,13 @@ export function sampleMaskAlpha(
   v: number,
   mask: MaskRevealDefinition,
 ) {
-  const p = smooth(progress);
+  const p = smoother(progress);
   if (p <= 0) return 0;
   if (p >= 1) return 1;
   const field = sampleMaskField(mask.preset, u, v, mask);
   const feather = Math.max(0.0001, mask.softness / 200);
-  const value = clamp01((p - field + feather) / (feather * 2));
+  // Same swept range as the CSS backend, so the two agree at both ends.
+  const swept = -feather + p * (1 + feather * 2);
+  const value = clamp01((swept - field + feather) / (feather * 2));
   return smooth(value);
 }

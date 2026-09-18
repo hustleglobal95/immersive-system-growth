@@ -10,7 +10,7 @@ type Roll = Extract<SceneBlock, { type: "image-roll" }>;
 
 const TAU = Math.PI * 2;
 const clamp01 = (t: number) => Math.max(0, Math.min(1, t));
-const smooth = (t: number) => { const v = clamp01(t); return v * v * (3 - 2 * v); };
+const smooth = (t: number) => { const v = clamp01(t); return v * v * v * (v * (v * 6 - 15) + 10); };
 const span = (t: number, a: number, b: number) => clamp01((t - a) / Math.max(1e-6, b - a));
 
 /**

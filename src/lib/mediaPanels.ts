@@ -13,7 +13,9 @@ const clamp = (n: number) => Math.max(0, Math.min(1, n));
  * frame started and stopped changing at full rate. Easing both ends lets a handover begin and
  * settle rather than switch on.
  */
-const ease = (n: number) => { const t = clamp(n); return t * t * (3 - 2 * t); };
+// Quintic rather than cubic: zero velocity AND zero acceleration at both ends, so a handover
+// does not catch as it starts or settles. See easeSmoother in src/lib/easing.ts.
+const ease = (n: number) => { const t = clamp(n); return t * t * t * (t * (t * 6 - 15) + 10); };
 export function getMediaPanelWindow(scenes: readonly SceneDefinition[], index: number): PanelWindow {
   const scene = scenes[index], prior = scenes[index - 1], next = scenes[index + 1];
   return {
