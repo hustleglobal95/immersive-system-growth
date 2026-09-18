@@ -9,14 +9,16 @@ export function AutonomyPreviewClient({
   experience,
   progress,
   viewport,
+  variant,
 }: {
   experience: ExperienceConfig;
   progress: number;
   viewport: "desktop" | "mobile";
+  variant: "incumbent" | "candidate";
 }) {
   const [active,setActive]=useState(()=>getSceneIndex(progress,experience));
   return (
-    <main className="autonomy-preview" data-autonomy-preview>
+    <main className="autonomy-preview" data-autonomy-preview data-autonomy-variant={variant}>
       <StudioLivePreview
         experience={experience}
         active={active}
