@@ -12,6 +12,9 @@ const reviewRoot=path.join(workRoot,"review");
 const candidatePath=path.join(reviewRoot,"candidate-experience.json");
 const candidateRoot=path.join(workRoot,"candidate");
 const comparisonPath=path.join(workRoot,"comparison-report.json");
+const incumbentMotionPath=path.join(workRoot,"incumbent-motion","report.json");
+const candidateFunctionalPath=path.join(workRoot,"candidate-functional","report.json");
+const candidateMotionPath=path.join(workRoot,"candidate-motion","report.json");
 const acceptedPath=path.join(workRoot,"accepted-experience.json");
 
 if(!process.env.FORGE_VISUAL_CRITIC_URL) {
@@ -45,6 +48,14 @@ try {
   ]);
 
   await run(process.execPath,[
+    "--import","tsx","scripts/autonomy-motion-review.mjs",
+    "--url",baseURL,
+    "--experience",experiencePath,
+    "--variant","incumbent",
+    "--output",incumbentMotionPath,
+  ]);
+
+  await run(process.execPath,[
     "--import","tsx","scripts/autonomy-visual-director.mjs",
     "--report",path.join(incumbentRoot,"review-report.json"),
     "--experience",experiencePath,
@@ -63,10 +74,29 @@ try {
   ]);
 
   await run(process.execPath,[
+    "--import","tsx","scripts/autonomy-functional-verify.mjs",
+    "--url",baseURL,
+    "--experience",candidatePath,
+    "--variant","candidate",
+    "--output",candidateFunctionalPath,
+  ]);
+
+  await run(process.execPath,[
+    "--import","tsx","scripts/autonomy-motion-review.mjs",
+    "--url",baseURL,
+    "--experience",candidatePath,
+    "--variant","candidate",
+    "--output",candidateMotionPath,
+  ]);
+
+  await run(process.execPath,[
     "--import","tsx","scripts/autonomy-compare.mjs",
     "--incumbent",path.join(incumbentRoot,"review-report.json"),
     "--candidate",path.join(candidateRoot,"review-report.json"),
     "--output",comparisonPath,
+    "--functional",candidateFunctionalPath,
+    "--incumbent-motion",incumbentMotionPath,
+    "--candidate-motion",candidateMotionPath,
     ...(options.context ? ["--context",String(options.context)] : []),
   ]);
 
