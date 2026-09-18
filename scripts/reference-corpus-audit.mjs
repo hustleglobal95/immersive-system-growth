@@ -76,11 +76,11 @@ for (const item of underSupported) {
   console.log(`- ${item.id}: ${item.references} references / ${item.hosts} source hosts`);
 }
 
-if (immersiveReferenceCorpus.length < 133) {
-  errors.push(`Expected at least 133 references; found ${immersiveReferenceCorpus.length}.`);
+if (immersiveReferenceCorpus.length < 144) {
+  errors.push(`Expected at least 144 references; found ${immersiveReferenceCorpus.length}.`);
 }
-if (immersiveConstructionPatterns.length < 78) {
-  errors.push(`Expected at least 78 construction patterns; found ${immersiveConstructionPatterns.length}.`);
+if (immersiveConstructionPatterns.length < 81) {
+  errors.push(`Expected at least 81 construction patterns; found ${immersiveConstructionPatterns.length}.`);
 }
 
 if (errors.length) {
