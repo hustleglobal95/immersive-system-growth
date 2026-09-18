@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { cinematicProgress } from "@/src/lib/cinematicProgress";
 import { useExperienceStore } from "@/src/store/experienceStore";
+import { isBotClient } from "@/src/lib/isBot";
 
 /**
  * A live field standing in for a flat colour plate.
@@ -78,6 +79,8 @@ export function MediaShader({ shader, deep, light }: { shader: string; deep: str
     const element = canvas.current;
     const source = SHADERS[shader];
     if (!element || !source) return;
+    // A crawler cannot see this either, and the panel's flat fill is the authored fallback.
+    if (isBotClient()) return;
     const gl = element.getContext("webgl2", { alpha: false, antialias: false, depth: false });
     if (!gl) return;
 

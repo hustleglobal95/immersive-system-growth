@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { NarrativeOverlay } from "@/src/components/dom/NarrativeOverlay";
@@ -21,6 +21,13 @@ import { InteractionGraphController } from "@/src/runtime/InteractionGraphContro
 import { RuntimeCommandController } from "@/src/runtime/RuntimeCommandController";
 import { TelemetryClient } from "@/src/components/runtime/TelemetryClient";
 import { useExperienceStore } from "@/src/store/experienceStore";
+import { isBotClient } from "@/src/lib/isBot";
+
+// The user agent never changes for the life of the document, so there is nothing to subscribe
+// to. This is the same shape InquiryForm uses to read a client-only fact without a cascading
+// render, and it keeps the server snapshot honest: markup is identical for everyone.
+const subscribeNever = () => () => {};
+const serverIsNotABot = () => false;
 import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 const SceneCanvas = dynamic(
   () => import("@/src/components/three/SceneCanvas").then((m) => m.SceneCanvas),
@@ -74,6 +81,11 @@ export function ExperienceRuntime({ children }: { children?: ReactNode }) {
   // Through the provider rather than the checked-in default, so the Studio's live preview shows
   // the draft's conversion section instead of production's.
   const experience = useExperienceConfig();
+  // A crawler never sees the canvas, so it should not download it. The scene is a dynamic
+  // import, so declining to render it means the chunk is never requested at all. Resolved after
+  // mount so the server-rendered markup -- the copy a crawler actually reads -- is identical for
+  // everyone.
+  const robot = useSyncExternalStore(subscribeNever, isBotClient, serverIsNotABot);
   const pathname = usePathname(),
     lab = pathname === "/lab";
   const ready = useExperienceStore((s) => s.profileReady),
@@ -99,7 +111,7 @@ export function ExperienceRuntime({ children }: { children?: ReactNode }) {
       <TelemetryClient />
       {currentExperienceMode.composition.navigation === "standard" && <SiteChrome />}
       <ExperienceModeLayer />
-      {ready && (
+      {ready && !robot && (
         <WebGLBoundary key={generation}>
           <SceneCanvas />
         </WebGLBoundary>
