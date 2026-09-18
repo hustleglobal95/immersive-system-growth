@@ -2196,6 +2196,100 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
     avoid: ["Minimalism that makes navigation ambiguous.", "Adding interface decoration merely to make quiet sections feel designed."],
   },
   {
+    id: "networked-presence-as-atmosphere",
+    title: "Show other visitors as presence before turning the site into a multiplayer game",
+    signals: ["live", "presence", "multiplayer", "networked", "community", "shared", "visitor"],
+    composition: [
+      "Use remote visitor traces, marks, avatars or activity as a secondary world layer so the main story remains legible even when no one else is present.",
+    ],
+    motion: [
+      "Interpolate remote presence locally and keep its motion visually softer than the primary visitor-controlled subject.",
+    ],
+    transitions: [
+      "Presence should survive chapter changes only when the shared world is persistent; otherwise fade/recontextualize it with the world boundary.",
+    ],
+    interaction: [
+      "Start with ambient awareness of others; add direct multiplayer interaction only when it advances the product/community thesis.",
+    ],
+    implementation: [
+      "Transmit compact semantic transforms/events rather than full render state and synthesize presentation locally.",
+      "Design a complete single-user state so network absence or low concurrency never leaves the experience empty.",
+    ],
+    mobile: [
+      "Reduce remote entity count and update frequency before removing the sense that others are present.",
+    ],
+    avoid: ["Multiplayer infrastructure added only as novelty.", "Remote presence becoming more visually dominant than the site's primary content."],
+  },
+  {
+    id: "transition-render-decimation",
+    title: "Spend fewer renders on secondary scenes during visually busy transitions",
+    signals: ["transition", "multiple scenes", "render", "ping pong", "frame", "performance", "overlap"],
+    composition: [],
+    motion: [
+      "During fast movement or cross-world overlap, expensive secondary scene outputs may update at a lower cadence while the primary transition still updates every display frame.",
+    ],
+    transitions: [
+      "Alternate or decimate updates only while motion/occlusion makes the reduced cadence perceptually acceptable, then restore full cadence before either scene settles.",
+    ],
+    interaction: [],
+    implementation: [
+      "Reuse the previous render target for a secondary scene on skipped frames instead of rerendering every heavy world during overlap.",
+      "Keep transition progress itself full-rate and deterministic; only the expensive scene refresh cadence may be reduced.",
+    ],
+    mobile: [
+      "Use a more aggressive overlap cadence when necessary, but restore full-rate rendering before the visitor regains precise control.",
+    ],
+    avoid: ["Permanent low-FPS rendering of the focused scene.", "Decimating state simulation in a way that makes reverse or interaction nondeterministic."],
+  },
+  {
+    id: "commerce-inside-world",
+    title: "Embed discovery and commerce in the same immersive world",
+    signals: ["commerce", "shop", "merch", "product", "store", "purchase", "drop", "retail"],
+    composition: [
+      "Let products, drops or purchase opportunities appear as meaningful destinations/objects in the world while price, variant and checkout controls remain highly legible.",
+    ],
+    motion: [
+      "Move from exploration into purchase mode by reducing environmental motion and increasing product/UI stability.",
+    ],
+    transitions: [
+      "Preserve the selected product/subject as the anchor when crossing from immersive discovery to rational commerce.",
+    ],
+    interaction: [
+      "Exploration may unlock or reveal products, but buying must not depend on mastering a game-like control scheme.",
+    ],
+    implementation: [
+      "Keep catalog, inventory, pricing and checkout state in normal commerce/data systems; the spatial layer references those records instead of duplicating them.",
+    ],
+    mobile: [
+      "Preserve product discovery and direct purchase routes even if the explorable world becomes simpler.",
+    ],
+    avoid: ["A beautiful virtual store that makes products harder to find or buy.", "Checkout embedded as unreadable UI inside 3D."],
+  },
+  {
+    id: "content-intensity-render-mode",
+    title: "Match rendering intensity to the information job of each chapter",
+    signals: ["content", "information", "careers", "vision", "digital", "theme", "mode", "density"],
+    composition: [
+      "Use quieter, more spacious editorial treatment for dense practical information and reserve stronger spatial/WebGL treatment for chapters whose job is emotion, identity or system explanation.",
+    ],
+    motion: [
+      "Reduce motion amplitude as reading density rises; increase spatial expression only when the chapter's meaning benefits from it.",
+    ],
+    transitions: [
+      "Bridge quiet and immersive modes through a shared palette, type system, subject or motion direction so the site still feels like one identity.",
+    ],
+    interaction: [
+      "Do not force playful interaction onto careers, legal, specs or other high-intent reading tasks.",
+    ],
+    implementation: [
+      "Choose scene medium per chapter rather than choosing one renderer intensity for the whole site.",
+    ],
+    mobile: [
+      "Bias even more strongly toward clear editorial presentation in dense chapters while preserving one or two signature spatial moments.",
+    ],
+    avoid: ["Maximum WebGL intensity on every route.", "Flattening visionary chapters into the same quiet template used for dense information."],
+  },
+  {
     id: "prewarm-signature-systems",
     title: "Prewarm signature systems",
     signals: ["shader", "3d", "video", "particles", "postprocessing", "cinematic", "performance"],
