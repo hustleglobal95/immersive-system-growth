@@ -24,6 +24,7 @@ import { brandAssetBlockers, identifyDistinctiveBrandAssets } from "@/src/platfo
 import { detectCouncilInflation } from "@/src/platform/director-intelligence/calibration";
 import { evaluateHumanGates } from "@/src/platform/director-intelligence/humanGates";
 import { applyTasteCalibration, inferTasteTraits, tasteAdjustment } from "@/src/platform/director-intelligence/taste";
+import { buildHierarchyReport, hierarchyApprovalBlockers } from "@/src/platform/director-intelligence/hierarchy";
 import { buildConstructionDirectives } from "@/src/platform/director-intelligence/constructionKnowledge";
 import { planImmersiveConstruction } from "@/src/platform/director-intelligence/constructionPlanner";
 
@@ -92,8 +93,10 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
   const defense = buildDefensePacket(brief, selectedTerritory);
   const audience = simulateAudienceLenses(brief, treatment, selectedTerritory);
   const inflation = detectCouncilInflation(selectedEvaluation.critiques);
+  const hierarchy = buildHierarchyReport(brief, treatment);
+  const hierarchyBlockers = hierarchyApprovalBlockers(hierarchy);
 
-  const blockers = [...selectedEvaluation.blockers, ...whyBlockers];
+  const blockers = [...selectedEvaluation.blockers, ...whyBlockers, ...hierarchyBlockers];
   if (inflation.warning) blockers.push(inflation.warning);
   if (!diverged.diversity.sufficient) blockers.push(`Territory diversity score ${diverged.diversity.score} is below the required divergence threshold.`);
   if (brief.tier === "signature" || brief.tier === "flagship") {
@@ -103,7 +106,7 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
   let verdict: DirectorIntelligenceReport["verdict"] = debate.disposition === "REJECT ALL" ? "REJECT" : debate.disposition;
   if (blockers.length && verdict === "LOCK") verdict = evidenceBlockers.length ? "RESEARCH REQUIRED" : assetGap.blockers.length ? "ASSET BLOCKED" : "REVISE";
 
-  const report: DirectorIntelligenceReport = { brief, treatment, evidence, precedents, fingerprint: fingerprintTreatment(treatment), collisions, evaluations, selectedEvaluation, originality, cliches, stress, ceiling, assetGap, leverage, whyLadders, decisions, defense, verdict, blockers: unique(blockers), generatedAt: new Date().toISOString() };
+  const report: DirectorIntelligenceReport = { brief, treatment, evidence, precedents, fingerprint: fingerprintTreatment(treatment), collisions, evaluations, selectedEvaluation, originality, cliches, stress, ceiling, assetGap, leverage, hierarchy, whyLadders, decisions, defense, verdict, blockers: unique(blockers), generatedAt: new Date().toISOString() };
   const humanGates = evaluateHumanGates({ brief, treatment, evidence, selectedEvaluation, assetGap, decisions, approvals: input.approvals, finalCutRequested: input.finalCutRequested });
   const baseProductionPlan = createProductionPlanFromTreatment(treatment);
   const gateBlockers = humanGates.pending.map((gate) => `Human gate: ${gate.label} — ${gate.reason}`);

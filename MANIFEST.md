@@ -1,6 +1,6 @@
 # Repository Manifest
 
-Immersive Site Forge 5.0 is organized as a multi-project production platform rather than a one-off demo.
+Immersive Site Forge 6.0 is organized as a multi-project production platform rather than a one-off demo.
 
 ## Runtime
 
@@ -56,6 +56,8 @@ Immersive Site Forge 5.0 is organized as a multi-project production platform rat
 - six reusable industry templates plus scene and media-transition presets
 - bounded image and color transition-layer composition
 - browser asset intake with hashes, media metadata, GLB structure and budget checks
+- Guided Build workflow from idea → assets → scenes → motion → review → publish
+- direct Asset Creator handoffs for Meshy 3D and Higgsfield image/video generation with server-only provider credentials
 - deterministic AVIF/WebP texture optimization with manifest updates
 - validated Studio project schema
 - CMS JSON and Shopify Storefront adapters
@@ -79,6 +81,7 @@ Immersive Site Forge 5.0 is organized as a multi-project production platform rat
 - sixteen primary-source technical doctrines for shader/texture prewarm, demand rendering, video-frame sync, worker canvas isolation, shared GSAP timing, hot-path setters and refresh-rate-independent motion
 - reference-deconstruction workflow that maps immersive precedents onto existing Forge systems before new dependencies
 - evidence-weighted, source-diverse precedent retrieval plus a reference corpus integrity audit
+- eight-layer hierarchy intelligence spanning strategy, narrative, section, information, visual, interaction, motion/spatial and semantic/accessibility priority
 - nine Claude command playbooks
 - project, scene and asset templates
 - GitHub CI and contribution templates

@@ -158,7 +158,7 @@ export function StudioWorkbench() {
       {tab === "telemetry" && <TelemetryPanel project={draft.project} setProject={draft.setProject} />}
 
       <footer className="studio-footer">
-        <span>Forge Studio v7.0</span>
+        <span>Forge Studio v6.0</span>
         <span>{currentWorkspace.label} workspace</span>
       </footer>
     </main>
