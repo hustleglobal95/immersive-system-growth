@@ -154,3 +154,45 @@ test("orthographic diorama knowledge can select a persistent-world construction 
     ),
   );
 });
+
+test("pre-rendered fidelity research can select media instead of forcing realtime 3D", () => {
+  const treatment = directProject(
+    brief("product", [
+      { id: "film", label: "High fidelity rendered product sequence", type: "video", notes: "Offline-rendered material sequence." },
+    ]),
+  );
+  const base = buildConstructionDirectives(treatment);
+  const directives = {
+    ...base,
+    patternIds: Array.from(new Set([...base.patternIds, "pre-rendered-sequence-for-fidelity"])),
+  };
+  const plan = planImmersiveConstruction(treatment, directives);
+
+  assert.ok(plan.sceneDecisions.some((scene) => scene.medium === "media"));
+  assert.ok(
+    plan.sceneDecisions.some((scene) =>
+      scene.performancePolicy.some((rule) => /active frame neighborhood|decode memory/i.test(rule)),
+    ),
+  );
+});
+
+test("companion and personalization patterns become global production rules", () => {
+  const treatment = directProject(
+    brief("brand", [
+      { id: "hero", label: "Hero 3D identity object", type: "model", notes: "Personalized interactive subject." },
+    ]),
+  );
+  const base = buildConstructionDirectives(treatment);
+  const directives = {
+    ...base,
+    patternIds: Array.from(new Set([
+      ...base.patternIds,
+      "cross-device-companion-control",
+      "personalization-to-render-state",
+    ])),
+  };
+  const plan = planImmersiveConstruction(treatment, directives);
+
+  assert.ok(plan.globalRules.some((rule) => /companion-device messages/i.test(rule)));
+  assert.ok(plan.globalRules.some((rule) => /personalization inputs/i.test(rule)));
+});
