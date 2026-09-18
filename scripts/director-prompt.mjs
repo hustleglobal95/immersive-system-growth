@@ -2,12 +2,14 @@ import fs from "node:fs/promises";
 import { parseDirectorBrief } from "../src/platform/directorSchema.ts";
 import { directProject } from "../src/platform/directorEngine.ts";
 import { buildConstructionDirectives } from "../src/platform/director-intelligence/constructionKnowledge.ts";
+import { planImmersiveConstruction } from "../src/platform/director-intelligence/constructionPlanner.ts";
 import { retrieveImmersiveReferences } from "../src/platform/director-intelligence/referenceCorpus.ts";
 
 const inputPath = process.argv[2] || "config/director-brief.example.json";
 const brief = parseDirectorBrief(JSON.parse(await fs.readFile(inputPath, "utf8")));
 const baseline = directProject(brief);
 const constructionResearch = buildConstructionDirectives(baseline);
+const constructionPlan = planImmersiveConstruction(baseline, constructionResearch);
 const immersiveReferences = retrieveImmersiveReferences(baseline, 5).map(({ reference, reasons }) => ({
   id: reference.id,
   title: reference.title,
@@ -56,6 +58,18 @@ ${JSON.stringify({
   implementationRules: constructionResearch.implementationRules.slice(0, 12),
   mobileRules: constructionResearch.mobileRules.slice(0, 10),
   avoid: constructionResearch.forbiddenPatterns.slice(0, 12),
+  experienceMode: constructionPlan.mode,
+  persistentCanvasRecommended: constructionPlan.persistentCanvasRecommended,
+  criticalBootStrategy: constructionPlan.criticalBootStrategy,
+  sceneConstruction: constructionPlan.sceneDecisions.map((scene) => ({
+    sceneId: scene.sceneId,
+    medium: scene.medium,
+    continuityAnchor: scene.continuityAnchor,
+    depthStrategy: scene.depthStrategy,
+    motionStrategy: scene.motionStrategy,
+    interactionStrategy: scene.interactionStrategy,
+    mobileTranslation: scene.mobileTranslation,
+  })),
 }, null, 2)}
 
 Use these principles to sharpen the treatment, but do not mention precedent names in client-facing creative concepts unless explicitly asked. Combine principles into a new client-specific direction rather than imitating any single reference.
