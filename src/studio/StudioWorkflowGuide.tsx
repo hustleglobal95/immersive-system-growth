@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { readStored, useClientValue } from "@/src/lib/useClientValue";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig } from "@/src/types/experience";
@@ -37,6 +37,13 @@ export function StudioWorkflowGuide({
   // Read the stored brief during render rather than setting it from an effect, so the guide
   // never renders an empty textarea for a frame and then replaces it.
   const storedBrief = useClientValue(() => readStored(BRIEF_KEY), "");
+  const dialogRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    dialogRef.current?.focus();
+    const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
   const [brief, setBrief] = useState(storedBrief);
   const [seededFrom, setSeededFrom] = useState(storedBrief);
   if (seededFrom !== storedBrief) {
@@ -79,7 +86,7 @@ export function StudioWorkflowGuide({
   const creatorHref = `/studio/assets/create?asset=${encodeURIComponent(`${project.id}-hero-source.webp`)}&type=image&priority=hero-critical&scene=0&reason=${encodeURIComponent(brief.trim() || `Create the first hero visual asset for ${project.name}.`)}`;
 
   return <div className="workflow-guide-backdrop" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) onClose(); }}>
-    <section className="workflow-guide" role="dialog" aria-modal="true" aria-labelledby="workflow-guide-title">
+    <section ref={dialogRef} tabIndex={-1} className="workflow-guide" role="dialog" aria-modal="true" aria-labelledby="workflow-guide-title">
       <header className="workflow-guide__header">
         <div><span>FORGE / GUIDED BUILD</span><h2 id="workflow-guide-title">Build the project without learning the machinery.</h2></div>
         <button type="button" aria-label="Close guide" onClick={onClose}>×</button>
