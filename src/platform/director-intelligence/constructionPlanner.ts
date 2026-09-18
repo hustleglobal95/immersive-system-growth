@@ -216,6 +216,14 @@ function chooseMedium(input: {
 
   if (
     hasVideo &&
+    patternSet.has("pre-rendered-sequence-for-fidelity") &&
+    beat.intensity >= 5
+  ) {
+    return "media";
+  }
+
+  if (
+    hasVideo &&
     (
       mode === "cinematic-media" ||
       patternSet.has("small-subject-big-environment")
@@ -318,6 +326,9 @@ function motionStrategy(
 }
 
 function interactionStrategy(patterns: Set<string>, interactionLevel: number) {
+  if (patterns.has("cross-device-companion-control") && interactionLevel >= 6) {
+    return "Map the companion device to semantic actions through a low-latency control channel, expose pairing/calibration state, and keep a local fallback.";
+  }
   if (patterns.has("gamified-progress-with-skip") && interactionLevel >= 6) {
     return "Track explicit progression/unlock state, make rewards visibly consequential, and keep a direct skip route available for high-intent visitors.";
   }
@@ -359,6 +370,9 @@ function performancePolicy(
   }
   if (patterns.has("scrubbable-media-delivery") && medium === "media") {
     rules.push("Use interaction-optimized media encoding with short keyframe intervals and verify browser seek latency before production lock.");
+  }
+  if (patterns.has("pre-rendered-sequence-for-fidelity") && medium === "media") {
+    rules.push("Prefetch/cache only the active frame neighborhood and verify decode memory so offline-rendered fidelity does not create a first-load stall.");
   }
   if (patterns.has("offscreen-render-worker") && ["3d", "hybrid", "shader"].includes(medium)) {
     rules.push("If profiling shows main-thread contention, isolate the heavy canvas behind a narrow OffscreenCanvas/worker state protocol.");
@@ -466,6 +480,12 @@ function globalRules(
   }
   if (patterns.has("audio-reactive-semantic-band")) {
     rules.push("Smooth and bound meaningful audio energy before it modulates visuals; audio response must reinforce the subject rather than shake the interface.");
+  }
+  if (patterns.has("personalization-to-render-state")) {
+    rules.push("Normalize personalization inputs into bounded art-directed render parameters and preserve a meaningful manual/fallback path.");
+  }
+  if (patterns.has("cross-device-companion-control")) {
+    rules.push("Keep companion-device messages compact and semantic; the primary world owns rendering while the second device supplies control state.");
   }
   if (patterns.has("prototype-prune-converge")) {
     rules.push("Prototype signature ideas modularly and cut any effect that no longer strengthens the final thesis.");
