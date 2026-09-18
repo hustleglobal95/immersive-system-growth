@@ -4250,7 +4250,7 @@
         "align": "center",
         "cta": {
           "label": "Enquire about a commission",
-          "href": "mailto:studio@ateliermaris.es"
+          "href": "#enquire"
         }
       }
     }
@@ -4289,5 +4289,21 @@
         4.2
       ]
     }
-  ]
+  ],
+  "conversion": {
+    "id": "enquire",
+    "eyebrow": "New commissions",
+    "title": "Tell us about the plot.",
+    "body": "We take four projects a year and run each one from the first survey to the last site visit. A first conversation is usually an hour, on site if the plot exists and over a table if it does not.",
+    "intent": "both",
+    "submit": "Send enquiry",
+    "consent": "I am happy for Atelier Maris to hold these details and reply to my enquiry. We never share them, and you can ask us to delete them at any time.",
+    "note": "Enquiries for 2026 are open.",
+    "brochure": {
+      "id": "casa-lumen-brochure",
+      "label": "Casa Lumen brochure",
+      "file": "casa-lumen.pdf",
+      "size": "1 KB"
+    }
+  }
 }

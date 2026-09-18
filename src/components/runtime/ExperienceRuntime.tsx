@@ -9,6 +9,7 @@ import { ProgressRail } from "@/src/components/dom/ProgressRail";
 import { HotspotDialog } from "@/src/components/dom/HotspotDialog";
 import { SiteChrome } from "@/src/components/dom/SiteChrome";
 import { SiteFooter } from "@/src/components/dom/SiteFooter";
+import { LeadCapture } from "@/src/components/dom/LeadCapture";
 import { ExperienceModeLayer, currentExperienceMode } from "@/src/components/dom/ExperienceModeLayer";
 import { experienceModeClass } from "@/src/platform/experienceModes";
 import { WebGLBoundary } from "@/src/components/runtime/WebGLBoundary";
@@ -20,6 +21,7 @@ import { InteractionGraphController } from "@/src/runtime/InteractionGraphContro
 import { RuntimeCommandController } from "@/src/runtime/RuntimeCommandController";
 import { TelemetryClient } from "@/src/components/runtime/TelemetryClient";
 import { useExperienceStore } from "@/src/store/experienceStore";
+import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 const SceneCanvas = dynamic(
   () => import("@/src/components/three/SceneCanvas").then((m) => m.SceneCanvas),
   { ssr: false },
@@ -69,6 +71,9 @@ function RuntimeStatus() {
   );
 }
 export function ExperienceRuntime({ children }: { children?: ReactNode }) {
+  // Through the provider rather than the checked-in default, so the Studio's live preview shows
+  // the draft's conversion section instead of production's.
+  const experience = useExperienceConfig();
   const pathname = usePathname(),
     lab = pathname === "/lab";
   const ready = useExperienceStore((s) => s.profileReady),
@@ -105,6 +110,11 @@ export function ExperienceRuntime({ children }: { children?: ReactNode }) {
       {currentExperienceMode.composition.navigation === "standard" && <ProgressRail />}
       <HotspotDialog />
       <RuntimeStatus />
+      {/* The conversion section sits after the last chapter and before the footer: ordinary
+          unpinned DOM, so no chapter's motion can take the form away while it is being used. */}
+      {currentExperienceMode.composition.navigation === "standard" && experience.conversion && (
+        <LeadCapture section={experience.conversion} />
+      )}
       {currentExperienceMode.composition.navigation === "standard" && <SiteFooter />}
       {debug && <DebugHUD />}
       {lab && <LabControls />}

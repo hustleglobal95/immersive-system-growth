@@ -372,3 +372,147 @@ body[data-project="atelier-maris"] .story-section {
   overflow-x: clip;
   overflow-y: visible;
 }
+
+/* ---------------------------------------------------------------------------
+   Conversion section
+   Unpinned DOM between the last chapter and the footer, so no chapter's motion
+   can take the form away while it is being filled in.
+   --------------------------------------------------------------------------- */
+body[data-project="atelier-maris"] .lead {
+  position: relative;
+  z-index: 14;
+  background: #12100d;
+  color: #efe6d8;
+  padding: 12vh 5vw;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 7vh 8vw;
+  align-items: start;
+  border-top: 1px solid rgba(239, 230, 216, .16);
+  scroll-margin-top: 12vh;
+}
+body[data-project="atelier-maris"] .lead__eyebrow {
+  margin: 0 0 26px;
+  font-size: 12px;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: #d7c2a3;
+}
+body[data-project="atelier-maris"] .lead__title {
+  margin: 0;
+  max-width: 14ch;
+  font: 400 clamp(44px, 5.4vw, 92px)/.94 var(--font-cormorant), Georgia, serif;
+  letter-spacing: -.03em;
+  text-wrap: balance;
+}
+body[data-project="atelier-maris"] .lead__body {
+  max-width: 44ch;
+  margin: 28px 0 0;
+  font-size: 17px;
+  line-height: 1.6;
+  color: rgba(239, 230, 216, .84);
+}
+body[data-project="atelier-maris"] .lead__note {
+  margin: 20px 0 0;
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #d7c2a3;
+}
+body[data-project="atelier-maris"] .lead__form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px 24px;
+  max-width: 640px;
+}
+body[data-project="atelier-maris"] .lead__intent,
+body[data-project="atelier-maris"] .lead__field--wide,
+body[data-project="atelier-maris"] .lead__consent,
+body[data-project="atelier-maris"] .lead__form > button,
+body[data-project="atelier-maris"] .lead__status,
+body[data-project="atelier-maris"] .lead__download,
+body[data-project="atelier-maris"] .lead__form > noscript { grid-column: 1 / -1; }
+body[data-project="atelier-maris"] .lead__intent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  margin: 0;
+  padding: 0 0 4px;
+  border: 0;
+}
+body[data-project="atelier-maris"] .lead__intent legend {
+  padding: 0 0 14px;
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: rgba(239, 230, 216, .6);
+}
+body[data-project="atelier-maris"] .lead__intent label,
+body[data-project="atelier-maris"] .lead__consent {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(239, 230, 216, .88);
+  cursor: pointer;
+}
+body[data-project="atelier-maris"] .lead__consent { max-width: 62ch; font-size: 13px; }
+body[data-project="atelier-maris"] .lead__intent input,
+body[data-project="atelier-maris"] .lead__consent input {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  accent-color: #d7c2a3;
+  cursor: pointer;
+}
+body[data-project="atelier-maris"] .lead__field { display: grid; gap: 9px; }
+body[data-project="atelier-maris"] .lead__field > span {
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(239, 230, 216, .62);
+}
+body[data-project="atelier-maris"] .lead__field i { font-style: normal; opacity: .6; }
+body[data-project="atelier-maris"] .lead__field input,
+body[data-project="atelier-maris"] .lead__field textarea {
+  width: 100%;
+  padding: 12px 2px;
+  border: 0;
+  border-bottom: 1px solid rgba(239, 230, 216, .3);
+  background: transparent;
+  color: #f4eee6;
+  font: inherit;
+  font-size: 16px;
+  border-radius: 0;
+  transition: border-color .2s ease;
+}
+body[data-project="atelier-maris"] .lead__field textarea { resize: vertical; line-height: 1.5; }
+body[data-project="atelier-maris"] .lead__field input:focus-visible,
+body[data-project="atelier-maris"] .lead__field textarea:focus-visible {
+  outline: 0;
+  border-bottom-color: #d7c2a3;
+}
+body[data-project="atelier-maris"] .lead__field input:user-invalid,
+body[data-project="atelier-maris"] .lead__field textarea:user-invalid { border-bottom-color: #c2704a; }
+body[data-project="atelier-maris"] .lead__form > button { margin-top: 12px; justify-self: start; cursor: pointer; }
+body[data-project="atelier-maris"] .lead__form > button[disabled] { opacity: .55; cursor: default; }
+body[data-project="atelier-maris"] .lead__status {
+  margin: 0;
+  min-height: 1.5em;
+  font-size: 14px;
+  line-height: 1.5;
+}
+body[data-project="atelier-maris"] .lead__status[data-state="ok"] { color: #cfe0c8; }
+body[data-project="atelier-maris"] .lead__status[data-state="error"] { color: #e2a184; }
+body[data-project="atelier-maris"] .lead__download { margin: 0; }
+body[data-project="atelier-maris"] .lead__download a {
+  color: #d7c2a3;
+  font-size: 14px;
+  text-underline-offset: 5px;
+}
+@media (max-width: 900px) {
+  body[data-project="atelier-maris"] .lead { grid-template-columns: minmax(0, 1fr); padding: 9vh 22px; gap: 5vh; }
+  body[data-project="atelier-maris"] .lead__form { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  body[data-project="atelier-maris"] .lead__title { max-width: 100%; }
+}

@@ -555,6 +555,43 @@ export const sceneSchema = z
       .strict(),
   })
   .strict();
+/**
+ * The conversion section: one stable, unpinned region after the scroll where the enquiry lives.
+ *
+ * It is deliberately not a scene block. Chapter copy disperses partway through its own chapter,
+ * so a form inside a pinned chapter would animate away while somebody was still typing in it.
+ *
+ * The brochure file name is pattern-constrained here as well as on the server, so a traversal
+ * segment cannot be authored into a config in the first place.
+ */
+export const conversionSchema = z
+  .object({
+    id,
+    eyebrow: z.string().min(1).max(100),
+    title: z.string().min(1).max(160),
+    body: z.string().min(1).max(600),
+    intent: z.enum(["enquiry", "brochure", "both"]).default("enquiry"),
+    submit: z.string().min(1).max(60),
+    // Consent wording travels with the config, because it is a legal statement and differs by
+    // market. It is never defaulted.
+    consent: z.string().min(1).max(300),
+    note: z.string().max(300).optional(),
+    brochure: z
+      .object({
+        id,
+        label: z.string().min(1).max(80),
+        file: z.string().regex(/^[a-z0-9][a-z0-9-]{0,60}\.pdf$/, "Brochure file must be a lower-case PDF name"),
+        size: z.string().min(1).max(24),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict()
+  .superRefine((section, context) => {
+    if (section.intent !== "enquiry" && !section.brochure)
+      context.addIssue({ code: "custom", message: "A brochure intent requires a brochure", path: ["brochure"] });
+  });
+
 export const experienceSchema = z
   .object({
     meta: z
@@ -598,6 +635,7 @@ export const experienceSchema = z
           .strict(),
       )
       .max(30),
+    conversion: conversionSchema.optional(),
   })
   .strict()
   .superRefine((c, ctx) => {

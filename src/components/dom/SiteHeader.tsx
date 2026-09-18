@@ -14,7 +14,7 @@ export function SiteHeader({ current }: { current?: "work" | "about" }) {
         <Link href="/site">Casa Lumen</Link>
         <Link href="/work" aria-current={current === "work" ? "page" : undefined}>Work</Link>
         <Link href="/about" aria-current={current === "about" ? "page" : undefined}>Studio</Link>
-        <a href="mailto:studio@ateliermaris.es">Enquire</a>
+        <Link href="/about#enquire">Enquire</Link>
       </nav>
     </header>
   );

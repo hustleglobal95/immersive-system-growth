@@ -3,6 +3,8 @@ import Link from "next/link";
 import { SiteHeader } from "@/src/components/dom/SiteHeader";
 import { SiteFooter } from "@/src/components/dom/SiteFooter";
 import { projects } from "@/src/lib/projects";
+import { LeadCapture } from "@/src/components/dom/LeadCapture";
+import { experience } from "@/src/lib/experience";
 
 export const metadata: Metadata = {
   title: "Studio — Atelier Maris",
@@ -88,16 +90,7 @@ export default function AboutPage() {
           <Link className="about-more" href="/work">All work</Link>
         </section>
 
-        <section className="about-block about-block--contact" aria-labelledby="commissions">
-          <h2 id="commissions">New commissions</h2>
-          <p className="page__lede">
-            We are taking enquiries for 2026. A first conversation is usually an hour, on site if
-            the plot exists and over a table if it does not.
-          </p>
-          <a className="forge-button" href="mailto:studio@ateliermaris.es">
-            Enquire about a commission
-          </a>
-        </section>
+        {experience.conversion && <LeadCapture section={experience.conversion} />}
       </main>
       <SiteFooter />
     </>

@@ -46,6 +46,14 @@ Server-side content adapter and deterministic JSON-path mapper. Remote URLs requ
 
 Validates and previews one static, JSON or Shopify source. Request bodies are capped and remote calls have a five-second timeout.
 
+## `POST /api/inquiry`
+
+Accepts a size-bounded, schema-validated lead from the conversion section. Consent is required and never inferred. Two spam gates run without asking the visitor to solve anything: a honeypot field and the time the form was on screen; a submission caught by either receives the same response a genuine one does and is not delivered. Submissions are rate limited per client. Leads are forwarded to `FORGE_LEAD_WEBHOOK_URL` when configured or logged as structured server output. A brochure request additionally returns a signed, expiring grant when `FORGE_LEAD_TOKEN_SECRET` is set; without the secret the lead is still recorded and no link is issued.
+
+## `GET /api/brochure`
+
+Releases a gated PDF against a grant from `/api/inquiry`. The token carries a brochure id and an expiry, never a path: the file name comes from the checked-in `conversion.brochure` config and is pattern-constrained to a lower-case PDF name, and gated files live outside `public`. Responses are `private, no-store`.
+
 ## `POST /api/telemetry`
 
 Accepts size-bounded, schema-validated anonymous performance events. Events are forwarded to `FORGE_TELEMETRY_WEBHOOK_URL` when configured or logged as structured server output.

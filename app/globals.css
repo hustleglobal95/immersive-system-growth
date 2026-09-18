@@ -964,3 +964,7 @@ html {
 @media (prefers-reduced-motion: reduce) {
   .forge-split { overflow: visible; padding-bottom: 0; margin-bottom: 0; }
 }
+
+/* The honeypot must be unreachable in every project, not only where a skin hides it: off-screen
+   rather than display:none, because some bots skip fields that are not rendered. */
+.lead__trap { position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }

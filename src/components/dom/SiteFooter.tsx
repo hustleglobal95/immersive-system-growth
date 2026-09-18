@@ -29,7 +29,7 @@ export function SiteFooter() {
           <ul>
             <li><a href="mailto:studio@ateliermaris.es">studio@ateliermaris.es</a></li>
             <li><a href="tel:+34972623140">+34 972 62 31 40</a></li>
-            <li><Link href="#inquiry">New commissions</Link></li>
+            <li><Link href="/about#enquire">New commissions</Link></li>
             <li><Link href="/work">Selected work</Link></li>
             <li><Link href="/about">The studio</Link></li>
           </ul>
