@@ -55,8 +55,12 @@ export function planImmersiveConstruction(
   const assets = treatment.assets.filter((asset) =>
     ["use", "upgrade", "create"].includes(asset.productionDecision),
   );
-  const hasModel = assets.some((asset) => /model|3d|glb|geometry/i.test(`${asset.label} ${asset.role}`));
-  const hasVideo = assets.some((asset) => /video|film|footage|motion/i.test(`${asset.label} ${asset.role}`));
+  // The brief declares each asset's medium, so trust it. Prose is only consulted
+  // for assets whose medium was left unspecified, where a label is all we have.
+  const carriesMedium = (asset: DirectorTreatment["assets"][number], type: "model" | "video", prose: RegExp) =>
+    asset.mediaType === type || (asset.mediaType === "other" && prose.test(`${asset.label} ${asset.role}`));
+  const hasModel = assets.some((asset) => carriesMedium(asset, "model", /model|3d|glb|geometry/i));
+  const hasVideo = assets.some((asset) => carriesMedium(asset, "video", /video|film|footage|motion/i));
   const patternSet = new Set(directives.patternIds);
   const persistentWorld =
     patternSet.has("single-world-under-interface") ||

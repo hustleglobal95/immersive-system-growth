@@ -28,6 +28,8 @@ export const DirectorTierSchema = z.enum(["cinematic", "immersive", "signature",
 export const DirectorAssetQualitySchema = z.enum(["hero", "strong", "supporting", "weak", "missing"]);
 export const DirectorProductionDecisionSchema = z.enum(["use", "upgrade", "replace", "create", "omit"]);
 
+export const DirectorAssetTypeSchema = z.enum(["model", "image", "video", "audio", "copy", "brand", "data", "other"]);
+
 export const DirectorBriefSchema = z.object({
   projectName: short,
   projectType: DirectorProjectTypeSchema,
@@ -42,7 +44,7 @@ export const DirectorBriefSchema = z.object({
   existingAssets: z.array(z.object({
     id: z.string().min(1).max(120),
     label: short,
-    type: z.enum(["model", "image", "video", "audio", "copy", "brand", "data", "other"]),
+    type: DirectorAssetTypeSchema,
     notes: medium.optional(),
   }).strict()).max(80).default([]),
   references: z.array(z.object({ label: short, lesson: medium }).strict()).max(20).default([]),
@@ -117,6 +119,7 @@ export const DirectorShotSchema = z.object({
 export const DirectorAssetAssessmentSchema = z.object({
   id: z.string().min(1).max(120),
   label: short,
+  mediaType: DirectorAssetTypeSchema.default("other"),
   quality: DirectorAssetQualitySchema,
   creativeValue: score,
   productionDecision: DirectorProductionDecisionSchema,

@@ -5,12 +5,18 @@ export function classifyClientFeedback(text: string): FeedbackClass {
   const value = text.toLowerCase();
   if (/wrong|incorrect|fact|date|number|name/.test(value)) return "factual-correction";
   if (/budget|deadline|legal|must|cannot|contract/.test(value)) return "business-constraint";
+  // Stated preference outranks a bare noun match: "I prefer the logo bigger" is taste,
+  // not a brand rule. Facts and business constraints still win over taste above this line.
+  if (/(do ?n'?t|do not) like|prefer|favou?rite|would rather|not a fan|i (love|hate)|wish it/.test(value))
+    return "preference";
   if (/brand|logo|guideline|tone|identity/.test(value)) return "brand-constraint";
   if (/copy|photo|video|section|content|amenit|feature/.test(value)) return "content-request";
   if (/confus|hard to use|can't find|cannot find|usab|navigation/.test(value)) return "usability-concern";
   if (/scope|extra page|new feature|also build|integration/.test(value)) return "scope-change";
   if (/ceo|founder|board|stakeholder|investor|partner/.test(value)) return "stakeholder-politics";
-  if (/don't like|prefer|favorite|colour|color|font|bigger|smaller/.test(value)) return "preference";
+  // Bare styling attributes with no stated intent: still taste, but only once the
+  // classes above have had their chance.
+  if (/colour|color|font|bigger|smaller/.test(value)) return "preference";
   return "creative-disagreement";
 }
 

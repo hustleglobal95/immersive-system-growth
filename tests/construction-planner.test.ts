@@ -73,10 +73,25 @@ test("signature scene receives stronger prewarm/performance direction when heavy
   const signatureScenes = plan.sceneDecisions.filter((scene) => signatureIds.has(scene.sceneId));
 
   assert.ok(signatureScenes.length >= 1);
+
+  // A hero GLB brief should put the signature beat on a rendering medium that costs something.
+  const heavySignature = signatureScenes.filter((scene) =>
+    ["3d", "hybrid", "shader"].includes(scene.medium),
+  );
+  assert.ok(heavySignature.length >= 1, "signature beat should be rendered, not DOM-only");
+
+  // The behavior that matters: the heaviest moment is never left to compile or load on
+  // arrival. Which pattern supplies that direction is a corpus decision, so accept it from
+  // the scene's own policy or from the plan's boot strategy.
   assert.ok(
-    signatureScenes.some((scene) =>
-      scene.performancePolicy.some((rule) => /prewarm/i.test(rule)),
+    heavySignature.every((scene) => scene.performancePolicy.length >= 1),
+    "a heavy signature scene should carry explicit performance direction",
+  );
+  assert.ok(
+    plan.criticalBootStrategy.some((rule) =>
+      /prewarm|preload|precompile|before it becomes interactive/i.test(rule),
     ),
+    "boot strategy should prewarm heavy work ahead of the visitor reaching it",
   );
 });
 

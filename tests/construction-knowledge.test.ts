@@ -42,11 +42,33 @@ const brief = {
 test("construction intelligence selects reusable immersive patterns", () => {
   const treatment = directProject(brief);
   const selected = selectConstructionPatterns(treatment);
-  const ids = selected.map((pattern) => pattern.id);
 
-  assert.ok(ids.includes("continuous-visual-anchor"));
-  assert.ok(ids.includes("staged-subject-hero"));
-  assert.ok(ids.includes("single-signature-peak"));
+  // This brief asks for one staged subject, restraint until a single reveal, and an anchor
+  // carried between chapters. Assert that the selection answers those, not that it returns
+  // particular ids: which pattern supplies an intent is a corpus decision and moves as the
+  // corpus grows.
+  assert.ok(selected.length >= 3);
+  assert.ok(
+    selected.every((pattern) => !pattern.projectTypes?.length || pattern.projectTypes.includes("brand")),
+    "every selected pattern should be type-agnostic or applicable to the brief's project type",
+  );
+
+  const composition = selected.flatMap((pattern) => pattern.composition);
+  const motion = selected.flatMap((pattern) => pattern.motion);
+  const transitions = selected.flatMap((pattern) => pattern.transitions);
+
+  assert.ok(
+    composition.some((rule) => /subject|hero object|dominant/i.test(rule)),
+    "expected composition direction for staging a dominant subject",
+  );
+  assert.ok(
+    [...motion, ...composition].some((rule) => /single|one .*(peak|signature|reveal)|restraint|stillness/i.test(rule)),
+    "expected direction protecting a single signature peak",
+  );
+  assert.ok(
+    transitions.some((rule) => /carry|anchor|persist/i.test(rule)),
+    "expected an anchor carried across transitions",
+  );
 });
 
 test("construction directives translate visual knowledge into implementation rules", () => {
