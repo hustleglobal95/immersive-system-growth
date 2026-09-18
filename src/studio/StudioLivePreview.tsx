@@ -53,12 +53,13 @@ export function StudioLivePreview({
     store.setProfile("high", "high");
     store.setSystemReducedMotion(false);
     store.setReducedMotion(false);
-    store.setDebug(false);
+    store.setDebug(reviewMode);
     return () => {
+      store.setDebug(false);
       store.setReducedMotion(null);
       store.setWebglStatus("loading");
     };
-  }, []);
+  }, [reviewMode]);
 
   useEffect(() => { progressRef.current = progress; }, [progress]);
   useEffect(() => { onProgressChangeRef.current = onProgressChange; }, [onProgressChange]);

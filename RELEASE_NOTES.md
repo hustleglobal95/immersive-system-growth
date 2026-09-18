@@ -2,6 +2,8 @@
 
 ## 6.0.0
 
+- Added Autonomy Level 4 functional and motion gates: candidate-aware full runtime browser verification, fixed-timestep camera/hero motion analysis, reverse-state determinism, boundary continuity checks and optional multimodal motion-sequence critique.
+- Updated forced optimization so a candidate cannot win visual A/B review when browser functionality fails, motion hard gates fail or motion quality materially regresses from the incumbent.
 - Reconciled all identified residual branch work: recovered 26 public references, five construction patterns, six failure lessons, five technical doctrines, cross-industry construction lenses and current-state project-preservation guards; superseded standalone scroll-video code was distilled into Forge-native construction knowledge.
 - Added Forge Visual Director v1: specialist rendered-frame critique, bounded reversible presentation repair, isolated A/B preview rendering, reversed-order pairwise judging and fail-closed forced optimization.
 - Added the end-to-end `autonomy:repair-loop` workflow; accepted candidates are emitted as artifacts rather than silently replacing production config.

@@ -52,6 +52,9 @@ For any request to show, preview, open, capture, share, or deploy an existing pr
 28. Visual Director repairs must stay inside registered reversible Forge commands. Do not let autonomous visual repair rewrite scene structure, semantic copy, CTA identity, scene ranges or factual claims.
 29. Incumbent and candidate visual comparisons must use the same review surface, viewport, progress state and dimensions. Cross-surface A/B judgments are invalid.
 30. Without a configured comparative visual judge, Forge must fail closed and keep the incumbent.
+31. Autonomy Level 4 candidates must pass browser functional verification before visual A/B acceptance. A visually stronger candidate with broken traversal, CTA reachability, mobile behavior or reduced-motion semantics is invalid.
+32. Motion review must sample identical progress states forward and backward and inspect scene boundaries. Reverse-state drift, non-finite motion state or severe boundary discontinuity blocks autonomous promotion.
+33. Headless renderer frame time is advisory evidence, not a substitute for real-device performance validation.
 
 ## Before implementation
 
