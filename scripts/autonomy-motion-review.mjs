@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { chromium } from "@playwright/test";
 import { buildMotionReviewPlan, analyzeMotionQuality } from "../src/platform/autonomy/motionQuality.ts";
+import { buildMotionSequenceCriticRequest, parseMotionSequenceResponse } from "../src/platform/autonomy/motionDirector.ts";
 
 const options=args(process.argv.slice(2));
 const baseURL=String(options.url || process.env.FORGE_URL || "http://127.0.0.1:3000");
@@ -11,6 +12,9 @@ const experiencePath=String(options.experience || (variant==="candidate" ? proce
 const outputPath=String(options.output || "test-results/autonomy-motion/report.json");
 const samplesPerScene=Number(options.samples || process.env.FORGE_MOTION_SAMPLES || 10);
 const experience=JSON.parse(await fs.readFile(experiencePath,"utf8"));
+const motionCriticUrl=process.env.FORGE_MOTION_CRITIC_URL;
+const motionCriticToken=process.env.FORGE_MOTION_CRITIC_TOKEN;
+const projectContext=String(options.context || process.env.FORGE_AUTONOMY_CONTEXT || experience.meta?.description || experience.meta?.name || "Forge experience");
 const plan=buildMotionReviewPlan(experience,samplesPerScene);
 const browser=await chromium.launch({
   headless:true,
@@ -54,7 +58,56 @@ try {
     }
     reverse.reverse();
 
-    const report=analyzeMotionQuality({ plan,forward,reverse,viewport:profile.viewport });
+    const deterministic=analyzeMotionQuality({ plan,forward,reverse,viewport:profile.viewport });
+    const sequenceFindings=[];
+    if(motionCriticUrl) {
+      const sceneIds=[...new Set(plan.points.filter((point)=>point.kind==="sample").map((point)=>point.sceneId))];
+      for(const sceneId of sceneIds) {
+        const scenePoints=plan.points.filter((point)=>point.kind==="sample" && point.sceneId===sceneId);
+        const selected=selectSequencePoints(scenePoints,5);
+        const images=[];
+        for(const point of selected) {
+          await page.evaluate(async (value)=>{
+            const bridge=window.__FORGE_AUTONOMY_REVIEW__;
+            if(!bridge) throw new Error("Autonomy review bridge is unavailable.");
+            bridge.seek(value);
+            await new Promise((resolve)=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+            await new Promise((resolve)=>setTimeout(resolve,40));
+          },point.progress);
+          const buffer=await page.locator(".studio-preview__canvas").first().screenshot({ animations:"disabled",timeout:15000 });
+          images.push({ progress:point.progress,mimeType:"image/png",data:buffer.toString("base64") });
+        }
+        const request=buildMotionSequenceCriticRequest({
+          sceneId,
+          viewport:profile.viewport,
+          projectContext,
+          progresses:selected.map((point)=>point.progress),
+          deterministicMetrics:deterministic.metrics,
+        });
+        const response=await fetch(motionCriticUrl,{
+          method:"POST",
+          headers:{
+            "content-type":"application/json",
+            ...(motionCriticToken ? { authorization:"Bearer "+motionCriticToken } : {}),
+          },
+          body:JSON.stringify({ ...request,images }),
+        });
+        if(!response.ok) throw new Error("Motion critic request failed for "+sceneId+" / "+profile.viewport+": HTTP "+response.status);
+        const parsed=parseMotionSequenceResponse(await response.json());
+        sequenceFindings.push(...parsed.findings);
+      }
+    }
+    const sequencePenalty=sequenceFindings.reduce((sum,finding)=>sum+(finding.severity==="blocker"?25:finding.severity==="major"?8:finding.severity==="minor"?2:0),0);
+    const report={
+      ...deterministic,
+      qualityScore:Math.max(0,deterministic.qualityScore-sequencePenalty),
+      sequenceCriticConnected:Boolean(motionCriticUrl),
+      sequenceFindings,
+      hardGateFailures:[
+        ...deterministic.hardGateFailures,
+        ...sequenceFindings.filter((finding)=>finding.severity==="blocker" && finding.confidence>=0.7).map((finding)=>finding.sceneId+": "+finding.finding),
+      ],
+    };
     viewportReports.push(report);
     await context.close();
   }
@@ -114,4 +167,12 @@ function args(argv) {
     else out[key]=true;
   }
   return out;
+}
+
+
+function selectSequencePoints(points,count) {
+  if(points.length<=count) return points;
+  const chosen=[];
+  for(let i=0;i<count;i++) chosen.push(points[Math.round((i/(count-1))*(points.length-1))]);
+  return [...new Map(chosen.map((point)=>[point.id,point])).values()];
 }
