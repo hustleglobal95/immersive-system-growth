@@ -1304,6 +1304,141 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
     avoid: ["Random per-item parallax that communicates no difference.", "Motion that makes comparison harder than a static specimen."],
   },
   {
+    id: "prototype-prune-converge",
+    title: "Prototype broadly, then prune toward one direction",
+    signals: ["prototype", "experiment", "concept", "effect", "iteration", "direction", "portfolio"],
+    composition: [
+      "Allow early visual experiments to compete, then remove those that no longer strengthen the emerging composition or thesis.",
+    ],
+    motion: [
+      "An effect that was expensive to build does not earn a place in the final motion system unless it improves the experience.",
+    ],
+    transitions: [],
+    interaction: [],
+    implementation: [
+      "Keep experiments modular enough that they can be demoted or removed without destabilizing the production architecture.",
+      "Record why a discarded experiment failed so future Director decisions learn from the cut, not only from shipped work.",
+    ],
+    mobile: [
+      "Do not preserve an experimental desktop effect on mobile solely because it exists; preserve the concept that survived final direction.",
+    ],
+    avoid: ["Sunk-cost effects.", "A portfolio of techniques masquerading as one art direction."],
+  },
+  {
+    id: "transition-readiness-gate",
+    title: "Do not reveal a destination before its prerequisites are ready",
+    signals: ["transition", "route", "image", "chunk", "loading", "readiness", "page"],
+    composition: [
+      "Keep the outgoing composition visually complete until the incoming state can replace it without a broken or partially loaded frame.",
+    ],
+    motion: [
+      "Use the outgoing transition to cover the readiness window; animation duration should not be the only timing authority.",
+    ],
+    transitions: [
+      "Gate the commit/reveal of the next page or scene on the code, critical media and render state required for its first frame.",
+    ],
+    interaction: [
+      "Block repeated navigation actions only for the minimal transition-critical window and preserve browser/history semantics.",
+    ],
+    implementation: [
+      "Model readiness explicitly and await critical destination resources before committing the visible handoff.",
+      "Do not confuse prefetch with readiness; verify that the actual first-frame dependencies have resolved.",
+    ],
+    mobile: [
+      "Use smaller destination critical sets so readiness gates do not become long waits on constrained connections.",
+    ],
+    avoid: ["Transition finishing into blank media.", "Hardcoded delays pretending assets are ready."],
+  },
+  {
+    id: "single-canvas-multi-view",
+    title: "Use one canvas for many section-scoped 3D views",
+    signals: ["canvas", "view", "section", "3d", "webgl", "multiple", "cards", "scissor"],
+    composition: [
+      "Let DOM sections define the visual windows while one shared canvas renders the spatial content aligned behind or inside those windows.",
+    ],
+    motion: [
+      "DOM and 3D elements that form one component should derive transforms from the same scroll/pointer state.",
+    ],
+    transitions: [
+      "Move or resize the view region when the same spatial subject travels between sections; avoid canvas teardown/recreation.",
+    ],
+    interaction: [
+      "Pointer state should be transformed into the active view's coordinate system before driving its 3D response.",
+    ],
+    implementation: [
+      "Share one renderer/context and render only active view rectangles when a page needs several independent 3D sections but not one persistent world.",
+      "Stop the frame loop when no view is visible and no transition/resize requires redraw.",
+    ],
+    mobile: [
+      "Reduce active view count and substitute CSS/media perspective where real geometry does not add capability.",
+    ],
+    avoid: ["One WebGL context per section.", "Rendering all viewports every frame regardless of visibility."],
+  },
+  {
+    id: "render-pass-ownership",
+    title: "Scenes own their complete render cost",
+    signals: ["render", "pass", "scene", "simulation", "composite", "gpu", "visibility", "pipeline"],
+    composition: [],
+    motion: [],
+    transitions: [
+      "During scene overlap, activate only the specific source/destination passes the transition needs.",
+    ],
+    interaction: [],
+    implementation: [
+      "Group scene render, simulation, UI texture and composite passes under scene ownership so an inactive scene can skip its entire GPU workload.",
+      "Use one section/scene configuration to derive both narrative progress and which render passes are eligible to execute.",
+    ],
+    mobile: [
+      "Tighten active-scene overlap and disable nonessential subpasses while keeping the visible transition intact.",
+    ],
+    avoid: ["Hiding a final scene texture while its simulations and subpasses still run.", "Render-pass eligibility scattered across unrelated components."],
+  },
+  {
+    id: "composable-rendering-systems",
+    title: "Build multi-scene worlds from composable rendering capabilities",
+    signals: ["scene", "material", "particle", "transition", "deferred", "module", "reusable", "system"],
+    composition: [],
+    motion: [
+      "Expose reusable particle and material behaviors as composable modules so scene-specific choreography can combine them without duplicating simulation code.",
+    ],
+    transitions: [
+      "Treat transitions as a small family of mixers that accept source scene, destination scene and normalized progress rather than bespoke pairwise code.",
+    ],
+    interaction: [],
+    implementation: [
+      "For large scene counts, separate reusable capabilities—materials, particles, postprocess, transition mixers—from scene content.",
+      "Allow one-off modules where art direction truly requires them without forking the entire render pipeline.",
+      "Prewarm reusable simulations when their initial state must look mature on first reveal.",
+    ],
+    mobile: [
+      "Disable or simplify individual modules by tier while keeping the scene's core composition.",
+    ],
+    avoid: ["Thirteen scenes with thirteen unrelated render stacks.", "One giant shader containing every feature for every scene."],
+  },
+  {
+    id: "procedural-motion-parameters",
+    title: "Animate the parameters that generate a path",
+    signals: ["spiral", "orbit", "helix", "procedural", "path", "radius", "angle", "motion"],
+    composition: [],
+    motion: [
+      "When motion has a mathematical structure, animate the minimal generating parameters—angle, radius, phase, amplitude, frequency—rather than hand-authoring every point.",
+      "Let the visible path emerge from parameter relationships so retiming and responsive adaptation remain controllable.",
+    ],
+    transitions: [
+      "Collapse or expand procedural parameters to transition collections into/out of ordered states.",
+    ],
+    interaction: [
+      "Pointer/scroll may influence one bounded parameter while the rest preserve the intended shape.",
+    ],
+    implementation: [
+      "Represent procedural motion as deterministic functions of normalized progress so forward/reverse reconstruction stays exact.",
+    ],
+    mobile: [
+      "Reduce instance count and amplitude while preserving the same parameterized motion law.",
+    ],
+    avoid: ["Hand-keyframing hundreds of points for a mathematically simple motion.", "Randomness that prevents reverse reconstruction."],
+  },
+  {
     id: "prewarm-signature-systems",
     title: "Prewarm signature systems",
     signals: ["shader", "3d", "video", "particles", "postprocessing", "cinematic", "performance"],
