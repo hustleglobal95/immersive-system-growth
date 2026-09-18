@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getSceneIndex } from "@/src/lib/experience";
 import { sampleExperience } from "@/src/lib/sampleExperience";
 import { useExperienceStore } from "@/src/store/experienceStore";
@@ -24,25 +24,28 @@ export function AutonomyPreviewClient({
   variant: "incumbent" | "candidate";
 }) {
   const [reviewProgress,setReviewProgress]=useState(progress);
+  const reviewProgressRef=useRef(progress);
   const [active,setActive]=useState(()=>getSceneIndex(progress,experience));
   const aspect=viewport==="mobile" ? 9/16 : 16/9;
   const sceneCount=experience.scenes.length;
   const sceneIds=useMemo(()=>experience.scenes.map((scene)=>scene.id),[experience]);
 
-  useEffect(()=>setReviewProgress(progress),[progress]);
+  useEffect(()=>{ reviewProgressRef.current=progress; setReviewProgress(progress); },[progress]);
 
   useEffect(()=>{
     const bridge:ReviewBridge={
       seek(value:number){
         const next=Math.max(0,Math.min(1,Number.isFinite(value)?value:0));
+        reviewProgressRef.current=next;
         setReviewProgress(next);
         setActive(getSceneIndex(next,experience));
       },
       snapshot(){
         const store=useExperienceStore.getState();
-        const sampled=sampleExperience(reviewProgress,store.reducedMotion,experience,aspect);
+        const current=reviewProgressRef.current;
+        const sampled=sampleExperience(current,store.reducedMotion,experience,aspect);
         return {
-          progress:reviewProgress,
+          progress:current,
           viewport,
           sceneIndex:sampled.sceneIndex,
           sceneId:sampled.scene.id,
@@ -66,7 +69,7 @@ export function AutonomyPreviewClient({
     return ()=>{
       delete (window as unknown as { __FORGE_AUTONOMY_REVIEW__?:ReviewBridge }).__FORGE_AUTONOMY_REVIEW__;
     };
-  },[aspect,experience,reviewProgress,viewport]);
+  },[aspect,experience,viewport]);
 
   return (
     <main
