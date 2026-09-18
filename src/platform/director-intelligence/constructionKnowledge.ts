@@ -1876,6 +1876,180 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
     avoid: ["Resetting to item one when switching views.", "Animating out before the destination mode is ready."],
   },
   {
+    id: "design-grid-runtime-contract",
+    title: "Keep the design grid inspectable in the real build",
+    signals: ["grid", "figma", "layout", "alignment", "editorial", "precision", "margin"],
+    composition: [
+      "Translate authored columns, gutters, rows and margins into explicit runtime tokens instead of approximating them by eye during implementation.",
+      "Use the same grid to place both semantic DOM and WebGL-aligned media so the spatial and editorial layers share one geometry.",
+    ],
+    motion: [
+      "Motion may break the grid temporarily, but resting states and transition endpoints should resolve back to authored alignment unless the concept explicitly rejects it.",
+    ],
+    transitions: [],
+    interaction: [],
+    implementation: [
+      "Provide a development-only grid overlay or measurement mode that renders the production layout rules directly in the browser.",
+      "When a reference/design file drives the build, store the grid values as project data/tokens so visual QA can compare against the actual implementation.",
+    ],
+    mobile: [
+      "Author a separate mobile grid contract rather than proportionally shrinking the desktop one.",
+    ],
+    avoid: ["Treating Figma gutters as loose inspiration.", "Hard-coded one-off offsets that cannot be inspected against the project grid."],
+  },
+  {
+    id: "gpu-instance-data-packing",
+    title: "Pack repeated-object state for the GPU",
+    signals: ["instance", "instancing", "atlas", "attribute", "gpu", "packing", "crowd", "repeated"],
+    composition: [],
+    motion: [
+      "Keep per-instance animation/state compact enough that large repeated systems remain a single coherent visual field.",
+    ],
+    transitions: [],
+    interaction: [],
+    implementation: [
+      "Atlas repeated material textures and pack small per-instance values such as color, UV region, tiling, metalness or state into the fewest practical GPU attributes.",
+      "Decode/expand packed values in the shader when that reduces buffer count, memory bandwidth or draw-call/material pressure.",
+      "Validate precision and atlas sampling on mobile GPUs, including half-texel/mipmap edge cases.",
+    ],
+    mobile: [
+      "Reduce instance count and attribute precision before splitting the field into many independent materials/draw calls.",
+    ],
+    avoid: ["One material per visually unique repeated object.", "Shipping verbose per-instance objects when a compact attribute representation is sufficient."],
+  },
+  {
+    id: "shared-simulation-field",
+    title: "Share renderer-level simulations across effects",
+    signals: ["fluid", "flowmap", "simulation", "field", "fbo", "shared", "velocity", "renderer"],
+    composition: [],
+    motion: [
+      "One simulation field may feed several visual consumers so related effects react to the same motion energy instead of diverging.",
+    ],
+    transitions: [
+      "During chapter overlap, only the active owner advances/resizes the shared simulation while passive consumers may sample the existing field.",
+    ],
+    interaction: [
+      "Normalize pointer/scroll impulses once before injecting them into a shared field.",
+    ],
+    implementation: [
+      "Own expensive renderer-level simulations once per renderer and expose their textures/state to consumers through refs or equivalent low-overhead channels.",
+      "Define one active simulation driver at a time so overlapping sections cannot fight over FBO size, timestep or input injection.",
+    ],
+    mobile: [
+      "Lower resolution/update frequency of the shared field rather than duplicating cheaper simulations per effect.",
+    ],
+    avoid: ["A separate fluid/flow simulation for every shader that wants cursor velocity.", "Multiple sections resizing or stepping the same renderer resource in one frame."],
+  },
+  {
+    id: "scene-neighborhood-window",
+    title: "Keep only the active scene neighborhood alive",
+    signals: ["scene", "neighbor", "adjacent", "mount", "dispose", "memory", "transition", "scroll"],
+    composition: [],
+    motion: [
+      "Maintain enough neighboring scene state for transitions to overlap without keeping the entire experience resident.",
+    ],
+    transitions: [
+      "Keep the active scene plus the minimum previous/next neighborhood required for reversible handoff; dispose scenes once they are outside that window.",
+    ],
+    interaction: [],
+    implementation: [
+      "Mount/prewarm the destination before overlap, keep the active and adjacent scenes alive through the transition, then dispose distant textures, geometries and shader pipelines.",
+      "Size the scene window by actual transition requirements and memory budget, not by a fixed assumption that every chapter must persist.",
+    ],
+    mobile: [
+      "Use a smaller scene neighborhood and earlier disposal under tighter memory pressure.",
+    ],
+    avoid: ["Keeping every point cloud/video/shader scene mounted for the whole page.", "Unmounting the destination before reverse-scroll can reconstruct the handoff."],
+  },
+  {
+    id: "production-preset-parity",
+    title: "Use the same scene data in creative tooling and production",
+    signals: ["preset", "playground", "studio", "authoring", "production", "tool", "scene data"],
+    composition: [
+      "Creative controls should manipulate the same camera/layout/material/transition values the production runtime consumes.",
+    ],
+    motion: [
+      "Preview timing and motion from the production sampler rather than a separate approximation layer.",
+    ],
+    transitions: [],
+    interaction: [],
+    implementation: [
+      "Define one validated scene-preset contract for camera, environment, assets, postprocessing, mobile offsets and transitions, and make both the playground/Studio and runtime consume it.",
+      "Avoid a prototype format that engineering must reinterpret manually before shipping.",
+    ],
+    mobile: [
+      "Quality tiers and mobile overrides must be previewable through the same production preset contract.",
+    ],
+    avoid: ["Designer-only controls that export screenshots instead of runtime values.", "Production rewrites of a separate motion prototype format."],
+  },
+  {
+    id: "physics-proxy-dom",
+    title: "Use invisible physics to drive semantic DOM",
+    signals: ["physics", "rapier", "matter", "dom", "collider", "rigid body", "gravity"],
+    composition: [
+      "Keep visible text/shapes accessible in DOM while an invisible physics world supplies believable motion where semantic HTML still matters.",
+    ],
+    motion: [
+      "Copy rigid-body transforms into DOM transforms each active frame; stop the physics loop when the section cannot affect visible pixels.",
+    ],
+    transitions: [
+      "Start physics close enough to reveal that the visitor sees the causal event, and tear it down/rebuild when layout dimensions invalidate collider geometry.",
+    ],
+    interaction: [
+      "Derive collider size/shape from the real DOM element and keep the semantic element responsible for focus/click behavior.",
+    ],
+    implementation: [
+      "Treat the physics scene as a simulation proxy, not the renderer. Recreate colliders on responsive layout changes so physical and visual geometry stay aligned.",
+    ],
+    mobile: [
+      "Use simpler colliders, lower step frequency or deterministic fallback motion when full simulation is unnecessary.",
+    ],
+    avoid: ["Rasterizing semantic DOM into WebGL just to gain physics.", "Running hidden physics continuously outside the active section."],
+  },
+  {
+    id: "transition-preload-race",
+    title: "Race destination readiness against the exit animation",
+    signals: ["route", "transition", "preload", "chunk", "image", "navigation", "ready"],
+    composition: [],
+    motion: [
+      "Begin loading destination code/media the instant navigation intent is known while the outgoing composition performs its exit choreography.",
+    ],
+    transitions: [
+      "Commit the destination only after both the visual exit gate and destination critical readiness resolve; if loading wins early, the user never waits on a blank frame.",
+    ],
+    interaction: [
+      "Protect against accidental/velocity-driven navigation by modeling transition state explicitly and allowing cancellation before the commit point.",
+    ],
+    implementation: [
+      "Start route chunk/data/hero-media preloads in parallel with the exit timeline and gate final route swap on readiness instead of adding a fixed delay.",
+    ],
+    mobile: [
+      "Shorten exit choreography and reduce destination critical media so the same overlap strategy remains effective on slower networks.",
+    ],
+    avoid: ["Starting destination fetch only after the exit animation finishes.", "Navigating on raw scroll threshold without state/velocity guards."],
+  },
+  {
+    id: "imperative-hot-path-state",
+    title: "Keep high-frequency visual state out of reconciliation",
+    signals: ["scroll", "uniform", "ref", "react", "frame", "high frequency", "pointer"],
+    composition: [],
+    motion: [
+      "High-frequency scroll/pointer/camera values should update render-time state directly without forcing component-tree reconciliation every frame.",
+    ],
+    transitions: [],
+    interaction: [
+      "Transient interaction values may live in refs/runtime stores while semantic outcomes such as selection, navigation and accessibility state remain declarative.",
+    ],
+    implementation: [
+      "Drive shader uniforms, camera offsets, transient transforms and other per-frame values through refs/direct style or the Forge frame sampler instead of React state updates.",
+      "Keep large Three.js geometries/material objects out of reactive state containers that walk/serialize them during ordinary UI commits.",
+    ],
+    mobile: [
+      "The same rule becomes more important under lower CPU budgets; reduce update frequency before promoting transient values into UI state.",
+    ],
+    avoid: ["setState on every scroll/pointer frame.", "Passing multi-megabyte scene objects through reactive state when stable refs are sufficient."],
+  },
+  {
     id: "prewarm-signature-systems",
     title: "Prewarm signature systems",
     signals: ["shader", "3d", "video", "particles", "postprocessing", "cinematic", "performance"],
