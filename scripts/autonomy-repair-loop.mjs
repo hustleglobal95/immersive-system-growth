@@ -53,6 +53,7 @@ try {
     "--experience",experiencePath,
     "--variant","incumbent",
     "--output",incumbentMotionPath,
+    "--allow-failures",
   ]);
 
   await run(process.execPath,[
