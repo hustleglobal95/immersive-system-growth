@@ -101,8 +101,8 @@ test("construction directives are grounded in both patterns and corpus precedent
 });
 
 
-test("broader immersive corpus adds 95 public studio and technical/source studies", () => {
-  assert.equal(broaderImmersiveReferenceCorpus.length, 95);
+test("broader immersive corpus adds 106 public studio and technical/source studies", () => {
+  assert.equal(broaderImmersiveReferenceCorpus.length, 106);
   assert.ok(
     broaderImmersiveReferenceCorpus.every(
       (reference) =>
@@ -110,7 +110,7 @@ test("broader immersive corpus adds 95 public studio and technical/source studie
         reference.evidenceLevel === "technical-reference",
     ),
   );
-  assert.equal(immersiveReferenceCorpus.length, 144);
+  assert.equal(immersiveReferenceCorpus.length, 155);
 });
 
 test("broader corpus teaches implementation-shaping lessons rather than only visual style", () => {
@@ -161,8 +161,8 @@ test("every corpus pattern id resolves to executable construction knowledge", ()
   const missing = Array.from(referenced).filter((id) => !known.has(id));
 
   assert.deepEqual(missing, []);
-  assert.equal(immersiveConstructionPatterns.length, 81);
-  assert.equal(known.size, 81);
+  assert.equal(immersiveConstructionPatterns.length, 84);
+  assert.equal(known.size, 84);
 });
 
 test("construction consensus ranks patterns by evidence across precedents", () => {
@@ -209,6 +209,9 @@ test("aggressive research adds media, audio, camera, DCC and interaction knowled
     "pre-rendered-sequence-for-fidelity",
     "cross-device-companion-control",
     "personalization-to-render-state",
+    "teach-nonstandard-navigation",
+    "entry-ritual-earns-its-wait",
+    "mode-switch-preserves-context",
   ]) {
     assert.ok(patterns.has(id), `Missing aggressive-research pattern: ${id}`);
   }
@@ -228,10 +231,28 @@ test("aggressive research adds media, audio, camera, DCC and interaction knowled
     "unseen-superlist",
     "hello-monday-google-cloud",
     "unit9-lightsaber-escape",
+    "codrops-motoyoshi-takamitsu",
+    "codrops-dich-fashion",
+    "codrops-jason-bergh",
+    "locomotive-scout-motors",
+    "uncasual-tokimonsta",
   ]) {
     assert.ok(
       immersiveReferenceCorpus.some((reference) => reference.id === referenceId),
       `Missing aggressive-research reference: ${referenceId}`,
     );
   }
+});
+
+test("reference retrieval covers visual, technical and shipped-case evidence roles", () => {
+  const treatment = directProject(brief);
+  const retrieved = retrieveImmersiveReferences(treatment, 8);
+  const levels = new Set(retrieved.map(({ reference }) => reference.evidenceLevel));
+
+  assert.ok(
+    levels.has("visual-preview") || levels.has("public-description"),
+    "Expected at least one visual precedent.",
+  );
+  assert.ok(levels.has("technical-reference"), "Expected at least one technical precedent.");
+  assert.ok(levels.has("public-case-study"), "Expected at least one shipped case-study precedent.");
 });
