@@ -6,6 +6,20 @@ Read this file before modifying the experience.
 
 Build cinematic, spatial, interactive websites that feel like one continuous experience rather than a stack of animated sections.
 
+## Preview and deployment safety
+
+**Previewing is not editing. Showing is not redesigning. Deploying is not rebuilding.**
+
+For any request to show, preview, open, capture, share, or deploy an existing project:
+
+- locate and use the exact checked-in project state;
+- state the commit SHA/provenance when presenting or deploying it;
+- use the project's existing route, build/export path, and checked-in assets;
+- never synthesize a substitute project under the same identity;
+- never modify protected project source merely to make a preview easier;
+- run `npm run project:integrity` before declaring protected creative work unchanged;
+- creative changes require an explicit edit/build/redesign instruction.
+
 ## Non-negotiable architecture
 
 1. Keep one persistent React Three Fiber canvas unless there is a documented technical reason not to.
@@ -83,6 +97,7 @@ Use optimized GLB/GLTF models. Prefer GPU-compressed textures when the project p
 Before declaring completion:
 
 ```bash
+npm run project:integrity
 npm run doctor
 npm run experience:validate
 npm run assets:audit
