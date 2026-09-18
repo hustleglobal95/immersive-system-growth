@@ -326,6 +326,9 @@ function motionStrategy(
 }
 
 function interactionStrategy(patterns: Set<string>, interactionLevel: number) {
+  if (patterns.has("teach-nonstandard-navigation") && interactionLevel >= 5) {
+    return "Teach the nonstandard navigation with a short first-run motion cue, then hand control back immediately while keeping an alternate orientation/control path visible.";
+  }
   if (patterns.has("cross-device-companion-control") && interactionLevel >= 6) {
     return "Map the companion device to semantic actions through a low-latency control channel, expose pairing/calibration state, and keep a local fallback.";
   }
@@ -440,6 +443,9 @@ function criticalBootStrategy(
   if (patterns.has("transition-readiness-gate")) {
     rules.push("Gate visible scene/page handoffs on the destination's critical code/media/render readiness instead of fixed delays.");
   }
+  if (patterns.has("entry-ritual-earns-its-wait")) {
+    rules.push("Let the entry ritual cover only genuinely critical first-state work and hand its final frame directly into the opening composition; defer later assets.");
+  }
   if (firstHeavy) {
     rules.push(`Prewarm the first heavy chapter (${firstHeavy.sceneId}) before it becomes interactive.`);
   }
@@ -486,6 +492,12 @@ function globalRules(
   }
   if (patterns.has("cross-device-companion-control")) {
     rules.push("Keep companion-device messages compact and semantic; the primary world owns rendering while the second device supplies control state.");
+  }
+  if (patterns.has("mode-switch-preserves-context")) {
+    rules.push("Separate presentation mode from content selection and preserve equivalent item/focus state through any slider/list/grid mode transition.");
+  }
+  if (patterns.has("entry-ritual-earns-its-wait")) {
+    rules.push("Treat the preloader/enter state as a prologue that establishes motion/permission context, never as decorative delay.");
   }
   if (patterns.has("prototype-prune-converge")) {
     rules.push("Prototype signature ideas modularly and cut any effect that no longer strengthens the final thesis.");
