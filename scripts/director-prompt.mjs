@@ -45,7 +45,18 @@ ${JSON.stringify(immersiveReferences, null, 2)}
 ## FORGE CONSTRUCTION RESEARCH
 The following is retrieved from Forge's evidence-graded immersive reference corpus for this brief. Treat it as precedent knowledge, not a style recipe.
 
-${JSON.stringify({\n  references: constructionResearch.referenceIds,\n  lessons: constructionResearch.referenceLessons,\n  patternEvidence: constructionResearch.patternEvidence.slice(0, 12),\n  compositionRules: constructionResearch.compositionRules.slice(0, 12),\n  motionRules: constructionResearch.motionRules.slice(0, 12),\n  transitionRules: constructionResearch.transitionRules.slice(0, 10),\n  interactionRules: constructionResearch.interactionRules.slice(0, 10),\n  implementationRules: constructionResearch.implementationRules.slice(0, 12),\n  mobileRules: constructionResearch.mobileRules.slice(0, 10),\n  avoid: constructionResearch.forbiddenPatterns.slice(0, 12),\n}, null, 2)}
+${JSON.stringify({
+  references: constructionResearch.referenceIds,
+  lessons: constructionResearch.referenceLessons,
+  patternEvidence: constructionResearch.patternEvidence.slice(0, 12),
+  compositionRules: constructionResearch.compositionRules.slice(0, 12),
+  motionRules: constructionResearch.motionRules.slice(0, 12),
+  transitionRules: constructionResearch.transitionRules.slice(0, 10),
+  interactionRules: constructionResearch.interactionRules.slice(0, 10),
+  implementationRules: constructionResearch.implementationRules.slice(0, 12),
+  mobileRules: constructionResearch.mobileRules.slice(0, 10),
+  avoid: constructionResearch.forbiddenPatterns.slice(0, 12),
+}, null, 2)}
 
 Use these principles to sharpen the treatment, but do not mention precedent names in client-facing creative concepts unless explicitly asked. Combine principles into a new client-specific direction rather than imitating any single reference.
 
