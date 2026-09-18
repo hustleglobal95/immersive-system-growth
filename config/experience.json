@@ -160,13 +160,13 @@
             },
             {
               "id": "maris-approach-copy-opacity-desktop-1",
-              "at": 0.52,
+              "at": 0.62,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-approach-copy-opacity-desktop-2",
-              "at": 0.62,
+              "at": 0.7,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -191,23 +191,29 @@
             {
               "id": "maris-approach-copy-y-desktop-0",
               "at": 0,
-              "value": 0,
-              "easing": "linear"
+              "value": 22,
+              "easing": "smooth"
             },
             {
               "id": "maris-approach-copy-y-desktop-1",
-              "at": 0.54,
+              "at": 0.16,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-approach-copy-y-desktop-2",
+              "at": 0.64,
               "value": 0,
               "easing": "linear"
             },
             {
-              "id": "maris-approach-copy-y-desktop-2",
-              "at": 0.62,
+              "id": "maris-approach-copy-y-desktop-3",
+              "at": 0.7,
               "value": -11,
               "easing": "smooth"
             },
             {
-              "id": "maris-approach-copy-y-desktop-3",
+              "id": "maris-approach-copy-y-desktop-4",
               "at": 1,
               "value": -11,
               "easing": "linear"
@@ -227,23 +233,29 @@
             {
               "id": "maris-approach-copy-blur-desktop-0",
               "at": 0,
-              "value": 0,
-              "easing": "linear"
+              "value": 5,
+              "easing": "smooth"
             },
             {
               "id": "maris-approach-copy-blur-desktop-1",
-              "at": 0.54,
+              "at": 0.16,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-approach-copy-blur-desktop-2",
+              "at": 0.64,
               "value": 0,
               "easing": "linear"
             },
             {
-              "id": "maris-approach-copy-blur-desktop-2",
-              "at": 0.62,
+              "id": "maris-approach-copy-blur-desktop-3",
+              "at": 0.7,
               "value": 4,
               "easing": "smooth"
             },
             {
-              "id": "maris-approach-copy-blur-desktop-3",
+              "id": "maris-approach-copy-blur-desktop-4",
               "at": 1,
               "value": 4,
               "easing": "linear"
@@ -268,13 +280,13 @@
             },
             {
               "id": "maris-approach-copy-opacity-mobile-1",
-              "at": 0.52,
+              "at": 0.62,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-approach-copy-opacity-mobile-2",
-              "at": 0.62,
+              "at": 0.7,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -299,25 +311,31 @@
             {
               "id": "maris-approach-copy-y-mobile-0",
               "at": 0,
-              "value": 0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-approach-copy-y-mobile-1",
-              "at": 0.54,
-              "value": 0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-approach-copy-y-mobile-2",
-              "at": 0.62,
-              "value": -11,
+              "value": 13.2,
               "easing": "smooth"
             },
             {
+              "id": "maris-approach-copy-y-mobile-1",
+              "at": 0.16,
+              "value": 0.0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-approach-copy-y-mobile-2",
+              "at": 0.64,
+              "value": 0.0,
+              "easing": "linear"
+            },
+            {
               "id": "maris-approach-copy-y-mobile-3",
+              "at": 0.7,
+              "value": -6.6,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-approach-copy-y-mobile-4",
               "at": 1,
-              "value": -11,
+              "value": -6.6,
               "easing": "linear"
             }
           ]
@@ -335,25 +353,31 @@
             {
               "id": "maris-approach-copy-blur-mobile-0",
               "at": 0,
-              "value": 0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-approach-copy-blur-mobile-1",
-              "at": 0.54,
-              "value": 0,
-              "easing": "linear"
-            },
-            {
-              "id": "maris-approach-copy-blur-mobile-2",
-              "at": 0.62,
-              "value": 4,
+              "value": 3.0,
               "easing": "smooth"
             },
             {
+              "id": "maris-approach-copy-blur-mobile-1",
+              "at": 0.16,
+              "value": 0.0,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-approach-copy-blur-mobile-2",
+              "at": 0.64,
+              "value": 0.0,
+              "easing": "linear"
+            },
+            {
               "id": "maris-approach-copy-blur-mobile-3",
+              "at": 0.7,
+              "value": 2.4,
+              "easing": "smooth"
+            },
+            {
+              "id": "maris-approach-copy-blur-mobile-4",
               "at": 1,
-              "value": 4,
+              "value": 2.4,
               "easing": "linear"
             }
           ]
@@ -542,7 +566,7 @@
           58,
           50
         ],
-        "overlap": 0.34,
+        "overlap": 0.26,
         "direction": "up",
         "zoom": 1.06,
         "textEnd": 0.3,
@@ -709,13 +733,13 @@
             },
             {
               "id": "maris-parti-copy-opacity-desktop-1",
-              "at": 0.38,
+              "at": 0.46,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-parti-copy-opacity-desktop-2",
-              "at": 0.48,
+              "at": 0.54,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -745,19 +769,19 @@
             },
             {
               "id": "maris-parti-copy-y-desktop-1",
-              "at": 0.24,
+              "at": 0.16,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-parti-copy-y-desktop-2",
-              "at": 0.38,
+              "at": 0.46,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-parti-copy-y-desktop-3",
-              "at": 0.48,
+              "at": 0.54,
               "value": -88,
               "easing": "smooth"
             },
@@ -787,19 +811,19 @@
             },
             {
               "id": "maris-parti-copy-blur-desktop-1",
-              "at": 0.24,
+              "at": 0.16,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-parti-copy-blur-desktop-2",
-              "at": 0.38,
+              "at": 0.46,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-parti-copy-blur-desktop-3",
-              "at": 0.48,
+              "at": 0.54,
               "value": 7,
               "easing": "smooth"
             },
@@ -829,13 +853,13 @@
             },
             {
               "id": "maris-parti-copy-opacity-mobile-1",
-              "at": 0.38,
+              "at": 0.46,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-parti-copy-opacity-mobile-2",
-              "at": 0.48,
+              "at": 0.54,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -865,19 +889,19 @@
             },
             {
               "id": "maris-parti-copy-y-mobile-1",
-              "at": 0.24,
+              "at": 0.16,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-parti-copy-y-mobile-2",
-              "at": 0.38,
+              "at": 0.46,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-parti-copy-y-mobile-3",
-              "at": 0.48,
+              "at": 0.54,
               "value": -52.8,
               "easing": "smooth"
             },
@@ -907,19 +931,19 @@
             },
             {
               "id": "maris-parti-copy-blur-mobile-1",
-              "at": 0.24,
+              "at": 0.16,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-parti-copy-blur-mobile-2",
-              "at": 0.38,
+              "at": 0.46,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-parti-copy-blur-mobile-3",
-              "at": 0.48,
+              "at": 0.54,
               "value": 4.2,
               "easing": "smooth"
             },
@@ -1115,7 +1139,7 @@
           61,
           50
         ],
-        "overlap": 0.34,
+        "overlap": 0.26,
         "direction": "up",
         "zoom": 1,
         "textEnd": 0.3,
@@ -1172,7 +1196,7 @@
             }
           ],
           "sweep": 0.56,
-          "exit": 0.56
+          "exit": 0.62
         }
       ],
       "hero": {
@@ -1352,13 +1376,13 @@
             },
             {
               "id": "maris-threshold-copy-opacity-desktop-1",
-              "at": 0.52,
+              "at": 0.62,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-opacity-desktop-2",
-              "at": 0.62,
+              "at": 0.7,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -1388,19 +1412,19 @@
             },
             {
               "id": "maris-threshold-copy-y-desktop-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-y-desktop-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-y-desktop-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": -11,
               "easing": "smooth"
             },
@@ -1430,19 +1454,19 @@
             },
             {
               "id": "maris-threshold-copy-blur-desktop-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-blur-desktop-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-blur-desktop-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": 4,
               "easing": "smooth"
             },
@@ -1472,13 +1496,13 @@
             },
             {
               "id": "maris-threshold-copy-opacity-mobile-1",
-              "at": 0.52,
+              "at": 0.62,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-opacity-mobile-2",
-              "at": 0.62,
+              "at": 0.7,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -1503,31 +1527,31 @@
             {
               "id": "maris-threshold-copy-y-mobile-0",
               "at": 0,
-              "value": 22,
+              "value": 13.2,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-y-mobile-1",
-              "at": 0.28,
-              "value": 0,
+              "at": 0.16,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-y-mobile-2",
-              "at": 0.54,
-              "value": 0,
+              "at": 0.64,
+              "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-y-mobile-3",
-              "at": 0.62,
-              "value": -11,
+              "at": 0.7,
+              "value": -6.6,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-y-mobile-4",
               "at": 1,
-              "value": -11,
+              "value": -6.6,
               "easing": "linear"
             }
           ]
@@ -1550,19 +1574,19 @@
             },
             {
               "id": "maris-threshold-copy-blur-mobile-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-blur-mobile-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-blur-mobile-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": 2.4,
               "easing": "smooth"
             },
@@ -1758,7 +1782,7 @@
           62,
           50
         ],
-        "overlap": 0.34,
+        "overlap": 0.26,
         "direction": "left",
         "zoom": 1.06,
         "textEnd": 0.16,
@@ -1908,13 +1932,13 @@
             },
             {
               "id": "maris-living-copy-opacity-desktop-1",
-              "at": 0.52,
+              "at": 0.62,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-living-copy-opacity-desktop-2",
-              "at": 0.62,
+              "at": 0.7,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -1944,19 +1968,19 @@
             },
             {
               "id": "maris-living-copy-y-desktop-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-living-copy-y-desktop-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-living-copy-y-desktop-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": -11,
               "easing": "smooth"
             },
@@ -1986,19 +2010,19 @@
             },
             {
               "id": "maris-living-copy-blur-desktop-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-living-copy-blur-desktop-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-living-copy-blur-desktop-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": 4,
               "easing": "smooth"
             },
@@ -2028,13 +2052,13 @@
             },
             {
               "id": "maris-living-copy-opacity-mobile-1",
-              "at": 0.52,
+              "at": 0.62,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-living-copy-opacity-mobile-2",
-              "at": 0.62,
+              "at": 0.7,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -2059,31 +2083,31 @@
             {
               "id": "maris-living-copy-y-mobile-0",
               "at": 0,
-              "value": 22,
+              "value": 13.2,
               "easing": "smooth"
             },
             {
               "id": "maris-living-copy-y-mobile-1",
-              "at": 0.28,
-              "value": 0,
+              "at": 0.16,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-living-copy-y-mobile-2",
-              "at": 0.54,
-              "value": 0,
+              "at": 0.64,
+              "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-living-copy-y-mobile-3",
-              "at": 0.62,
-              "value": -11,
+              "at": 0.7,
+              "value": -6.6,
               "easing": "smooth"
             },
             {
               "id": "maris-living-copy-y-mobile-4",
               "at": 1,
-              "value": -11,
+              "value": -6.6,
               "easing": "linear"
             }
           ]
@@ -2106,19 +2130,19 @@
             },
             {
               "id": "maris-living-copy-blur-mobile-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-living-copy-blur-mobile-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-living-copy-blur-mobile-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": 2.4,
               "easing": "smooth"
             },
@@ -2314,7 +2338,7 @@
           64,
           50
         ],
-        "overlap": 0.34,
+        "overlap": 0.26,
         "direction": "up",
         "zoom": 1,
         "textEnd": 0.22,
@@ -2554,13 +2578,13 @@
             },
             {
               "id": "maris-material-copy-opacity-desktop-1",
-              "at": 0.52,
+              "at": 0.62,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-material-copy-opacity-desktop-2",
-              "at": 0.62,
+              "at": 0.7,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -2590,19 +2614,19 @@
             },
             {
               "id": "maris-material-copy-y-desktop-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-material-copy-y-desktop-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-material-copy-y-desktop-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": -11,
               "easing": "smooth"
             },
@@ -2632,19 +2656,19 @@
             },
             {
               "id": "maris-material-copy-blur-desktop-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-material-copy-blur-desktop-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-material-copy-blur-desktop-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": 4,
               "easing": "smooth"
             },
@@ -2674,13 +2698,13 @@
             },
             {
               "id": "maris-material-copy-opacity-mobile-1",
-              "at": 0.52,
+              "at": 0.62,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-material-copy-opacity-mobile-2",
-              "at": 0.62,
+              "at": 0.7,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -2705,31 +2729,31 @@
             {
               "id": "maris-material-copy-y-mobile-0",
               "at": 0,
-              "value": 22,
+              "value": 13.2,
               "easing": "smooth"
             },
             {
               "id": "maris-material-copy-y-mobile-1",
-              "at": 0.28,
-              "value": 0,
+              "at": 0.16,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-material-copy-y-mobile-2",
-              "at": 0.54,
-              "value": 0,
+              "at": 0.64,
+              "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-material-copy-y-mobile-3",
-              "at": 0.62,
-              "value": -11,
+              "at": 0.7,
+              "value": -6.6,
               "easing": "smooth"
             },
             {
               "id": "maris-material-copy-y-mobile-4",
               "at": 1,
-              "value": -11,
+              "value": -6.6,
               "easing": "linear"
             }
           ]
@@ -2752,19 +2776,19 @@
             },
             {
               "id": "maris-material-copy-blur-mobile-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-material-copy-blur-mobile-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-material-copy-blur-mobile-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": 2.4,
               "easing": "smooth"
             },
@@ -2960,7 +2984,7 @@
           50,
           50
         ],
-        "overlap": 0.34,
+        "overlap": 0.26,
         "direction": "up",
         "zoom": 1.06,
         "textEnd": 0.24,
@@ -3153,13 +3177,13 @@
             },
             {
               "id": "maris-wellness-copy-opacity-desktop-1",
-              "at": 0.52,
+              "at": 0.62,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-wellness-copy-opacity-desktop-2",
-              "at": 0.62,
+              "at": 0.7,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -3189,19 +3213,19 @@
             },
             {
               "id": "maris-wellness-copy-y-desktop-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-wellness-copy-y-desktop-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-wellness-copy-y-desktop-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": -11,
               "easing": "smooth"
             },
@@ -3231,19 +3255,19 @@
             },
             {
               "id": "maris-wellness-copy-blur-desktop-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-wellness-copy-blur-desktop-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-wellness-copy-blur-desktop-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": 4,
               "easing": "smooth"
             },
@@ -3273,13 +3297,13 @@
             },
             {
               "id": "maris-wellness-copy-opacity-mobile-1",
-              "at": 0.52,
+              "at": 0.62,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-wellness-copy-opacity-mobile-2",
-              "at": 0.62,
+              "at": 0.7,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -3304,31 +3328,31 @@
             {
               "id": "maris-wellness-copy-y-mobile-0",
               "at": 0,
-              "value": 22,
+              "value": 13.2,
               "easing": "smooth"
             },
             {
               "id": "maris-wellness-copy-y-mobile-1",
-              "at": 0.28,
-              "value": 0,
+              "at": 0.16,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-wellness-copy-y-mobile-2",
-              "at": 0.54,
-              "value": 0,
+              "at": 0.64,
+              "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-wellness-copy-y-mobile-3",
-              "at": 0.62,
-              "value": -11,
+              "at": 0.7,
+              "value": -6.6,
               "easing": "smooth"
             },
             {
               "id": "maris-wellness-copy-y-mobile-4",
               "at": 1,
-              "value": -11,
+              "value": -6.6,
               "easing": "linear"
             }
           ]
@@ -3351,19 +3375,19 @@
             },
             {
               "id": "maris-wellness-copy-blur-mobile-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-wellness-copy-blur-mobile-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-wellness-copy-blur-mobile-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": 2.4,
               "easing": "smooth"
             },
@@ -3559,7 +3583,7 @@
           56,
           52
         ],
-        "overlap": 0.3,
+        "overlap": 0.26,
         "direction": "right",
         "zoom": 1.06,
         "textEnd": 0.3,
@@ -3709,13 +3733,13 @@
             },
             {
               "id": "maris-studio-copy-opacity-desktop-1",
-              "at": 0.52,
+              "at": 0.62,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-studio-copy-opacity-desktop-2",
-              "at": 0.62,
+              "at": 0.7,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -3745,19 +3769,19 @@
             },
             {
               "id": "maris-studio-copy-y-desktop-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-studio-copy-y-desktop-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-studio-copy-y-desktop-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": -11,
               "easing": "smooth"
             },
@@ -3787,19 +3811,19 @@
             },
             {
               "id": "maris-studio-copy-blur-desktop-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-studio-copy-blur-desktop-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-studio-copy-blur-desktop-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": 4,
               "easing": "smooth"
             },
@@ -3829,13 +3853,13 @@
             },
             {
               "id": "maris-studio-copy-opacity-mobile-1",
-              "at": 0.52,
+              "at": 0.62,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-studio-copy-opacity-mobile-2",
-              "at": 0.62,
+              "at": 0.7,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -3860,31 +3884,31 @@
             {
               "id": "maris-studio-copy-y-mobile-0",
               "at": 0,
-              "value": 22,
+              "value": 13.2,
               "easing": "smooth"
             },
             {
               "id": "maris-studio-copy-y-mobile-1",
-              "at": 0.28,
-              "value": 0,
+              "at": 0.16,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-studio-copy-y-mobile-2",
-              "at": 0.54,
-              "value": 0,
+              "at": 0.64,
+              "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-studio-copy-y-mobile-3",
-              "at": 0.62,
-              "value": -11,
+              "at": 0.7,
+              "value": -6.6,
               "easing": "smooth"
             },
             {
               "id": "maris-studio-copy-y-mobile-4",
               "at": 1,
-              "value": -11,
+              "value": -6.6,
               "easing": "linear"
             }
           ]
@@ -3907,19 +3931,19 @@
             },
             {
               "id": "maris-studio-copy-blur-mobile-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-studio-copy-blur-mobile-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-studio-copy-blur-mobile-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": 2.4,
               "easing": "smooth"
             },
@@ -4115,7 +4139,7 @@
           55,
           50
         ],
-        "overlap": 0.34,
+        "overlap": 0.26,
         "direction": "up",
         "zoom": 1,
         "textEnd": 0.32,
@@ -4195,7 +4219,8 @@
               "alt": "Room open to the horizon"
             }
           ],
-          "sweep": 0.34
+          "sweep": 0.34,
+          "exit": 0.62
         }
       ],
       "hero": {
@@ -4341,13 +4366,13 @@
             },
             {
               "id": "maris-horizon-copy-opacity-desktop-1",
-              "at": 0.52,
+              "at": 0.62,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-horizon-copy-opacity-desktop-2",
-              "at": 0.62,
+              "at": 0.7,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -4377,19 +4402,19 @@
             },
             {
               "id": "maris-horizon-copy-y-desktop-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-horizon-copy-y-desktop-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-horizon-copy-y-desktop-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": -11,
               "easing": "smooth"
             },
@@ -4419,19 +4444,19 @@
             },
             {
               "id": "maris-horizon-copy-blur-desktop-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-horizon-copy-blur-desktop-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-horizon-copy-blur-desktop-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": 4,
               "easing": "smooth"
             },
@@ -4461,13 +4486,13 @@
             },
             {
               "id": "maris-horizon-copy-opacity-mobile-1",
-              "at": 0.52,
+              "at": 0.62,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-horizon-copy-opacity-mobile-2",
-              "at": 0.62,
+              "at": 0.7,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -4492,31 +4517,31 @@
             {
               "id": "maris-horizon-copy-y-mobile-0",
               "at": 0,
-              "value": 22,
+              "value": 13.2,
               "easing": "smooth"
             },
             {
               "id": "maris-horizon-copy-y-mobile-1",
-              "at": 0.28,
-              "value": 0,
+              "at": 0.16,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-horizon-copy-y-mobile-2",
-              "at": 0.54,
-              "value": 0,
+              "at": 0.64,
+              "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-horizon-copy-y-mobile-3",
-              "at": 0.62,
-              "value": -11,
+              "at": 0.7,
+              "value": -6.6,
               "easing": "smooth"
             },
             {
               "id": "maris-horizon-copy-y-mobile-4",
               "at": 1,
-              "value": -11,
+              "value": -6.6,
               "easing": "linear"
             }
           ]
@@ -4539,19 +4564,19 @@
             },
             {
               "id": "maris-horizon-copy-blur-mobile-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-horizon-copy-blur-mobile-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-horizon-copy-blur-mobile-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": 2.4,
               "easing": "smooth"
             },
@@ -4747,7 +4772,7 @@
           61,
           50
         ],
-        "overlap": 0.34,
+        "overlap": 0.26,
         "direction": "down",
         "zoom": 1.06,
         "textEnd": 0.26,
@@ -4914,13 +4939,13 @@
             },
             {
               "id": "maris-inquiry-copy-opacity-desktop-1",
-              "at": 0.52,
+              "at": 0.62,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-inquiry-copy-opacity-desktop-2",
-              "at": 0.62,
+              "at": 0.7,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -4950,19 +4975,19 @@
             },
             {
               "id": "maris-inquiry-copy-y-desktop-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-inquiry-copy-y-desktop-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-inquiry-copy-y-desktop-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": -11,
               "easing": "smooth"
             },
@@ -4992,19 +5017,19 @@
             },
             {
               "id": "maris-inquiry-copy-blur-desktop-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-inquiry-copy-blur-desktop-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-inquiry-copy-blur-desktop-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": 4,
               "easing": "smooth"
             },
@@ -5034,13 +5059,13 @@
             },
             {
               "id": "maris-inquiry-copy-opacity-mobile-1",
-              "at": 0.52,
+              "at": 0.62,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-inquiry-copy-opacity-mobile-2",
-              "at": 0.62,
+              "at": 0.7,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -5065,31 +5090,31 @@
             {
               "id": "maris-inquiry-copy-y-mobile-0",
               "at": 0,
-              "value": 22,
+              "value": 13.2,
               "easing": "smooth"
             },
             {
               "id": "maris-inquiry-copy-y-mobile-1",
-              "at": 0.28,
-              "value": 0,
+              "at": 0.16,
+              "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-inquiry-copy-y-mobile-2",
-              "at": 0.54,
-              "value": 0,
+              "at": 0.64,
+              "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-inquiry-copy-y-mobile-3",
-              "at": 0.62,
-              "value": -11,
+              "at": 0.7,
+              "value": -6.6,
               "easing": "smooth"
             },
             {
               "id": "maris-inquiry-copy-y-mobile-4",
               "at": 1,
-              "value": -11,
+              "value": -6.6,
               "easing": "linear"
             }
           ]
@@ -5112,19 +5137,19 @@
             },
             {
               "id": "maris-inquiry-copy-blur-mobile-1",
-              "at": 0.28,
+              "at": 0.16,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-inquiry-copy-blur-mobile-2",
-              "at": 0.54,
+              "at": 0.64,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-inquiry-copy-blur-mobile-3",
-              "at": 0.62,
+              "at": 0.7,
               "value": 2.4,
               "easing": "smooth"
             },
@@ -5320,7 +5345,7 @@
           60,
           50
         ],
-        "overlap": 0.34,
+        "overlap": 0.26,
         "direction": "up",
         "zoom": 1.06,
         "textEnd": 0.3,

@@ -15,7 +15,7 @@ const CHAPTER_MOTION: Record<string, { label: CinematicPreset; headline: Cinemat
   // for a beat before the ring itself goes.
   parti: {
     label: "label-track", headline: "headline-words", lede: "lede-words", pace: .9,
-    collapse: "section-lift", collapseAt: [.38, .48],
+    collapse: "section-lift", collapseAt: [.46, .54],
   },
   threshold: { label: "text-settle", headline: "headline-reveal", lede: "copy-drift", pace: .6, lead: .03 },
   living: { label: "label-track", headline: "headline-drop", lede: "lede-words", pace: 1, lead: .1, rows: "list-unfold", plates: "plate-rise" },
@@ -37,26 +37,25 @@ const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
   const motion = CHAPTER_MOTION[scene.id] ?? FALLBACK_MOTION;
   const scope = '[data-motion-scene="' + index + '"] ';
 
-  // Chapter shape: the photograph holds alone, the entrance plays, then everything sits
-  // completely still through a 90vh hold before the exit. The hold is what was missing -- the
-  // entrance used to finish and begin fading in the same breath, which is why it felt rushed.
-  const lead = motion.lead ?? .06;
+  // Chapter shape. The settled state is the point of the chapter, so the entrance is brief
+  // and the hold runs two full screens: 18vh lead, 53vh entrance, 202vh arrived, 35vh exit,
+  // 18vh still, 114vh handover at a 440vh chapter.
+  const lead = motion.lead ?? .04;
   const pace = Math.min(1.15, motion.pace);
   const at = (fraction: number) => start + span * Math.min(1, fraction);
   return [
-    { selector: scope + "[data-motion-index]", range: [at(lead), at(lead + .08 * pace)], preset: motion.label },
-    { selector: scope + "[data-motion-copy]", range: [at(lead + .02), at(lead + .12 * pace)], preset: motion.label },
-    { selector: scope + "[data-motion-headline]", range: [at(lead), at(lead + .2 * pace)], preset: motion.headline },
-    { selector: scope + "[data-motion-lede]", range: [at(lead + .06), at(lead + .24 * pace)], preset: motion.lede },
-    { selector: scope + "[data-motion-block]", range: [at(lead + .04), at(lead + .24)], preset: "copy-drift" },
-    { selector: scope + "[data-motion-row]", range: [at(lead + .06), at(lead + .25)], preset: motion.rows ?? "copy-drift" },
-    { selector: scope + "[data-motion-plate]", range: [at(lead + .08), at(lead + .26)], preset: motion.plates ?? "copy-drift" },
-    { selector: scope + "[data-motion-aside]", range: [at(lead + .1), at(lead + .26)], preset: "copy-drift" },
-    { selector: scope + "[data-motion-cta]", range: [at(lead + .12), at(lead + .28)], preset: "copy-drift" },
-    // Absolute, not lead-relative: the collapse has to sit exactly on the copy's exit window.
+    { selector: scope + "[data-motion-index]", range: [at(lead), at(lead + .05 * pace)], preset: motion.label },
+    { selector: scope + "[data-motion-copy]", range: [at(lead + .01), at(lead + .07 * pace)], preset: motion.label },
+    { selector: scope + "[data-motion-headline]", range: [at(lead), at(lead + .11 * pace)], preset: motion.headline },
+    { selector: scope + "[data-motion-lede]", range: [at(lead + .03), at(lead + .13 * pace)], preset: motion.lede },
+    { selector: scope + "[data-motion-block]", range: [at(lead + .02), at(lead + .12)], preset: "copy-drift" },
+    { selector: scope + "[data-motion-row]", range: [at(lead + .03), at(lead + .13)], preset: motion.rows ?? "copy-drift" },
+    { selector: scope + "[data-motion-plate]", range: [at(lead + .04), at(lead + .14)], preset: motion.plates ?? "copy-drift" },
+    { selector: scope + "[data-motion-aside]", range: [at(lead + .05), at(lead + .13)], preset: "copy-drift" },
+    { selector: scope + "[data-motion-cta]", range: [at(lead + .06), at(lead + .14)], preset: "copy-drift" },
     {
       selector: scope + "[data-motion-panel]",
-      range: [at(motion.collapseAt?.[0] ?? .52), at(motion.collapseAt?.[1] ?? .62)],
+      range: [at(motion.collapseAt?.[0] ?? .62), at(motion.collapseAt?.[1] ?? .7)],
       preset: motion.collapse ?? "section-collapse",
     },
   ];
