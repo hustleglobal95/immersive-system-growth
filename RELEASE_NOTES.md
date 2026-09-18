@@ -1,5 +1,7 @@
 # Release Notes
 
+- Productized Forge Studio around a Guided → Studio → Advanced model: first-run Guided Build, persistent next-step progress, Guided Ship with owner-unlocked HTTP-only publishing sessions, Command-K/Ctrl-K and slash command palette, docked Assist specialists, meaningful timeline/render labels, media-backed scene thumbnails, and accessibility labels for icon-only cockpit controls.
+
 ## 6.0.0
 
 - Added Autonomy Level 4 functional and motion gates: candidate-aware full runtime browser verification, fixed-timestep camera/hero motion analysis, reverse-state determinism, boundary continuity checks and optional multimodal motion-sequence critique.
