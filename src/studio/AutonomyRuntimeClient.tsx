@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useMemo } from "react";
 import { ExperienceConfigProvider } from "@/src/components/runtime/ExperienceConfigContext";
+import { WebGLBoundary } from "@/src/components/runtime/WebGLBoundary";
 import { CinematicMedia } from "@/src/components/dom/CinematicMedia";
 import { CinematicTransitionLayers } from "@/src/components/dom/CinematicTransitionLayers";
 import { ScrollController } from "@/src/runtime/ScrollController";
@@ -42,7 +43,7 @@ export function AutonomyRuntimeClient({
         <PointerController />
         <KeyboardController />
         <InteractionGraphController />
-        <SceneCanvas />
+        <WebGLBoundary><SceneCanvas /></WebGLBoundary>
         <CinematicMedia />
         <CinematicTransitionLayers />
         <main id="experience-content" className="narrative-document" aria-label={experience.meta.name}>
