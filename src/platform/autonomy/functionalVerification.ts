@@ -53,3 +53,23 @@ export function buildFunctionalVerificationPlan(packet: PromptIntelligencePacket
     },
   ];
 }
+
+
+export interface FunctionalVerificationResult {
+  id:string;
+  label:string;
+  viewport:"desktop"|"mobile";
+  reducedMotion:boolean;
+  passed:boolean;
+  details:string[];
+}
+
+export interface FunctionalVerificationReport {
+  version:1;
+  variant:"incumbent"|"candidate";
+  project:string;
+  results:FunctionalVerificationResult[];
+  hardGateFailures:string[];
+  runtimeErrors:Array<{ viewport:string; reducedMotion:boolean; type:string; message:string }>;
+  passed:boolean;
+}
