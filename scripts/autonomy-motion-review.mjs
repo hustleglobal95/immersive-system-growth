@@ -72,7 +72,7 @@ try {
             if(!bridge) throw new Error("Autonomy review bridge is unavailable.");
             bridge.seek(value);
             await new Promise((resolve)=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-            await new Promise((resolve)=>setTimeout(resolve,40));
+            await new Promise((resolve)=>setTimeout(resolve,220));
           },point.progress);
           const buffer=await page.locator(".studio-preview__canvas").first().screenshot({ animations:"disabled",timeout:15000 });
           images.push({ progress:point.progress,mimeType:"image/png",data:buffer.toString("base64") });
