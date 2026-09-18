@@ -20,6 +20,7 @@ export interface MotionSnapshot {
   sceneId:string;
   localProgress:number;
   camera:{ position:Vec3; target:Vec3; fov:number };
+  runtimeCamera?:{ position:Vec3; target:Vec3; fov:number };
   hero:{ position:Vec3; rotation:Vec3; scale:number };
   renderer?:{ frameMs?:number; calls?:number; triangles?:number; webglStatus?:string; quality?:string };
   reducedMotion?:boolean;
@@ -52,6 +53,7 @@ export interface MotionQualityReport {
     maxHeroStep:number;
     maxCameraVelocityRatio:number;
     maxHeroVelocityRatio:number;
+    maxRuntimeCameraDrift:number;
   };
 }
 
@@ -95,6 +97,7 @@ export function analyzeMotionQuality(input:{
   const reverseById=new Map(input.reverse.map((item)=>[item.point.id,item.snapshot]));
   let finite=true;
   let reversible=true;
+  let maxRuntimeCameraDrift=0;
 
   for(const point of input.plan.points) {
     const a=forwardById.get(point.id);
@@ -114,10 +117,28 @@ export function analyzeMotionQuality(input:{
     }
     const drift=snapshotDistance(a,b);
     if(drift>0.0025) {
-      const message=point.id+": forward/reverse state drifted at identical progress";
+      const message=point.id+": authored forward/reverse state drifted at identical progress";
       findings.push({ code:"motion.reverse.drift",severity:"blocker",sceneId:point.sceneId,progress:point.progress,message,metric:round(drift),threshold:0.0025 });
       hardGateFailures.push(message);
       reversible=false;
+    }
+    if(a.runtimeCamera && b.runtimeCamera) {
+      const runtimeDrift=cameraStateDistance(a.runtimeCamera,b.runtimeCamera);
+      maxRuntimeCameraDrift=Math.max(maxRuntimeCameraDrift,runtimeDrift);
+      if(runtimeDrift>0.75) {
+        const severe=runtimeDrift>3;
+        const message=point.id+": actual damped camera differs by direction at the same progress state";
+        findings.push({
+          code:"motion.runtime-camera.hysteresis",
+          severity:severe ? "blocker" : "major",
+          sceneId:point.sceneId,
+          progress:point.progress,
+          message,
+          metric:round(runtimeDrift),
+          threshold:severe ? 3 : 0.75,
+        });
+        if(severe) hardGateFailures.push(message);
+      }
     }
   }
 
@@ -234,6 +255,7 @@ export function analyzeMotionQuality(input:{
       maxHeroStep:round(heroSteps.length?Math.max(...heroSteps):0),
       maxCameraVelocityRatio:round(maxCameraVelocityRatio),
       maxHeroVelocityRatio:round(maxHeroVelocityRatio),
+      maxRuntimeCameraDrift:round(maxRuntimeCameraDrift),
     },
   };
 }
@@ -257,6 +279,9 @@ function snapshotDistance(a:MotionSnapshot,b:MotionSnapshot) {
     +vecDistance(a.hero.position,b.hero.position)
     +vecDistance(a.hero.rotation,b.hero.rotation)*0.2
     +Math.abs(a.hero.scale-b.hero.scale)*0.4;
+}
+function cameraStateDistance(a:{ position:Vec3; target:Vec3; fov:number },b:{ position:Vec3; target:Vec3; fov:number }) {
+  return vecDistance(a.position,b.position)+0.35*vecDistance(a.target,b.target)+0.025*Math.abs(a.fov-b.fov);
 }
 function vecDistance(a:Vec3,b:Vec3) {
   return Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);
