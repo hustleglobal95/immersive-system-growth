@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { readSearch, useClientValue } from "@/src/lib/useClientValue";
 import Link from "next/link";
 import rawExperience from "@/config/experience.json";
 import rawProject from "@/config/studio-project.json";
@@ -35,8 +36,13 @@ export function AssetCreationWorkbench() {
   const [installed, setInstalled] = useState(false);
   const refineStarted = useRef(false);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
+  // An asset gap hands this workspace its brief in the URL. Read it during render and apply it
+  // once, rather than rendering empty fields and then filling them from an effect.
+  const search = useClientValue(readSearch, "");
+  const [seededFrom, setSeededFrom] = useState(search);
+  if (seededFrom !== search) {
+    setSeededFrom(search);
+    const params = new URLSearchParams(search);
     const nextName = params.get("asset");
     const nextType = params.get("type") as ForgeAssetType | null;
     const nextReason = params.get("reason");
@@ -50,9 +56,7 @@ export function AssetCreationWorkbench() {
     const seededPrompt = params.get("prompt");
     if (seededPrompt) setPrompt(seededPrompt.slice(0, 4000));
     else if (nextName || nextReason) setPrompt(buildPrompt(nextName ?? name, nextType ?? type, nextReason ?? reason));
-  // URL seed should only be consumed once.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }
 
   const provider = preferredAssetProvider(type);
   const providerLabel = provider === "meshy" ? "Meshy" : provider?.startsWith("higgsfield") ? "Higgsfield" : "Not connected";

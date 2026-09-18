@@ -1,6 +1,6 @@
 "use client";
 
-import { createElement, useEffect, useRef, type ElementType, type ReactNode } from "react";
+import { useEffect, useRef, type ElementType, type ReactNode, type RefObject } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
@@ -69,10 +69,13 @@ export function CinematicTextReveal({
     };
   }, [mode, once, stagger, start, yPercent]);
 
-  return createElement(Tag, {
-    ref: (node: HTMLElement | null) => {
-      ref.current = node;
-    },
-    className,
-  }, children);
+  // JSX with a dynamic tag, rather than createElement with a hand-rolled ref callback: React
+  // attaches the ref on commit, and the ref is never read during render. The public `as` prop
+  // stays a plain ElementType; it is narrowed here only so TypeScript can see the props we pass.
+  const Component = Tag as (props: {
+    ref?: RefObject<HTMLElement | null>;
+    className?: string;
+    children?: ReactNode;
+  }) => ReactNode;
+  return <Component ref={ref} className={className}>{children}</Component>;
 }

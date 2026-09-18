@@ -30,7 +30,11 @@ export function AutonomyPreviewClient({
   const sceneCount=experience.scenes.length;
   const sceneIds=useMemo(()=>experience.scenes.map((scene)=>scene.id),[experience]);
 
-  useEffect(()=>{ reviewProgressRef.current=progress; setReviewProgress(progress); },[progress]);
+  // Follow the incoming progress prop by adjusting during render; the ref mirrors whatever
+  // state settled, so the review bridge and the rendered frame can never disagree.
+  const [lastProgress,setLastProgress]=useState(progress);
+  if(lastProgress!==progress){ setLastProgress(progress); setReviewProgress(progress); }
+  useEffect(()=>{ reviewProgressRef.current=reviewProgress; },[reviewProgress]);
 
   useEffect(()=>{
     const bridge:ReviewBridge={

@@ -157,7 +157,10 @@ function hex(value:string|undefined){const v=(value??"#ffffff").replace("#","");
 
 export function CinematicShaderCanvas(props:Props){
   const canvas=useRef<HTMLCanvasElement>(null),runtime=useRef<Runtime|null>(null),values=useRef(props);
-  values.current=props;
+  // The render loop reads the latest props off this ref instead of re-subscribing every frame.
+  // Updating it after commit rather than during render keeps the write out of the render phase;
+  // the loop samples it per frame, so it picks the new values up on the next tick.
+  useEffect(()=>{values.current=props;});
   useEffect(()=>{
     let disposed=false, unsubscribe: null | (()=>void)=null;
     const element=canvas.current;

@@ -29,9 +29,10 @@ export function StudioWorkflowDock() {
 
   const refresh = useCallback(() => setSnapshot(readSnapshot()), []);
 
+  // The launcher refreshes before it opens the dock, so the effect only has to keep the
+  // snapshot current while the dock stays open.
   useEffect(() => {
     if (!open) return;
-    refresh();
     const timer = window.setInterval(refresh, 700);
     return () => window.clearInterval(timer);
   }, [open, refresh]);

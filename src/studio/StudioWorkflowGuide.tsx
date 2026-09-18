@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { readStored, useClientValue } from "@/src/lib/useClientValue";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig } from "@/src/types/experience";
 import type { StudioProject } from "@/src/platform/studioSchema";
@@ -32,11 +33,15 @@ export function StudioWorkflowGuide({
   onOpenMotion: () => void;
   onOpenShip: () => void;
 }) {
-  const [brief, setBrief] = useState("");
-
-  useEffect(() => {
-    try { setBrief(window.localStorage.getItem(BRIEF_KEY) ?? ""); } catch { /* local storage may be unavailable */ }
-  }, []);
+  // Read the stored brief during render rather than setting it from an effect, so the guide
+  // never renders an empty textarea for a frame and then replaces it.
+  const storedBrief = useClientValue(() => readStored(BRIEF_KEY), "");
+  const [brief, setBrief] = useState(storedBrief);
+  const [seededFrom, setSeededFrom] = useState(storedBrief);
+  if (seededFrom !== storedBrief) {
+    setSeededFrom(storedBrief);
+    setBrief(storedBrief);
+  }
 
   const saveBrief = (value: string) => {
     setBrief(value);

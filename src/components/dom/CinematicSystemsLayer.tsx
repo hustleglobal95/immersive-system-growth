@@ -21,7 +21,11 @@ export function CinematicSystemsLayer(){
   const composed=useMemo(()=>config?composeCinematicScene(config,{progress:local,pointer:{x:pointer.x,y:pointer.y,velocity:pointer.speed,trailEnergy:pointer.trailEnergy}}):null,[config,local,pointer.x,pointer.y,pointer.speed,pointer.trailEnergy]);
   const gpuEligible=!!(base?.media?.kind==="image"&&config&&(config.spatial||config.reveal)&&quality!=="low"&&!reduced&&!shaderFailed);
 
-  useEffect(()=>{setShaderReady(false);setShaderFailed(false);},[activeScene]);
+  // Each scene compiles its own shader, so readiness resets when the scene changes. Adjusting
+  // during render means the layer never paints one frame claiming the previous scene's shader
+  // is ready for the new scene.
+  const [shaderScene,setShaderScene]=useState(activeScene);
+  if(shaderScene!==activeScene){setShaderScene(activeScene);setShaderReady(false);setShaderFailed(false);}
 
   useEffect(()=>{
     if(!config||!composed)return;
