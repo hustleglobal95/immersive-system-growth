@@ -9,7 +9,7 @@ import {
 } from "../src/platform/director-intelligence/technicalDoctrine";
 
 test("primary-source technical doctrine covers critical immersive runtime concerns", () => {
-  assert.equal(immersiveTechnicalDoctrine.length, 7);
+  assert.equal(immersiveTechnicalDoctrine.length, 16);
   const ids = new Set(immersiveTechnicalDoctrine.map((item) => item.id));
 
   for (const id of [
@@ -20,6 +20,15 @@ test("primary-source technical doctrine covers critical immersive runtime concer
     "gsap-one-heartbeat",
     "gsap-high-frequency-setters",
     "refresh-rate-independent-time",
+    "three-compressed-runtime-assets",
+    "three-batching-instancing",
+    "media-capability-selection",
+    "page-visibility-suspension",
+    "reduced-motion-substitution",
+    "audio-analysis-smoothing",
+    "view-transition-lifecycle",
+    "renderer-info-budgeting",
+    "gsap-responsive-lifecycle",
   ]) {
     assert.ok(ids.has(id), `Missing doctrine: ${id}`);
   }
