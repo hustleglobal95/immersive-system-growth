@@ -225,6 +225,19 @@ Blender/C4D/Houdini are not only asset exporters. Node names, pivots, zones, ani
 
 Rendering quality is not only about lower resolution. Expensive work should disappear when it cannot change visible pixels: offscreen scenes stop, raycasts wait for dirty input, compute passes run only while their effect is active, deep visual-stack items remain simplified, and worker isolation is reserved for measured main-thread contention.
 
+## Pattern maturity
+
+Not every lesson in the corpus deserves equal authority. Forge now tracks global support for each construction pattern across all reviewed precedents.
+
+Patterns are classified as:
+
+- **emerging** — one reviewed precedent;
+- **supported** — at least two reviewed precedents;
+- **established** — at least three precedents across at least two independent source hosts;
+- **strong** — at least five precedents across at least three independent source hosts.
+
+Director still may use an emerging pattern when it precisely fits a client's idea, but it can distinguish a one-off experiment from a technique repeatedly validated across unrelated productions. Pattern evidence includes both the references retrieved for the current brief and the pattern's global reference/source counts.
+
 ## Primary technical doctrine
 
 Creative precedents answer **what construction choices repeatedly work**. Primary technical documentation answers **how the underlying browser/runtime behavior actually works**.
