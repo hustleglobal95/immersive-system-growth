@@ -2123,6 +2123,79 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
     avoid: ["Sound effects attached indiscriminately to every motion event.", "Visual transitions that reset ambience abruptly without narrative reason."],
   },
   {
+    id: "storyboard-before-wireframe",
+    title: "Storyboard temporal experiences before conventional wireframes",
+    signals: ["storyboard", "story", "sequence", "long-scroll", "cinematic", "pacing", "chapter"],
+    composition: [
+      "For experiences whose value depends on order, reveal and transition, define the sequence of visual beats before optimizing individual screens.",
+      "Each storyboard frame should identify the dominant subject, copy role, carried anchor and visual temperature.",
+    ],
+    motion: [
+      "Use the storyboard to set intensity, duration character and transition intent before assigning easing or implementation detail.",
+    ],
+    transitions: [
+      "Design the connection between beats at the same time as the beats themselves so the site never becomes a stack of individually polished sections.",
+    ],
+    interaction: [
+      "Mark which beats are directed and which give control back to the visitor before implementation.",
+    ],
+    implementation: [
+      "Store chapter/beat intent in Forge treatment data so camera, media and DOM implementation can be changed without losing the temporal plan.",
+    ],
+    mobile: [
+      "Re-storyboard the portrait journey when pacing or visual order must change; do not merely compress the desktop sequence.",
+    ],
+    avoid: ["Designing every section in isolation and inventing transitions afterward.", "Treating a cinematic long-scroll as a static sitemap plus animation."],
+  },
+  {
+    id: "grid-as-orientation-memory",
+    title: "Use a persistent grid as navigational memory",
+    signals: ["grid", "columns", "editorial", "orientation", "navigation", "portfolio", "layout"],
+    composition: [
+      "Keep a recognizable column/gutter/alignment system across changing media scales so visitors retain spatial orientation while compositions become expressive.",
+      "Allow hero media to span or break the grid selectively, but preserve enough stable alignments that the break feels intentional.",
+    ],
+    motion: [
+      "Transitions may temporarily detach content from the grid, then land the next chapter on an identifiable shared alignment.",
+    ],
+    transitions: [
+      "Use column edges, baselines and image bounds as transition anchors so spatial continuity survives large visual changes.",
+    ],
+    interaction: [],
+    implementation: [
+      "Represent the grid as project-level runtime data/tokens and use the same geometry for DOM placement, WebGL alignment and visual QA.",
+    ],
+    mobile: [
+      "Define a separate portrait grid that preserves hierarchy and recurring alignment relationships.",
+    ],
+    avoid: ["A different alignment system per section.", "Breaking the grid everywhere until no stable orientation remains."],
+  },
+  {
+    id: "interface-recedes-behind-content",
+    title: "Let the interface disappear when content is strong enough",
+    signals: ["minimal", "editorial", "content", "portfolio", "gallery", "quiet", "interface"],
+    composition: [
+      "Remove persistent controls, labels and decoration that compete with high-quality media when the next action remains inferable.",
+      "Use negative space, crop and sequence to create discoverability before adding visible UI chrome.",
+    ],
+    motion: [
+      "Interaction feedback should be subtle and local when the work itself carries the emotional weight.",
+    ],
+    transitions: [
+      "Use media continuity and spacing rhythm to guide progression instead of adding a transition layer solely to announce every change.",
+    ],
+    interaction: [
+      "Keep direct navigation accessible even when the visible interface is intentionally quiet.",
+    ],
+    implementation: [
+      "Separate accessibility/navigation structure from decorative chrome so visual reduction never removes semantic wayfinding.",
+    ],
+    mobile: [
+      "Restore explicit controls where touch discoverability would otherwise fall below an acceptable threshold.",
+    ],
+    avoid: ["Minimalism that makes navigation ambiguous.", "Adding interface decoration merely to make quiet sections feel designed."],
+  },
+  {
     id: "prewarm-signature-systems",
     title: "Prewarm signature systems",
     signals: ["shader", "3d", "video", "particles", "postprocessing", "cinematic", "performance"],
