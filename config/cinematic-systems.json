@@ -1,38 +1,121 @@
 {
   "version": 1,
   "defaults": {
-    "spring": {"mass": 1, "stiffness": 104, "damping": 23, "precision": 0.001, "maxStep": 0.0333333333},
-    "pointer": {"trailLength": 24, "smoothing": 0.1, "velocityClamp": 4, "dwellMs": 350},
+    "spring": {
+      "mass": 1,
+      "stiffness": 104,
+      "damping": 23,
+      "precision": 0.001,
+      "maxStep": 0.0333333333
+    },
+    "pointer": {
+      "trailLength": 24,
+      "smoothing": 0.1,
+      "velocityClamp": 4,
+      "dwellMs": 350
+    },
     "reducedMotion": "minimal"
   },
   "scenes": [
     {
       "id": "approach",
-      "stack": {"enabled": false, "scaleTo": 0.96, "darkenTo": 0.12, "depth": 72, "overlap": 0.22, "pin": true},
+      "stack": {
+        "enabled": false,
+        "scaleTo": 0.96,
+        "darkenTo": 0.12,
+        "depth": 72,
+        "overlap": 0.22,
+        "pin": true
+      },
       "procedural": [
-        {"id": "coastal-contours", "kind": "contours", "opacity": 0.12, "color": "#d7c2a3", "range": [0, 1], "blendMode": "screen", "interactive": true, "seed": 31, "count": 20, "amplitude": 0.4, "frequency": 2.3}
+        {
+          "id": "coastal-contours",
+          "kind": "contours",
+          "opacity": 0.12,
+          "color": "#d7c2a3",
+          "range": [
+            0,
+            1
+          ],
+          "blendMode": "screen",
+          "interactive": true,
+          "seed": 31,
+          "count": 20,
+          "amplitude": 0.4,
+          "frequency": 2.3
+        }
       ],
       "occlusion": []
     },
     {
       "id": "parti",
       "procedural": [
-        {"id": "parti-halftone", "kind": "halftone", "opacity": 0.12, "color": "#ffffff", "range": [0.08, 0.92], "blendMode": "screen", "interactive": true, "seed": 102, "count": 8004, "radius": 1.1, "response": 1.15}
+        {
+          "id": "parti-halftone",
+          "kind": "halftone",
+          "opacity": 0.12,
+          "color": "#ffffff",
+          "range": [
+            0.08,
+            0.92
+          ],
+          "blendMode": "screen",
+          "interactive": true,
+          "seed": 102,
+          "count": 8004,
+          "radius": 1.1,
+          "response": 1.15
+        }
       ],
       "occlusion": []
     },
     {
       "id": "threshold",
-      "stack": {"enabled": false, "scaleTo": 0.96, "darkenTo": 0.12, "depth": 96, "overlap": 0.3, "pin": true},
+      "stack": {
+        "enabled": false,
+        "scaleTo": 0.96,
+        "darkenTo": 0.12,
+        "depth": 96,
+        "overlap": 0.3,
+        "pin": true
+      },
       "procedural": [],
       "occlusion": [
-        {"id": "threshold-shadow", "kind": "shadow", "range": [0.62, 0.96], "axis": "x", "from": 110, "to": -110, "blur": 20, "opacity": 0.55, "depth": 1}
+        {
+          "id": "threshold-shadow",
+          "kind": "shadow",
+          "range": [
+            0.62,
+            0.96
+          ],
+          "axis": "x",
+          "from": 110,
+          "to": -110,
+          "blur": 20,
+          "opacity": 0.55,
+          "depth": 1
+        }
       ]
     },
     {
       "id": "material",
       "procedural": [
-        {"id": "material-grid", "kind": "grid", "opacity": 0.12, "color": "#eadbc5", "range": [0.05, 0.95], "blendMode": "screen", "interactive": true, "seed": 9, "columns": 16, "rows": 10, "distortion": 0.18}
+        {
+          "id": "material-grid",
+          "kind": "grid",
+          "opacity": 0.12,
+          "color": "#eadbc5",
+          "range": [
+            0.05,
+            0.95
+          ],
+          "blendMode": "screen",
+          "interactive": true,
+          "seed": 9,
+          "columns": 16,
+          "rows": 10,
+          "distortion": 0.18
+        }
       ],
       "occlusion": []
     },
@@ -40,30 +123,74 @@
       "id": "wellness",
       "procedural": [],
       "occlusion": [
-        {"id": "wellness-blur", "kind": "blur", "range": [0.58, 0.9], "axis": "y", "from": 100, "to": -100, "blur": 32, "opacity": 0.45, "depth": 2}
+        {
+          "id": "wellness-blur",
+          "kind": "blur",
+          "range": [
+            0.58,
+            0.9
+          ],
+          "axis": "y",
+          "from": 100,
+          "to": -100,
+          "blur": 32,
+          "opacity": 0.45,
+          "depth": 2
+        }
       ]
     },
     {
       "id": "horizon",
-      "stack": {"enabled": false, "scaleTo": 0.96, "darkenTo": 0.12, "depth": 44, "overlap": 0.18, "pin": true},
+      "stack": {
+        "enabled": false,
+        "scaleTo": 0.96,
+        "darkenTo": 0.12,
+        "depth": 44,
+        "overlap": 0.18,
+        "pin": true
+      },
       "procedural": [
         {
           "id": "horizon-trace",
           "kind": "line-trace",
           "opacity": 0.12,
           "color": "#d7c2a3",
-          "range": [0.08, 0.9],
+          "range": [
+            0.08,
+            0.9
+          ],
           "blendMode": "screen",
           "interactive": false,
           "seed": 58,
           "points": [
-            [0.04, 0.58],
-            [0.18, 0.52],
-            [0.32, 0.54],
-            [0.47, 0.47],
-            [0.61, 0.49],
-            [0.76, 0.42],
-            [0.95, 0.4]
+            [
+              0.04,
+              0.58
+            ],
+            [
+              0.18,
+              0.52
+            ],
+            [
+              0.32,
+              0.54
+            ],
+            [
+              0.47,
+              0.47
+            ],
+            [
+              0.61,
+              0.49
+            ],
+            [
+              0.76,
+              0.42
+            ],
+            [
+              0.95,
+              0.4
+            ]
           ],
           "duration": 6
         }
@@ -72,27 +199,247 @@
       "diagram": {
         "kind": "floor-plan",
         "points": [
-          {"id": "court", "x": 0.2, "y": 0.55, "label": "COURT"},
-          {"id": "living-axis", "x": 0.43, "y": 0.46, "label": "LIVING"},
-          {"id": "terrace-axis", "x": 0.67, "y": 0.42, "label": "TERRACE"},
-          {"id": "horizon-axis", "x": 0.87, "y": 0.37, "label": "SEA"}
+          {
+            "id": "road-w",
+            "x": 0.04,
+            "y": 0.1,
+            "label": "APPROACH ROAD"
+          },
+          {
+            "id": "road-e",
+            "x": 0.96,
+            "y": 0.1
+          },
+          {
+            "id": "drive-top",
+            "x": 0.33,
+            "y": 0.1
+          },
+          {
+            "id": "drive-foot",
+            "x": 0.33,
+            "y": 0.19
+          },
+          {
+            "id": "wall-in",
+            "x": 0.315,
+            "y": 0.21,
+            "label": "ENTRY 1.9 M"
+          },
+          {
+            "id": "wall-out",
+            "x": 0.315,
+            "y": 0.33
+          },
+          {
+            "id": "screen-in",
+            "x": 0.345,
+            "y": 0.21
+          },
+          {
+            "id": "screen-out",
+            "x": 0.345,
+            "y": 0.33
+          },
+          {
+            "id": "plane-a-w",
+            "x": 0.22,
+            "y": 0.36
+          },
+          {
+            "id": "plane-a-e",
+            "x": 0.8,
+            "y": 0.36
+          },
+          {
+            "id": "plane-b-w",
+            "x": 0.22,
+            "y": 0.58
+          },
+          {
+            "id": "plane-b-e",
+            "x": 0.8,
+            "y": 0.58
+          },
+          {
+            "id": "court-nw",
+            "x": 0.38,
+            "y": 0.36,
+            "label": "COURT"
+          },
+          {
+            "id": "court-sw",
+            "x": 0.38,
+            "y": 0.58
+          },
+          {
+            "id": "court-ne",
+            "x": 0.58,
+            "y": 0.36
+          },
+          {
+            "id": "court-se",
+            "x": 0.58,
+            "y": 0.58
+          },
+          {
+            "id": "axis-head",
+            "x": 0.48,
+            "y": 0.34
+          },
+          {
+            "id": "axis-foot",
+            "x": 0.48,
+            "y": 0.9
+          },
+          {
+            "id": "bath-nw",
+            "x": 0.62,
+            "y": 0.62
+          },
+          {
+            "id": "bath-ne",
+            "x": 0.71,
+            "y": 0.62
+          },
+          {
+            "id": "bath-se",
+            "x": 0.71,
+            "y": 0.72
+          },
+          {
+            "id": "bath-sw",
+            "x": 0.62,
+            "y": 0.72,
+            "label": "BATHING COURT"
+          },
+          {
+            "id": "pool-nw",
+            "x": 0.24,
+            "y": 0.78
+          },
+          {
+            "id": "pool-ne",
+            "x": 0.56,
+            "y": 0.78
+          },
+          {
+            "id": "pool-se",
+            "x": 0.56,
+            "y": 0.86
+          },
+          {
+            "id": "pool-sw",
+            "x": 0.24,
+            "y": 0.86
+          },
+          {
+            "id": "sea-w",
+            "x": 0.02,
+            "y": 0.93,
+            "label": "SEA LINE"
+          },
+          {
+            "id": "sea-e",
+            "x": 0.98,
+            "y": 0.93
+          }
         ],
         "edges": [
-          {"from": "court", "to": "living-axis"},
-          {"from": "living-axis", "to": "terrace-axis"},
-          {"from": "terrace-axis", "to": "horizon-axis"}
+          {
+            "from": "road-w",
+            "to": "road-e"
+          },
+          {
+            "from": "drive-top",
+            "to": "drive-foot"
+          },
+          {
+            "from": "wall-in",
+            "to": "wall-out"
+          },
+          {
+            "from": "screen-in",
+            "to": "screen-out"
+          },
+          {
+            "from": "plane-a-w",
+            "to": "plane-a-e"
+          },
+          {
+            "from": "plane-b-w",
+            "to": "plane-b-e"
+          },
+          {
+            "from": "court-nw",
+            "to": "court-sw"
+          },
+          {
+            "from": "court-ne",
+            "to": "court-se"
+          },
+          {
+            "from": "axis-head",
+            "to": "axis-foot"
+          },
+          {
+            "from": "bath-nw",
+            "to": "bath-ne"
+          },
+          {
+            "from": "bath-ne",
+            "to": "bath-se"
+          },
+          {
+            "from": "bath-se",
+            "to": "bath-sw"
+          },
+          {
+            "from": "bath-sw",
+            "to": "bath-nw"
+          },
+          {
+            "from": "pool-nw",
+            "to": "pool-ne"
+          },
+          {
+            "from": "pool-ne",
+            "to": "pool-se"
+          },
+          {
+            "from": "pool-se",
+            "to": "pool-sw"
+          },
+          {
+            "from": "pool-sw",
+            "to": "pool-nw"
+          },
+          {
+            "from": "sea-w",
+            "to": "sea-e"
+          }
         ],
-        "stroke": "#ffffff",
+        "stroke": "#efe4d2",
         "accent": "#d7c2a3",
-        "lineWidth": 1.2,
-        "drawRange": [0.1, 0.88],
+        "lineWidth": 0.9,
+        "drawRange": [
+          0.14,
+          0.82
+        ],
         "labels": true,
         "interactive": false
       }
     },
     {
       "id": "inquiry",
-      "stack": {"enabled": false, "scaleTo": 0.96, "darkenTo": 0.12, "depth": 100, "overlap": 0.28, "pin": true},
+      "stack": {
+        "enabled": false,
+        "scaleTo": 0.96,
+        "darkenTo": 0.12,
+        "depth": 100,
+        "overlap": 0.28,
+        "pin": true
+      },
       "procedural": [],
       "occlusion": []
     }

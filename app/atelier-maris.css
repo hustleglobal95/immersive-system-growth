@@ -516,3 +516,58 @@ body[data-project="atelier-maris"] .lead__download a {
   body[data-project="atelier-maris"] .lead__form { grid-template-columns: minmax(0, 1fr); gap: 22px; }
   body[data-project="atelier-maris"] .lead__title { max-width: 100%; }
 }
+
+/* ---------------------------------------------------------------------------
+   Site plan plate
+   The plan is sited as its own drawing rather than spread behind the copy,
+   which is where its labels used to collide with the headline.
+   --------------------------------------------------------------------------- */
+body[data-project="atelier-maris"] .cinematic-diagram {
+  /* Sited in the band below the copy: a key plan in the corner of the sheet. The height is
+     capped so the plate's top clears the lede, which is the only constraint that holds however
+     the centred copy wraps. */
+  inset: 9vh auto auto 5vw;
+  /* content-box with the viewBox's own ratio, so percentage annotations land on their points
+     and the plan is never stretched. Sized so the plate's foot clears the chapter eyebrow. */
+  box-sizing: content-box;
+  width: min(360px, 28vw);
+  height: auto;
+  aspect-ratio: 5 / 3;
+  /* A key plan is presented on the sheet, not floated over the photograph: a held-back ink
+     panel and a hairline give the drawing its own ground, which is also what makes hairline
+     strokes legible over whatever is behind them. */
+  padding: 16px 18px;
+  background: rgba(9, 8, 6, .44);
+  backdrop-filter: blur(7px);
+  border: 1px solid rgba(235, 220, 198, .22);
+}
+body[data-project="atelier-maris"] .cinematic-diagram__label {
+  font-family: var(--font-dm-sans), Arial, sans-serif;
+  font-size: 10.5px;
+  letter-spacing: .14em;
+}
+
+/* ---------------------------------------------------------------------------
+   Chrome between phone and desktop
+   The three-column header crowds from roughly 640 to 900: the wordmark reached
+   the first nav item with no gap, and the project meta wrapped onto five lines
+   into the chapter rail.
+   --------------------------------------------------------------------------- */
+@media (min-width: 761px) and (max-width: 1000px) {
+  .atelier-maris-chrome { padding: 20px 22px; column-gap: 20px; }
+  .atelier-maris-brand { font-size: 17px; letter-spacing: .15em; }
+  .atelier-maris-nav { gap: 18px; font-size: 10px; letter-spacing: .12em; }
+  .atelier-maris-meta { font-size: 9px; letter-spacing: .1em; white-space: nowrap; }
+  body[data-project="atelier-maris"] .cinematic-diagram {
+    inset: 10vh auto auto 22px;
+    width: min(360px, 52vw);
+    padding: 13px 15px;
+  }
+}
+@media (max-width: 760px) {
+  body[data-project="atelier-maris"] .cinematic-diagram {
+    inset: 9vh auto auto 22px;
+    width: 70vw;
+    padding: 11px 13px;
+  }
+}

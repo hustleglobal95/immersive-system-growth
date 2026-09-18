@@ -72,6 +72,47 @@ export function CinematicSystemsLayer(){
     <canvas ref={canvas} style={{position:"absolute",inset:0,width:"100%",height:"100%"}} />
     {composed?.stack&&<div style={{position:"absolute",inset:0,background:"#000",opacity:reduced?0:composed.stack.shade,pointerEvents:"none"}} />}
     {composed?.occlusion.map(({config:layer,sample})=>sample.visible?<div key={layer.id} style={{position:"absolute",inset:"-12%",opacity:reduced?0:sample.opacity,filter:`blur(${sample.blur}px)`,transform:layer.axis==="x"?`translate3d(${sample.translate}%,0,0)`:`translate3d(0,${sample.translate}%,0)`,zIndex:Math.round(20+sample.depth*5),background:layer.kind==="shadow"?"linear-gradient(90deg,transparent,rgba(0,0,0,.92),transparent)":layer.kind==="blur"?"rgba(255,255,255,.035)":layer.kind==="gradient"?"linear-gradient(110deg,rgba(255,255,255,.08),rgba(0,0,0,.75))":undefined,backgroundImage:layer.kind==="image"&&layer.src?`url(${layer.src})`:undefined,backgroundSize:"cover",backgroundPosition:"center"}}/>:null)}
-    {composed?.diagram&&<svg viewBox="0 0 1000 600" preserveAspectRatio="none" style={{position:"absolute",inset:"10%",width:"80%",height:"80%",overflow:"visible"}}>{composed.diagram.sample.edges.map((edge,index)=>{const segment=svgSegment(edge.from,edge.to,reduced?1:edge.progress);return <line key={`${edge.from.id}-${edge.to.id}-${index}`} {...segment} stroke={composed.diagram!.config.stroke} strokeWidth={composed.diagram!.config.lineWidth} vectorEffect="non-scaling-stroke"/>;})}{composed.diagram.config.labels&&composed.diagram.sample.points.map(point=><g key={point.id} transform={`translate(${point.x*1000} ${point.y*600})`}><circle r="4" fill={composed.diagram!.config.accent}/>{point.label&&<text x="10" y="-9" fill={composed.diagram!.config.stroke} fontSize="14">{point.label}</text>}</g>)}</svg>}
+    {composed?.diagram && (
+      /* The drawing is strokes in SVG and annotations in HTML.
+         Text inside a scaled viewBox is measured in user units, so a label authored at 11px
+         rendered at about 4 and could not be read. The annotations are therefore ordinary
+         elements positioned by percentage, which keeps them at a real type size at any plate
+         size. That mapping is exact as long as the plate's content box carries the viewBox's
+         own 5:3 ratio, which the project skin sets; edges carry their own progress from the
+         shared sampler, which is what draws the plan line by line as the chapter is read. */
+      <div className="cinematic-diagram" aria-hidden="true">
+        <svg className="cinematic-diagram__ink" viewBox="0 0 1000 600" preserveAspectRatio="none">
+          {composed.diagram.sample.edges.map((edge, index) => (
+            <line
+              key={`${edge.from.id}-${edge.to.id}-${index}`}
+              {...svgSegment(edge.from, edge.to, reduced ? 1 : edge.progress)}
+              stroke={composed.diagram!.config.stroke}
+              strokeWidth={composed.diagram!.config.lineWidth}
+              vectorEffect="non-scaling-stroke"
+            />
+          ))}
+        </svg>
+        {composed.diagram.config.labels &&
+          composed.diagram.sample.points
+            // A tick is an annotation, so only an annotated point carries one. A marker on every
+            // vertex of a real plan reads as noise rather than as a drawing.
+            .filter((point) => point.label)
+            .map((point) => (
+              <span
+                key={point.id}
+                className="cinematic-diagram__label"
+                data-flip={point.x > 0.62 ? "true" : undefined}
+                style={{
+                  left: `${point.x * 100}%`,
+                  top: `${point.y * 100}%`,
+                  color: composed.diagram!.config.stroke,
+                  ["--tick" as string]: composed.diagram!.config.accent,
+                }}
+              >
+                {point.label}
+              </span>
+            ))}
+      </div>
+    )}
   </div>;
 }
