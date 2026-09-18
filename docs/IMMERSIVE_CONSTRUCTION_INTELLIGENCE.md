@@ -4,7 +4,7 @@ Forge already has the runtime systems required to build high-end immersive websi
 
 The objective is not to add another animation library or replace Forge's cinematic architecture. The objective is to make Director understand how strong immersive sites are composed so it can choose the right existing Forge systems with much less trial and error.
 
-The current research base contains **170 evidence-graded references** and **92 executable construction patterns**. Reference selection is source-diversified and recurring patterns are ranked by evidence strength plus independent source support rather than by a single favorite studio.
+The current research base contains **196 evidence-graded references** and **98 executable construction patterns**. Reference selection is source-diversified and recurring patterns are ranked by evidence strength plus independent source support rather than by a single favorite studio.
 
 ## Operating rule
 
@@ -248,7 +248,7 @@ The executable doctrine lives in:
 
 `src/platform/director-intelligence/technicalDoctrine.ts`
 
-The current seven doctrine groups cover:
+The current sixteen doctrine groups cover:
 
 1. Three.js shader compilation and GPU resource initialization before first-use.
 2. React Three Fiber demand rendering and explicit invalidation.
@@ -257,6 +257,15 @@ The current seven doctrine groups cover:
 5. A shared GSAP ticker/heartbeat for systems that must remain phase-locked.
 6. Prepared high-frequency setters for measured hot paths.
 7. Refresh-rate-independent elapsed-time motion.
+8. GPU-friendly texture and mesh compression with decode cost considered alongside transfer size.
+9. Draw-call reduction through instancing/batching when object independence allows it.
+10. Cinematic media capability selection based on expected decode quality rather than codec support alone.
+11. Page-visibility suspension when the document cannot produce visible pixels.
+12. Reduced-motion substitution that preserves information and causality.
+13. Smoothed audio analysis before audio energy becomes visual motion.
+14. Browser view-transition lifecycle treated as a readiness transaction.
+15. Renderer-info budgeting for memory and draw work at the exact narrative frame that matters.
+16. GSAP responsive motion creation/cleanup as one lifecycle.
 
 When a selected construction pattern overlaps one of these doctrines, its principles are injected into Director implementation rules and its verification checks are compiled into the production performance rules. This means technical research changes the build plan instead of remaining documentation.
 
