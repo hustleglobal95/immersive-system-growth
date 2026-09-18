@@ -34,7 +34,7 @@ export function inferPromptIntelligence(input: { prompt: string; projectName: st
   const sourcePrompt = normalize(input.prompt);
   const lower = sourcePrompt.toLowerCase();
   const ranked = profiles
-    .map((profile) => ({ profile, score: scoreSignals(lower, profile.signals), matched: profile.signals.filter((signal) => lower.includes(signal)) }))
+    .map((profile) => ({ profile, score: scoreSignals(lower, profile.signals), matched: profile.signals.filter((signal) => hasSignal(lower,signal)) }))
     .sort((a,b) => b.score - a.score);
   const best = ranked[0];
   const fallback = profiles.find((profile) => profile.type === "brand")!;
@@ -102,7 +102,7 @@ export function inferPromptIntelligence(input: { prompt: string; projectName: st
 
 function inferTier(lower: string, manifest: AssetManifest, sceneCount: number): InferredField<AutonomyTier> {
   for (const item of tierSignals) {
-    const matched = item.signals.filter((signal) => lower.includes(signal));
+    const matched = item.signals.filter((signal) => hasSignal(lower,signal));
     if (matched.length) return makeField(item.tier, item.tier === "flagship" ? 0.82 : 0.78, "prompt", matched, false);
   }
   const rich = manifest.models.length > 0 || manifest.video.length > 0 || sceneCount >= 7;
@@ -150,7 +150,8 @@ function objectiveFor(type: AutonomyProjectType) {
 }
 function extractClaims(prompt: string) { return prompt.split(/[.;]|\bbut\b|\bwithout\b/i).map((item) => item.trim()).filter((item) => item.length >= 12 && item.length <= 180).slice(0,3); }
 const genericSignals = new Set(["product","camera","brand","company","story","launch","event","platform","collection","shop","store"]);
-function scoreSignals(lower: string, signals: string[]) { return signals.reduce((score,signal) => score + (lower.includes(signal) ? (genericSignals.has(signal) ? 0.35 : Math.max(1,signal.split(/\s+/).length)) : 0),0); }
+function scoreSignals(lower: string, signals: string[]) { return signals.reduce((score,signal) => score + (hasSignal(lower,signal) ? (genericSignals.has(signal) ? 0.35 : Math.max(1,signal.split(/\s+/).length)) : 0),0); }
+function hasSignal(lower:string, signal:string) { if (signal.includes(" ") || signal.includes("-")) return lower.includes(signal); return lower.split(/[^a-z0-9]+/).includes(signal); }
 function makeField<T>(value:T, confidence:number, evidenceClass:InferredField<T>["evidenceClass"], evidence:string[], requiresConfirmation:boolean):InferredField<T> { return { value, confidence:clamp(confidence), evidenceClass, evidence, requiresConfirmation }; }
 function stripLeadVerb(value:string) { return value.replace(/^(make|create|build)\s+/i,"").trim(); }
 function normalize(value:string) { return value.trim().replace(/\s+/g," ").slice(0,4000) || "Create a memorable immersive experience."; }
