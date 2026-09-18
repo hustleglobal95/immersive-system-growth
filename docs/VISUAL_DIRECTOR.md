@@ -122,11 +122,14 @@ The candidate cannot replace the incumbent because it is newer or because one cr
 Acceptance requires:
 
 1. candidate capture succeeds;
-2. candidate has no runtime or overflow hard-gate failures;
-3. no pairwise judge reports a candidate hard-gate failure;
-4. reversed-order comparisons provide enough valid evidence;
-5. candidate wins aggregate comparison;
-6. the repair remained inside the bounded non-structural command surface.
+2. browser functional verification passes;
+3. deterministic motion review has no candidate hard-gate failures;
+4. candidate motion quality does not materially regress from the incumbent;
+5. candidate has no runtime or overflow hard-gate failures;
+6. no pairwise judge reports a candidate hard-gate failure;
+7. reversed-order comparisons provide enough valid evidence;
+8. candidate wins aggregate comparison;
+9. the repair remained inside the bounded non-structural command surface.
 
 If those conditions are not met, the incumbent remains authoritative.
 
@@ -160,14 +163,21 @@ Without FORGE_VISUAL_CRITIC_URL, Forge may still collect deterministic runtime a
 
 This is deliberate. A missing creative judge is not evidence that a candidate improved.
 
+## Functional and motion gates
+
+The Visual Director loop now includes browser-executed functional verification and fixed-timestep motion-quality review before visual pairwise acceptance.
+
+Use:
+
+- `npm run autonomy:functional-verify`
+- `npm run autonomy:motion-review`
+- `npm run autonomy:repair-loop`
+
+Motion review is deterministic even without a model endpoint. Optional ordered-frame visual critique is available through `FORGE_MOTION_CRITIC_URL`.
+
 ## Remaining Autonomy Level 4 work
 
-The Visual Director loop now covers rendered visual review and bounded repair.
-
-The next reliability layers are:
-
-- browser execution of the full functional-verification plan on accepted candidates;
-- fixed-timestep motion/video comparison rather than key-frame-only review;
-- stronger visual judge calibration against human studio choices;
+- stronger visual/motion judge calibration against human studio choices;
 - multi-candidate repair search instead of one repair candidate per pass;
-- measured performance traces attached to pairwise review.
+- measured real-device performance traces attached to comparison;
+- production-trace learning from accepted and rejected candidates.
