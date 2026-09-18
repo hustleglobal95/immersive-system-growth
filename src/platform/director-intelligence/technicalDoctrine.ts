@@ -340,6 +340,89 @@ export const immersiveTechnicalDoctrine: ImmersiveTechnicalDoctrine[] = [
       "Crossing desktop/mobile breakpoints repeatedly does not multiply active triggers or leave stale transforms/pins behind.",
       "Mobile and reduced-motion conditions rebuild the intended motion system from a clean state.",
     ],
+  },
+  {
+    id: "intersection-activation-window",
+    title: "Use visibility thresholds for activation and prewarm windows",
+    source: "https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API",
+    authority: "web-standard",
+    patternIds: [
+      "freeze-static-render-work",
+      "scene-neighborhood-window",
+      "single-canvas-multi-view",
+      "staged-resource-boot",
+      "prewarm-signature-systems",
+    ],
+    principles: [
+      "Use IntersectionObserver thresholds for coarse visibility state instead of polling layout every frame when continuous geometry is not required.",
+      "Use positive rootMargin/scrollMargin to create a prewarm window before a heavy section becomes visible.",
+      "Reserve trackVisibility for cases that truly need visual-compromise checks because the calculation is more expensive.",
+    ],
+    verification: [
+      "Heavy scenes begin prewarm before first visible pixels and stop nonessential work after leaving the active window.",
+      "Visibility callbacks are threshold-driven rather than used as a replacement high-frequency scroll sampler.",
+    ],
+  },
+  {
+    id: "image-decode-before-swap",
+    title: "Decode critical replacement images before revealing them",
+    source: "https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/decode",
+    authority: "web-standard",
+    patternIds: [
+      "transition-readiness-gate",
+      "transition-preload-race",
+      "progressive-fidelity-stack",
+      "pre-rendered-sequence-for-fidelity",
+    ],
+    principles: [
+      "Use image decode readiness as part of a destination/replacement readiness gate when an image must appear without a first-frame decode hitch.",
+      "For progressive fidelity, decode the higher-resolution replacement before swapping it into the visible composition.",
+    ],
+    verification: [
+      "Critical image swaps are gated on successful decode or a documented fallback path.",
+      "Cold navigation/reveal traces do not show a large image-decode task on the first visible frame.",
+    ],
+  },
+  {
+    id: "network-information-is-a-hint",
+    title: "Treat network/save-data signals as optional hints, never as the only quality detector",
+    source: "https://developer.mozilla.org/en-US/docs/Web/API/Network_Information_API",
+    authority: "web-standard",
+    patternIds: [
+      "adaptive-fidelity-not-removal",
+      "staged-resource-boot",
+      "mobile-medium-substitution",
+    ],
+    principles: [
+      "Network Information and saveData can inform asset policy where supported, but they are not Baseline and must never be the only path for quality selection.",
+      "Combine optional network hints with deterministic defaults, viewport/device policy, measured runtime behavior and explicit user preferences.",
+      "A Save-Data request should reduce transfer-heavy optional media/effects before removing essential content.",
+    ],
+    verification: [
+      "The experience has a complete quality path when navigator.connection/saveData are unavailable.",
+      "Save-Data or slow-connection hints reduce optional asset cost without changing essential information or navigation.",
+    ],
+  },
+  {
+    id: "gltf-disposal-contract",
+    title: "Dispose glTF resources explicitly when scene windows unload",
+    source: "https://threejs.org/docs/pages/GLTFLoader.html",
+    authority: "official-docs",
+    patternIds: [
+      "scene-neighborhood-window",
+      "multi-subscene-transition-budget",
+      "staged-resource-boot",
+      "source-structure-to-runtime-format",
+    ],
+    principles: [
+      "Treat glTF scene disposal as explicit runtime ownership; image bitmaps and GPU resources are not guaranteed to disappear merely because a scene object is unreferenced.",
+      "Track which scene owns geometries, materials, textures, render targets and decoded media so leaving the active neighborhood can release them safely.",
+      "Reuse shared assets deliberately; do not dispose a resource while another active scene still owns it.",
+    ],
+    verification: [
+      "Repeated forward/backward traversal through scene windows does not produce monotonically increasing renderer.info memory counts.",
+      "Disposed scenes release scene-owned GPU resources while shared resources remain valid.",
+    ],
   }
 ];
 
