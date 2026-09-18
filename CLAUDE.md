@@ -31,11 +31,14 @@ Build cinematic, spatial, interactive websites that feel like one continuous exp
 21. All-viewport motion applies before the matching desktop or mobile override.
 22. Motion targets that reference transition layers or GLB nodes must resolve during schema validation.
 23. Viewport gizmos may write selected keyframes, but they must not own production transforms or ship active in the public runtime.
-24. Editor dependencies with reciprocal network-copyleft or custom commercial licenses are not accepted into the Studio client bundle.\n25. Reference-driven immersive work must deconstruct composition, typography, depth, motion, continuity, interaction, DOM/WebGL roles, mobile translation and first-use performance before implementation. Consult `docs/IMMERSIVE_CONSTRUCTION_INTELLIGENCE.md` and map the principles to existing Forge systems before proposing a new dependency.
+24. Editor dependencies with reciprocal network-copyleft or custom commercial licenses are not accepted into the Studio client bundle.
+25. Reference-driven immersive work must deconstruct composition, typography, depth, motion, continuity, interaction, DOM/WebGL roles, mobile translation and first-use performance before implementation. Consult `docs/IMMERSIVE_CONSTRUCTION_INTELLIGENCE.md` and map the principles to existing Forge systems before proposing a new dependency.
 
 ## Before implementation
 
-If a reference site, recording or screenshot set is supplied, deconstruct it first using `docs/IMMERSIVE_REFERENCE_DECONSTRUCTION_TEMPLATE.md`. Transfer construction principles, not proprietary surface styling.\n\nProduce a scene plan containing:
+If a reference site, recording or screenshot set is supplied, deconstruct it first using `docs/IMMERSIVE_REFERENCE_DECONSTRUCTION_TEMPLATE.md`. Transfer construction principles, not proprietary surface styling.
+
+Produce a scene plan containing:
 
 - scene purpose
 - camera starting state
