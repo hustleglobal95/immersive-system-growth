@@ -5,6 +5,10 @@ import { routeDecisionGuidance } from "../src/platform/autonomy/guidanceRouter";
 import { forcedOptimizationDecision } from "../src/platform/autonomy/forcedOptimization";
 import { autonomyContract } from "../src/platform/autonomy/contracts";
 import { runAutonomyBenchmark } from "../src/platform/autonomy/autonomyBenchmark";
+import { buildRenderReviewPlan } from "../src/platform/autonomy/visualReview";
+import { buildFunctionalVerificationPlan } from "../src/platform/autonomy/functionalVerification";
+import rawExperience from "../config/experience.json" with { type: "json" };
+import { parseExperience } from "../src/lib/configSchema";
 import type { AssetManifest } from "../src/types/assets";
 
 const emptyManifest: AssetManifest = {
@@ -78,4 +82,24 @@ test("autonomy prompt benchmark clears the release threshold", () => {
   const report = runAutonomyBenchmark();
   assert.ok(report.total >= 30);
   assert.ok(report.score >= 90, JSON.stringify(report.results.filter((item) => !item.passed), null, 2));
+});
+
+
+test("render review plan covers desktop and mobile scene states deterministically", () => {
+  const experience = parseExperience(rawExperience);
+  const plan = buildRenderReviewPlan(experience,6);
+  assert.ok(plan.captures.length >= 12);
+  assert.ok(plan.captures.some((item) => item.viewport === "desktop"));
+  assert.ok(plan.captures.some((item) => item.viewport === "mobile"));
+  assert.ok(plan.captures.some((item) => item.role === "handoff"));
+  assert.ok(plan.dimensions.includes("composition"));
+  assert.ok(plan.dimensions.includes("motion"));
+});
+
+test("functional verification derives commercial and mobile gates from prompt intelligence", () => {
+  const packet = inferPromptIntelligence({ prompt:"Luxury mechanical watch. Enter the movement through a cinematic 3D assembly.", projectName:"Watch", sceneCount:6, manifest:emptyManifest });
+  const scenarios = buildFunctionalVerificationPlan(packet);
+  assert.ok(scenarios.some((item) => item.id === "primary-action" && item.steps.some((step) => step.includes(packet.primaryAction.value))));
+  assert.ok(scenarios.some((item) => item.id === "mobile-equivalence"));
+  assert.ok(scenarios.every((item) => item.required));
 });
