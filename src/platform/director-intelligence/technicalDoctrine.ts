@@ -154,7 +154,193 @@ export const immersiveTechnicalDoctrine: ImmersiveTechnicalDoctrine[] = [
       "Time-based motion has comparable real-world speed across common refresh rates.",
       "Scroll-bound states do not accumulate frame-rate-dependent integration error.",
     ],
+  },,
+  {
+    id: "three-compressed-runtime-assets",
+    title: "Choose GPU-friendly texture and mesh compression with decode cost in mind",
+    source: "https://threejs.org/docs/pages/KTX2Loader.html",
+    authority: "official-docs",
+    patternIds: [
+      "source-structure-to-runtime-format",
+      "adaptive-fidelity-not-removal",
+      "staged-resource-boot",
+      "hero-scan-optimization",
+    ],
+    principles: [
+      "Use KTX2/Basis textures when GPU texture compression materially reduces transfer and GPU memory pressure, and detect supported output formats against the actual renderer before loading.",
+      "Use Draco when geometry transfer savings justify client decode time; reuse one decoder instance rather than repeatedly loading decoder infrastructure.",
+      "Treat compression as a trade between bytes, decode latency, GPU upload cost and quality rather than maximizing compression ratio blindly.",
+    ],
+    verification: [
+      "Texture formats are selected against renderer support and the chosen mobile tier does not silently fall back to oversized uncompressed textures.",
+      "Cold asset decode and GPU upload are measured separately from network transfer.",
+      "Decoder/transcoder infrastructure is reused instead of recreated per asset.",
+    ],
   },
+  {
+    id: "three-batching-instancing",
+    title: "Reduce draw calls with instancing or batching when object independence allows it",
+    source: "https://threejs.org/docs/pages/BatchedMesh.html",
+    authority: "official-docs",
+    patternIds: [
+      "static-geometry-batching",
+      "gpu-instance-data-packing",
+      "spatial-metaphor-compression",
+    ],
+    principles: [
+      "Use InstancedMesh when repeated objects share geometry/material and differ primarily by transforms or compact per-instance state.",
+      "Use BatchedMesh when many objects share a material but use different geometries or transforms and can share one batched render path.",
+      "Do not batch away interaction, animation or visibility ownership that the experience genuinely needs.",
+    ],
+    verification: [
+      "renderer.info draw-call counts fall after batching/instancing without breaking independent interaction requirements.",
+      "Batch boundaries follow runtime material/state ownership, not arbitrary DCC grouping.",
+    ],
+  },
+  {
+    id: "media-capability-selection",
+    title: "Select cinematic media variants by expected decode quality, not codec support alone",
+    source: "https://developer.mozilla.org/en-US/docs/Web/API/MediaCapabilities/decodingInfo",
+    authority: "web-standard",
+    patternIds: [
+      "mobile-medium-substitution",
+      "pre-rendered-sequence-for-fidelity",
+      "scrubbable-media-delivery",
+      "choose-medium-by-capability",
+    ],
+    principles: [
+      "Query candidate media configurations for support, expected smoothness and power efficiency when choosing high-cost cinematic video variants.",
+      "Prefer the highest-quality configuration expected to remain smooth on the device rather than serving one universal master.",
+      "Keep a conservative fallback path because capability predictions and browser support are not perfect.",
+    ],
+    verification: [
+      "Chosen media variants are supported and expected to decode smoothly at their declared resolution, bitrate and frame rate.",
+      "Mobile/high-density variants are tested on real devices instead of assuming desktop decode behavior.",
+    ],
+  },
+  {
+    id: "page-visibility-suspension",
+    title: "Suspend work when the document cannot produce visible pixels",
+    source: "https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API",
+    authority: "web-standard",
+    patternIds: [
+      "freeze-static-render-work",
+      "render-pass-ownership",
+      "scene-neighborhood-window",
+      "prioritized-frame-pipeline",
+    ],
+    principles: [
+      "Use document visibility state to pause or reduce nonessential rendering, simulation, audio-reactive analysis and polling while the page is hidden.",
+      "Resume from explicit state rather than integrating a large hidden-tab delta as if every missed frame had rendered.",
+    ],
+    verification: [
+      "Hidden tabs stop unnecessary renderer/simulation work.",
+      "Returning to the tab does not cause a giant time-step jump or burst of queued work.",
+    ],
+  },
+  {
+    id: "reduced-motion-substitution",
+    title: "Replace nonessential motion while preserving information and causality",
+    source: "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/%40media/prefers-reduced-motion",
+    authority: "web-standard",
+    patternIds: [
+      "mobile-preserve-concept",
+      "responsive-authored-compositions",
+      "motion-grammar-primitives",
+      "choose-medium-by-capability",
+    ],
+    principles: [
+      "Treat prefers-reduced-motion as a request to remove, reduce or replace nonessential motion rather than as permission to hide content.",
+      "Avoid large-scale panning/scaling motion that can create vestibular discomfort when reduced motion is requested.",
+      "Preserve reading order, state change, interaction outcome and navigation even when the cinematic motion path is replaced.",
+    ],
+    verification: [
+      "Every scene remains understandable and navigable with reduced motion enabled.",
+      "Large camera/object travel has a lower-motion substitute rather than disappearing into an empty state.",
+    ],
+  },
+  {
+    id: "audio-analysis-smoothing",
+    title: "Smooth audio analysis before it becomes visual motion",
+    source: "https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode/smoothingTimeConstant",
+    authority: "web-standard",
+    patternIds: [
+      "audio-reactive-semantic-band",
+      "interaction-as-thesis",
+    ],
+    principles: [
+      "Use time averaging for spectrum/energy data so visual response follows musical or vocal energy instead of raw frame-to-frame FFT noise.",
+      "Map only the frequency/energy band that has semantic relevance to the visual behavior and clamp the resulting motion range.",
+    ],
+    verification: [
+      "Audio-reactive values return to rest smoothly and do not flicker on individual FFT-bin noise.",
+      "The same track produces stable visual character across common frame rates.",
+    ],
+  },
+  {
+    id: "view-transition-lifecycle",
+    title: "Treat browser view transitions as a readiness transaction",
+    source: "https://developer.mozilla.org/en-US/docs/Web/API/Document/startViewTransition",
+    authority: "web-standard",
+    patternIds: [
+      "transition-readiness-gate",
+      "transition-preload-race",
+      "mode-switch-preserves-context",
+    ],
+    principles: [
+      "For same-document transitions, mutate the DOM inside the view-transition update callback so the browser captures coherent before/after states.",
+      "Use transition readiness and completion signals as lifecycle boundaries; do not assume a visual duration proves destination readiness.",
+      "Keep a no-View-Transition fallback because support and partial features still vary.",
+    ],
+    verification: [
+      "The old and new DOM states captured by the transition correspond to the intended route/mode states.",
+      "Unsupported browsers still receive a complete navigable route change.",
+    ],
+  },
+  {
+    id: "renderer-info-budgeting",
+    title: "Measure renderer memory and draw work at the frame where it matters",
+    source: "https://threejs.org/docs/pages/WebGLRenderer.html",
+    authority: "official-docs",
+    patternIds: [
+      "freeze-static-render-work",
+      "render-pass-ownership",
+      "static-geometry-batching",
+      "adaptive-fidelity-not-removal",
+      "prewarm-signature-systems",
+    ],
+    principles: [
+      "Use renderer.info to track geometries, textures, programs, calls and primitive counts while profiling representative scene states.",
+      "For multi-pass frames, control renderer.info reset boundaries so measurements represent one complete authored frame rather than one subpass.",
+      "Use the metrics as attribution signals alongside CPU/frame traces; they are not a substitute for real device profiling.",
+    ],
+    verification: [
+      "Representative desktop/mobile scene states have recorded draw-call, primitive and texture/geometry counts.",
+      "Transition overlap frames are measured separately from steady-state frames.",
+      "Program/texture counts remain stable after prewarm when no new visual capability should appear.",
+    ],
+  },
+  {
+    id: "gsap-responsive-lifecycle",
+    title: "Create and clean responsive motion as one lifecycle",
+    source: "https://gsap.com/docs/v3/GSAP/gsap.matchMedia%28%29/",
+    authority: "official-docs",
+    patternIds: [
+      "responsive-authored-compositions",
+      "mobile-medium-substitution",
+      "motion-grammar-primitives",
+      "scroll-distance-pacing",
+    ],
+    principles: [
+      "Use responsive motion setup that owns both creation and automatic cleanup/revert when breakpoint or accessibility conditions change.",
+      "Do not accumulate ScrollTriggers/tweens when the viewport crosses breakpoints repeatedly.",
+      "Author different motion logic where the composition changes materially; responsivity is not limited to numeric scaling.",
+    ],
+    verification: [
+      "Crossing desktop/mobile breakpoints repeatedly does not multiply active triggers or leave stale transforms/pins behind.",
+      "Mobile and reduced-motion conditions rebuild the intended motion system from a clean state.",
+    ],
+  }
 ];
 
 export function doctrineForPatterns(patternIds: string[]) {
