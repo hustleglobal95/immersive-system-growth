@@ -386,6 +386,21 @@ function performancePolicy(
   if (patterns.has("input-work-on-demand")) {
     rules.push("Gate expensive pointer hit testing/raycast work on dirty input or changed scene/camera state.");
   }
+  if (patterns.has("gpu-instance-data-packing")) {
+    rules.push("Pack repeated-object material/state into compact GPU attributes/atlases instead of multiplying materials and draw calls.");
+  }
+  if (patterns.has("shared-simulation-field")) {
+    rules.push("Own expensive simulation fields once per renderer; one active driver advances/resizes the field while related effects sample it.");
+  }
+  if (patterns.has("scene-neighborhood-window")) {
+    rules.push("Keep only the active scene and the minimum adjacent transition neighborhood resident; dispose distant scene GPU resources.");
+  }
+  if (patterns.has("imperative-hot-path-state")) {
+    rules.push("Keep per-frame camera/uniform/pointer transforms out of component reconciliation and update them through stable refs/runtime state.");
+  }
+  if (patterns.has("physics-proxy-dom") && medium === "dom") {
+    rules.push("If physics drives semantic DOM, run the invisible simulation only while the section can affect visible pixels and rebuild colliders after layout changes.");
+  }
   return rules;
 }
 
@@ -443,6 +458,12 @@ function criticalBootStrategy(
   if (patterns.has("transition-readiness-gate")) {
     rules.push("Gate visible scene/page handoffs on the destination's critical code/media/render readiness instead of fixed delays.");
   }
+  if (patterns.has("transition-preload-race")) {
+    rules.push("Start destination code/data/hero-media loading with navigation intent so readiness races the outgoing transition instead of starting after it.");
+  }
+  if (patterns.has("scene-neighborhood-window")) {
+    rules.push("Prewarm the next required scene neighborhood before overlap and release distant scenes only after reverse-safe handoff completes.");
+  }
   if (patterns.has("entry-ritual-earns-its-wait")) {
     rules.push("Let the entry ritual cover only genuinely critical first-state work and hand its final frame directly into the opening composition; defer later assets.");
   }
@@ -498,6 +519,18 @@ function globalRules(
   }
   if (patterns.has("entry-ritual-earns-its-wait")) {
     rules.push("Treat the preloader/enter state as a prologue that establishes motion/permission context, never as decorative delay.");
+  }
+  if (patterns.has("design-grid-runtime-contract")) {
+    rules.push("Store desktop/mobile grid geometry as runtime project data and make a development overlay inspect the exact production columns, gutters and rows.");
+  }
+  if (patterns.has("production-preset-parity")) {
+    rules.push("Studio/playground controls and the shipped runtime must consume the same validated scene preset and deterministic motion data.");
+  }
+  if (patterns.has("shared-simulation-field")) {
+    rules.push("Related fluid/flow effects share one renderer-level simulation field and one normalized input source instead of running duplicate simulations.");
+  }
+  if (patterns.has("imperative-hot-path-state")) {
+    rules.push("Keep transient per-frame visual values imperative while semantic outcomes such as selection/navigation remain declarative.");
   }
   if (patterns.has("prototype-prune-converge")) {
     rules.push("Prototype signature ideas modularly and cut any effect that no longer strengthens the final thesis.");
