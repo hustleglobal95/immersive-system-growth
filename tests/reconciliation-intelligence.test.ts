@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { broaderImmersiveReferenceCorpus } from "../src/platform/director-intelligence/broaderReferenceCorpus";
 import { immersiveConstructionPatterns } from "../src/platform/director-intelligence/constructionKnowledge";
-import { buildReferenceLensCoverage } from "../src/platform/director-intelligence/constructionLenses";
+import { buildReferenceLensCoverage, type ImmersiveConstructionLens } from "../src/platform/director-intelligence/constructionLenses";
 import { immersiveFailureKnowledge } from "../src/platform/director-intelligence/failureKnowledge";
 import { immersiveTechnicalDoctrine } from "../src/platform/director-intelligence/technicalDoctrine";
 
@@ -65,7 +65,7 @@ test("reconciled public research references and construction lenses stay availab
     "content-data-commerce",
     "production-tooling",
     "sound",
-  ]) assert.ok(lenses.has(lens as never), "Missing construction lens coverage: " + lens);
+  ] as ImmersiveConstructionLens[]) assert.ok(lenses.has(lens), "Missing construction lens coverage: " + lens);
   assert.ok(coverage.every((item) => item.referenceIds.length > 0 && item.patternIds.length > 0));
 });
 
