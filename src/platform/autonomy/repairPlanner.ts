@@ -231,10 +231,18 @@ function mergePresentation(a:ScenePresentationAdjustment,b:ScenePresentationAdju
     "exposureDelta","ambientDelta","keyDelta","rimDelta","bloomDelta","vignetteDelta",
     "heroXDelta","heroYDelta","mediaXDelta","mediaYDelta","mobileMediaXDelta","mobileMediaYDelta",
   ];
+  const limits:Partial<Record<keyof ScenePresentationAdjustment,[number,number]>>={
+    exposureDelta:[-0.4,0.4],ambientDelta:[-2,2],keyDelta:[-5,5],rimDelta:[-5,5],
+    bloomDelta:[-0.5,0.5],vignetteDelta:[-0.3,0.3],heroXDelta:[-1.5,1.5],heroYDelta:[-1.5,1.5],
+    mediaXDelta:[-20,20],mediaYDelta:[-20,20],mobileMediaXDelta:[-20,20],mobileMediaYDelta:[-20,20],
+  };
   for(const key of additive) {
     const left=a[key];
     const right=b[key];
-    if(typeof left==="number" || typeof right==="number") (result as Record<string,unknown>)[key]=(Number(left ?? 0)+Number(right ?? 0));
+    if(typeof left==="number" || typeof right==="number") {
+      const range=limits[key] ?? [-Infinity,Infinity];
+      (result as Record<string,unknown>)[key]=Math.max(range[0],Math.min(range[1],Number(left ?? 0)+Number(right ?? 0)));
+    }
   }
   const scaleA=a.heroScaleMultiplier ?? 1;
   const scaleB=b.heroScaleMultiplier ?? 1;
