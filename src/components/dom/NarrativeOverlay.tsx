@@ -9,23 +9,39 @@ import { SceneBlocks } from "./SceneBlocks";
  * each carry a different treatment, and `pace` sets how quickly that chapter's copy lands.
  * Chapters not listed here fall back to the last entry's shape.
  */
-const CHAPTER_MOTION: Record<string, { label: CinematicPreset; headline: CinematicPreset; lede: CinematicPreset; pace: number; lead?: number; rows?: CinematicPreset; plates?: CinematicPreset;
+const CHAPTER_MOTION: Record<string, { label: CinematicPreset; headline: CinematicPreset; lede: CinematicPreset; pace?: number; lead?: number; rows?: CinematicPreset; plates?: CinematicPreset;
   collapse?: CinematicPreset; collapseAt?: readonly [number, number] }> = {
   // 01 Position clears its words early and upward, leaving the carousel alone in the frame
   // for a beat before the ring itself goes.
-  parti: {
-    label: "label-track", headline: "headline-words", lede: "lede-words", pace: .9,
-    collapse: "section-lift", collapseAt: [.5, .62],
-  },
-  threshold: { label: "text-settle", headline: "headline-unfold", lede: "copy-drift", pace: 1, lead: .04 },
-  living: { label: "label-track", headline: "headline-drop", lede: "lede-words", pace: 1, lead: .1, rows: "list-unfold", plates: "plate-rise" },
-  material: { label: "label-track", headline: "headline-fracture", lede: "lede-scatter", pace: 1, lead: .1, rows: "list-unfold" },
-  wellness: { label: "label-track", headline: "headline-swing", lede: "copy-drift", pace: .9 },
-  studio: { label: "text-settle", headline: "headline-words", lede: "lede-scatter", pace: 1.1 },
-  horizon: { label: "label-track", headline: "headline-converge", lede: "lede-words", pace: 1 },
-  inquiry: { label: "text-settle", headline: "headline-chars", lede: "copy-drift", pace: 1.24 },
+  parti: { label: "label-track", headline: "headline-words", lede: "lede-words" },
+  threshold: { label: "text-settle", headline: "headline-unfold", lede: "copy-drift" },
+  living: { label: "label-track", headline: "headline-drop", lede: "lede-words", rows: "list-unfold", plates: "plate-rise" },
+  material: { label: "label-track", headline: "headline-fracture", lede: "lede-scatter", rows: "list-unfold" },
+  wellness: { label: "label-track", headline: "headline-swing", lede: "copy-drift" },
+  studio: { label: "text-settle", headline: "headline-words", lede: "lede-scatter" },
+  horizon: { label: "label-track", headline: "headline-converge", lede: "lede-words" },
+  inquiry: { label: "text-settle", headline: "headline-slide", lede: "copy-drift" },
 };
-const FALLBACK_MOTION = { label: "label-track", headline: "headline-words", lede: "lede-words", pace: 1 } as const;
+
+/**
+ * One rhythm for every handover.
+ *
+ * Each chapter used to carry its own lead, pace and collapse point, which left the stretch with
+ * nothing to read ranging from 6vh at the closing handover to 141vh at 02 into 03 -- measured as
+ * legible headline ink. The presets above stay different, because that is the authored character
+ * of each chapter; only the timing is shared, so the sequence reads at one tempo.
+ *
+ * The three windows are solved together and stay strictly serial. A chapter's copy is empty by
+ * about 0.86, the media handover runs 0.86 to 1.0 on a 0.14 overlap, and the next chapter's copy
+ * begins at its own 0. Nothing overlaps, and the stretch with no headline to read is the handover
+ * itself rather than the handover plus a wait either side of it.
+ */
+// collapseAt drives the GSAP disperse and panel-collapse cues; the authored copy.opacity track
+// empties the panel at 0.86. Both have to land together or whichever fires first decides when
+// the chapter stops being readable, which is what left 02 into 03 a third longer than its
+// neighbours: the disperse was ending at 0.76 while the track ran on to 0.86.
+const RHYTHM = { lead: 0, pace: 1, collapseAt: [.82, .92] as const };
+const FALLBACK_MOTION = { label: "label-track", headline: "headline-words", lede: "lede-words" } as const;
 
 // Every cue is seeked by the one scroll clock, so scrubbing backwards reconstructs the same frame.
 const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
@@ -40,8 +56,8 @@ const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
   // Chapter shape. The settled state is the point of the chapter, so the entrance is brief
   // and the hold runs two full screens: 18vh lead, 53vh entrance, 202vh arrived, 35vh exit,
   // 18vh still, 114vh handover at a 440vh chapter.
-  const lead = motion.lead ?? .04;
-  const pace = Math.min(1.15, motion.pace);
+  const lead = motion.lead ?? RHYTHM.lead;
+  const pace = Math.min(1.15, motion.pace ?? RHYTHM.pace);
   const at = (fraction: number) => start + span * Math.min(1, fraction);
   return [
     { selector: scope + "[data-motion-index]", range: [at(lead), at(lead + .05 * pace)], preset: motion.label },
@@ -55,12 +71,12 @@ const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
     { selector: scope + "[data-motion-cta]", range: [at(lead + .06), at(lead + .14)], preset: "copy-drift" },
     {
       selector: scope + "[data-motion-headline] .forge-split",
-      range: [at((motion.collapseAt?.[0] ?? .6) - .04), at((motion.collapseAt?.[1] ?? .74) - .06)],
+      range: [at((motion.collapseAt?.[0] ?? RHYTHM.collapseAt[0]) - .04), at((motion.collapseAt?.[1] ?? RHYTHM.collapseAt[1]) - .06)],
       preset: "type-disperse",
     },
     {
       selector: scope + "[data-motion-panel]",
-      range: [at(motion.collapseAt?.[0] ?? .6), at(motion.collapseAt?.[1] ?? .74)],
+      range: [at(motion.collapseAt?.[0] ?? RHYTHM.collapseAt[0]), at(motion.collapseAt?.[1] ?? RHYTHM.collapseAt[1])],
       preset: motion.collapse ?? "section-collapse",
     },
   ];

@@ -35,8 +35,10 @@ export function CinematicDomMotion({ children, cues, experience }: { children: R
       const authored = scene.media?.mask;
       return {
         index,
-        from: prior.range[0] + priorSpan * 0.78,
-        to: scene.range[0] + span * 0.08,
+        // Opens across the tail of the previous chapter and completes just before the next
+        // chapter's copy begins, so the mask never holds copy back that is already animating in.
+        from: prior.range[0] + priorSpan * 0.86,
+        to: scene.range[0] + span * 0.015,
         mask: createMaskReveal(authored?.preset ?? "linear-soft", {
           ...authored,
           direction: "down",
