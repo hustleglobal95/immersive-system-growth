@@ -1,5 +1,6 @@
 import type { DirectorTreatment } from "@/src/platform/directorSchema";
 import { retrieveImmersiveReferences } from "@/src/platform/director-intelligence/referenceCorpus";
+import { doctrineForPatterns } from "@/src/platform/director-intelligence/technicalDoctrine";
 
 export interface ImmersiveConstructionPattern {
   id: string;
@@ -1834,6 +1835,8 @@ export interface ConstructionPatternEvidence {
 export interface ImmersiveConstructionDirectives {
   patternIds: string[];
   patternEvidence: ConstructionPatternEvidence[];
+  technicalDoctrineIds: string[];
+  technicalVerification: string[];
   referenceIds: string[];
   referenceLessons: string[];
   compositionRules: string[];
@@ -1906,10 +1909,13 @@ export function buildConstructionDirectives(
     0,
     Math.max(limit, treatment.tier === "flagship" ? 14 : 12),
   );
+  const doctrine = doctrineForPatterns(patterns.map((pattern) => pattern.id));
 
   return {
     patternIds: patterns.map((pattern) => pattern.id),
     patternEvidence,
+    technicalDoctrineIds: doctrine.map((item) => item.id),
+    technicalVerification: unique(doctrine.flatMap((item) => item.verification)),
     referenceIds: references.map(({ reference }) => reference.id),
     referenceLessons: unique(
       references.flatMap(({ reference }) => reference.transferableLessons),
@@ -1918,7 +1924,10 @@ export function buildConstructionDirectives(
     motionRules: unique(patterns.flatMap((pattern) => pattern.motion)),
     transitionRules: unique(patterns.flatMap((pattern) => pattern.transitions)),
     interactionRules: unique(patterns.flatMap((pattern) => pattern.interaction)),
-    implementationRules: unique(patterns.flatMap((pattern) => pattern.implementation)),
+    implementationRules: unique([
+      ...patterns.flatMap((pattern) => pattern.implementation),
+      ...doctrine.flatMap((item) => item.principles),
+    ]),
     mobileRules: unique(patterns.flatMap((pattern) => pattern.mobile)),
     forbiddenPatterns: unique(patterns.flatMap((pattern) => pattern.avoid)),
   };
