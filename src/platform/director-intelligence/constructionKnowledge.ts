@@ -1,4 +1,5 @@
 import type { DirectorTreatment } from "@/src/platform/directorSchema";
+import { retrieveImmersiveReferences } from "@/src/platform/director-intelligence/referenceCorpus";
 
 export interface ImmersiveConstructionPattern {
   id: string;
@@ -455,6 +456,8 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
 
 export interface ImmersiveConstructionDirectives {
   patternIds: string[];
+  referenceIds: string[];
+  referenceLessons: string[];
   compositionRules: string[];
   motionRules: string[];
   transitionRules: string[];
@@ -509,9 +512,25 @@ export function buildConstructionDirectives(
   treatment: DirectorTreatment,
   limit = 7,
 ): ImmersiveConstructionDirectives {
-  const patterns = selectConstructionPatterns(treatment, limit);
+  const references = retrieveImmersiveReferences(treatment, 5);
+  const basePatterns = selectConstructionPatterns(treatment, limit);
+  const referencePatternIds = unique(
+    references.flatMap(({ reference }) => reference.constructionPatternIds),
+  );
+  const referencedPatterns = referencePatternIds
+    .map((id) => immersiveConstructionPatterns.find((pattern) => pattern.id === id))
+    .filter((pattern): pattern is ImmersiveConstructionPattern => Boolean(pattern));
+  const patterns = uniquePatterns([...basePatterns, ...referencedPatterns]).slice(
+    0,
+    Math.max(limit, 10),
+  );
+
   return {
     patternIds: patterns.map((pattern) => pattern.id),
+    referenceIds: references.map(({ reference }) => reference.id),
+    referenceLessons: unique(
+      references.flatMap(({ reference }) => reference.transferableLessons),
+    ).slice(0, 12),
     compositionRules: unique(patterns.flatMap((pattern) => pattern.composition)),
     motionRules: unique(patterns.flatMap((pattern) => pattern.motion)),
     transitionRules: unique(patterns.flatMap((pattern) => pattern.transitions)),
@@ -520,6 +539,13 @@ export function buildConstructionDirectives(
     mobileRules: unique(patterns.flatMap((pattern) => pattern.mobile)),
     forbiddenPatterns: unique(patterns.flatMap((pattern) => pattern.avoid)),
   };
+}
+
+function uniquePatterns(patterns: ImmersiveConstructionPattern[]) {
+  return patterns.filter(
+    (pattern, index) =>
+      patterns.findIndex((candidate) => candidate.id === pattern.id) === index,
+  );
 }
 
 function unique(items: string[]) {
