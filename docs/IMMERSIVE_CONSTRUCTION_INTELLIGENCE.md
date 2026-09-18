@@ -225,6 +225,28 @@ Blender/C4D/Houdini are not only asset exporters. Node names, pivots, zones, ani
 
 Rendering quality is not only about lower resolution. Expensive work should disappear when it cannot change visible pixels: offscreen scenes stop, raycasts wait for dirty input, compute passes run only while their effect is active, deep visual-stack items remain simplified, and worker isolation is reserved for measured main-thread contention.
 
+## Primary technical doctrine
+
+Creative precedents answer **what construction choices repeatedly work**. Primary technical documentation answers **how the underlying browser/runtime behavior actually works**.
+
+Forge keeps those evidence types separate so official implementation guidance cannot accidentally become a visual style precedent.
+
+The executable doctrine lives in:
+
+`src/platform/director-intelligence/technicalDoctrine.ts`
+
+The current seven doctrine groups cover:
+
+1. Three.js shader compilation and GPU resource initialization before first-use.
+2. React Three Fiber demand rendering and explicit invalidation.
+3. Browser video-frame synchronization with `requestVideoFrameCallback`.
+4. OffscreenCanvas/worker isolation for measured main-thread rendering contention.
+5. A shared GSAP ticker/heartbeat for systems that must remain phase-locked.
+6. Prepared high-frequency setters for measured hot paths.
+7. Refresh-rate-independent elapsed-time motion.
+
+When a selected construction pattern overlaps one of these doctrines, its principles are injected into Director implementation rules and its verification checks are compiled into the production performance rules. This means technical research changes the build plan instead of remaining documentation.
+
 ## Forge construction patterns
 
 The executable knowledge lives in:
