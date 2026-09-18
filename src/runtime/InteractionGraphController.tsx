@@ -87,7 +87,7 @@ export function InteractionGraphController() {
     }
     if (previous !== current) dispatch({ type: "scene-enter", sceneId: experience.scenes[current]?.id });
     previousScene.current = current;
-  }, [activeScene, dispatch]);
+  }, [activeScene, dispatch, experience]);
 
   useEffect(() => {
     const previous = previousHotspot.current;
