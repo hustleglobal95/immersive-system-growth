@@ -7,7 +7,7 @@ import {
   retrieveImmersiveReferences,
 } from "../src/platform/director-intelligence/referenceCorpus";
 import { broaderImmersiveReferenceCorpus } from "../src/platform/director-intelligence/broaderReferenceCorpus";
-import { buildConstructionDirectives } from "../src/platform/director-intelligence/constructionKnowledge";
+import { buildConstructionDirectives, immersiveConstructionPatterns } from "../src/platform/director-intelligence/constructionKnowledge";
 
 const brief = {
   projectName: "Corpus Test",
@@ -151,4 +151,16 @@ test("precedent retrieval avoids one-source monoculture", () => {
 
   assert.ok(new Set(hosts).size >= 3);
   assert.ok(Array.from(counts.values()).every((count) => count <= 2));
+});
+
+test("every corpus pattern id resolves to executable construction knowledge", () => {
+  const known = new Set(immersiveConstructionPatterns.map((pattern) => pattern.id));
+  const referenced = new Set(
+    immersiveReferenceCorpus.flatMap((reference) => reference.constructionPatternIds),
+  );
+  const missing = Array.from(referenced).filter((id) => !known.has(id));
+
+  assert.deepEqual(missing, []);
+  assert.equal(immersiveConstructionPatterns.length, 52);
+  assert.equal(known.size, 52);
 });
