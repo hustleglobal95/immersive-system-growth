@@ -973,6 +973,184 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
     avoid: ["Specs floating unreadably inside a busy 3D world.", "A hard cut from spectacle to generic ecommerce template."],
   },
   {
+    id: "effect-strength-vs-clarity",
+    title: "Balance expressive effects against message clarity",
+    signals: ["distortion", "blur", "effect", "expressive", "clarity", "motion", "brand"],
+    composition: [
+      "Give expressive distortion or blur a defined visual territory so the message still has a stable reading plane.",
+    ],
+    motion: [
+      "Modulate effect intensity with narrative emphasis; do not keep the strongest distortion active during proof, reading or conversion moments.",
+    ],
+    transitions: [
+      "Let effect intensity rise into expressive peaks and settle before the next information-heavy chapter.",
+    ],
+    interaction: [],
+    implementation: [
+      "Measure readability and frame cost at the same time; an effect that weakens either without strengthening the concept should be reduced or cut.",
+    ],
+    mobile: [
+      "Lower spatial frequency, blur radius and simultaneous effect count before removing the motion idea.",
+    ],
+    avoid: ["Full-page distortion at constant intensity.", "Blur used where clear hierarchy is the actual problem."],
+  },
+  {
+    id: "hero-scan-optimization",
+    title: "Optimize scanned hero characters for the actual shots",
+    signals: ["scan", "photogrammetry", "character", "person", "hero", "lod", "texture", "rig"],
+    composition: [
+      "Preserve the identity features the camera can actually reveal; do not spend equal budget on invisible detail.",
+    ],
+    motion: [
+      "Match recognizable signature motion from reference when movement is part of the subject's identity.",
+    ],
+    transitions: [],
+    interaction: [],
+    implementation: [
+      "Consolidate texture sets, create explicit LODs, simplify topology and replace thin repeated geometry with alpha/textural representation where silhouette permits.",
+      "Test rig deformations after optimization so identity-critical body/face regions survive the web conversion.",
+    ],
+    mobile: [
+      "Use a lower LOD and texture set while keeping silhouette, face readability and signature motion.",
+    ],
+    avoid: ["Shipping raw photogrammetry topology.", "Keeping many texture materials when one packed set can preserve the same result."],
+  },
+  {
+    id: "stylization-as-performance",
+    title: "Use stylization as a rendering strategy",
+    signals: ["stylized", "npr", "watercolor", "toon", "illustration", "performance", "shader"],
+    composition: [
+      "Make the visual simplification part of the world language so lower-fidelity rendering reads as intentional art direction.",
+    ],
+    motion: [
+      "Use motion that matches the stylized medium instead of adding photoreal simulation that contradicts the look.",
+    ],
+    transitions: [],
+    interaction: [],
+    implementation: [
+      "Prefer NPR, baked shading, simplified materials and controlled postprocessing when they strengthen the concept while reducing lighting/material cost.",
+    ],
+    mobile: [
+      "Preserve the stylized material logic and reduce samples/detail before switching to a generic fallback.",
+    ],
+    avoid: ["Chasing photorealism after the concept has established a graphic style.", "Calling an obvious degraded render a style without consistent art direction."],
+  },
+  {
+    id: "persistent-device-metaphor",
+    title: "Use a persistent device or frame as the world",
+    signals: ["device", "crt", "monitor", "frame", "screen", "window", "interface", "persistent"],
+    composition: [
+      "Let one persistent frame/device define the viewport relationship across otherwise different content pages.",
+      "Content changes inside the frame while the framing object preserves identity and continuity.",
+    ],
+    motion: [
+      "Animate the frame sparingly; most change should happen inside it so the device remains a stable reference.",
+    ],
+    transitions: [
+      "Page/section changes should feel like state changes inside the same device rather than unrelated page loads.",
+    ],
+    interaction: [
+      "Controls may borrow from the device metaphor only when they remain understandable and accessible.",
+    ],
+    implementation: [
+      "Keep the persistent frame outside page-specific content ownership so routing/content swaps do not recreate it unnecessarily.",
+    ],
+    mobile: [
+      "Simplify the physical framing while preserving the same 'viewed through this device' premise.",
+    ],
+    avoid: ["A decorative frame that disappears whenever layout becomes difficult.", "Metaphor-specific controls that hide basic navigation."],
+  },
+  {
+    id: "identity-rhythm-unification",
+    title: "Unify identity, layout and motion before adding spectacle",
+    signals: ["identity", "brand", "rhythm", "presence", "portfolio", "coherent", "system"],
+    composition: [
+      "Typography, spacing, image scale and layout rhythm should already feel like the brand before animation is applied.",
+    ],
+    motion: [
+      "Motion inherits the same personality as the identity—weight, restraint, sharpness, elasticity or formality—rather than introducing a second visual language.",
+    ],
+    transitions: [
+      "Use transition timing and shape to reinforce the established identity rhythm.",
+    ],
+    interaction: [],
+    implementation: [
+      "Revise design and motion together when they feel disconnected; do not solve identity weakness with additional effects.",
+    ],
+    mobile: [
+      "Preserve the identity rhythm through type scale, spacing and timing even when visual complexity drops.",
+    ],
+    avoid: ["A strong static identity with generic motion presets.", "A motion-heavy site whose typography/layout could belong to any brand."],
+  },
+  {
+    id: "freeze-static-render-work",
+    title: "Stop rendering work that cannot change the pixels",
+    signals: ["performance", "shadow", "static", "offscreen", "fps", "profile", "render"],
+    composition: [],
+    motion: [],
+    transitions: [],
+    interaction: [],
+    implementation: [
+      "Freeze static shadow maps, pause offscreen loops, stop inactive simulations and skip updates for objects whose state cannot affect the current frame.",
+      "Profile performance by scroll/scene position so optimization is tied to an exact narrative moment instead of a vague average.",
+      "Hide unavoidable initialization work behind an intentional cover or prewarm window before interaction begins.",
+    ],
+    mobile: [
+      "Apply stricter update gating and lower work frequency before reducing visible quality.",
+    ],
+    avoid: ["Animating invisible or unchanged systems.", "Optimizing average FPS while one transition still drops catastrophically."],
+  },
+  {
+    id: "archive-as-exploration",
+    title: "Design archives for wandering and scalable discovery",
+    signals: ["archive", "culture", "collection", "history", "portfolio", "discover", "wander"],
+    composition: [
+      "Give heterogeneous items one navigational grammar without forcing them into identical visual templates.",
+      "Design the system to remain legible at both small and large collection sizes.",
+    ],
+    motion: [
+      "Use motion to reveal adjacency and relationships between items rather than to make every entry perform independently.",
+    ],
+    transitions: [
+      "Preserve the visitor's place in the collection when opening and closing detail states.",
+    ],
+    interaction: [
+      "Support serendipitous browsing while keeping search/filter/direct routes available for intentional retrieval.",
+    ],
+    implementation: [
+      "Separate collection data from the exploratory presentation so the archive can grow without rewriting the interaction model.",
+    ],
+    mobile: [
+      "Reduce simultaneous items but preserve browsing continuity and direct access.",
+    ],
+    avoid: ["A fixed-size layout that breaks as the archive grows.", "Forcing every item into one case-study importance hierarchy."],
+  },
+  {
+    id: "type-is-interface",
+    title: "Let typography become the interaction surface when type is the subject",
+    signals: ["typeface", "font", "glyph", "variable", "typography", "specimen", "letter"],
+    composition: [
+      "Use glyphs and text specimens as the primary objects rather than decorating a conventional layout with type samples.",
+    ],
+    motion: [
+      "Animate typographic axes or transforms to reveal how the type system behaves, with calm comparison moments between expressive peaks.",
+      "Scroll state should be reversible when it represents a specific typographic state.",
+    ],
+    transitions: [
+      "Use changes in type state as section transitions when the type system itself is the content.",
+    ],
+    interaction: [
+      "Map proximity, hover or drag to meaningful font dimensions such as weight, width or variation rather than arbitrary movement.",
+    ],
+    implementation: [
+      "Pause offscreen type loops and simplify ambiguous desktop-only gestures on touch.",
+    ],
+    mobile: [
+      "Replace proximity interactions with clear static/comparison states when touch cannot communicate the same relationship.",
+    ],
+    avoid: ["Decorative type motion that does not teach anything about the type system.", "Replicating cursor-proximity behavior poorly on touch."],
+  },
+  {
     id: "prewarm-signature-systems",
     title: "Prewarm signature systems",
     signals: ["shader", "3d", "video", "particles", "postprocessing", "cinematic", "performance"],
