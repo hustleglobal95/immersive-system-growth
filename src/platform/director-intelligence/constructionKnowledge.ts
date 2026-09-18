@@ -2050,6 +2050,79 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
     avoid: ["setState on every scroll/pointer frame.", "Passing multi-megabyte scene objects through reactive state when stable refs are sufficient."],
   },
   {
+    id: "shared-media-source-mapping",
+    title: "Decode one media source and map it across multiple surfaces",
+    signals: ["video", "texture", "planes", "uv", "screens", "multi-screen", "installation"],
+    composition: [
+      "Treat multiple spatial screens/surfaces as one composed media canvas when they display coordinated parts of the same authored source.",
+    ],
+    motion: [
+      "Keep all surfaces phase-locked by sampling one decoded source rather than starting separate media elements that may drift.",
+    ],
+    transitions: [
+      "Author transitions inside the shared media source or through UV/material state when synchronized timing matters across surfaces.",
+    ],
+    interaction: [],
+    implementation: [
+      "Decode one video/image source and reuse its texture across several meshes with distinct UV regions when the content is authored as one synchronized atlas.",
+      "Prefer one decode/upload path over several identical high-resolution video decoders when the surfaces share timing.",
+    ],
+    mobile: [
+      "Reduce source resolution/bitrate while preserving the shared mapping and synchronized composition.",
+    ],
+    avoid: ["Multiple duplicate video decoders showing synchronized crops of the same source.", "Independent playback clocks for surfaces that must remain frame-aligned."],
+  },
+  {
+    id: "layered-video-state-machine",
+    title: "Use authored video layers as an interactive state machine",
+    signals: ["video", "layers", "loops", "interactive", "state", "cinematic", "product", "control"],
+    composition: [
+      "Separate stable background/context footage from state-changing foreground layers so authored cinematography can remain interactive.",
+    ],
+    motion: [
+      "Cut or crossfade between loopable media states only at prepared boundaries so interaction feels immediate without exposing seams.",
+    ],
+    transitions: [
+      "Preload the next loop/state before the action commits and preserve a common visual anchor across the media switch.",
+    ],
+    interaction: [
+      "Map user actions to a small explicit set of media states instead of allowing unconstrained seeking when the footage was authored around discrete outcomes.",
+    ],
+    implementation: [
+      "Use layered video/canvas/WebGL compositing when several deterministic visual states can be delivered more efficiently as authored footage than realtime 3D.",
+      "Model loop/state ownership explicitly and keep media clocks synchronized where layers must composite together.",
+    ],
+    mobile: [
+      "Reduce simultaneous layers and decode resolution before replacing the interaction with a static state.",
+    ],
+    avoid: ["Realtime 3D recreations of footage that only needs a finite set of interactive states.", "Uncoordinated loop boundaries that visibly jump under interaction."],
+  },
+  {
+    id: "sound-as-continuity-layer",
+    title: "Use sound to preserve place, scale and continuity",
+    signals: ["sound", "audio", "ambient", "world", "cinematic", "scale", "transition", "music"],
+    composition: [
+      "Keep sound subordinate to comprehension but let it reinforce the perceived scale, material and atmosphere of the visual world.",
+    ],
+    motion: [
+      "Tie authored sound cues to meaningful movement or state changes rather than triggering generic whooshes for every animation.",
+    ],
+    transitions: [
+      "Use crossfades, filtering, spatial emphasis or persistent ambience to bridge chapter changes and prevent the world from feeling reset.",
+    ],
+    interaction: [
+      "Interactive sound should acknowledge the same semantic action as the visual response; one action should not produce unrelated audio behavior.",
+    ],
+    implementation: [
+      "Treat ambience, interaction cues and authored score as separate controllable layers tied to the experience state machine.",
+      "Respect autoplay/permission constraints and keep the experience complete when sound is unavailable.",
+    ],
+    mobile: [
+      "Preserve essential narrative cues at lower complexity and keep a silent path fully usable.",
+    ],
+    avoid: ["Sound effects attached indiscriminately to every motion event.", "Visual transitions that reset ambience abruptly without narrative reason."],
+  },
+  {
     id: "prewarm-signature-systems",
     title: "Prewarm signature systems",
     signals: ["shader", "3d", "video", "particles", "postprocessing", "cinematic", "performance"],
