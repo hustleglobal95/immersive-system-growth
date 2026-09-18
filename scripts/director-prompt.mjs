@@ -1,10 +1,19 @@
 import fs from "node:fs/promises";
 import { parseDirectorBrief } from "../src/platform/directorSchema.ts";
 import { directProject } from "../src/platform/directorEngine.ts";
+import { retrieveImmersiveReferences } from "../src/platform/director-intelligence/referenceCorpus.ts";
 
 const inputPath = process.argv[2] || "config/director-brief.example.json";
 const brief = parseDirectorBrief(JSON.parse(await fs.readFile(inputPath, "utf8")));
 const baseline = directProject(brief);
+const immersiveReferences = retrieveImmersiveReferences(baseline, 5).map(({ reference, reasons }) => ({
+  id: reference.id,
+  title: reference.title,
+  evidenceLevel: reference.evidenceLevel,
+  observedTraits: reference.observedTraits,
+  transferableLessons: reference.transferableLessons,
+  reasons,
+}));
 
 const prompt = `# FORGE DIRECTOR — EXECUTIVE CREATIVE TREATMENT
 
@@ -25,6 +34,11 @@ Do not produce a menu of interchangeable ideas. Develop exactly three genuinely 
 
 ## PROJECT BRIEF
 ${JSON.stringify(brief, null, 2)}
+
+## RETRIEVED IMMERSIVE CONSTRUCTION PRECEDENTS
+These are evidence-scored construction precedents from Forge's reviewed corpus. Use the transferable lessons only. Do not reproduce the reference's surface styling or branded execution.
+
+${JSON.stringify(immersiveReferences, null, 2)}
 
 ## NON-NEGOTIABLE CREATIVE STANDARD
 1. The project must have one controlling thesis that can govern camera, motion, typography, composition, transitions, interaction and asset decisions.
