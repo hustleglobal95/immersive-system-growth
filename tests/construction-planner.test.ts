@@ -95,3 +95,62 @@ test("every scene carries a mobile interpretation rather than a hide instruction
       .every((rule) => !/hide the (scene|experience)/i.test(rule)),
   );
 });
+
+
+test("aggressive research patterns change construction policy instead of staying metadata", () => {
+  const treatment = directProject(
+    brief("product", [
+      { id: "hero", label: "Hero GLB product model", type: "model", notes: "Hero-quality product model." },
+      { id: "film", label: "Interactive product film", type: "video", notes: "Product motion footage intended for tactile scrubbing." },
+    ]),
+  );
+  const base = buildConstructionDirectives(treatment);
+  const directives = {
+    ...base,
+    patternIds: Array.from(new Set([
+      ...base.patternIds,
+      "scrubbable-media-delivery",
+      "offscreen-render-worker",
+      "input-work-on-demand",
+      "scroll-distance-pacing",
+      "directional-cut-continuity",
+      "dcc-semantic-naming-contract",
+      "static-geometry-batching",
+      "audio-reactive-semantic-band",
+    ])),
+  };
+  const plan = planImmersiveConstruction(treatment, directives);
+
+  assert.ok(plan.globalRules.some((rule) => /travel distance|view-height/i.test(rule)));
+  assert.ok(plan.globalRules.some((rule) => /film cuts/i.test(rule)));
+  assert.ok(plan.globalRules.some((rule) => /DCC node names/i.test(rule)));
+  assert.ok(plan.globalRules.some((rule) => /Batch static/i.test(rule)));
+  assert.ok(plan.globalRules.some((rule) => /audio energy/i.test(rule)));
+  assert.ok(
+    plan.sceneDecisions.some((scene) =>
+      scene.performancePolicy.some((rule) => /raycast|hit testing/i.test(rule)),
+    ),
+  );
+});
+
+test("orthographic diorama knowledge can select a persistent-world construction mode", () => {
+  const treatment = directProject(
+    brief("portfolio", [
+      { id: "room", label: "Orthographic 3D room model", type: "model", notes: "Persistent miniature room." },
+    ]),
+  );
+  const base = buildConstructionDirectives(treatment);
+  const directives = {
+    ...base,
+    patternIds: Array.from(new Set([...base.patternIds, "orthographic-diorama-staging"])),
+  };
+  const plan = planImmersiveConstruction(treatment, directives);
+
+  assert.equal(plan.mode, "persistent-world");
+  assert.ok(plan.persistentCanvasRecommended);
+  assert.ok(
+    plan.sceneDecisions.every((scene) =>
+      /Persistent world\/subject/.test(scene.continuityAnchor),
+    ),
+  );
+});
