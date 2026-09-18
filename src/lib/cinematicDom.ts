@@ -15,7 +15,6 @@ export type CinematicPreset =
   | "list-unfold"
   | "section-collapse"
   | "section-lift"
-  | "section-reveal"
   | "plate-rise"
   | "label-track"
   | "copy-drift"
@@ -26,7 +25,7 @@ export type CinematicPreset =
 const COPY_PRESETS = new Set<CinematicPreset>([
   "text-settle", "headline-reveal", "headline-words", "headline-chars", "headline-swing",
   "headline-slide", "headline-fracture", "headline-drop", "lede-words", "lede-scatter",
-  "list-unfold", "plate-rise", "section-collapse", "section-lift", "section-reveal", "label-track", "copy-drift",
+  "list-unfold", "plate-rise", "section-collapse", "section-lift", "label-track", "copy-drift",
 ]);
 /** Presets whose targets are split into per-word or per-character boxes before animating. */
 const SPLIT_PRESETS: Partial<Record<CinematicPreset, "word" | "char">> = {
@@ -232,18 +231,6 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
           yPercent: compact ? -7 : -14,
           rotateX: compact ? 3 : 7,
           duration: 1, ease: "power2.in", immediateRender: true,
-        });
-      } else if (cue.preset === "section-reveal") {
-        // The arriving chapter opens itself through a soft mask that wipes up from the bottom
-        // while the previous chapter is still finishing. Clip only -- the collapse owns this
-        // element's transform, and two timelines on one matrix contend.
-        timeline.fromTo(targets, {
-          clipPath: "inset(0% 0% 100% 0%)",
-          webkitClipPath: "inset(0% 0% 100% 0%)",
-        }, {
-          clipPath: "inset(0% 0% 0% 0%)",
-          webkitClipPath: "inset(0% 0% 0% 0%)",
-          duration: 1, ease: "power2.inOut", immediateRender: true,
         });
       } else if (cue.preset === "list-unfold") {
         // Rows unfold from their own left edge, so the schedule builds line by line.
