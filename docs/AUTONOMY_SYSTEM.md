@@ -115,6 +115,12 @@ Run:
 
 npm run autonomy:benchmark
 
+With a production/dev server running, capture deterministic review frames with:
+
+npm run autonomy:capture
+
+The capture runner writes desktop/mobile screenshots plus `test-results/autonomy/review-report.json`, including runtime errors and horizontal-overflow findings.
+
 The benchmark currently measures short-prompt interpretation across at least 30 commercial prompts. It is part of npm run check and must remain at or above the release threshold.
 
 Future benchmark revisions should add rendered pairwise quality, browser task success, repair monotonicity, performance and human preference rather than collapsing everything into one aesthetic score.
