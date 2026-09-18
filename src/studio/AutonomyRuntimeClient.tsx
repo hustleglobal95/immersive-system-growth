@@ -6,6 +6,7 @@ import { ExperienceConfigProvider } from "@/src/components/runtime/ExperienceCon
 import { WebGLBoundary } from "@/src/components/runtime/WebGLBoundary";
 import { CinematicMedia } from "@/src/components/dom/CinematicMedia";
 import { CinematicTransitionLayers } from "@/src/components/dom/CinematicTransitionLayers";
+import { SceneBlocks } from "@/src/components/dom/SceneBlocks";
 import { ScrollController } from "@/src/runtime/ScrollController";
 import { PointerController } from "@/src/runtime/PointerController";
 import { KeyboardController } from "@/src/runtime/KeyboardController";
@@ -59,6 +60,7 @@ export function AutonomyRuntimeClient({
               }}
               aria-labelledby={scene.id+"-heading"}
             >
+              {scene.media && <img className="story-media-static" src={scene.media.poster ?? scene.media.src} alt={scene.media.alt} loading={index===0?"eager":"lazy"} />}
               <div className="story-panel">
                 <div className="narrative-panel__index">{String(index+1).padStart(2,"0")}</div>
                 {scene.copy.eyebrow && <p className="eyebrow">{scene.copy.eyebrow}</p>}
@@ -66,6 +68,7 @@ export function AutonomyRuntimeClient({
                   ? <h1 id={scene.id+"-heading"}>{scene.copy.headline}</h1>
                   : <h2 id={scene.id+"-heading"}>{scene.copy.headline}</h2>}
                 <p className="narrative-body">{scene.copy.body}</p>
+                <SceneBlocks blocks={scene.blocks} range={scene.range} />
                 {experience.hotspots.filter((hotspot)=>hotspot.sceneId===scene.id).map((hotspot)=>(
                   <details key={hotspot.id} data-autonomy-hotspot={hotspot.id}>
                     <summary data-forge-interaction={"hotspot-"+hotspot.id}>{hotspot.label}</summary>
