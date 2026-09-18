@@ -4,9 +4,9 @@ Reviewed: **2026-09-18**
 
 This corpus expands Forge beyond GetLayers so Director does not overfit to one marketplace, one studio, one visual trend or one implementation style.
 
-It contains **51 public studio case studies and technical breakdowns** from Dogstudio, Lusion, makemepulse, Bonhomme, 14islands and Codrops.
+It contains **53 public studio case studies, technical breakdowns and official source studies** from Dogstudio, Lusion, makemepulse, Bonhomme, 14islands and Codrops.
 
-Combined with the 49-template GetLayers corpus, Forge now has **100 immersive references** and **52 executable construction patterns**.
+Combined with the 49-template GetLayers corpus, Forge now has **102 immersive references** and **59 executable construction patterns**.
 
 ## What this corpus is for
 
@@ -93,10 +93,12 @@ The goal is **not** to copy a studio's exact visual identity, proprietary engine
 49. **Better Off® Lookback** — an archive is designed for scalable wandering rather than funnel conversion.
 50. **Exat Typeface Microsite** — typography itself is the interface; reversible scroll and proximity reveal variable-font behavior.
 51. **Chems.Studio Archive** — heterogeneous film/creative work shares one navigation grammar without being flattened into identical case studies.
+52. **Basement Grotesque — official source study** — responsive poster layouts use separately authored mobile/desktop coordinate systems; shared GSAP timing/easing defines a reusable motion grammar; glyph-level parallax demonstrates typographic variants; custom smooth scroll is disabled on smartphone.
+53. **Bruno Simon Folio 2025 — official source study** — explicit ordered frame pipeline; staged boot/resource batches; forced pre-render warmup; DCC-authored spatial activation zones; semantic input actions across keyboard/pointer/touch/gamepad; KTX/Draco runtime asset conversion and tiered postprocessing.
 
 ## New construction intelligence extracted
 
-This expansion first added 15 patterns on top of the original 29, then the second research pass added 8 more. The current library contains **52 patterns**:
+This expansion first added 15 patterns on top of the original 29, then the second research pass added 8 more. The current library contains **59 patterns**:
 
 1. **interaction-as-thesis**
 2. **multi-subscene-transition-budget**
@@ -121,6 +123,13 @@ This expansion first added 15 patterns on top of the original 29, then the secon
 21. **freeze-static-render-work**
 22. **archive-as-exploration**
 23. **type-is-interface**
+24. **prioritized-frame-pipeline**
+25. **staged-resource-boot**
+26. **authored-spatial-activation-zones**
+27. **semantic-input-actions**
+28. **responsive-authored-compositions**
+29. **motion-grammar-primitives**
+30. **feature-difference-as-motion**
 
 These are executable in `src/platform/director-intelligence/constructionKnowledge.ts`.
 
@@ -212,9 +221,23 @@ Forge should be able to build:
 
 from the same Director process.
 
+### 9. Source study adds implementation-order knowledge
+
+The official Basement Grotesque and Bruno Simon repositories add a deeper layer than visual/case-study analysis:
+
+- responsive art direction may require separate authored coordinate systems, not only CSS scaling;
+- motion coherence comes from shared timing/easing primitives before individual section choreography;
+- frame execution order should be explicit in large interactive worlds;
+- startup should be staged around the first meaningful experience instead of every asset;
+- authored scene metadata can drive activation/culling at runtime;
+- input devices should map to semantic actions;
+- pre-rendering representative scene states can move compilation/upload cost before interaction.
+
+This is exactly the level Forge should keep accumulating: not another dependency list, but proven ways to structure immersive production.
+
 ## Retrieval policy
 
-Director now retrieves from the combined **100-reference corpus**, not the GetLayers set alone.
+Director now retrieves from the combined **102-reference corpus**, not the GetLayers set alone.
 
 Retrieval deliberately limits source monoculture: when enough candidates exist, no single source host can dominate the selected precedent set. The Director can therefore combine, for example:
 
