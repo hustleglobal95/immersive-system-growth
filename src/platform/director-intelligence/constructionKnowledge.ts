@@ -1,6 +1,7 @@
 import type { DirectorTreatment } from "@/src/platform/directorSchema";
 import { immersiveReferenceCorpus, retrieveImmersiveReferences } from "@/src/platform/director-intelligence/referenceCorpus";
 import { doctrineForPatterns } from "@/src/platform/director-intelligence/technicalDoctrine";
+import { failureLessonsForTreatment } from "@/src/platform/director-intelligence/failureKnowledge";
 
 export interface ImmersiveConstructionPattern {
   id: string;
@@ -2330,6 +2331,8 @@ export interface ImmersiveConstructionDirectives {
   patternEvidence: ConstructionPatternEvidence[];
   technicalDoctrineIds: string[];
   technicalVerification: string[];
+  failureLessonIds: string[];
+  failureAvoidance: string[];
   referenceIds: string[];
   referenceLessons: string[];
   compositionRules: string[];
@@ -2403,12 +2406,23 @@ export function buildConstructionDirectives(
     Math.max(limit, treatment.tier === "flagship" ? 14 : 12),
   );
   const doctrine = doctrineForPatterns(patterns.map((pattern) => pattern.id));
+  const failureLessons = failureLessonsForTreatment(
+    treatment,
+    patterns.map((pattern) => pattern.id),
+  );
 
   return {
     patternIds: patterns.map((pattern) => pattern.id),
     patternEvidence,
     technicalDoctrineIds: doctrine.map((item) => item.id),
     technicalVerification: unique(doctrine.flatMap((item) => item.verification)),
+    failureLessonIds: failureLessons.map((item) => item.id),
+    failureAvoidance: unique(
+      failureLessons.flatMap((item) => [
+        item.failure,
+        ...item.recovery,
+      ]),
+    ),
     referenceIds: references.map(({ reference }) => reference.id),
     referenceLessons: unique(
       references.flatMap(({ reference }) => reference.transferableLessons),
@@ -2420,9 +2434,13 @@ export function buildConstructionDirectives(
     implementationRules: unique([
       ...patterns.flatMap((pattern) => pattern.implementation),
       ...doctrine.flatMap((item) => item.principles),
+      ...failureLessons.flatMap((item) => item.recovery),
     ]),
     mobileRules: unique(patterns.flatMap((pattern) => pattern.mobile)),
-    forbiddenPatterns: unique(patterns.flatMap((pattern) => pattern.avoid)),
+    forbiddenPatterns: unique([
+      ...patterns.flatMap((pattern) => pattern.avoid),
+      ...failureLessons.map((item) => item.failure),
+    ]),
   };
 }
 
