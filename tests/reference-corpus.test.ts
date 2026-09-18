@@ -256,3 +256,19 @@ test("reference retrieval covers visual, technical and shipped-case evidence rol
   assert.ok(levels.has("technical-reference"), "Expected at least one technical precedent.");
   assert.ok(levels.has("public-case-study"), "Expected at least one shipped case-study precedent.");
 });
+
+test("construction evidence exposes global pattern maturity", () => {
+  const treatment = directProject(brief);
+  const directives = buildConstructionDirectives(treatment, 7);
+  const maturities = new Set(["emerging", "supported", "established", "strong"]);
+
+  assert.ok(directives.patternEvidence.length > 0);
+  assert.ok(
+    directives.patternEvidence.every(
+      (item) =>
+        item.globalReferenceCount >= item.referenceIds.length &&
+        item.globalSourceCount >= item.sourceCount &&
+        maturities.has(item.maturity),
+    ),
+  );
+});
