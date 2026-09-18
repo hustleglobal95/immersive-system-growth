@@ -3,8 +3,10 @@ import assert from "node:assert/strict";
 import { directProject } from "../src/platform/directorEngine";
 import {
   getLayersTemplateCorpus,
+  immersiveReferenceCorpus,
   retrieveImmersiveReferences,
 } from "../src/platform/director-intelligence/referenceCorpus";
+import { broaderImmersiveReferenceCorpus } from "../src/platform/director-intelligence/broaderReferenceCorpus";
 import { buildConstructionDirectives } from "../src/platform/director-intelligence/constructionKnowledge";
 
 const brief = {
@@ -95,5 +97,47 @@ test("construction directives are grounded in both patterns and corpus precedent
   assert.ok(
     directives.patternIds.includes("single-world-under-interface") ||
       directives.patternIds.includes("scroll-reposition-not-reset"),
+  );
+});
+
+
+test("broader immersive corpus adds 35 public studio and technical case studies", () => {
+  assert.equal(broaderImmersiveReferenceCorpus.length, 35);
+  assert.ok(
+    broaderImmersiveReferenceCorpus.every(
+      (reference) =>
+        reference.evidenceLevel === "public-case-study" ||
+        reference.evidenceLevel === "technical-reference",
+    ),
+  );
+  assert.equal(immersiveReferenceCorpus.length, 84);
+});
+
+test("broader corpus teaches implementation-shaping lessons rather than only visual style", () => {
+  const lessons = broaderImmersiveReferenceCorpus.flatMap(
+    (reference) => reference.transferableLessons,
+  );
+  const patterns = new Set(
+    broaderImmersiveReferenceCorpus.flatMap(
+      (reference) => reference.constructionPatternIds,
+    ),
+  );
+
+  assert.ok(lessons.some((lesson) => lesson.includes("camera")));
+  assert.ok(lessons.some((lesson) => lesson.includes("mobile")));
+  assert.ok(lessons.some((lesson) => lesson.includes("interaction")));
+  assert.ok(patterns.has("interaction-as-thesis"));
+  assert.ok(patterns.has("authored-camera-corridor"));
+  assert.ok(patterns.has("choose-medium-by-capability"));
+  assert.ok(patterns.has("mobile-medium-substitution"));
+});
+
+test("Director retrieval can pull non-GetLayers precedents", () => {
+  const treatment = directProject(brief);
+  const retrieved = retrieveImmersiveReferences(treatment, 20);
+  assert.ok(
+    retrieved.some(({ reference }) =>
+      broaderImmersiveReferenceCorpus.some((candidate) => candidate.id === reference.id),
+    ),
   );
 });
