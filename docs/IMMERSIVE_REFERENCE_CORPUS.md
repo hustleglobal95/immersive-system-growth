@@ -2,7 +2,7 @@
 
 Reviewed: 2026-09-18
 
-This corpus exists to make Forge better at **constructing** premium immersive websites with its existing engine. It is not a mirror of GetLayers, a prompt dump, or a source-code archive.\n\nThe GetLayers set remains one visual corpus inside a broader research system. The combined Director research pool now contains **100 references** across GetLayers, Dogstudio, Lusion, makemepulse, Bonhomme, 14islands and Codrops technical case studies, feeding **52 reusable construction patterns**.
+This corpus exists to make Forge better at **constructing** premium immersive websites with its existing engine. It is not a mirror of GetLayers, a prompt dump, or a source-code archive.\n\nThe GetLayers set remains one visual corpus inside a broader research system. The combined Director research pool now contains **102 references** across GetLayers, Dogstudio, Lusion, makemepulse, Bonhomme, 14islands and Codrops technical case studies, feeding **59 reusable construction patterns**.
 
 ## Evidence policy
 
