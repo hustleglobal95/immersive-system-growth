@@ -35,6 +35,11 @@ export function CreativeAgentWorkbench() {
   const [notice, setNotice] = useState("");
   const [previewOpen, setPreviewOpen] = useState(true);
 
+  useEffect(() => {
+    const seededIdea = new URLSearchParams(window.location.search).get("idea")?.trim();
+    if (seededIdea) setIdea(seededIdea.slice(0, 4000));
+  }, []);
+
   const plan = useMemo(() => planCreativeExecution({
     idea,
     experience: draft.experience,
@@ -53,12 +58,13 @@ export function CreativeAgentWorkbench() {
   );
   const intelligence = useMemo(() => runDirectorIntelligence({ brief }), [brief]);
   const report = intelligence.report;
+  const hierarchyBlocked = report.hierarchy.blockers.length > 0;
   const selectedTerritory = report.treatment.territories.find((item) => item.id === report.treatment.selectedTerritoryId);
   const selectedBlocked = plan.sceneMoves.filter((move) => selectedScenes.includes(move.sceneIndex) && !move.assetPlan.canBuildNow).length;
 
   const tryAnother = () => {
     setVariation((value) => value + 1);
-    setNotice("Director changed medium, camera grammar, scene strategy and asset requirements instead of restyling the same answer.");
+    setNotice("Director changed medium, camera grammar, scene strategy, hierarchy and asset requirements instead of restyling the same answer.");
   };
 
   const toggleScene = (sceneIndex: number) => {
@@ -68,6 +74,10 @@ export function CreativeAgentWorkbench() {
   };
 
   const applyPlan = () => {
+    if (hierarchyBlocked) {
+      setNotice(`Creative Agent held the patch because hierarchy is unresolved: ${report.hierarchy.blockers[0]}`);
+      return;
+    }
     if (!plan.validation.valid) {
       setNotice(`Creative Agent refused to apply an incomplete plan: ${plan.validation.errors[0] ?? "asset planning validation failed."}`);
       return;
@@ -82,15 +92,15 @@ export function CreativeAgentWorkbench() {
 
   return <main className="creative-agent">
     <header className="creative-agent__topbar">
-      <div><span>FORGE</span><strong>Creative Agent</strong><em>V3 · ASSET AWARE</em></div>
-      <nav><Link href="/studio">Studio</Link><Link href="/director/intelligence">Director Intelligence</Link></nav>
+      <div><span>FORGE</span><strong>Creative Agent</strong><em>V5 · HIERARCHY + ASSET CREATION</em></div>
+      <nav><Link href="/studio/assets/create">Asset Creator</Link><Link href="/studio">Studio</Link><Link href="/director/intelligence">Director Intelligence</Link></nav>
     </header>
 
     <section className="creative-agent__layout">
       <aside className="creative-agent__brief">
         <span className="creative-agent__eyebrow">EXECUTIVE CREATIVE DIRECTION</span>
         <h1>Describe the outcome. Director chooses the smartest production path.</h1>
-        <p>Every scene the agent proposes must now include an asset strategy: what already exists, what can be reused, what must be created, what is optional, what blocks production, and the cheapest versus best execution.</p>
+        <p>Every scene must pass hierarchy review and carry an explicit asset strategy. Missing hero, video or 3D inputs can be sent directly to Forge Asset Creator instead of being treated as invisible production debt.</p>
 
         <label>Creative intent
           <textarea value={idea} onChange={(event) => { setIdea(event.target.value); setVariation(0); }} />
@@ -111,6 +121,7 @@ export function CreativeAgentWorkbench() {
       <section className="creative-agent__stage">
         <div className="creative-agent__verdict">
           <div><span>DIRECTOR VERDICT</span><strong>{report.verdict}</strong></div>
+          <div><span>HIERARCHY</span><strong>{report.hierarchy.overallScore}/10</strong></div>
           <div><span>EXECUTION MEDIUM</span><strong>{plan.mediumLabel}</strong></div>
           <div><span>ASSET READY</span><strong>{plan.assetSummary.scenesBuildableNow.length}/{plan.sceneMoves.length} scenes</strong></div>
           <div><span>CREATE</span><strong>{plan.assetSummary.totalAssetsToCreate} required assets</strong></div>
@@ -134,6 +145,21 @@ export function CreativeAgentWorkbench() {
             <h3>Spend the craft here.</h3>
             <p>{plan.signatureMoment}</p>
           </div>
+        </section>
+
+        <section className="creative-agent__hierarchy">
+          <header><div><span>HIERARCHY ENGINE</span><h3>Importance must propagate downward.</h3></div><strong>{report.hierarchy.overallScore}/10</strong></header>
+          <div className="creative-agent__hierarchy-chain">{report.hierarchy.recommendedNarrative.map((item, index) => <span key={`${item}-${index}`}>{item}{index < report.hierarchy.recommendedNarrative.length - 1 ? " →" : ""}</span>)}</div>
+          <div className="creative-agent__hierarchy-levels">
+            {report.hierarchy.levels.map((level) => <article key={level.id} data-status={level.status}>
+              <div><span>{level.label}</span><strong>{level.score}</strong></div>
+              <p>{level.principle}</p>
+              <small>DOMINANT</small><b>{level.dominant}</b>
+              {level.issues[0] && <em>{level.issues[0].message} {level.issues[0].recommendation}</em>}
+            </article>)}
+          </div>
+          <div className="creative-agent__attention-rule"><span>ATTENTION RULE</span><strong>{report.hierarchy.attentionRules[0]?.owner}</strong><p>{report.hierarchy.attentionRules[0]?.reason}</p></div>
+          {hierarchyBlocked && <div className="creative-agent__validation"><strong>HIERARCHY HELD</strong>{report.hierarchy.blockers.map((blocker) => <p key={blocker}>{blocker}</p>)}</div>}
         </section>
 
         <section className="creative-agent__asset-summary">
@@ -168,8 +194,8 @@ export function CreativeAgentWorkbench() {
                 <div className="creative-agent__asset-columns">
                   <AssetNames title="USE EXISTING" values={move.assetPlan.existingAssets} empty="No registered asset required." />
                   <AssetNames title="REUSE" values={move.assetPlan.reusableAssets} empty="No additional reusable asset selected." />
-                  <AssetItems title="CREATE" values={move.assetPlan.assetsToCreate} empty="No required new asset." />
-                  <AssetItems title="OPTIONAL" values={move.assetPlan.optionalAssets} empty="No optional asset suggested." />
+                  <AssetItems title="CREATE" values={move.assetPlan.assetsToCreate} empty="No required new asset." sceneIndex={move.sceneIndex} />
+                  <AssetItems title="OPTIONAL" values={move.assetPlan.optionalAssets} empty="No optional asset suggested." sceneIndex={move.sceneIndex} />
                 </div>
                 {move.assetPlan.blockers.length > 0 && <div className="creative-agent__blockers"><small>BLOCKERS</small>{move.assetPlan.blockers.map((blocker) => <p key={blocker}>{blocker}</p>)}</div>}
                 <div className="creative-agent__production-notes"><small>PRODUCTION NOTES</small>{move.assetPlan.productionNotes.map((note) => <p key={note}>{note}</p>)}</div>
@@ -181,8 +207,8 @@ export function CreativeAgentWorkbench() {
             {plan.patchSummary.map((line, index) => <code key={line} className={selectedScenes.includes(plan.sceneMoves[index]?.sceneIndex ?? -1) ? "" : "is-muted"}>{line}</code>)}
           </div>}
           <div className="creative-agent__apply-row">
-            <div><strong>{selectedScenes.length} scene{selectedScenes.length === 1 ? "" : "s"} selected · {selectedBlocked} asset-blocked</strong><span>Missing assets are never faked as complete. Existing non-agent authored tracks are preserved.</span></div>
-            <button className="creative-agent__apply" disabled={!plan.validation.valid} onClick={applyPlan}>Apply reversible plan</button>
+            <div><strong>{selectedScenes.length} scene{selectedScenes.length === 1 ? "" : "s"} selected · {selectedBlocked} asset-blocked · {hierarchyBlocked ? "hierarchy held" : "hierarchy clear"}</strong><span>Missing assets are never faked as complete. Existing non-agent authored tracks are preserved.</span></div>
+            <button className="creative-agent__apply" disabled={!plan.validation.valid || hierarchyBlocked} onClick={applyPlan}>Apply reversible plan</button>
           </div>
         </section>
 
@@ -226,8 +252,13 @@ function AssetNames({ title, values, empty }: { title: string; values: string[];
   return <section><small>{title}</small>{values.length ? values.map((value) => <p key={value} title={value}>{shortPath(value)}</p>) : <p className="is-empty">{empty}</p>}</section>;
 }
 
-function AssetItems({ title, values, empty }: { title: string; values: AgentSceneAssetItem[]; empty: string }) {
-  return <section><small>{title}</small>{values.length ? values.map((item) => <div className="creative-agent__asset-item" key={`${item.name}-${item.type}`}><strong>{item.name}</strong><span>{item.type} · {item.priority}</span><p>{item.reason}</p></div>) : <p className="is-empty">{empty}</p>}</section>;
+function AssetItems({ title, values, empty, sceneIndex }: { title: string; values: AgentSceneAssetItem[]; empty: string; sceneIndex: number }) {
+  return <section><small>{title}</small>{values.length ? values.map((item) => <div className="creative-agent__asset-item" key={`${item.name}-${item.type}`}><strong>{item.name}</strong><span>{item.type} · {item.priority}</span><p>{item.reason}</p><Link className="creative-agent__create-asset" href={assetCreatorHref(item, sceneIndex)}>{title === "CREATE" ? "Create this asset" : "Explore creating it"}</Link></div>) : <p className="is-empty">{empty}</p>}</section>;
+}
+
+function assetCreatorHref(item: AgentSceneAssetItem, sceneIndex: number) {
+  const query = new URLSearchParams({ asset: item.name, type: item.type, reason: item.reason, priority: item.priority, scene: String(sceneIndex) });
+  return `/studio/assets/create?${query.toString()}`;
 }
 
 function makeBrief(projectName: string, idea: string, sceneCount: number, manifest: AssetManifest, medium: string, signature: string): DirectorBrief {
