@@ -154,7 +154,7 @@ export const immersiveTechnicalDoctrine: ImmersiveTechnicalDoctrine[] = [
       "Time-based motion has comparable real-world speed across common refresh rates.",
       "Scroll-bound states do not accumulate frame-rate-dependent integration error.",
     ],
-  },,
+  },
   {
     id: "three-compressed-runtime-assets",
     title: "Choose GPU-friendly texture and mesh compression with decode cost in mind",
