@@ -214,9 +214,19 @@ It transfers:
 - intensity -> motion preset selection
 - signature moment -> primary motion archetype
 - asset direction -> asset requirements
-- mobile interpretation -> mobile notes
+- mobile interpretation -> mobile notes\n- immersive construction knowledge -> composition, motion, transition, interaction, implementation, mobile and forbidden-pattern directives
 
 The result can use the existing Forge creative compiler without inventing a parallel runtime.
+
+## Immersive construction intelligence
+
+Director does not treat a reference as a request to import its implementation stack. Before reference-driven production, Forge deconstructs the observable construction: composition, typography, depth, scroll choreography, persistent anchors, interaction physics, DOM/WebGL responsibilities, mobile translation and first-use performance costs.
+
+Reusable construction knowledge lives in `src/platform/director-intelligence/constructionKnowledge.ts` and is compiled into the existing Creative Plan. The current rules cover continuous visual anchors, editorial depth stacks, staged subjects, type/media countermotion, macro-to-whole rhythm, spatial galleries, restrained interactive fields, threshold passages, signature peaks, DOM/WebGL contracts, mobile concept preservation and signature-system prewarming.
+
+These are **construction rules, not component presets**. They describe how to use Forge's existing camera, motion, R3F, shader, media, mask and interaction systems. They do not prescribe a proprietary palette, typeface, branded layout or signature interaction from a reference.
+
+For manual or agent-led reference study, use `docs/IMMERSIVE_REFERENCE_DECONSTRUCTION_TEMPLATE.md` and the `/study-reference` command. The governing method is documented in `docs/IMMERSIVE_CONSTRUCTION_INTELLIGENCE.md`.
 
 ## Director room
 
