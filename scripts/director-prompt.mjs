@@ -43,6 +43,24 @@ ${JSON.stringify(brief, null, 2)}
 14. Never invent client facts, product claims, dimensions, awards, testimonials, asset availability or business results.
 15. If evidence is missing, direct around the gap or identify the asset dependency.
 
+## IMMERSIVE CONSTRUCTION STANDARD
+When the brief contains references, treat them as construction evidence rather than implementation dependencies.
+
+For each reference:
+- identify the dominant composition and negative-space strategy
+- identify typography/media layering
+- identify what creates depth: crop, scale, parallax, occlusion, camera, lighting or real geometry
+- identify the persistent visual anchor across sections
+- identify scroll and pointer behavior separately
+- identify the single highest-intensity signature moment and the intentionally quiet moments
+- identify the DOM/WebGL boundary
+- identify how the behavior should translate to mobile
+- identify likely first-use costs that must be preloaded or prewarmed
+
+Transfer the underlying principle, never the exact palette, typeface, branded layout, assets or signature interaction.
+
+Do not recommend or add a new library merely because a reference appears to use one. Express the idea through Forge's existing camera, R3F/Three, GSAP, deterministic motion tracks, media/mask, shader and interaction systems unless a genuinely missing primitive is documented.
+
 ## ORIGINALITY TEST
 Ask: “Could this treatment be reused for another client by replacing the logo, colors and copy?”
 If yes, rewrite it.
