@@ -101,8 +101,8 @@ test("construction directives are grounded in both patterns and corpus precedent
 });
 
 
-test("broader immersive corpus adds 84 public studio and technical/source studies", () => {
-  assert.equal(broaderImmersiveReferenceCorpus.length, 84);
+test("broader immersive corpus adds 95 public studio and technical/source studies", () => {
+  assert.equal(broaderImmersiveReferenceCorpus.length, 95);
   assert.ok(
     broaderImmersiveReferenceCorpus.every(
       (reference) =>
@@ -110,7 +110,7 @@ test("broader immersive corpus adds 84 public studio and technical/source studie
         reference.evidenceLevel === "technical-reference",
     ),
   );
-  assert.equal(immersiveReferenceCorpus.length, 133);
+  assert.equal(immersiveReferenceCorpus.length, 144);
 });
 
 test("broader corpus teaches implementation-shaping lessons rather than only visual style", () => {
@@ -161,8 +161,8 @@ test("every corpus pattern id resolves to executable construction knowledge", ()
   const missing = Array.from(referenced).filter((id) => !known.has(id));
 
   assert.deepEqual(missing, []);
-  assert.equal(immersiveConstructionPatterns.length, 78);
-  assert.equal(known.size, 78);
+  assert.equal(immersiveConstructionPatterns.length, 81);
+  assert.equal(known.size, 81);
 });
 
 test("construction consensus ranks patterns by evidence across precedents", () => {
@@ -206,6 +206,9 @@ test("aggressive research adds media, audio, camera, DCC and interaction knowled
     "input-work-on-demand",
     "orthographic-diorama-staging",
     "gamified-progress-with-skip",
+    "pre-rendered-sequence-for-fidelity",
+    "cross-device-companion-control",
+    "personalization-to-render-state",
   ]) {
     assert.ok(patterns.has(id), `Missing aggressive-research pattern: ${id}`);
   }
@@ -221,6 +224,10 @@ test("aggressive research adds media, audio, camera, DCC and interaction knowled
     "codrops-forged-build",
     "source-bruno-simon-folio-2019",
     "source-abigail-bloom-room",
+    "unseen-letter",
+    "unseen-superlist",
+    "hello-monday-google-cloud",
+    "unit9-lightsaber-escape",
   ]) {
     assert.ok(
       immersiveReferenceCorpus.some((reference) => reference.id === referenceId),
