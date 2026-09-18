@@ -435,6 +435,219 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
     avoid: ["Constant maximum density.", "Filling every quiet area with particles, badges or secondary copy."],
   },
   {
+    id: "subject-occludes-display-type",
+    title: "Subject occludes display type",
+    signals: ["portrait", "character", "product", "headline", "identity", "editorial"],
+    composition: [
+      "Let a dominant subject overlap oversized display type so depth is created by a simple foreground/background relationship.",
+      "Keep enough uncovered letterform structure that the headline remains readable even when the subject crosses it.",
+    ],
+    motion: [
+      "Move subject and type on different curves or depths; the overlap should evolve rather than slide as one flattened group.",
+    ],
+    transitions: [
+      "The subject silhouette or an oversized letterform can become the mask or carried edge into the next chapter.",
+    ],
+    interaction: [],
+    implementation: [
+      "Keep the type semantic DOM and place the subject in DOM media or WebGL according to whether real perspective/material response is needed.",
+    ],
+    mobile: [
+      "Reduce the overlap and re-break the headline instead of shrinking both subject and type until the composition loses authority.",
+    ],
+    avoid: ["Occlusion that destroys legibility.", "Rasterizing essential display copy into the hero image."],
+  },
+  {
+    id: "atmosphere-as-layout",
+    title: "Atmosphere as layout",
+    signals: ["landscape", "cosmic", "fog", "space", "world", "environment", "night", "dream"],
+    composition: [
+      "Use the environment's light, horizon, negative space and visual mass as layout constraints rather than placing a conventional content container on top.",
+      "Place copy where the environment naturally creates contrast and breathing room.",
+    ],
+    motion: [
+      "Let environmental motion carry much of the immersion while interface motion remains restrained.",
+    ],
+    transitions: [
+      "Change atmosphere, horizon, exposure or environmental scale to move between chapters before adding a separate transition effect.",
+    ],
+    interaction: [],
+    implementation: [
+      "A full-bleed image, video, shader field or persistent 3D environment can all satisfy this pattern; choose the lightest medium that preserves the spatial read.",
+    ],
+    mobile: [
+      "Re-crop the environment around its strongest negative-space pocket so copy remains integrated with the scene.",
+    ],
+    avoid: ["Centering a generic card over a carefully composed environment.", "Adding decorative UI that fights the scene's natural hierarchy."],
+  },
+  {
+    id: "edge-utility-central-spectacle",
+    title: "Edge utility around a central spectacle",
+    signals: ["stats", "cta", "proof", "product", "visualization", "interface", "center"],
+    composition: [
+      "Give the central subject or visualization the largest uninterrupted area and push proof, navigation and utility toward the perimeter.",
+      "Use edge-aligned information to balance the frame without boxing the hero into a card.",
+    ],
+    motion: [
+      "Keep utility comparatively stable while the central spectacle carries the main spatial or material motion.",
+    ],
+    transitions: [
+      "Allow the central subject to travel or transform while edge utility dissolves, swaps or reflows with lower amplitude.",
+    ],
+    interaction: [
+      "Keep primary utility easy to hit and legible even when the central object has rich pointer behavior.",
+    ],
+    implementation: [
+      "Use semantic DOM for edge utility and let the central subject be media or WebGL; synchronize both from the same chapter state.",
+    ],
+    mobile: [
+      "Stack proof and CTA below or above the subject while keeping the subject visually dominant.",
+    ],
+    avoid: ["Turning every proof value into an equal floating card.", "Animating utility with the same amplitude as the hero."],
+  },
+  {
+    id: "technical-chrome-world-language",
+    title: "Technical chrome as world language",
+    signals: ["technical", "code", "monitor", "hud", "grid", "viewfinder", "system", "data"],
+    composition: [
+      "Use grids, coordinates, status labels, viewfinder lines or code fragments as a coherent framing language when the brand premise genuinely supports it.",
+      "Keep the technical chrome at the edges or secondary depth so the main subject remains clear.",
+    ],
+    motion: [
+      "Technical indicators should update or drift with a consistent system logic rather than flicker randomly.",
+    ],
+    transitions: [
+      "Carry one grid, frame, coordinate or status system across chapters to make different media feel like one instrument.",
+    ],
+    interaction: [
+      "If the chrome reacts, tie it to a measurable state such as focus, progress, hover target or scene index.",
+    ],
+    implementation: [
+      "Most chrome belongs in DOM/SVG; reserve WebGL for depth-dependent overlays, spatial screens or genuinely volumetric data.",
+    ],
+    mobile: [
+      "Remove nonessential instrumentation first while preserving the core system cue and readable labels.",
+    ],
+    avoid: ["Fake diagnostic noise with no relation to state.", "Tiny unreadable interface text used only as decoration."],
+  },
+  {
+    id: "procedural-field-as-hero",
+    title: "Procedural field as hero",
+    signals: ["particles", "field", "wave", "halo", "galaxy", "brain", "data", "energy"],
+    composition: [
+      "Let one large procedural form define the frame, then place copy where the field creates natural negative space or a focal void.",
+      "Use one coherent field rather than several unrelated particle emitters.",
+    ],
+    motion: [
+      "Give the field a slow baseline behavior and reserve stronger deformation for scroll thresholds or purposeful interaction.",
+    ],
+    transitions: [
+      "Morph density, radius, aperture, energy or camera relation of the same field across chapters instead of swapping to a new effect.",
+    ],
+    interaction: [
+      "Pointer influence should perturb one physical quantity—force, proximity, velocity or orientation—and decay smoothly.",
+    ],
+    implementation: [
+      "Prefer GPU-side attributes, uniforms, instancing and shared render state for large repeated systems.",
+    ],
+    mobile: [
+      "Reduce point count, DPR, bloom and update frequency while retaining the field's silhouette and focal behavior.",
+    ],
+    avoid: ["Several particle systems competing for attention.", "High-frequency motion that makes copy hard to read."],
+  },
+  {
+    id: "object-prop-depth-stage",
+    title: "Object plus prop depth stage",
+    signals: ["product", "package", "object", "props", "floating", "commerce", "still-life"],
+    composition: [
+      "Use one hero object as the authority and a small number of supporting props at different depths to imply a world around it.",
+      "Supporting props should reinforce material, flavor, function or brand story rather than exist as filler.",
+    ],
+    motion: [
+      "Move props with lower authority and different parallax than the hero so the product remains the visual anchor.",
+    ],
+    transitions: [
+      "A prop may become an occluder or transition carrier if it naturally crosses the camera or media plane.",
+    ],
+    interaction: [],
+    implementation: [
+      "Props can be 2D cutouts, video layers or 3D objects; do not promote them to full geometry when depth can be faked cleanly.",
+    ],
+    mobile: [
+      "Reduce prop count before shrinking the hero product.",
+    ],
+    avoid: ["Equal visual weight for hero and props.", "Decorative floating objects with no product relationship."],
+  },
+  {
+    id: "small-subject-big-environment",
+    title: "Small subject in a large environment",
+    signals: ["architecture", "travel", "hospitality", "landscape", "person", "scale", "environment"],
+    composition: [
+      "Make the subject deliberately small when environmental scale, isolation or destination is the message.",
+      "Use foreground silhouettes, horizon and atmospheric depth to establish scale before adding explanatory UI.",
+    ],
+    motion: [
+      "Favor patient camera or environmental movement so the viewer can register scale.",
+    ],
+    transitions: [
+      "Travel through the environment, horizon or foreground occluder rather than cutting away from the place immediately.",
+    ],
+    interaction: [],
+    implementation: [
+      "A cinematic image/video can outperform 3D when the value is photographic atmosphere rather than interactive geometry.",
+    ],
+    mobile: [
+      "Protect the subject's silhouette and horizon relationship in the portrait crop.",
+    ],
+    avoid: ["Cropping so tightly that the environment stops communicating scale.", "Overlaying large interface blocks on the subject."],
+  },
+  {
+    id: "split-stage-editorial",
+    title: "Split-stage editorial composition",
+    signals: ["split", "editorial", "agency", "portfolio", "service", "product", "proof"],
+    composition: [
+      "Divide the frame into one quiet information plane and one high-energy visual plane instead of making every region equally expressive.",
+      "Let the split be asymmetric when one side contains the signature visual.",
+    ],
+    motion: [
+      "Keep the information plane comparatively stable while the visual plane transforms, scrubs or reacts.",
+    ],
+    transitions: [
+      "Collapse, widen or hand off the split boundary as the page enters the next chapter.",
+    ],
+    interaction: [
+      "Primary CTA stays on the quiet plane unless the interaction itself is the concept.",
+    ],
+    implementation: [
+      "DOM owns the information plane; the visual plane may use image, video, shader or 3D depending on the actual effect required.",
+    ],
+    mobile: [
+      "Stack the two planes in narrative order while preserving the contrast between quiet information and high-energy visual.",
+    ],
+    avoid: ["Two equally busy columns.", "Duplicating the same headline or CTA on both planes."],
+  },
+  {
+    id: "embedded-proof-in-hero",
+    title: "Embedded proof inside the hero",
+    signals: ["stats", "reviews", "users", "rating", "uptime", "distance", "performance", "proof"],
+    composition: [
+      "Place a small amount of high-value proof inside the hero composition so credibility arrives with the promise instead of waiting for a later card grid.",
+      "Treat proof as a compositional counterweight rather than a separate dashboard.",
+    ],
+    motion: [
+      "Proof may count, update or reveal after the hero premise is understood, with lower intensity than the main subject.",
+    ],
+    transitions: [],
+    interaction: [],
+    implementation: [
+      "Keep proof semantic DOM and bind animated values to deterministic chapter state or real data when available.",
+    ],
+    mobile: [
+      "Keep only the strongest one or two proof points in the hero; move secondary metrics later in the page.",
+    ],
+    avoid: ["Invented metrics.", "A wall of badges or statistics before the main proposition is legible."],
+  },
+  {
     id: "prewarm-signature-systems",
     title: "Prewarm signature systems",
     signals: ["shader", "3d", "video", "particles", "postprocessing", "cinematic", "performance"],
