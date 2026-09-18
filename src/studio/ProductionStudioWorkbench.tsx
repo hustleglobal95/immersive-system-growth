@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { readStored, useClientValue } from "@/src/lib/useClientValue";
 import rawExperience from "@/config/experience.json";
 import rawProject from "@/config/studio-project.json";
 import rawAssetManifest from "@/config/asset-manifest.json";
@@ -19,6 +20,7 @@ import { AssetBankPanel } from "@/src/studio/AssetBankPanel";
 import { GlbInspectorPanel } from "@/src/studio/GlbInspectorPanel";
 import { PublishPanel, TelemetryPanel } from "@/src/studio/ProjectPanels";
 import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
+import { STUDIO_GUIDE_BRIEF_KEY, StudioWorkflowGuide } from "@/src/studio/StudioWorkflowGuide";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig, MotionTrack, SceneDefinition, Vec3 } from "@/src/types/experience";
 
@@ -52,12 +54,36 @@ export function ProductionStudioWorkbench() {
   const [newProjectOpen, setNewProjectOpen] = useState(false);
   const [newName, setNewName] = useState("Untitled Experience");
   const [newKind, setNewKind] = useState<ProjectKind>("custom");
+  const [guidedOpen, setGuidedOpen] = useState(false);
+  const [guideDismissed, setGuideDismissed] = useState(false);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const importRef = useRef<HTMLInputElement>(null);
 
   const sceneIndex = Math.min(activeScene, draft.experience.scenes.length - 1);
   const scene = draft.experience.scenes[sceneIndex];
   const rigNodes = draft.experience.productRig?.nodes ?? [];
   const selectionLabel = useMemo(() => labelForSelection(selection, draft.experience), [selection, draft.experience]);
+  const guideBrief = useClientValue(() => readStored(STUDIO_GUIDE_BRIEF_KEY), "");
+  const guideSeen = useClientValue(() => readStored("forge-studio-guided-first-run-v1"), "");
+  const workflow = useMemo(() => {
+    const assetCount = draft.assetManifest.models.length + draft.assetManifest.textures.length + draft.assetManifest.hdr.length + draft.assetManifest.video.length;
+    const motionCount = draft.experience.scenes.reduce((total, item) => total + item.motionTracks.length, 0);
+    const customStructure = draft.experience.scenes.length > 1 || draft.experience.scenes[0]?.label !== "Opening Scene";
+    const ideaDone = guideBrief.trim().length >= 12;
+    const assetsDone = assetCount > 0;
+    const motionDone = motionCount > 0;
+    const reviewDone = draft.validation.length === 0 && ideaDone && customStructure && motionDone;
+    const completed = [ideaDone, assetsDone, customStructure, motionDone, reviewDone].filter(Boolean).length;
+    const nextLabel = !ideaDone ? "Describe the experience" : !assetsDone ? "Create or import the hero assets" : !customStructure ? "Shape the scene journey" : !motionDone ? "Direct the movement" : !reviewDone ? "Resolve review issues" : "Review and publish";
+    const unconfigured = draft.experience.scenes.length === 1 && assetCount === 0 && motionCount === 0 && !draft.experience.heroModel && !draft.experience.scenes[0]?.media;
+    return { completed, nextLabel, unconfigured };
+  }, [draft.assetManifest, draft.experience, draft.validation.length, guideBrief]);
+  const guideVisible = guidedOpen || (!guideDismissed && draft.hydrated && !guideSeen && workflow.unconfigured);
+  const closeGuide = () => {
+    setGuidedOpen(false);
+    setGuideDismissed(true);
+    try { window.localStorage.setItem("forge-studio-guided-first-run-v1", "seen"); } catch { /* storage can be blocked */ }
+  };
 
   const selectScene = (index: number) => {
     setActiveScene(index);
@@ -239,6 +265,23 @@ export function ProductionStudioWorkbench() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draft.hydrated]);
 
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      const typing = Boolean(target?.matches("input, textarea, select, [contenteditable='true']"));
+      const commandShortcut = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k";
+      const slashShortcut = event.key === "/" && !typing && !event.metaKey && !event.ctrlKey && !event.altKey;
+      if (commandShortcut || slashShortcut) {
+        event.preventDefault();
+        setCommandPaletteOpen(true);
+      } else if (event.key === "Escape") {
+        setCommandPaletteOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   const importExperience = async (file?: File) => {
     if (!file) return;
     try {
@@ -254,10 +297,20 @@ export function ProductionStudioWorkbench() {
     }
   };
 
-  const runCommand = () => {
-    const value = command.trim().toLowerCase();
+  const runCommandValue = (input: string) => {
+    const value = input.trim().toLowerCase();
     if (!value) return;
-    if (value.includes("architect") || value.includes("build")) { setArchetype("architectural-build"); applyArchetype("architectural-build"); }
+    if (value.includes("guided")) setGuidedOpen(true);
+    else if (value.includes("creative agent")) window.location.assign("/studio/agent");
+    else if (value === "director" || value.includes("open director")) window.location.assign("/director");
+    else if (value.includes("asset creator") || value.includes("create asset")) window.location.assign("/studio/assets/create");
+    else if (value.includes("new project")) setNewProjectOpen(true);
+    else if (value.includes("ship") || value.includes("publish") || value.includes("review release")) { setWorkspace("Ship"); setAdvanced(true); }
+    else if (value.includes("interact")) { setWorkspace("Interact"); setAdvanced(true); }
+    else if (value === "assets" || value.includes("asset workspace")) { setWorkspace("Assets"); setAdvanced(true); }
+    else if (value === "motion" || value.includes("motion workspace")) { setWorkspace("Motion"); setAdvanced(true); }
+    else if (value === "create" || value.includes("create workspace")) { setWorkspace("Create"); setAdvanced(false); }
+    else if (value.includes("architect") || value.includes("build")) { setArchetype("architectural-build"); applyArchetype("architectural-build"); }
     else if (value.includes("product") || value.includes("macro")) { setArchetype("product-hero"); applyArchetype("product-hero"); }
     else if (value.includes("parallax")) { setArchetype("parallax-story"); applyArchetype("parallax-story"); }
     else if (value.includes("threshold") || value.includes("enter")) { setArchetype("threshold-passage"); applyArchetype("threshold-passage"); }
@@ -265,20 +318,37 @@ export function ProductionStudioWorkbench() {
     else if (value.includes("new scene") || value.includes("add scene")) addScene();
     else if (value.includes("duplicate")) duplicateScene();
     else if (value.includes("clear motion") || value.includes("reset motion")) resetSceneMotion();
-    else setNotice("Command not matched. Try: architectural build, editorial reveal, product hero, parallax, threshold, add scene, duplicate, or reset motion.");
+    else setNotice("Command not matched. Try Guided Build, Creative Agent, Ship, architectural build, product hero, add scene, or reset motion.");
     setCommand("");
+    setCommandPaletteOpen(false);
   };
+  const runCommand = () => runCommandValue(command);
 
   return (
     <main className="production-studio">
+      <h1 className="production-sr-only">Forge Studio — {draft.project.name}</h1>
       {booting && <div className="production-boot" role="status" aria-live="polite">Loading workspace…</div>}
+      {guideVisible && <StudioWorkflowGuide
+        project={draft.project}
+        experience={draft.experience}
+        manifest={draft.assetManifest}
+        validationCount={draft.validation.length}
+        onClose={closeGuide}
+        onNewProject={() => { closeGuide(); setNewProjectOpen(true); }}
+        onOpenCreate={() => { closeGuide(); setWorkspace("Create"); setAdvanced(false); }}
+        onOpenAssets={() => { closeGuide(); setWorkspace("Assets"); setAdvanced(true); }}
+        onOpenMotion={() => { closeGuide(); setWorkspace("Motion"); setAdvanced(true); }}
+        onOpenShip={() => { closeGuide(); setWorkspace("Ship"); setAdvanced(true); }}
+      />}
       <header className="production-topbar">
         <div className="production-brand"><Link href="/forge">FORGE</Link><span>STUDIO</span></div>
         <nav aria-label="Production workspaces">
           {workspaces.map((item) => <button key={item} type="button" aria-current={workspace === item ? "page" : undefined} onClick={() => { setWorkspace(item); setAdvanced(item !== "Create"); }}>{item}</button>)}
         </nav>
         <div className="production-top-actions">
+          <button type="button" className="production-guided-button" onClick={() => setGuidedOpen(true)}><span>Guided Build</span><strong>{workflow.completed}/6</strong></button>
           <span className="production-status" data-valid={!draft.validation.length}><i />{draft.validation.length ? `${draft.validation.length} issue` : "Ready"}</span>
+          <details className="production-assist"><summary>Assist</summary><div><Link href="/studio/agent"><strong>Creative Agent</strong><span>Turn the idea into a production strategy.</span></Link><Link href="/director"><strong>Director</strong><span>Critique and strengthen the creative direction.</span></Link><Link href="/studio/assets/create"><strong>Asset Creator</strong><span>Create a missing image, video or 3D asset.</span></Link></div></details>
           <details><summary>Project</summary><div><button type="button" onClick={() => setNewProjectOpen(true)}>New project</button><button type="button" onClick={() => importRef.current?.click()}>Import</button><button type="button" onClick={draft.reset}>Reset draft</button></div></details>
           <details><summary>Export</summary><div className="align-right"><button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Experience</button><button type="button" onClick={() => downloadJson("interaction-graph.json", draft.interactionGraph)}>Interactions</button><button type="button" onClick={() => downloadJson("studio-project.json", draft.project)}>Project</button><button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Assets</button></div></details>
           <input ref={importRef} hidden type="file" accept="application/json,.json" onChange={(event) => void importExperience(event.target.files?.[0])} />
@@ -292,7 +362,7 @@ export function ProductionStudioWorkbench() {
       ) : (
         <div className="production-layout">
           <aside className="production-left">
-            <div className="production-panel-title"><div><span>PROJECT</span><strong>{draft.project.name}</strong></div><button type="button" title="New scene" onClick={addScene}>＋</button></div>
+            <div className="production-panel-title"><div><span>PROJECT</span><strong>{draft.project.name}</strong></div><button type="button" title="New scene" aria-label="Add scene" onClick={addScene}>＋</button></div>
             <div className="production-segmented">
               {(["Scenes", "Structure", "Assets"] as LeftMode[]).map((mode) => <button key={mode} type="button" aria-pressed={leftMode === mode} onClick={() => setLeftMode(mode)}>{mode}</button>)}
             </div>
@@ -305,36 +375,50 @@ export function ProductionStudioWorkbench() {
               <div><span>{scene.copy.eyebrow}</span><strong>{scene.label}</strong></div>
               <div className="production-stage-actions"><button type="button" onClick={() => setSelection({ kind: "camera", index: sceneIndex })}>Camera</button><button type="button" onClick={openAdvanced}>Advanced</button></div>
             </div>
+            {workflow.unconfigured && <section className="production-first-run" aria-labelledby="studio-first-run-title"><div><span>START HERE</span><h2 id="studio-first-run-title">What do you want to create?</h2><p>Start with the outcome. Forge will guide assets, scenes, motion, review and publishing without asking you to learn the machinery first.</p></div><div><button type="button" className="primary" onClick={() => setGuidedOpen(true)}>Start Guided Build</button><button type="button" onClick={() => importRef.current?.click()}>Import an existing project</button><button type="button" onClick={() => { setGuideDismissed(true); try { window.localStorage.setItem("forge-studio-guided-first-run-v1", "seen"); } catch {} }}>Open Studio anyway</button></div></section>}
+            {!workflow.unconfigured && <button type="button" className="production-guided-next" onClick={() => setGuidedOpen(true)}><span>NEXT · {workflow.completed}/6 COMPLETE</span><strong>{workflow.nextLabel}</strong><small>Continue →</small></button>}
             <div className="production-runtime">
               <StudioLivePreview experience={draft.experience} active={sceneIndex} setActive={selectScene} />
             </div>
             <form className="production-command" onSubmit={(event) => { event.preventDefault(); runCommand(); }}>
-              <span>⌘</span><input value={command} onChange={(event) => setCommand(event.target.value)} placeholder="Command Forge: ‘architectural build’, ‘add scene’, ‘product hero’…" /><button type="submit">Run</button>
+              <button type="button" className="production-command-shortcut" aria-label="Open command palette" onClick={() => setCommandPaletteOpen(true)}>⌘K</button><input aria-label="Forge command" value={command} onChange={(event) => setCommand(event.target.value)} placeholder="Command Forge: ‘architectural build’, ‘add scene’, ‘product hero’…" /><button type="submit">Run</button>
             </form>
           </section>
 
           <aside className="production-right">
-            <div className="production-panel-title"><div><span>INSPECTOR</span><strong>{selectionLabel}</strong></div><button type="button" onClick={openAdvanced}>•••</button></div>
+            <div className="production-panel-title"><div><span>INSPECTOR</span><strong>{selectionLabel}</strong></div><button type="button" aria-label="Open advanced inspector" onClick={openAdvanced}>•••</button></div>
             <Inspector selection={selection} experience={draft.experience} setExperience={draft.setExperience} sceneIndex={sceneIndex} archetype={archetype} setArchetype={setArchetype} applyArchetype={applyArchetype} buildSelectedNode={buildSelectedNode} resetSceneMotion={resetSceneMotion} openAdvanced={openAdvanced} setWorkspace={setWorkspace} />
           </aside>
 
           <section className="production-bottom">
-            <div className="production-story-head"><div><span>STORY</span><strong>{draft.experience.scenes.length} scenes</strong></div><div><button type="button" onClick={() => moveScene(-1)} disabled={sceneIndex === 0}>←</button><button type="button" onClick={() => moveScene(1)} disabled={sceneIndex === draft.experience.scenes.length - 1}>→</button><button type="button" onClick={duplicateScene}>Duplicate</button><button type="button" onClick={deleteScene}>Delete</button><button type="button" className="accent" onClick={addScene}>＋ Scene</button></div></div>
+            <div className="production-story-head"><div><span>STORY</span><strong>{draft.experience.scenes.length} scenes</strong></div><div><button type="button" aria-label="Move scene earlier" onClick={() => moveScene(-1)} disabled={sceneIndex === 0}>←</button><button type="button" aria-label="Move scene later" onClick={() => moveScene(1)} disabled={sceneIndex === draft.experience.scenes.length - 1}>→</button><button type="button" onClick={duplicateScene}>Duplicate</button><button type="button" onClick={deleteScene}>Delete</button><button type="button" className="accent" onClick={addScene}>＋ Scene</button></div></div>
             <div className="production-story-strip">
-              {draft.experience.scenes.map((item, index) => <button key={item.id} type="button" className={index === sceneIndex ? "active" : ""} onClick={() => selectScene(index)}><small>{String(index + 1).padStart(2, "0")}</small><span>{item.label}</span><i style={{ background: item.world.background }} /></button>)}
+              {draft.experience.scenes.map((item, index) => <button key={item.id} type="button" className={index === sceneIndex ? "active" : ""} onClick={() => selectScene(index)}><small>{String(index + 1).padStart(2, "0")}</small><span>{item.label}</span><i aria-hidden="true" style={scenePreviewStyle(item)} /></button>)}
             </div>
             <div className="production-progress"><span>00</span><div>{draft.experience.scenes.map((item, index) => <button key={item.id} type="button" aria-label={`Go to ${item.label}`} className={index === sceneIndex ? "active" : ""} style={{ width: `${(item.range[1] - item.range[0]) * 100}%` }} onClick={() => selectScene(index)} />)}</div><span>100</span></div>
           </section>
         </div>
       )}
 
+      {commandPaletteOpen && <div className="production-command-palette-backdrop" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) setCommandPaletteOpen(false); }}>
+        <section className="production-command-palette" role="dialog" aria-modal="true" aria-labelledby="command-palette-title">
+          <header><div><span>FORGE COMMAND</span><h2 id="command-palette-title">Go anywhere. Do anything.</h2></div><button type="button" aria-label="Close command palette" onClick={() => setCommandPaletteOpen(false)}>×</button></header>
+          <form onSubmit={(event) => { event.preventDefault(); runCommandValue(command); }}><input autoFocus aria-label="Search Forge commands" value={command} onChange={(event) => setCommand(event.target.value)} placeholder="Try “ship”, “Creative Agent”, “add scene”, “product hero”…" /><kbd>ESC</kbd></form>
+          <div className="production-command-groups">
+            <section><span>NAVIGATE</span><button type="button" onClick={() => runCommandValue("create workspace")}>Create</button><button type="button" onClick={() => runCommandValue("motion workspace")}>Motion</button><button type="button" onClick={() => runCommandValue("interact")}>Interact</button><button type="button" onClick={() => runCommandValue("assets")}>Assets</button><button type="button" onClick={() => runCommandValue("ship")}>Ship</button></section>
+            <section><span>PROJECT</span><button type="button" onClick={() => runCommandValue("guided build")}>Guided Build</button><button type="button" onClick={() => runCommandValue("new project")}>New project</button><button type="button" onClick={() => runCommandValue("add scene")}>Add scene</button><button type="button" onClick={() => runCommandValue("duplicate")}>Duplicate scene</button></section>
+            <section><span>ASSIST</span><button type="button" onClick={() => runCommandValue("creative agent")}>Creative Agent</button><button type="button" onClick={() => runCommandValue("open director")}>Director</button><button type="button" onClick={() => runCommandValue("asset creator")}>Asset Creator</button></section>
+            <section><span>MOTION</span><button type="button" onClick={() => runCommandValue("product hero")}>Product hero</button><button type="button" onClick={() => runCommandValue("architectural build")}>Architectural build</button><button type="button" onClick={() => runCommandValue("editorial reveal")}>Editorial reveal</button><button type="button" onClick={() => runCommandValue("threshold")}>Threshold passage</button></section>
+          </div>
+        </section>
+      </div>}
       {newProjectOpen && <NewProjectDialog name={newName} setName={setNewName} kind={newKind} setKind={setNewKind} onCreate={createProject} onClose={() => setNewProjectOpen(false)} />}
     </main>
   );
 }
 
 function Navigator({ mode, experience, manifest, activeScene, selection, onSelect, onScene }: { mode: LeftMode; experience: ExperienceConfig; manifest: AssetManifest; activeScene: number; selection: Selection; onSelect: (value: Selection) => void; onScene: (index: number) => void }) {
-  if (mode === "Scenes") return <div className="production-tree">{experience.scenes.map((scene, index) => <button type="button" key={scene.id} className={activeScene === index ? "active" : ""} onClick={() => onScene(index)}><span>◫</span><strong>{scene.label}</strong><small>{Math.round((scene.range[1] - scene.range[0]) * 100)}%</small></button>)}</div>;
+  if (mode === "Scenes") return <div className="production-tree">{experience.scenes.map((scene, index) => <button type="button" key={scene.id} className={activeScene === index ? "active" : ""} onClick={() => onScene(index)}><span>◫</span><strong>{scene.label}</strong><small>Timeline {Math.round((scene.range[1] - scene.range[0]) * 100)}%</small></button>)}</div>;
   if (mode === "Structure") return <div className="production-tree"><button type="button" className={selection.kind === "camera" ? "active" : ""} onClick={() => onSelect({ kind: "camera", index: activeScene })}><span>⌁</span><strong>Camera</strong><small>shot</small></button><button type="button" className={selection.kind === "environment" ? "active" : ""} onClick={() => onSelect({ kind: "environment", index: activeScene })}><span>◉</span><strong>Environment</strong><small>world</small></button>{(experience.productRig?.nodes ?? []).map((node) => <button type="button" key={node} className={selection.kind === "node" && selection.name === node ? "active" : ""} onClick={() => onSelect({ kind: "node", index: activeScene, name: node })}><span>◇</span><strong>{node}</strong><small>rig</small></button>)}</div>;
   const assets = [...manifest.models.map((entry) => ({ ...entry, kind: "model" })), ...manifest.textures.map((entry) => ({ ...entry, kind: "texture" })), ...manifest.hdr.map((entry) => ({ ...entry, kind: "hdr" })), ...manifest.video.map((entry) => ({ ...entry, kind: "video" }))];
   return <div className="production-tree">{assets.length ? assets.map((asset, index) => <button type="button" key={`${asset.kind}-${asset.path}`} className={selection.kind === "asset" && selection.index === index ? "active" : ""} onClick={() => onSelect({ kind: "asset", index })}><span>▧</span><strong>{asset.path.split("/").pop()}</strong><small>{asset.kind}</small></button>) : <p className="production-empty">No banked assets yet. Import assets to begin.</p>}</div>;
@@ -350,7 +434,8 @@ function Inspector({ selection, experience, setExperience, sceneIndex, archetype
 }
 
 function AdvancedWorkspace({ workspace, draft, activeScene, setActiveScene, onClose }: { workspace: Workspace; draft: ReturnType<typeof useStudioDraft>; activeScene: number; setActiveScene: (index: number) => void; onClose: () => void }) {
-  return <div className="production-advanced"><div className="production-advanced-head"><div><span>{workspace.toUpperCase()} / ADVANCED</span><strong>Full production controls</strong></div><button type="button" onClick={onClose}>← Back to cockpit</button></div>{workspace === "Motion" || workspace === "Create" ? <SequencerEditor experience={draft.experience} setExperience={draft.setExperience} active={activeScene} setActive={setActiveScene} beginGroup={draft.beginExperienceGroup} endGroup={draft.endExperienceGroup} undo={draft.undoExperience} redo={draft.redoExperience} canUndo={draft.canUndoExperience} canRedo={draft.canRedoExperience} /> : null}{workspace === "Interact" ? <InteractionGraphEditor graph={draft.interactionGraph} setGraph={draft.setInteractionGraph} /> : null}{workspace === "Assets" ? <div className="production-advanced-stack"><AssetManager setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} active={activeScene} /><AssetBankPanel experience={draft.experience} setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} interactionGraph={draft.interactionGraph} undo={draft.undoExperience} canUndo={draft.canUndoExperience} /><GlbInspectorPanel experience={draft.experience} setExperience={draft.setExperience} /></div> : null}{workspace === "Ship" ? <div className="production-advanced-stack"><PublishPanel project={draft.project} setProject={draft.setProject} experience={draft.experience} assetManifest={draft.assetManifest} /><TelemetryPanel project={draft.project} setProject={draft.setProject} /></div> : null}</div>;
+  const guidedShip = workspace === "Ship";
+  return <div className="production-advanced"><div className="production-advanced-head"><div><span>{workspace.toUpperCase()} / {guidedShip ? "GUIDED" : "ADVANCED"}</span><strong>{guidedShip ? "Review, hand off and publish" : "Full production controls"}</strong></div><button type="button" onClick={onClose}>← Back to cockpit</button></div>{workspace === "Motion" || workspace === "Create" ? <SequencerEditor experience={draft.experience} setExperience={draft.setExperience} active={activeScene} setActive={setActiveScene} beginGroup={draft.beginExperienceGroup} endGroup={draft.endExperienceGroup} undo={draft.undoExperience} redo={draft.redoExperience} canUndo={draft.canUndoExperience} canRedo={draft.canRedoExperience} /> : null}{workspace === "Interact" ? <InteractionGraphEditor graph={draft.interactionGraph} setGraph={draft.setInteractionGraph} /> : null}{workspace === "Assets" ? <div className="production-advanced-stack"><AssetManager setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} active={activeScene} /><AssetBankPanel experience={draft.experience} setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} interactionGraph={draft.interactionGraph} undo={draft.undoExperience} canUndo={draft.canUndoExperience} /><GlbInspectorPanel experience={draft.experience} setExperience={draft.setExperience} /></div> : null}{workspace === "Ship" ? <div className="production-advanced-stack"><PublishPanel project={draft.project} setProject={draft.setProject} experience={draft.experience} assetManifest={draft.assetManifest} validationCount={draft.validation.length} /><details className="production-performance-disclosure"><summary>Advanced performance controls</summary><TelemetryPanel project={draft.project} setProject={draft.setProject} /></details></div> : null}</div>;
 }
 
 function NewProjectDialog({ name, setName, kind, setKind, onCreate, onClose }: { name: string; setName: (value: string) => void; kind: ProjectKind; setKind: (value: ProjectKind) => void; onCreate: () => void; onClose: () => void }) {
@@ -391,6 +476,12 @@ function makeStarterExperience(base: ExperienceConfig, name: string, kind: Proje
   delete source.media;
   source.copy = { eyebrow: `01 / ${kind.replace("-", " ").toUpperCase()}`, headline: name, body: "Start directing this experience from the cockpit.", align: "left" };
   return parseExperience({ ...structuredClone(base), meta: { ...base.meta, name, description: `${name} — Forge production project.` }, heroModel: "", heroVisible: false, assets: [], scenes: [source], hotspots: [], productRig: undefined });
+}
+
+function scenePreviewStyle(scene: SceneDefinition) {
+  if (scene.media?.kind === "image") return { background: `linear-gradient(180deg, transparent, rgba(0,0,0,.2)), url("${scene.media.src}") center / cover` };
+  if (scene.media?.kind === "video" && scene.media.poster) return { background: `linear-gradient(180deg, transparent, rgba(0,0,0,.2)), url("${scene.media.poster}") center / cover` };
+  return { background: `linear-gradient(135deg, ${scene.world.background}, #262b31)` };
 }
 
 function labelForSelection(selection: Selection, experience: ExperienceConfig) {
