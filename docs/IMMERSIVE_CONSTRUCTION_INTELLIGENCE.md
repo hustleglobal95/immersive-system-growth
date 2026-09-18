@@ -4,7 +4,7 @@ Forge already has the runtime systems required to build high-end immersive websi
 
 The objective is not to add another animation library or replace Forge's cinematic architecture. The objective is to make Director understand how strong immersive sites are composed so it can choose the right existing Forge systems with much less trial and error.
 
-The current research base contains **102 evidence-graded references** and **59 executable construction patterns**. Reference selection is source-diversified and recurring patterns are ranked by evidence strength plus independent source support rather than by a single favorite studio.
+The current research base contains **133 evidence-graded references** and **78 executable construction patterns**. Reference selection is source-diversified and recurring patterns are ranked by evidence strength plus independent source support rather than by a single favorite studio.
 
 ## Operating rule
 
@@ -208,6 +208,22 @@ Before the visitor reaches a signature chapter, the required resources should al
 - generated geometry or particle buffers
 
 A site that is smooth only on the second pass is not finished.
+
+### 11. Media delivery as interaction infrastructure
+
+When video is scrubbed, dragged or used as a tactile surface, encoding becomes part of interaction design. Keyframe interval, decode complexity and browser seek behavior determine whether the gesture feels direct. Forge should distinguish playback-optimized media from interaction-optimized media.
+
+### 12. Camera input semantics
+
+Scroll is a one-dimensional input. If a scroll-bound camera curves, circles and changes axes continuously, the visitor may expect game-style control that the input cannot provide. Prefer one dominant travel axis per chapter and use deterministic film cuts when a spatial connection would otherwise make the control model ambiguous.
+
+### 13. DCC-to-runtime contracts
+
+Blender/C4D/Houdini are not only asset exporters. Node names, pivots, zones, animation groups and semantic markers can become validated runtime metadata. Forge should preserve those semantics through optimization so art-direction changes do not create brittle hand-maintained mappings.
+
+### 14. Demand-driven computation
+
+Rendering quality is not only about lower resolution. Expensive work should disappear when it cannot change visible pixels: offscreen scenes stop, raycasts wait for dirty input, compute passes run only while their effect is active, deep visual-stack items remain simplified, and worker isolation is reserved for measured main-thread contention.
 
 ## Forge construction patterns
 
