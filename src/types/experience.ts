@@ -7,6 +7,7 @@ import type {
   maskRevealSchema,
   maskPresetSchema,
   transitionLayerSchema,
+  conversionSchema,
   motionTrackSchema,
   motionEasingSchema,
 } from "@/src/lib/configSchema";
@@ -28,6 +29,7 @@ export type MotionEasing = z.infer<typeof motionEasingSchema>;
 export type MotionViewport = MotionTrack["viewport"];
 export type SceneBlock = SceneDefinition["blocks"][number];
 export type SceneEasing = SceneDefinition["easing"];
+export type ConversionSection = z.infer<typeof conversionSchema>;
 export type CameraPathPreset = CameraDefinition["path"];
 export type ObjectMotionPreset = NonNullable<SceneDefinition["hero"]["motion"]>;
 export type CameraState = CameraDefinition["from"];

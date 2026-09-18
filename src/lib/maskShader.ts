@@ -103,18 +103,23 @@ float maskField(vec2 uv) {
 
 void main() {
   float progress = clamp(uProgress, 0.0, 1.0);
-  progress = progress * progress * (3.0 - 2.0 * progress);
+  // Quintic smootherstep, identical to the timing curve in maskReveal.ts so the WebGL and CSS
+  // backends reveal on the same curve. The feather below stays on the smoothstep builtin.
+  progress = progress * progress * progress * (progress * (progress * 6.0 - 15.0) + 10.0);
   vec2 uv = coverUv(vUv);
   float organic = layeredNoise(vUv * (4.0 + uIntensity * 2.0));
   if (uPreset > 4.5) uv += (organic - 0.5) * 0.018 * uIntensity * sin(progress * 3.14159265);
   vec4 media = texture2D(uMap, uv);
   float field = maskField(vUv);
   float feather = max(0.001, uSoftness * 0.5);
-  float alpha = smoothstep(field - feather, field + feather, progress);
+  // The swept range carries the feather, matching maskReveal.ts: without it the incoming frame
+  // arrives with a band already showing and closes a band short of the far edge.
+  float swept = -feather + progress * (1.0 + feather * 2.0);
+  float alpha = smoothstep(field - feather, field + feather, swept);
   if (uProgress <= 0.0) alpha = 0.0;
   if (uProgress >= 1.0) alpha = 1.0;
   float edgeWidth = uEdgeWidth * 0.5;
-  float edge = edgeWidth > 0.0 ? 1.0 - smoothstep(0.0, edgeWidth, abs(progress - field)) : 0.0;
+  float edge = edgeWidth > 0.0 ? 1.0 - smoothstep(0.0, edgeWidth, abs(swept - field)) : 0.0;
   vec3 color = mix(media.rgb, uEdgeColor, edge * (1.0 - alpha * 0.35));
   gl_FragColor = vec4(color, media.a * max(alpha, edge) * uPanelOpacity);
 }

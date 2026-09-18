@@ -28,6 +28,15 @@ test("media config requires safe source, video poster and bounded art direction"
   assert(!sceneMediaSchema.safeParse({kind:"image",src:"javascript:alert(1)",alt:"Product"}).success);
   assert(!sceneMediaSchema.safeParse({kind:"image",src:"/textures/test.jpg",alt:"Product",overlap:.9}).success);
 });
+test("a shader plate names its artifact and keeps a fill to fall back to",()=>{
+  assert(sceneMediaSchema.safeParse({kind:"shader",shader:"tide",fill:"#131c19",alt:"Field"}).success);
+  // No artifact named, no flat field to show without WebGL, and no invented artifact.
+  assert(!sceneMediaSchema.safeParse({kind:"shader",fill:"#131c19",alt:"Field"}).success);
+  assert(!sceneMediaSchema.safeParse({kind:"shader",shader:"tide",alt:"Field"}).success);
+  assert(!sceneMediaSchema.safeParse({kind:"shader",shader:"lagoon",fill:"#131c19",alt:"Field"}).success);
+  // It carries no source, so it must not be held to the image and video rule.
+  assert(sceneMediaSchema.safeParse({kind:"shader",shader:"tide",fill:"#131c19",shaderTint:"#31463b",alt:"Field"}).success);
+});
 test("media transition presets sample deterministic reveal properties",()=>{
   for(const transition of ["slide","curtain","zoom","dissolve","wipe","mask"] as const){
     const a=sampleMediaPanel(.44,{...window,transition});

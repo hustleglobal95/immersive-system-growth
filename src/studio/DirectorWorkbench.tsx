@@ -168,7 +168,7 @@ export function DirectorWorkbench() {
         </div>}
 
         {active === "bible" && <div className="director-panel">
-          <div className="director-section-heading"><span>03</span><div><h3>Director's bible</h3><p>One visual grammar, then a shot-by-shot interpretation.</p></div></div>
+          <div className="director-section-heading"><span>03</span><div><h3>Director&apos;s bible</h3><p>One visual grammar, then a shot-by-shot interpretation.</p></div></div>
           <div className="director-bible-grid">
             <Bible title="Camera" items={treatment.grammar.camera} />
             <Bible title="Motion" items={treatment.grammar.motion} />

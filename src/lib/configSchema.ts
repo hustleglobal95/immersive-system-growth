@@ -270,11 +270,18 @@ export const transitionLayerSchema = z.discriminatedUnion("kind", [
   z.object({ ...transitionLayerBase, kind: z.literal("image"), src: assetUrl, position: z.tuple([finite.min(0).max(100), finite.min(0).max(100)]).default([50, 50]) }).strict(),
 ]);
 export const sceneMediaSchema = z.object({
-  // A "color" plate is a chapter whose background is a flat field rather than a photograph. It
-  // is a first-class media kind, so it inherits every transition, mask and overlap rule.
-  kind: z.enum(["image", "video", "color"]),
+  // A "color" plate is a chapter whose background is a flat field rather than a photograph, and
+  // a "shader" plate is that field rendered live. Both are first-class media kinds, so they
+  // inherit every transition, mask and overlap rule rather than sitting outside the system.
+  kind: z.enum(["image", "video", "color", "shader"]),
+  shader: z.enum(["tide"]).optional(),
+  shaderTint: color.optional(),
   src: assetUrl.optional(),
   fill: color.optional(),
+  // How strongly this chapter's frame is held back behind its copy. The scrim's side is derived
+  // from copy.align rather than authored, so it always covers the words; only the weight varies,
+  // because a bright wall needs more than dark water does.
+  scrim: finite.min(0).max(1).optional(),
   poster: assetUrl.optional(),
   alt: z.string().min(1).max(300),
   transition: z.enum(["slide", "curtain", "zoom", "dissolve", "wipe", "mask", "cut"]).default("slide"),
@@ -303,7 +310,11 @@ export const sceneMediaSchema = z.object({
 }).strict().superRefine((media, context) => {
   if (media.kind === "video" && !media.poster) context.addIssue({ code: "custom", message: "Video media requires a poster", path: ["poster"] });
   if (media.kind === "color" && !media.fill) context.addIssue({ code: "custom", message: "Color media requires a fill", path: ["fill"] });
-  if (media.kind !== "color" && !media.src) context.addIssue({ code: "custom", message: "Image and video media require a src", path: ["src"] });
+  // A shader plate must name its artifact and still carry a flat fill, which is what shows if
+  // WebGL is unavailable or the reader has asked for reduced motion.
+  if (media.kind === "shader" && !media.shader) context.addIssue({ code: "custom", message: "Shader media requires a shader name", path: ["shader"] });
+  if (media.kind === "shader" && !media.fill) context.addIssue({ code: "custom", message: "Shader media requires a fill to fall back to", path: ["fill"] });
+  if (media.kind !== "color" && media.kind !== "shader" && !media.src) context.addIssue({ code: "custom", message: "Image and video media require a src", path: ["src"] });
   const ids = new Set<string>();
   media.layers.forEach((layer, index) => {
     if (ids.has(layer.id)) context.addIssue({ code: "custom", message: "Transition layer IDs must be unique", path: ["layers", index, "id"] });
@@ -548,6 +559,43 @@ export const sceneSchema = z
       .strict(),
   })
   .strict();
+/**
+ * The conversion section: one stable, unpinned region after the scroll where the enquiry lives.
+ *
+ * It is deliberately not a scene block. Chapter copy disperses partway through its own chapter,
+ * so a form inside a pinned chapter would animate away while somebody was still typing in it.
+ *
+ * The brochure file name is pattern-constrained here as well as on the server, so a traversal
+ * segment cannot be authored into a config in the first place.
+ */
+export const conversionSchema = z
+  .object({
+    id,
+    eyebrow: z.string().min(1).max(100),
+    title: z.string().min(1).max(160),
+    body: z.string().min(1).max(600),
+    intent: z.enum(["enquiry", "brochure", "both"]).default("enquiry"),
+    submit: z.string().min(1).max(60),
+    // Consent wording travels with the config, because it is a legal statement and differs by
+    // market. It is never defaulted.
+    consent: z.string().min(1).max(300),
+    note: z.string().max(300).optional(),
+    brochure: z
+      .object({
+        id,
+        label: z.string().min(1).max(80),
+        file: z.string().regex(/^[a-z0-9][a-z0-9-]{0,60}\.pdf$/, "Brochure file must be a lower-case PDF name"),
+        size: z.string().min(1).max(24),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict()
+  .superRefine((section, context) => {
+    if (section.intent !== "enquiry" && !section.brochure)
+      context.addIssue({ code: "custom", message: "A brochure intent requires a brochure", path: ["brochure"] });
+  });
+
 export const experienceSchema = z
   .object({
     meta: z
@@ -591,6 +639,7 @@ export const experienceSchema = z
           .strict(),
       )
       .max(30),
+    conversion: conversionSchema.optional(),
   })
   .strict()
   .superRefine((c, ctx) => {

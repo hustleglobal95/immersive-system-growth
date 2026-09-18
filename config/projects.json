@@ -11,21 +11,42 @@
       "summary": "A house drawn around the horizon, resolved in section before a single material was chosen.",
       "body": [
         "The site falls forty metres from the approach road to the water. Rather than terrace it, the house is set as two stone planes holding a shaded court between them, with the long axis ending at the sea and never at a wall.",
-        "Glass disappears between the planes. The entry compresses through stone and timber before the room opens in one controlled reveal, and the reverse journey reconstructs the threshold exactly.",
+        "Glass disappears between the planes. The approach narrows to 1.9 metres between a stone wall and an oak screen, holds that width for nine metres, and releases at the living level in one move.",
         "Travertine is honed rather than polished throughout. Oak is quarter-sawn and brushed. Nothing was added to be noticed."
       ],
       "facts": [
-        { "label": "Internal area", "value": "410 m²" },
-        { "label": "Site", "value": "2,180 m²" },
-        { "label": "Orientation", "value": "South-east to the water" },
-        { "label": "Structure", "value": "In-situ concrete, stone-faced" },
-        { "label": "Completion", "value": "Spring 2024" }
+        {
+          "label": "Internal area",
+          "value": "410 m²"
+        },
+        {
+          "label": "Site",
+          "value": "2,180 m²"
+        },
+        {
+          "label": "Orientation",
+          "value": "South-east to the water"
+        },
+        {
+          "label": "Structure",
+          "value": "In-situ concrete, stone-faced"
+        },
+        {
+          "label": "Completion",
+          "value": "Spring 2024"
+        }
       ],
       "hero": "https://images.unsplash.com/photo-1762337018404-052afb0e3370?auto=format&fit=crop&fm=jpg&q=86&w=2400",
       "heroAlt": "Casa Lumen seen from the coastal approach",
       "gallery": [
-        { "src": "https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=84&w=2400", "alt": "The atrium opening toward the sea" },
-        { "src": "https://images.unsplash.com/photo-1769737122085-97b1ee5ab104?auto=format&fit=crop&fm=jpg&q=86&w=2400", "alt": "The living room at the datum of the water" }
+        {
+          "src": "https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=84&w=2400",
+          "alt": "The atrium opening toward the sea"
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1769737122085-97b1ee5ab104?auto=format&fit=crop&fm=jpg&q=86&w=2400",
+          "alt": "The living room at the datum of the water"
+        }
       ]
     },
     {
@@ -42,16 +63,34 @@
         "The roof is a single folded plane. From the approach the house is a low wall; from the sea it is five storeys."
       ],
       "facts": [
-        { "label": "Internal area", "value": "295 m²" },
-        { "label": "Site", "value": "740 m²" },
-        { "label": "Level change", "value": "18 m across the plot" },
-        { "label": "Structure", "value": "Reinforced concrete frame" },
-        { "label": "Completion", "value": "Autumn 2023" }
+        {
+          "label": "Internal area",
+          "value": "295 m²"
+        },
+        {
+          "label": "Site",
+          "value": "740 m²"
+        },
+        {
+          "label": "Level change",
+          "value": "18 m across the plot"
+        },
+        {
+          "label": "Structure",
+          "value": "Reinforced concrete frame"
+        },
+        {
+          "label": "Completion",
+          "value": "Autumn 2023"
+        }
       ],
       "hero": "https://images.unsplash.com/photo-1774423864869-702b21c2490a?auto=format&fit=crop&fm=jpg&q=86&w=2400",
       "heroAlt": "Casa Vent above the water at dusk",
       "gallery": [
-        { "src": "https://images.unsplash.com/photo-1762337018404-052afb0e3370?auto=format&fit=crop&fm=jpg&q=86&w=2400", "alt": "The approach from the road" }
+        {
+          "src": "https://images.unsplash.com/photo-1762337018404-052afb0e3370?auto=format&fit=crop&fm=jpg&q=86&w=2400",
+          "alt": "The approach from the road"
+        }
       ]
     },
     {
@@ -68,16 +107,34 @@
         "The house now has fewer rooms than when we found it, and considerably more space."
       ],
       "facts": [
-        { "label": "Internal area", "value": "165 m²" },
-        { "label": "Original fabric", "value": "18th century, stone" },
-        { "label": "Intervention", "value": "Strip out, one new shaft" },
-        { "label": "Finish", "value": "Hand-floated lime" },
-        { "label": "Completion", "value": "Summer 2023" }
+        {
+          "label": "Internal area",
+          "value": "165 m²"
+        },
+        {
+          "label": "Original fabric",
+          "value": "18th century, stone"
+        },
+        {
+          "label": "Intervention",
+          "value": "Strip out, one new shaft"
+        },
+        {
+          "label": "Finish",
+          "value": "Hand-floated lime"
+        },
+        {
+          "label": "Completion",
+          "value": "Summer 2023"
+        }
       ],
       "hero": "https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=82&w=2400",
       "heroAlt": "Casa Sal interior under the light shaft",
       "gallery": [
-        { "src": "https://images.unsplash.com/photo-1770970831074-6e88b6cc260b?auto=format&fit=crop&fm=jpg&q=86&w=2200", "alt": "Material studies for the interior" }
+        {
+          "src": "https://images.unsplash.com/photo-1770970831074-6e88b6cc260b?auto=format&fit=crop&fm=jpg&q=86&w=2200",
+          "alt": "Material studies for the interior"
+        }
       ]
     },
     {
@@ -94,16 +151,34 @@
         "The external walls are close to blank. Everything the house has to offer is held inside."
       ],
       "facts": [
-        { "label": "Internal area", "value": "340 m²" },
-        { "label": "Courts", "value": "Two, 44 m² and 61 m²" },
-        { "label": "Site", "value": "1,400 m²" },
-        { "label": "Structure", "value": "Load-bearing stone" },
-        { "label": "Completion", "value": "Winter 2022" }
+        {
+          "label": "Internal area",
+          "value": "340 m²"
+        },
+        {
+          "label": "Courts",
+          "value": "Two, 44 m² and 61 m²"
+        },
+        {
+          "label": "Site",
+          "value": "1,400 m²"
+        },
+        {
+          "label": "Structure",
+          "value": "Load-bearing stone"
+        },
+        {
+          "label": "Completion",
+          "value": "Winter 2022"
+        }
       ],
       "hero": "https://images.unsplash.com/photo-1763485956343-61b0163a3e7e?auto=format&fit=crop&fm=jpg&q=86&w=2200",
       "heroAlt": "The bathing court at Casa Pedra",
       "gallery": [
-        { "src": "https://images.unsplash.com/photo-1769737122085-97b1ee5ab104?auto=format&fit=crop&fm=jpg&q=86&w=2400", "alt": "The living loop around the planted court" }
+        {
+          "src": "https://images.unsplash.com/photo-1769737122085-97b1ee5ab104?auto=format&fit=crop&fm=jpg&q=86&w=2400",
+          "alt": "The living loop around the planted court"
+        }
       ]
     },
     {
@@ -120,16 +195,34 @@
         "The shared wall is the only place they meet, and it holds the kitchen on one side and the wash-up on the other."
       ],
       "facts": [
-        { "label": "Internal area", "value": "260 m² plus 95 m² studio" },
-        { "label": "Studio light", "value": "North, sawtooth" },
-        { "label": "Site", "value": "980 m²" },
-        { "label": "Structure", "value": "Timber frame on concrete base" },
-        { "label": "Completion", "value": "Autumn 2021" }
+        {
+          "label": "Internal area",
+          "value": "260 m² plus 95 m² studio"
+        },
+        {
+          "label": "Studio light",
+          "value": "North, sawtooth"
+        },
+        {
+          "label": "Site",
+          "value": "980 m²"
+        },
+        {
+          "label": "Structure",
+          "value": "Timber frame on concrete base"
+        },
+        {
+          "label": "Completion",
+          "value": "Autumn 2021"
+        }
       ],
       "hero": "https://images.unsplash.com/photo-1770970831074-6e88b6cc260b?auto=format&fit=crop&fm=jpg&q=86&w=2200",
       "heroAlt": "The studio at Casa Nord",
       "gallery": [
-        { "src": "https://images.unsplash.com/photo-1763485956343-61b0163a3e7e?auto=format&fit=crop&fm=jpg&q=86&w=2200", "alt": "The shared wall from the house side" }
+        {
+          "src": "https://images.unsplash.com/photo-1763485956343-61b0163a3e7e?auto=format&fit=crop&fm=jpg&q=86&w=2200",
+          "alt": "The shared wall from the house side"
+        }
       ]
     }
   ]

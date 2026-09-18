@@ -55,8 +55,12 @@ export function planImmersiveConstruction(
   const assets = treatment.assets.filter((asset) =>
     ["use", "upgrade", "create"].includes(asset.productionDecision),
   );
-  const hasModel = assets.some((asset) => /model|3d|glb|geometry/i.test(`${asset.label} ${asset.role}`));
-  const hasVideo = assets.some((asset) => /video|film|footage|motion/i.test(`${asset.label} ${asset.role}`));
+  // The brief declares each asset's medium, so trust it. Prose is only consulted
+  // for assets whose medium was left unspecified, where a label is all we have.
+  const carriesMedium = (asset: DirectorTreatment["assets"][number], type: "model" | "video", prose: RegExp) =>
+    asset.mediaType === type || (asset.mediaType === "other" && prose.test(`${asset.label} ${asset.role}`));
+  const hasModel = assets.some((asset) => carriesMedium(asset, "model", /model|3d|glb|geometry/i));
+  const hasVideo = assets.some((asset) => carriesMedium(asset, "video", /video|film|footage|motion/i));
   const patternSet = new Set(directives.patternIds);
   const persistentWorld =
     patternSet.has("single-world-under-interface") ||
@@ -133,6 +137,15 @@ export function planImmersiveConstruction(
     } satisfies SceneConstructionDecision;
   });
 
+  // The heaviest moment is the highest-intensity beat; ties resolve to the earlier beat so the
+  // named chapter is the first one that has to be ready.
+  const signatureSceneId = treatment.emotionalArc
+    .filter((beat) => beat.intensity >= 9)
+    .reduce<typeof treatment.emotionalArc[number] | null>(
+      (best, beat) => (!best || beat.intensity > best.intensity ? beat : best),
+      null,
+    )?.id;
+
   return {
     mode,
     persistentCanvasRecommended,
@@ -142,7 +155,7 @@ export function planImmersiveConstruction(
         : mode === "spatial-hybrid" || mode === "multi-view-hybrid"
           ? 1
           : 0,
-    criticalBootStrategy: criticalBootStrategy(patternSet, sceneDecisions),
+    criticalBootStrategy: criticalBootStrategy(patternSet, sceneDecisions, signatureSceneId),
     sceneDecisions,
     globalRules: globalRules(patternSet, directives),
   };
@@ -362,6 +375,10 @@ function performancePolicy(
   const rules: string[] = [];
   if (signature && patterns.has("prewarm-signature-systems")) {
     rules.push("Prewarm representative signature state before the visitor reaches it.");
+  } else if (signature && medium !== "dom") {
+    // The peak is the most expensive frame in the experience. Prewarming it is a property of
+    // the moment, not of whether a prewarm pattern happened to survive selection.
+    rules.push("Prewarm this signature chapter before the visitor reaches it: compile and upload whatever it renders from during an earlier, cheaper chapter so the peak never pays setup cost on screen.");
   }
   if (["3d", "hybrid", "shader"].includes(medium)) {
     rules.push("Gate render/update work by visibility and device tier; do not spend frames on unchanged/offscreen systems.");
@@ -467,6 +484,7 @@ function chooseEvidencePatterns(
 function criticalBootStrategy(
   patterns: Set<string>,
   decisions: SceneConstructionDecision[],
+  signatureSceneId?: string,
 ) {
   const firstHeavy = decisions.find((decision) =>
     ["3d", "hybrid", "shader"].includes(decision.medium),
@@ -491,6 +509,15 @@ function criticalBootStrategy(
   }
   if (firstHeavy) {
     rules.push(`Prewarm the first heavy chapter (${firstHeavy.sceneId}) before it becomes interactive.`);
+  }
+  // The first heavy chapter and the signature chapter are different problems: one is the first
+  // cost the visitor meets, the other is the largest. Cover the peak explicitly whenever it is
+  // not already the chapter named above.
+  const signatureScene = decisions.find(
+    (decision) => decision.sceneId === signatureSceneId && decision.medium !== "dom",
+  );
+  if (signatureScene && signatureScene.sceneId !== firstHeavy?.sceneId) {
+    rules.push(`Prewarm the signature chapter (${signatureScene.sceneId}) during an earlier, cheaper chapter so the experience's heaviest frame is never the one compiling or uploading on arrival.`);
   }
   return rules;
 }

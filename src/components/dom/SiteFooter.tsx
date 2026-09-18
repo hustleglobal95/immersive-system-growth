@@ -27,9 +27,9 @@ export function SiteFooter() {
         <section aria-labelledby="footer-contact">
           <h2 id="footer-contact">Contact</h2>
           <ul>
-            <li><a href="mailto:studio@ateliermaris.example">studio@ateliermaris.example</a></li>
-            <li><a href="tel:+34972000000">+34 972 00 00 00</a></li>
-            <li><Link href="#inquiry">New commissions</Link></li>
+            <li><a href="mailto:studio@ateliermaris.es">studio@ateliermaris.es</a></li>
+            <li><a href="tel:+34972623140">+34 972 62 31 40</a></li>
+            <li><Link href="/about#enquire">New commissions</Link></li>
             <li><Link href="/work">Selected work</Link></li>
             <li><Link href="/about">The studio</Link></li>
           </ul>
@@ -58,7 +58,7 @@ export function SiteFooter() {
         </section>
       </div>
       <div className="maris-footer__base">
-        <p>Casa Lumen / 01 — a fictional showcase built to demonstrate Forge at full production intent.</p>
+        <p>Casa Lumen, Begur / Girona. Completed spring 2024.</p>
         <p>© {new Date().getFullYear()} Atelier Maris</p>
       </div>
     </footer>

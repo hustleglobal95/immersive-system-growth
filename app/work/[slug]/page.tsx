@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { responsiveImage } from "@/src/lib/responsiveImage";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteHeader } from "@/src/components/dom/SiteHeader";
@@ -17,6 +18,7 @@ export async function generateMetadata(
   return {
     title: `${project.name} — Atelier Maris`,
     description: project.summary,
+    alternates: { canonical: `/work/${project.slug}` },
     openGraph: { title: project.name, description: project.summary, images: [project.hero] },
   };
 }
@@ -31,7 +33,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
       <SiteHeader current="work" />
       <main className="page page--project" id="main">
         <figure className="project__hero">
-          <img src={project.hero} alt={project.heroAlt} decoding="async" />
+          <img {...responsiveImage(project.hero, "100vw")} alt={project.heroAlt} decoding="async" />
         </figure>
         <header className="page__head">
           <p className="page__eyebrow">{project.year} / {project.location}</p>
@@ -54,7 +56,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           <div className="project__gallery">
             {project.gallery.map((image) => (
               <figure key={image.src}>
-                <img src={image.src} alt={image.alt} decoding="async" loading="lazy" />
+                <img {...responsiveImage(image.src, "(max-width: 760px) 100vw, 50vw", 1280)} alt={image.alt} decoding="async" loading="lazy" />
                 <figcaption>{image.alt}</figcaption>
               </figure>
             ))}

@@ -86,6 +86,7 @@
     "performance:audit": "node --import tsx scripts/performance-audit.mjs",
     "release:report": "node --import tsx scripts/release-report.mjs",
     "experience:modes:audit": "node --import tsx scripts/experience-mode-audit.mjs",
+    "verify": "bash scripts/verify.sh",
     "autonomy:benchmark": "node --import tsx scripts/autonomy-benchmark.mjs",
     "autonomy:capture": "node --import tsx scripts/autonomy-capture.mjs",
     "autonomy:visual-review": "node --import tsx scripts/autonomy-visual-director.mjs",

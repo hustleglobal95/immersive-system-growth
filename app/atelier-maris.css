@@ -1,4 +1,4 @@
-body[data-project="atelier-maris"]{--maris-ink:#171310;--maris-stone:#d7c2a3;--maris-ivory:#f2ede5;--maris-muted:#b9b0a5;background:var(--maris-ink);color:var(--maris-ivory);font-family:var(--font-dm-sans),Arial,sans-serif}.atelier-maris-chrome{position:fixed;inset:0 0 auto;z-index:70;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:28px 34px;color:#f6f0e7;pointer-events:none;text-shadow:0 1px 14px rgba(8,7,6,.72),0 0 2px rgba(8,7,6,.5)}.atelier-maris-chrome::before{content:"";position:absolute;inset:0 0 auto;height:150px;background:linear-gradient(180deg,rgba(9,8,6,.58),rgba(9,8,6,.22) 46%,transparent);pointer-events:none;z-index:-1}.atelier-maris-chrome a{color:inherit;text-decoration:none;pointer-events:auto}.atelier-maris-brand{display:flex;gap:.45em;font-family:var(--font-cormorant),Georgia,serif;font-size:23px;letter-spacing:.24em}.atelier-maris-nav{display:flex;gap:38px;font-size:11px;letter-spacing:.18em;text-transform:uppercase}.atelier-maris-meta{justify-self:end;text-align:right;font-size:10px;letter-spacing:.16em;text-transform:uppercase;line-height:1.6}.atelier-maris-rule{display:block;width:42px;height:1px;background:currentColor;margin:6px 0 0 auto;opacity:.65}body[data-project="atelier-maris"] .scene-canvas,body[data-project="atelier-maris"] .cinematic-media{position:fixed;inset:0;z-index:0}body[data-project="atelier-maris"] .cinematic-media{z-index:2;pointer-events:none;background:#171310}body[data-project="atelier-maris"] .media-panel{background:transparent}body[data-project="atelier-maris"] .media-panel__shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,6,5,.52) 0%,rgba(7,6,5,.18) 34%,rgba(7,6,5,.04) 52%,rgba(7,6,5,.2) 74%,rgba(7,6,5,.5) 100%),linear-gradient(0deg,rgba(7,6,5,.34),transparent 44%)}body[data-project="atelier-maris"] .media-panel__inner img,body[data-project="atelier-maris"] .media-panel__inner video{filter:saturate(.94) contrast(1.02) brightness(1.06)}body[data-project="atelier-maris"] .narrative-document{position:relative;z-index:12}body[data-project="atelier-maris"] .story-section{position:relative;display:flex;align-items:flex-start;padding:0 5vw;isolation:isolate}body[data-project="atelier-maris"] .story-section--right{justify-content:flex-end}body[data-project="atelier-maris"] .story-section--center{justify-content:center;text-align:center}body[data-project="atelier-maris"] .story-media-static{display:none}body[data-project="atelier-maris"] .story-panel{position:sticky;top:8vh;height:84vh;display:flex;flex-direction:column;justify-content:center;width:min(760px,52vw);padding:2vh 0;background:transparent;border:0;box-shadow:none;color:#f4eee6;text-shadow:0 1px 3px rgba(9,7,5,.5),0 2px 26px rgba(9,7,5,.55)}body[data-project="atelier-maris"] .story-section--right .story-panel{text-align:right}body[data-project="atelier-maris"] .story-section--center .story-panel{text-align:center;width:min(980px,74vw)}body[data-project="atelier-maris"] .narrative-panel__index{font-size:11px;letter-spacing:.2em;opacity:.6;margin-bottom:6vh}body[data-project="atelier-maris"] .eyebrow{font-size:12px;letter-spacing:.26em;text-transform:uppercase;margin:0 0 28px;color:#f3e6d2;text-shadow:0 1px 3px rgba(9,7,5,.6)}body[data-project="atelier-maris"] .story-panel h1,body[data-project="atelier-maris"] .story-panel h2{font-family:var(--font-cormorant),Georgia,serif;font-weight:400;font-size:clamp(62px,8.4vw,152px);line-height:.86;letter-spacing:-.04em;margin:0;max-width:9ch;text-wrap:balance}body[data-project="atelier-maris"] .story-section--right h2{margin-left:auto}body[data-project="atelier-maris"] .story-section--center h2{margin-inline:auto;max-width:12ch}body[data-project="atelier-maris"] .narrative-body{max-width:540px;margin:34px 0 0;font-size:18px;line-height:1.6;letter-spacing:.01em;color:rgba(249,244,237,.95);text-shadow:0 1px 3px rgba(9,7,5,.62),0 2px 20px rgba(9,7,5,.5)}body[data-project="atelier-maris"] .story-section--right .narrative-body{margin-left:auto}body[data-project="atelier-maris"] .story-section--center .narrative-body{margin-inline:auto}body[data-project="atelier-maris"] .story-detail{width:min(360px,100%);margin-top:24px;border-top:1px solid rgba(255,255,255,.28);padding-top:12px;color:#f1e8dc}body[data-project="atelier-maris"] .story-section--right .story-detail{margin-left:auto}body[data-project="atelier-maris"] .story-detail summary{cursor:pointer;font-size:11px;letter-spacing:.18em;text-transform:uppercase;list-style:none}body[data-project="atelier-maris"] .story-detail summary::after{content:" +";color:#d7c2a3}body[data-project="atelier-maris"] .story-detail[open] summary::after{content:" −"}body[data-project="atelier-maris"] .story-detail p{font-size:13.5px;line-height:1.55;color:rgba(248,243,236,.88)}body[data-project="atelier-maris"] .forge-button{display:inline-flex;margin-top:40px;padding:18px 26px;border:1px solid rgba(242,237,229,.65);color:#f6f0e7;text-decoration:none;text-transform:uppercase;font-size:11px;letter-spacing:.2em;background:rgba(10,9,7,.18);backdrop-filter:blur(8px);transition:background .25s ease,color .25s ease}body[data-project="atelier-maris"] .forge-button:hover{background:#efe7dc;color:#11100d}body[data-project="atelier-maris"] .progress-rail{z-index:65}body[data-project="atelier-maris"] .progress-rail__track{background:rgba(255,255,255,.22)}body[data-project="atelier-maris"] .progress-rail__fill{background:#d7c2a3}body[data-project="atelier-maris"] .hotspot{--hotspot:#ead8bd}body[data-project="atelier-maris"] .runtime-notice{background:rgba(11,10,8,.85);color:#eee5d8;border-color:rgba(215,194,163,.35)}body[data-project="atelier-maris"] [data-scene-id="inquiry"]{align-items:center}body[data-project="atelier-maris"] [data-scene-id="approach"]::after{content:"SCROLL TO ENTER";position:absolute;left:5vw;bottom:5vh;font-size:9px;letter-spacing:.24em;color:rgba(255,255,255,.7);writing-mode:vertical-rl}body[data-project="atelier-maris"] [data-scene-id="inquiry"] .story-panel{height:auto;align-self:center;display:block;padding:9vh 7vw;background:rgba(13,11,8,.52);backdrop-filter:blur(16px);border:1px solid rgba(235,220,198,.2);width:min(850px,80vw)}body[data-project="atelier-maris"] [data-scene-id="inquiry"] h2{font-size:clamp(72px,9.4vw,172px)}@media(max-width:760px){.atelier-maris-chrome{grid-template-columns:1fr auto;padding:20px}.atelier-maris-nav{display:none}.atelier-maris-brand{font-size:17px}.atelier-maris-meta{font-size:8px}.story-section{padding-inline:22px!important}body[data-project="atelier-maris"] .story-panel{top:0;width:100%;max-width:100%;text-align:left!important}body[data-project="atelier-maris"] .story-section--center .story-panel{width:100%}body[data-project="atelier-maris"] .story-panel h1,body[data-project="atelier-maris"] .story-panel h2{font-size:clamp(54px,16.5vw,88px);max-width:9ch;margin-left:0!important}body[data-project="atelier-maris"] .narrative-body{font-size:16px;max-width:86vw;margin-left:0!important}body[data-project="atelier-maris"] .narrative-panel__index{margin-bottom:16vh}body[data-project="atelier-maris"] [data-scene-id="inquiry"] .story-panel{padding:34px 24px;width:100%}body[data-project="atelier-maris"] [data-scene-id="inquiry"] h2{font-size:16.5vw}body[data-project="atelier-maris"] [data-scene-id="approach"]::after{left:auto;right:18px}}
+body[data-project="atelier-maris"]{--maris-ink:#171310;--maris-stone:#d7c2a3;--maris-ivory:#f2ede5;--maris-muted:#b9b0a5;background:var(--maris-ink);color:var(--maris-ivory);font-family:var(--font-dm-sans),Arial,sans-serif}.atelier-maris-chrome{position:fixed;inset:0 0 auto;z-index:70;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:28px 34px;color:#f6f0e7;pointer-events:none;text-shadow:0 1px 14px rgba(8,7,6,.72),0 0 2px rgba(8,7,6,.5)}.atelier-maris-chrome::before{content:"";position:absolute;inset:0 0 auto;height:150px;background:linear-gradient(180deg,rgba(9,8,6,.58),rgba(9,8,6,.22) 46%,transparent);pointer-events:none;z-index:-1}.atelier-maris-chrome a{color:inherit;text-decoration:none;pointer-events:auto}.atelier-maris-brand{display:flex;gap:.45em;font-family:var(--font-cormorant),Georgia,serif;font-size:23px;letter-spacing:.24em}.atelier-maris-nav{display:flex;gap:38px;font-size:11px;letter-spacing:.18em;text-transform:uppercase}.atelier-maris-meta{justify-self:end;text-align:right;font-size:10px;letter-spacing:.16em;text-transform:uppercase;line-height:1.6}.atelier-maris-rule{display:block;width:42px;height:1px;background:currentColor;margin:6px 0 0 auto;opacity:.65}body[data-project="atelier-maris"] .scene-canvas,body[data-project="atelier-maris"] .cinematic-media{position:fixed;inset:0;z-index:0}body[data-project="atelier-maris"] .cinematic-media{z-index:2;pointer-events:none;background:#171310}body[data-project="atelier-maris"] .media-panel{background:transparent}body[data-project="atelier-maris"] .media-panel__shade{position:absolute;inset:0;background:radial-gradient(118% 136% at var(--scrim-x,24%) 48%,rgba(7,6,5,calc(var(--scrim,.62))) 0%,rgba(7,6,5,calc(var(--scrim,.62)*.66)) 38%,rgba(7,6,5,calc(var(--scrim,.62)*.22)) 72%,rgba(7,6,5,.05) 100%),linear-gradient(0deg,rgba(7,6,5,.3),transparent 42%)}body[data-project="atelier-maris"] .media-panel__inner img,body[data-project="atelier-maris"] .media-panel__inner video{filter:saturate(.94) contrast(1.02) brightness(1.06)}body[data-project="atelier-maris"] .narrative-document{position:relative;z-index:12}body[data-project="atelier-maris"] .story-section{position:relative;display:flex;align-items:flex-start;padding:0 5vw;isolation:isolate}body[data-project="atelier-maris"] .story-section--right{justify-content:flex-end}body[data-project="atelier-maris"] .story-section--center{justify-content:center;text-align:center}body[data-project="atelier-maris"] .story-media-static{display:none}body[data-project="atelier-maris"] .story-panel{position:sticky;top:8vh;height:84vh;display:flex;flex-direction:column;justify-content:center;width:min(760px,52vw);padding:2vh 0;background:transparent;border:0;box-shadow:none;color:#f4eee6;text-shadow:0 1px 3px rgba(9,7,5,.5),0 2px 26px rgba(9,7,5,.55)}body[data-project="atelier-maris"] .story-section--right .story-panel{text-align:right}body[data-project="atelier-maris"] .story-section--center .story-panel{text-align:center;width:min(980px,74vw)}body[data-project="atelier-maris"] .story-panel h1,body[data-project="atelier-maris"] .story-panel h2{font-family:var(--font-cormorant),Georgia,serif;font-weight:400;font-size:clamp(62px,8.4vw,152px);line-height:.86;letter-spacing:-.04em;margin:0;max-width:9ch;text-wrap:balance}body[data-project="atelier-maris"] .story-section--right h2{margin-left:auto}body[data-project="atelier-maris"] .story-section--center h2{margin-inline:auto;max-width:12ch}body[data-project="atelier-maris"] .narrative-body{max-width:540px;margin:34px 0 0;font-size:18px;line-height:1.6;letter-spacing:.01em;color:rgba(249,244,237,.95);text-shadow:0 1px 3px rgba(9,7,5,.62),0 2px 20px rgba(9,7,5,.5)}body[data-project="atelier-maris"] .story-section--right .narrative-body{margin-left:auto}body[data-project="atelier-maris"] .story-section--center .narrative-body{margin-inline:auto}body[data-project="atelier-maris"] .story-detail{width:min(360px,100%);margin-top:24px;border-top:1px solid rgba(255,255,255,.28);padding-top:12px;color:#f1e8dc}body[data-project="atelier-maris"] .story-section--right .story-detail{margin-left:auto}body[data-project="atelier-maris"] .story-detail summary{cursor:pointer;font-size:11px;letter-spacing:.18em;text-transform:uppercase;list-style:none}body[data-project="atelier-maris"] .story-detail summary::after{content:" +";color:#d7c2a3}body[data-project="atelier-maris"] .story-detail[open] summary::after{content:" −"}body[data-project="atelier-maris"] .story-detail p{font-size:13.5px;line-height:1.55;color:rgba(248,243,236,.88)}body[data-project="atelier-maris"] .forge-button{display:inline-flex;margin-top:40px;padding:18px 26px;border:1px solid rgba(242,237,229,.65);color:#f6f0e7;text-decoration:none;text-transform:uppercase;font-size:11px;letter-spacing:.2em;background:rgba(10,9,7,.18);backdrop-filter:blur(8px);transition:background .25s ease,color .25s ease}body[data-project="atelier-maris"] .forge-button:hover{background:#efe7dc;color:#11100d}body[data-project="atelier-maris"] .progress-rail{z-index:65}body[data-project="atelier-maris"] .progress-rail__track{background:rgba(255,255,255,.22)}body[data-project="atelier-maris"] .progress-rail__fill{background:#d7c2a3}body[data-project="atelier-maris"] .hotspot{--hotspot:#ead8bd}body[data-project="atelier-maris"] .runtime-notice{background:rgba(11,10,8,.85);color:#eee5d8;border-color:rgba(215,194,163,.35)}/* The closing chapter is authored 100svh taller than the others. Centring its panel inside that taller box put the copy roughly 1150px below the section top, so the last handover ran 154vh with nothing to read against 26 to 70vh everywhere else. The panel is sticky, so it pins to the same place once reached either way -- starting at the top only makes it arrive on time. */body[data-project="atelier-maris"] [data-scene-id="inquiry"]{align-items:flex-start}body[data-project="atelier-maris"] [data-scene-id="approach"]::after{content:"SCROLL TO ENTER";position:absolute;left:5vw;bottom:5vh;font-size:9px;letter-spacing:.24em;color:rgba(255,255,255,.7);writing-mode:vertical-rl}body[data-project="atelier-maris"] [data-scene-id="inquiry"] .story-panel{height:auto;align-self:flex-start;display:block;padding:9vh 7vw;background:rgba(13,11,8,.52);backdrop-filter:blur(16px);border:1px solid rgba(235,220,198,.2);width:min(850px,80vw)}body[data-project="atelier-maris"] [data-scene-id="inquiry"] h2{font-size:clamp(72px,9.4vw,172px)}@media(max-width:760px){.atelier-maris-chrome{grid-template-columns:1fr auto;padding:20px}.atelier-maris-nav{display:none}.atelier-maris-brand{font-size:17px}.atelier-maris-meta{font-size:8px}.story-section{padding-inline:22px!important}body[data-project="atelier-maris"] .story-panel{top:0;width:100%;max-width:100%;text-align:left!important}body[data-project="atelier-maris"] .story-section--center .story-panel{width:100%}body[data-project="atelier-maris"] .story-panel h1,body[data-project="atelier-maris"] .story-panel h2{font-size:clamp(54px,16.5vw,88px);max-width:9ch;margin-left:0!important}body[data-project="atelier-maris"] .narrative-body{font-size:16px;max-width:86vw;margin-left:0!important}body[data-project="atelier-maris"] [data-scene-id="inquiry"] .story-panel{padding:34px 24px;width:100%}body[data-project="atelier-maris"] [data-scene-id="inquiry"] h2{font-size:16.5vw}body[data-project="atelier-maris"] [data-scene-id="approach"]::after{left:auto;right:18px}}
 @media(prefers-reduced-motion:reduce){body[data-project="atelier-maris"] .story-media-static{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;filter:brightness(.52) saturate(.8)}body[data-project="atelier-maris"] .story-panel{position:relative;top:auto;height:auto;padding:0}body[data-project="atelier-maris"] .story-section{align-items:center}}
 
 body[data-project="atelier-maris"] [data-media-panel="1"] .media-panel__inner img{filter:saturate(.95) contrast(1.04) brightness(1.3)}
@@ -133,15 +133,6 @@ body[data-project="atelier-maris"] .story-section--blocks h2 {
 body[data-project="atelier-maris"] [data-scene-id="parti"] h2 {
   font-size: clamp(48px, 6.6vw, 128px);
   max-width: 15ch;
-}
-body[data-project="atelier-maris"] [data-scene-id="parti"] .eyebrow,
-body[data-project="atelier-maris"] .story-section--blocks .eyebrow,
-body[data-project="atelier-maris"] [data-scene-id="parti"] .narrative-panel__index,
-body[data-project="atelier-maris"] .story-section--blocks .narrative-panel__index {
-  font-family: var(--font-manrope), Arial, sans-serif;
-  font-weight: 600;
-  font-size: 11px;
-  letter-spacing: .16em;
 }
 body[data-project="atelier-maris"] [data-scene-id="parti"] .narrative-body,
 body[data-project="atelier-maris"] .story-section--blocks .narrative-body {
@@ -371,4 +362,203 @@ body[data-project="atelier-maris"] .scene-block--menu li { position: relative; }
 body[data-project="atelier-maris"] .story-section {
   overflow-x: clip;
   overflow-y: visible;
+}
+
+/* ---------------------------------------------------------------------------
+   Conversion section
+   Unpinned DOM between the last chapter and the footer, so no chapter's motion
+   can take the form away while it is being filled in.
+   --------------------------------------------------------------------------- */
+body[data-project="atelier-maris"] .lead {
+  position: relative;
+  z-index: 14;
+  background: #12100d;
+  color: #efe6d8;
+  padding: 12vh 5vw;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 7vh 8vw;
+  align-items: start;
+  border-top: 1px solid rgba(239, 230, 216, .16);
+  scroll-margin-top: 12vh;
+}
+body[data-project="atelier-maris"] .lead__eyebrow {
+  margin: 0 0 26px;
+  font-size: 12px;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: #d7c2a3;
+}
+body[data-project="atelier-maris"] .lead__title {
+  margin: 0;
+  max-width: 14ch;
+  font: 400 clamp(44px, 5.4vw, 92px)/.94 var(--font-cormorant), Georgia, serif;
+  letter-spacing: -.03em;
+  text-wrap: balance;
+}
+body[data-project="atelier-maris"] .lead__body {
+  max-width: 44ch;
+  margin: 28px 0 0;
+  font-size: 17px;
+  line-height: 1.6;
+  color: rgba(239, 230, 216, .84);
+}
+body[data-project="atelier-maris"] .lead__note {
+  margin: 20px 0 0;
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #d7c2a3;
+}
+body[data-project="atelier-maris"] .lead__form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px 24px;
+  max-width: 640px;
+}
+body[data-project="atelier-maris"] .lead__intent,
+body[data-project="atelier-maris"] .lead__field--wide,
+body[data-project="atelier-maris"] .lead__consent,
+body[data-project="atelier-maris"] .lead__form > button,
+body[data-project="atelier-maris"] .lead__status,
+body[data-project="atelier-maris"] .lead__download,
+body[data-project="atelier-maris"] .lead__form > noscript { grid-column: 1 / -1; }
+body[data-project="atelier-maris"] .lead__intent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  margin: 0;
+  padding: 0 0 4px;
+  border: 0;
+}
+body[data-project="atelier-maris"] .lead__intent legend {
+  padding: 0 0 14px;
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: rgba(239, 230, 216, .6);
+}
+body[data-project="atelier-maris"] .lead__intent label,
+body[data-project="atelier-maris"] .lead__consent {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(239, 230, 216, .88);
+  cursor: pointer;
+}
+body[data-project="atelier-maris"] .lead__consent { max-width: 62ch; font-size: 13px; }
+body[data-project="atelier-maris"] .lead__intent input,
+body[data-project="atelier-maris"] .lead__consent input {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  accent-color: #d7c2a3;
+  cursor: pointer;
+}
+body[data-project="atelier-maris"] .lead__field { display: grid; gap: 9px; }
+body[data-project="atelier-maris"] .lead__field > span {
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(239, 230, 216, .62);
+}
+body[data-project="atelier-maris"] .lead__field i { font-style: normal; opacity: .6; }
+body[data-project="atelier-maris"] .lead__field input,
+body[data-project="atelier-maris"] .lead__field textarea {
+  width: 100%;
+  padding: 12px 2px;
+  border: 0;
+  border-bottom: 1px solid rgba(239, 230, 216, .3);
+  background: transparent;
+  color: #f4eee6;
+  font: inherit;
+  font-size: 16px;
+  border-radius: 0;
+  transition: border-color .2s ease;
+}
+body[data-project="atelier-maris"] .lead__field textarea { resize: vertical; line-height: 1.5; }
+body[data-project="atelier-maris"] .lead__field input:focus-visible,
+body[data-project="atelier-maris"] .lead__field textarea:focus-visible {
+  outline: 0;
+  border-bottom-color: #d7c2a3;
+}
+body[data-project="atelier-maris"] .lead__field input:user-invalid,
+body[data-project="atelier-maris"] .lead__field textarea:user-invalid { border-bottom-color: #c2704a; }
+body[data-project="atelier-maris"] .lead__form > button { margin-top: 12px; justify-self: start; cursor: pointer; }
+body[data-project="atelier-maris"] .lead__form > button[disabled] { opacity: .55; cursor: default; }
+body[data-project="atelier-maris"] .lead__status {
+  margin: 0;
+  min-height: 1.5em;
+  font-size: 14px;
+  line-height: 1.5;
+}
+body[data-project="atelier-maris"] .lead__status[data-state="ok"] { color: #cfe0c8; }
+body[data-project="atelier-maris"] .lead__status[data-state="error"] { color: #e2a184; }
+body[data-project="atelier-maris"] .lead__download { margin: 0; }
+body[data-project="atelier-maris"] .lead__download a {
+  color: #d7c2a3;
+  font-size: 14px;
+  text-underline-offset: 5px;
+}
+@media (max-width: 900px) {
+  body[data-project="atelier-maris"] .lead { grid-template-columns: minmax(0, 1fr); padding: 9vh 22px; gap: 5vh; }
+  body[data-project="atelier-maris"] .lead__form { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  body[data-project="atelier-maris"] .lead__title { max-width: 100%; }
+}
+
+/* ---------------------------------------------------------------------------
+   Site plan plate
+   The plan is sited as its own drawing rather than spread behind the copy,
+   which is where its labels used to collide with the headline.
+   --------------------------------------------------------------------------- */
+body[data-project="atelier-maris"] .cinematic-diagram {
+  /* Sited in the band below the copy: a key plan in the corner of the sheet. The height is
+     capped so the plate's top clears the lede, which is the only constraint that holds however
+     the centred copy wraps. */
+  inset: 9vh auto auto 5vw;
+  /* content-box with the viewBox's own ratio, so percentage annotations land on their points
+     and the plan is never stretched. Sized so the plate's foot clears the chapter eyebrow. */
+  box-sizing: content-box;
+  width: min(360px, 28vw);
+  height: auto;
+  aspect-ratio: 5 / 3;
+  /* A key plan is presented on the sheet, not floated over the photograph: a held-back ink
+     panel and a hairline give the drawing its own ground, which is also what makes hairline
+     strokes legible over whatever is behind them. */
+  padding: 16px 18px;
+  background: rgba(9, 8, 6, .44);
+  backdrop-filter: blur(7px);
+  border: 1px solid rgba(235, 220, 198, .22);
+}
+body[data-project="atelier-maris"] .cinematic-diagram__label {
+  font-family: var(--font-dm-sans), Arial, sans-serif;
+  font-size: 10.5px;
+  letter-spacing: .14em;
+}
+
+/* ---------------------------------------------------------------------------
+   Chrome between phone and desktop
+   The three-column header crowds from roughly 640 to 900: the wordmark reached
+   the first nav item with no gap, and the project meta wrapped onto five lines
+   into the chapter rail.
+   --------------------------------------------------------------------------- */
+@media (min-width: 761px) and (max-width: 1000px) {
+  .atelier-maris-chrome { padding: 20px 22px; column-gap: 20px; }
+  .atelier-maris-brand { font-size: 17px; letter-spacing: .15em; }
+  .atelier-maris-nav { gap: 18px; font-size: 10px; letter-spacing: .12em; }
+  .atelier-maris-meta { font-size: 9px; letter-spacing: .1em; white-space: nowrap; }
+  body[data-project="atelier-maris"] .cinematic-diagram {
+    inset: 10vh auto auto 22px;
+    width: min(360px, 52vw);
+    padding: 13px 15px;
+  }
+}
+@media (max-width: 760px) {
+  body[data-project="atelier-maris"] .cinematic-diagram {
+    inset: 9vh auto auto 22px;
+    width: 70vw;
+    padding: 11px 13px;
+  }
 }

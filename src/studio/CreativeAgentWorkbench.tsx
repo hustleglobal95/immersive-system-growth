@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { readSearch, useClientValue } from "@/src/lib/useClientValue";
 import Link from "next/link";
 import rawExperience from "@/config/experience.json";
 import rawProject from "@/config/studio-project.json";
@@ -30,15 +31,18 @@ const fallbackIdeas = [
 
 export function CreativeAgentWorkbench() {
   const draft = useStudioDraft(initialExperience, initialProject, initialManifest, initialGraph);
-  const [idea, setIdea] = useState(fallbackIdeas[0]);
+  // The workspace can be opened with an idea in the URL. Read it during render so the textarea
+  // is never briefly seeded with the fallback and then replaced.
+  const seededIdea = useClientValue(() => new URLSearchParams(readSearch()).get("idea")?.trim()?.slice(0, 4000) ?? "", "");
+  const [idea, setIdea] = useState(seededIdea || fallbackIdeas[0]);
+  const [ideaSeed, setIdeaSeed] = useState(seededIdea);
+  if (ideaSeed !== seededIdea) {
+    setIdeaSeed(seededIdea);
+    if (seededIdea) setIdea(seededIdea);
+  }
   const [variation, setVariation] = useState(0);
   const [notice, setNotice] = useState("");
   const [previewOpen, setPreviewOpen] = useState(true);
-
-  useEffect(() => {
-    const seededIdea = new URLSearchParams(window.location.search).get("idea")?.trim();
-    if (seededIdea) setIdea(seededIdea.slice(0, 4000));
-  }, []);
 
   const promptIntelligence = useMemo(() => inferPromptIntelligence({
     prompt: idea,
@@ -55,10 +59,16 @@ export function CreativeAgentWorkbench() {
     preferredMedia: promptIntelligence.recommendedMedia,
   }), [idea, draft.experience, draft.assetManifest, variation, promptIntelligence.recommendedMedia]);
 
-  const [selectedScenes, setSelectedScenes] = useState<number[]>([]);
-  useEffect(() => {
+  // Re-select every scene the plan touches whenever the plan itself changes. Adjusting during
+  // render keeps the checkbox list in step with the plan it belongs to instead of showing the
+  // previous plan's selection for a frame.
+  const [selectedScenes, setSelectedScenes] = useState<number[]>(() => plan.sceneMoves.map((move) => move.sceneIndex));
+  const planKey = `${plan.title}:${plan.sceneMoves.length}`;
+  const [selectionKey, setSelectionKey] = useState(planKey);
+  if (selectionKey !== planKey) {
+    setSelectionKey(planKey);
     setSelectedScenes(plan.sceneMoves.map((move) => move.sceneIndex));
-  }, [plan.title, plan.sceneMoves.length]);
+  }
 
   const brief = promptIntelligence.brief;
   const intelligence = useMemo(() => runDirectorIntelligence({ brief }), [brief]);

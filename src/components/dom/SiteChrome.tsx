@@ -16,11 +16,11 @@ export function SiteChrome() {
           <Link href="#material">Material</Link>
           <Link href="/work">Work</Link>
           <Link href="/about">Studio</Link>
-          <Link href="#inquiry">Inquire</Link>
+          <Link href="#inquiry">Enquire</Link>
         </nav>
         <div className="atelier-maris-meta">
-          <span>Casa Lumen / 01</span><br />
-          <span>Costa Brava, Spain</span>
+          <span>Casa Lumen, 2024</span><br />
+          <span>Begur, Girona</span>
           <i className="atelier-maris-rule" />
         </div>
       </header>

@@ -1,7 +1,7 @@
 {
   "meta": {
     "name": "ATELIER MARIS | Casa Lumen",
-    "description": "A portfolio-grade cinematic architecture experience for a fictional Mediterranean studio, directed as a continuous journey from coastal approach through material, interior, landscape and inquiry.",
+    "description": "Casa Lumen, a private house above the water at Begur on the Costa Brava, presented as one continuous sequence from the coastal approach through threshold, material, bathing court and horizon.",
     "themeColor": "#d7c2a3",
     "backgroundColor": "#171310"
   },
@@ -19,12 +19,6 @@
   "stage": "minimal",
   "heroVisible": false,
   "assets": [
-    {
-      "id": "casa-lumen-light",
-      "kind": "environment",
-      "url": "/hdr/umhlanga_sunrise_1k.hdr",
-      "persist": true
-    },
     {
       "id": "maris-pavilion",
       "kind": "model",
@@ -51,7 +45,7 @@
   "scenes": [
     {
       "id": "approach",
-      "label": "Coastal Approach",
+      "label": "Approach",
       "range": [
         0.0,
         0.142857
@@ -158,13 +152,13 @@
             },
             {
               "id": "maris-approach-copy-opacity-desktop-1",
-              "at": 0.6,
+              "at": 0.78,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-approach-copy-opacity-desktop-2",
-              "at": 0.74,
+              "at": 0.86,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -194,19 +188,19 @@
             },
             {
               "id": "maris-approach-copy-y-desktop-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-approach-copy-y-desktop-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-approach-copy-y-desktop-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": -11,
               "easing": "smooth"
             },
@@ -236,19 +230,19 @@
             },
             {
               "id": "maris-approach-copy-blur-desktop-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-approach-copy-blur-desktop-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-approach-copy-blur-desktop-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": 4,
               "easing": "smooth"
             },
@@ -278,13 +272,13 @@
             },
             {
               "id": "maris-approach-copy-opacity-mobile-1",
-              "at": 0.6,
+              "at": 0.78,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-approach-copy-opacity-mobile-2",
-              "at": 0.74,
+              "at": 0.86,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -314,19 +308,19 @@
             },
             {
               "id": "maris-approach-copy-y-mobile-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-approach-copy-y-mobile-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-approach-copy-y-mobile-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": -6.6,
               "easing": "smooth"
             },
@@ -356,19 +350,19 @@
             },
             {
               "id": "maris-approach-copy-blur-mobile-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-approach-copy-blur-mobile-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-approach-copy-blur-mobile-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": 2.4,
               "easing": "smooth"
             },
@@ -564,7 +558,7 @@
           58,
           50
         ],
-        "overlap": 0.26,
+        "overlap": 0.14,
         "direction": "up",
         "zoom": 1.06,
         "textEnd": 0.3,
@@ -597,7 +591,8 @@
             "y": 0,
             "zoom": 1.1
           }
-        }
+        },
+        "scrim": 0.66
       },
       "blocks": [],
       "hero": {
@@ -652,9 +647,9 @@
         "vignette": 0.22
       },
       "copy": {
-        "eyebrow": "ATELIER MARIS / COSTA BRAVA",
-        "headline": "Architecture shaped by sea, light, and restraint.",
-        "body": "Casa Lumen is introduced as a sequence of thresholds. The coast establishes scale; architecture edits the horizon.",
+        "eyebrow": "01 / APPROACH",
+        "headline": "A house set into a forty-metre fall to the sea.",
+        "body": "Casa Lumen. Two stone planes held apart by a shaded court, on a cliff plot south-east of Begur.",
         "align": "left"
       }
     },
@@ -743,13 +738,13 @@
             },
             {
               "id": "maris-parti-copy-opacity-desktop-1",
-              "at": 0.5,
+              "at": 0.78,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-parti-copy-opacity-desktop-2",
-              "at": 0.62,
+              "at": 0.86,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -779,19 +774,19 @@
             },
             {
               "id": "maris-parti-copy-y-desktop-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-parti-copy-y-desktop-2",
-              "at": 0.5,
+              "at": 0.78,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-parti-copy-y-desktop-3",
-              "at": 0.62,
+              "at": 0.86,
               "value": -88,
               "easing": "smooth"
             },
@@ -821,19 +816,19 @@
             },
             {
               "id": "maris-parti-copy-blur-desktop-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-parti-copy-blur-desktop-2",
-              "at": 0.5,
+              "at": 0.78,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-parti-copy-blur-desktop-3",
-              "at": 0.62,
+              "at": 0.86,
               "value": 7,
               "easing": "smooth"
             },
@@ -863,13 +858,13 @@
             },
             {
               "id": "maris-parti-copy-opacity-mobile-1",
-              "at": 0.5,
+              "at": 0.78,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-parti-copy-opacity-mobile-2",
-              "at": 0.62,
+              "at": 0.86,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -899,19 +894,19 @@
             },
             {
               "id": "maris-parti-copy-y-mobile-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-parti-copy-y-mobile-2",
-              "at": 0.5,
+              "at": 0.78,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-parti-copy-y-mobile-3",
-              "at": 0.62,
+              "at": 0.86,
               "value": -52.8,
               "easing": "smooth"
             },
@@ -941,19 +936,19 @@
             },
             {
               "id": "maris-parti-copy-blur-mobile-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-parti-copy-blur-mobile-2",
-              "at": 0.5,
+              "at": 0.78,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-parti-copy-blur-mobile-3",
-              "at": 0.62,
+              "at": 0.86,
               "value": 4.2,
               "easing": "smooth"
             },
@@ -1135,8 +1130,9 @@
         }
       ],
       "media": {
-        "kind": "color",
-        "alt": "Flat field for the manifesto chapter",
+        "kind": "shader",
+        "shader": "tide",
+        "alt": "Live light field for the position chapter",
         "transition": "mask",
         "blendColor": "#171310",
         "maskSoftness": 22,
@@ -1149,7 +1145,7 @@
           61,
           50
         ],
-        "overlap": 0.26,
+        "overlap": 0.14,
         "direction": "up",
         "zoom": 1,
         "textEnd": 0.3,
@@ -1170,7 +1166,9 @@
           "invert": false,
           "edgeColor": "#eadbc5",
           "edgeWidth": 0.18
-        }
+        },
+        "shaderTint": "#31463b",
+        "scrim": 0.22
       },
       "blocks": [
         {
@@ -1261,9 +1259,9 @@
         "vignette": 0.2
       },
       "copy": {
-        "eyebrow": "01 / POSITION",
-        "headline": "Section before surface. Light before finish.",
-        "body": "Casa Lumen was resolved in section before a single material was chosen. Nothing was added to be noticed.",
+        "eyebrow": "02 / POSITION",
+        "headline": "The plot falls forty metres. The house does not.",
+        "body": "Rather than terrace the slope, two level planes are set into it and the ground passes beneath. Section first, finishes last.",
         "align": "right"
       }
     },
@@ -1386,13 +1384,13 @@
             },
             {
               "id": "maris-threshold-copy-opacity-desktop-1",
-              "at": 0.6,
+              "at": 0.78,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-opacity-desktop-2",
-              "at": 0.74,
+              "at": 0.86,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -1422,19 +1420,19 @@
             },
             {
               "id": "maris-threshold-copy-y-desktop-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-y-desktop-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-y-desktop-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": -11,
               "easing": "smooth"
             },
@@ -1464,19 +1462,19 @@
             },
             {
               "id": "maris-threshold-copy-blur-desktop-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-blur-desktop-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-blur-desktop-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": 4,
               "easing": "smooth"
             },
@@ -1506,13 +1504,13 @@
             },
             {
               "id": "maris-threshold-copy-opacity-mobile-1",
-              "at": 0.6,
+              "at": 0.78,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-opacity-mobile-2",
-              "at": 0.74,
+              "at": 0.86,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -1542,19 +1540,19 @@
             },
             {
               "id": "maris-threshold-copy-y-mobile-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-y-mobile-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-y-mobile-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": -6.6,
               "easing": "smooth"
             },
@@ -1584,19 +1582,19 @@
             },
             {
               "id": "maris-threshold-copy-blur-mobile-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-threshold-copy-blur-mobile-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-threshold-copy-blur-mobile-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": 2.4,
               "easing": "smooth"
             },
@@ -1792,7 +1790,7 @@
           62,
           50
         ],
-        "overlap": 0.26,
+        "overlap": 0.14,
         "direction": "left",
         "zoom": 1.06,
         "textEnd": 0.16,
@@ -1808,7 +1806,8 @@
             "y": 0,
             "zoom": 1.03
           }
-        }
+        },
+        "scrim": 0.78
       },
       "blocks": [],
       "hero": {
@@ -1863,9 +1862,9 @@
         "vignette": 0.16
       },
       "copy": {
-        "eyebrow": "02 / THRESHOLD",
-        "headline": "The entry compresses. The view releases.",
-        "body": "The approach narrows through stone and timber before the room opens in one controlled reveal. Forward enters the house; reverse reconstructs the threshold.",
+        "eyebrow": "03 / THRESHOLD",
+        "headline": "Nine metres of stone. Then the whole sea.",
+        "body": "The approach narrows to 1.9 metres between a stone wall and an oak screen, holds that width for nine metres, and releases at the living level in one move.",
         "align": "left"
       }
     },
@@ -1984,13 +1983,13 @@
             },
             {
               "id": "maris-material-copy-opacity-desktop-1",
-              "at": 0.6,
+              "at": 0.78,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-material-copy-opacity-desktop-2",
-              "at": 0.74,
+              "at": 0.86,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -2020,19 +2019,19 @@
             },
             {
               "id": "maris-material-copy-y-desktop-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-material-copy-y-desktop-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-material-copy-y-desktop-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": -11,
               "easing": "smooth"
             },
@@ -2062,19 +2061,19 @@
             },
             {
               "id": "maris-material-copy-blur-desktop-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-material-copy-blur-desktop-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-material-copy-blur-desktop-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": 4,
               "easing": "smooth"
             },
@@ -2104,13 +2103,13 @@
             },
             {
               "id": "maris-material-copy-opacity-mobile-1",
-              "at": 0.6,
+              "at": 0.78,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-material-copy-opacity-mobile-2",
-              "at": 0.74,
+              "at": 0.86,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -2140,19 +2139,19 @@
             },
             {
               "id": "maris-material-copy-y-mobile-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-material-copy-y-mobile-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-material-copy-y-mobile-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": -6.6,
               "easing": "smooth"
             },
@@ -2182,19 +2181,19 @@
             },
             {
               "id": "maris-material-copy-blur-mobile-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-material-copy-blur-mobile-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-material-copy-blur-mobile-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": 2.4,
               "easing": "smooth"
             },
@@ -2390,7 +2389,7 @@
           50,
           50
         ],
-        "overlap": 0.26,
+        "overlap": 0.14,
         "direction": "up",
         "zoom": 1.06,
         "textEnd": 0.24,
@@ -2423,30 +2422,31 @@
             "y": -1.2,
             "zoom": 1.16
           }
-        }
+        },
+        "scrim": 0.84
       },
       "blocks": [
         {
           "id": "material-schedule",
           "type": "menu-grid",
-          "title": "Specified finishes",
+          "title": "Material schedule",
           "items": [
             {
               "name": "Travertine",
               "description": "Floors, bathing court, external coping",
-              "price": "Honed / 20 mm",
+              "price": "Honed / 20 mm sawn",
               "badge": "01"
             },
             {
               "name": "Quarter-sawn oak",
               "description": "Brise-soleil, ceiling plane, joinery",
-              "price": "Brushed / oiled",
+              "price": "Brushed, hardwax oil",
               "badge": "02"
             },
             {
               "name": "Undyed linen",
               "description": "Curtains, upholstery, acoustic softening",
-              "price": "Belgian / heavy",
+              "price": "Belgian / 480 gsm",
               "badge": "03"
             }
           ]
@@ -2505,14 +2505,14 @@
       },
       "copy": {
         "eyebrow": "04 / MATERIAL",
-        "headline": "Stone carries time.",
-        "body": "Travertine honed, never polished. Oak quarter-sawn and brushed. Linen that softens a room without asking for attention.",
+        "headline": "Three materials, and glass.",
+        "body": "Travertine honed rather than polished, so it holds light instead of returning it. Oak quarter-sawn for straight grain. Linen undyed.",
         "align": "left"
       }
     },
     {
       "id": "wellness",
-      "label": "Wellness Court",
+      "label": "Bathing Court",
       "range": [
         0.571429,
         0.714286
@@ -2595,13 +2595,13 @@
             },
             {
               "id": "maris-wellness-copy-opacity-desktop-1",
-              "at": 0.6,
+              "at": 0.78,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-wellness-copy-opacity-desktop-2",
-              "at": 0.74,
+              "at": 0.86,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -2631,19 +2631,19 @@
             },
             {
               "id": "maris-wellness-copy-y-desktop-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-wellness-copy-y-desktop-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-wellness-copy-y-desktop-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": -11,
               "easing": "smooth"
             },
@@ -2673,19 +2673,19 @@
             },
             {
               "id": "maris-wellness-copy-blur-desktop-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-wellness-copy-blur-desktop-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-wellness-copy-blur-desktop-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": 4,
               "easing": "smooth"
             },
@@ -2715,13 +2715,13 @@
             },
             {
               "id": "maris-wellness-copy-opacity-mobile-1",
-              "at": 0.6,
+              "at": 0.78,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-wellness-copy-opacity-mobile-2",
-              "at": 0.74,
+              "at": 0.86,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -2751,19 +2751,19 @@
             },
             {
               "id": "maris-wellness-copy-y-mobile-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-wellness-copy-y-mobile-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-wellness-copy-y-mobile-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": -6.6,
               "easing": "smooth"
             },
@@ -2793,19 +2793,19 @@
             },
             {
               "id": "maris-wellness-copy-blur-mobile-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-wellness-copy-blur-mobile-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-wellness-copy-blur-mobile-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": 2.4,
               "easing": "smooth"
             },
@@ -3001,7 +3001,7 @@
           56,
           52
         ],
-        "overlap": 0.26,
+        "overlap": 0.14,
         "direction": "right",
         "zoom": 1.06,
         "textEnd": 0.3,
@@ -3017,7 +3017,8 @@
             "y": -3.4,
             "zoom": 1.05
           }
-        }
+        },
+        "scrim": 0.66
       },
       "blocks": [],
       "hero": {
@@ -3072,15 +3073,15 @@
         "vignette": 0.2
       },
       "copy": {
-        "eyebrow": "05 / WELLNESS",
-        "headline": "Ritual spaces designed for stillness.",
-        "body": "A private bathing court is cut from the same stone language as the house. Water, shade and framed sky do the decorative work.",
+        "eyebrow": "05 / BATHING COURT",
+        "headline": "A court for water, cut from the house.",
+        "body": "Six by four metres, a metre deep, open to the south-west. The same travertine as the floors inside, so the court reads as a room without a roof.",
         "align": "right"
       }
     },
     {
       "id": "horizon",
-      "label": "Landscape",
+      "label": "Horizon",
       "range": [
         0.714286,
         0.857143
@@ -3163,13 +3164,13 @@
             },
             {
               "id": "maris-horizon-copy-opacity-desktop-1",
-              "at": 0.6,
+              "at": 0.78,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-horizon-copy-opacity-desktop-2",
-              "at": 0.74,
+              "at": 0.86,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -3199,19 +3200,19 @@
             },
             {
               "id": "maris-horizon-copy-y-desktop-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-horizon-copy-y-desktop-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-horizon-copy-y-desktop-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": -11,
               "easing": "smooth"
             },
@@ -3241,19 +3242,19 @@
             },
             {
               "id": "maris-horizon-copy-blur-desktop-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-horizon-copy-blur-desktop-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-horizon-copy-blur-desktop-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": 4,
               "easing": "smooth"
             },
@@ -3283,13 +3284,13 @@
             },
             {
               "id": "maris-horizon-copy-opacity-mobile-1",
-              "at": 0.6,
+              "at": 0.78,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-horizon-copy-opacity-mobile-2",
-              "at": 0.74,
+              "at": 0.86,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -3319,19 +3320,19 @@
             },
             {
               "id": "maris-horizon-copy-y-mobile-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-horizon-copy-y-mobile-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-horizon-copy-y-mobile-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": -6.6,
               "easing": "smooth"
             },
@@ -3361,19 +3362,19 @@
             },
             {
               "id": "maris-horizon-copy-blur-mobile-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-horizon-copy-blur-mobile-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-horizon-copy-blur-mobile-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": 2.4,
               "easing": "smooth"
             },
@@ -3569,7 +3570,7 @@
           61,
           50
         ],
-        "overlap": 0.26,
+        "overlap": 0.14,
         "direction": "down",
         "zoom": 1.06,
         "textEnd": 0.26,
@@ -3602,7 +3603,8 @@
             "y": 0,
             "zoom": 1.0
           }
-        }
+        },
+        "scrim": 0.72
       },
       "blocks": [],
       "hero": {
@@ -3657,15 +3659,15 @@
         "vignette": 0.24
       },
       "copy": {
-        "eyebrow": "07 / LANDSCAPE",
-        "headline": "The horizon becomes the final room.",
-        "body": "The architecture recedes until stone, water and topography read as one field. The project ends where the site begins.",
+        "eyebrow": "06 / HORIZON",
+        "headline": "The pool edge sits on the sea line.",
+        "body": "Set from the principal seated position, the pool edge aligns with the coast so foreground water joins the sea.",
         "align": "center"
       }
     },
     {
       "id": "inquiry",
-      "label": "Private Inquiry",
+      "label": "Commissions",
       "range": [
         0.857143,
         1.0
@@ -3748,13 +3750,13 @@
             },
             {
               "id": "maris-inquiry-copy-opacity-desktop-1",
-              "at": 0.6,
+              "at": 0.78,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-inquiry-copy-opacity-desktop-2",
-              "at": 0.74,
+              "at": 0.86,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -3784,19 +3786,19 @@
             },
             {
               "id": "maris-inquiry-copy-y-desktop-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-inquiry-copy-y-desktop-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-inquiry-copy-y-desktop-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": -11,
               "easing": "smooth"
             },
@@ -3826,19 +3828,19 @@
             },
             {
               "id": "maris-inquiry-copy-blur-desktop-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0,
               "easing": "smooth"
             },
             {
               "id": "maris-inquiry-copy-blur-desktop-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0,
               "easing": "linear"
             },
             {
               "id": "maris-inquiry-copy-blur-desktop-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": 4,
               "easing": "smooth"
             },
@@ -3868,13 +3870,13 @@
             },
             {
               "id": "maris-inquiry-copy-opacity-mobile-1",
-              "at": 0.6,
+              "at": 0.78,
               "value": 1.0,
               "easing": "linear"
             },
             {
               "id": "maris-inquiry-copy-opacity-mobile-2",
-              "at": 0.74,
+              "at": 0.86,
               "value": 0.0,
               "easing": "smooth"
             },
@@ -3904,19 +3906,19 @@
             },
             {
               "id": "maris-inquiry-copy-y-mobile-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-inquiry-copy-y-mobile-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-inquiry-copy-y-mobile-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": -6.6,
               "easing": "smooth"
             },
@@ -3946,19 +3948,19 @@
             },
             {
               "id": "maris-inquiry-copy-blur-mobile-1",
-              "at": 0.16,
+              "at": 0.1,
               "value": 0.0,
               "easing": "smooth"
             },
             {
               "id": "maris-inquiry-copy-blur-mobile-2",
-              "at": 0.6,
+              "at": 0.78,
               "value": 0.0,
               "easing": "linear"
             },
             {
               "id": "maris-inquiry-copy-blur-mobile-3",
-              "at": 0.74,
+              "at": 0.86,
               "value": 2.4,
               "easing": "smooth"
             },
@@ -4154,7 +4156,7 @@
           60,
           50
         ],
-        "overlap": 0.26,
+        "overlap": 0.14,
         "direction": "up",
         "zoom": 1.06,
         "textEnd": 0.3,
@@ -4187,7 +4189,8 @@
             "y": 0,
             "zoom": 1.02
           }
-        }
+        },
+        "scrim": 0.74
       },
       "blocks": [],
       "hero": {
@@ -4242,13 +4245,13 @@
         "vignette": 0.26
       },
       "copy": {
-        "eyebrow": "ATELIER MARIS / PRIVATE RESIDENCES",
-        "headline": "Let us shape your next residence.",
-        "body": "Private homes, interior transformations and coastal retreats. A fictional showcase built to demonstrate Forge at full production intent.",
+        "eyebrow": "07 / COMMISSIONS",
+        "headline": "We take four projects a year.",
+        "body": "Private houses, interior transformations and coastal retreats, run from the first survey to the last site visit by the people who drew them. Enquiries for 2026 are open.",
         "align": "center",
         "cta": {
-          "label": "Begin a private conversation",
-          "href": "mailto:studio@ateliermaris.example"
+          "label": "Enquire about a commission",
+          "href": "#enquire"
         }
       }
     }
@@ -4287,5 +4290,21 @@
         4.2
       ]
     }
-  ]
+  ],
+  "conversion": {
+    "id": "enquire",
+    "eyebrow": "New commissions",
+    "title": "Tell us about the plot.",
+    "body": "We take four projects a year and run each one from the first survey to the last site visit. A first conversation is usually an hour, on site if the plot exists and over a table if it does not.",
+    "intent": "both",
+    "submit": "Send enquiry",
+    "consent": "I am happy for Atelier Maris to hold these details and reply to my enquiry. We never share them, and you can ask us to delete them at any time.",
+    "note": "Enquiries for 2026 are open.",
+    "brochure": {
+      "id": "casa-lumen-brochure",
+      "label": "Casa Lumen brochure",
+      "file": "casa-lumen.pdf",
+      "size": "1 KB"
+    }
+  }
 }

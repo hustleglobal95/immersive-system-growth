@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { responsiveImage } from "@/src/lib/responsiveImage";
 import { cinematicProgress } from "@/src/lib/cinematicProgress";
 import { remap01 } from "@/src/lib/math";
 import { useExperienceStore } from "@/src/store/experienceStore";
@@ -10,7 +11,7 @@ type Roll = Extract<SceneBlock, { type: "image-roll" }>;
 
 const TAU = Math.PI * 2;
 const clamp01 = (t: number) => Math.max(0, Math.min(1, t));
-const smooth = (t: number) => { const v = clamp01(t); return v * v * (3 - 2 * v); };
+const smooth = (t: number) => { const v = clamp01(t); return v * v * v * (v * (v * 6 - 15) + 10); };
 const span = (t: number, a: number, b: number) => clamp01((t - a) / Math.max(1e-6, b - a));
 
 /**
@@ -187,7 +188,7 @@ export function ImageRoll({ block, range }: { block: Roll; range: readonly [numb
       <div className="image-roll__stage" ref={stage}>
         {[...block.images, ...block.images, ...block.images].map((image, index) => (
           <figure className="image-roll__plate" key={`${image.src}-${index}`}>
-            <img src={image.src} alt="" decoding="async" loading="lazy" />
+            <img {...responsiveImage(image.src, "(max-width: 760px) 42vw, 340px", 640)} alt="" decoding="async" loading="lazy" />
           </figure>
         ))}
       </div>

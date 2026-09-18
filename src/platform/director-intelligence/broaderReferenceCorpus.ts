@@ -654,7 +654,7 @@ export const broaderImmersiveReferenceCorpus: ImmersiveReference[] = [
     ["Codrops case study describes multi-input slider control, restrained project layouts and reusable animation/WebGL utilities."],
     0.98,
     "technical-reference",
-  ),,
+  ),
   caseStudy(
     "codrops-haoqi-design",
     "HAOQI.DESIGN",

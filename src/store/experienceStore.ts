@@ -125,8 +125,15 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
   adaptiveTier: "low",
   deviceCeiling: "low",
   profileReady: false,
-  reducedMotion: true,
-  systemReducedMotion: true,
+  // Motion on is the server-rendered default because it is what most visitors get, and the
+  // layout depends on it: rendering the reduced page first made every section 900px, then
+  // SystemProfile resolved the real preference on mount and they jumped to 2880px, growing the
+  // document from 7,177px to 22,667px. That re-layout was measured as 0.16 of cumulative layout
+  // shift on its own, against a 0.1 threshold. Nothing is lost by assuming motion: all of it is
+  // JS-driven, so a visitor without JS gets none of it whatever this flag says, and
+  // SystemProfile still resolves the true preference on mount.
+  reducedMotion: false,
+  systemReducedMotion: false,
   motionOverride: null,
   debug: false,
   freeCamera: false,

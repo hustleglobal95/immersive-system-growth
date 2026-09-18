@@ -58,8 +58,30 @@ test("generated stress fixture preserves invariants at flagship-scale scene coun
       id: `stress-${index}-${trackIndex}`,
     })),
   }));
-  const stress = parseExperience({ ...structuredClone(base), scenes });
+  // The generator renames every scene, so everything that references a scene by id has to
+  // be carried across with it. Otherwise the fixture describes a config that cannot exist
+  // and the scale invariants never get exercised at all.
+  const remap = new Map(base.scenes.map((scene, index) => [scene.id, scenes[index % scenes.length].id]));
+  const rename = (sceneId: string) => remap.get(sceneId) ?? scenes[0].id;
+  const hotspots = base.hotspots.map((hotspot) => ({
+    ...structuredClone(hotspot),
+    sceneId: rename(hotspot.sceneId),
+  }));
+  const assets = base.assets.map((asset) => {
+    const next = structuredClone(asset);
+    if (next.scenes) next.scenes = next.scenes.map(rename);
+    if (next.kind === "model" && next.animation) next.animation.sceneId = rename(next.animation.sceneId);
+    if (next.kind === "video" && next.sceneId) next.sceneId = rename(next.sceneId);
+    return next;
+  });
+  const stress = parseExperience({ ...structuredClone(base), scenes, hotspots, assets });
   assert.equal(stress.scenes.length, 16);
+  const stressSceneIds = new Set(stress.scenes.map((scene) => scene.id));
+  assert.equal(stress.hotspots.length, base.hotspots.length);
+  assert.ok(stress.hotspots.every((hotspot) => stressSceneIds.has(hotspot.sceneId)));
+  assert.ok(
+    stress.assets.every((asset) => (asset.scenes ?? []).every((sceneId) => stressSceneIds.has(sceneId))),
+  );
   assert.ok(stress.scenes.reduce((sum, scene) => sum + scene.motionTracks.length, 0) >= 64);
   assert.deepEqual(validateInvariants(stress, sceneInvariants).filter((item) => item.level === "error"), []);
 });
