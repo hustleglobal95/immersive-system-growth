@@ -101,8 +101,8 @@ test("construction directives are grounded in both patterns and corpus precedent
 });
 
 
-test("broader immersive corpus adds 35 public studio and technical case studies", () => {
-  assert.equal(broaderImmersiveReferenceCorpus.length, 35);
+test("broader immersive corpus adds 51 public studio and technical case studies", () => {
+  assert.equal(broaderImmersiveReferenceCorpus.length, 51);
   assert.ok(
     broaderImmersiveReferenceCorpus.every(
       (reference) =>
@@ -110,7 +110,7 @@ test("broader immersive corpus adds 35 public studio and technical case studies"
         reference.evidenceLevel === "technical-reference",
     ),
   );
-  assert.equal(immersiveReferenceCorpus.length, 84);
+  assert.equal(immersiveReferenceCorpus.length, 100);
 });
 
 test("broader corpus teaches implementation-shaping lessons rather than only visual style", () => {
