@@ -1,5 +1,6 @@
 import { parseCreativePlan, type CreativePlan, type CreativeMotionArchetype, type CreativeMotionPreset } from "@/src/platform/creativePlanSchema";
 import { parseDirectorTreatment, type DirectorTreatment } from "@/src/platform/directorSchema";
+import { buildConstructionDirectives } from "@/src/platform/director-intelligence/constructionKnowledge";
 
 const archetypeByProject: Partial<Record<DirectorTreatment["projectType"], CreativeMotionArchetype>> = {
   property: "architectural-build",
@@ -33,6 +34,7 @@ export function compileDirectorTreatment(input: unknown): DirectorCompilation {
   const provenance: Record<string, string> = {};
   const selected = treatment.territories.find((territory) => territory.id === treatment.selectedTerritoryId)!;
   const primaryArchetype = archetypeByProject[treatment.projectType] ?? "editorial-reveal";
+  const construction = buildConstructionDirectives(treatment);
 
   const scenes = treatment.emotionalArc.map((beat, index) => {
     const shot = treatment.shotBible.find((candidate) => candidate.chapterId === beat.id) ?? treatment.shotBible[index % treatment.shotBible.length];
@@ -55,7 +57,7 @@ export function compileDirectorTreatment(input: unknown): DirectorCompilation {
       direction: {
         objective: beat.purpose,
         spatialStory: treatment.grammar.spatial.join(" ").slice(0, 500),
-        composition: treatment.grammar.composition.slice(0, 32),
+        composition: directiveList(treatment.grammar.composition, construction.compositionRules.slice(0, 4)),
         camera: {
           framing: [shot.framing],
           lens: [shot.lensCharacter],
@@ -72,27 +74,31 @@ export function compileDirectorTreatment(input: unknown): DirectorCompilation {
         },
         materials: treatment.grammar.materials.slice(0, 32),
         motion: {
-          subject: treatment.grammar.motion.slice(0, 32),
+          subject: directiveList(treatment.grammar.motion, construction.motionRules.slice(0, 4)),
           environment: treatment.grammar.spatial.slice(0, 32),
           assembly: signature ? [treatment.signatureMoment.description.slice(0, 300)] : [],
           easing: [beat.intensity >= 8 ? "Use deliberate timing with a clear acceleration/deceleration story." : "Keep timing measured and subordinate to comprehension."],
-          continuity: treatment.grammar.transitions.slice(0, 32),
+          continuity: directiveList(treatment.grammar.transitions, construction.transitionRules.slice(0, 4)),
         },
         sound: treatment.grammar.sound.slice(0, 32),
-        interactionNotes: treatment.grammar.interaction.slice(0, 32),
-        transitionNotes: treatment.grammar.transitions.slice(0, 32),
+        interactionNotes: directiveList(treatment.grammar.interaction, construction.interactionRules.slice(0, 4)),
+        transitionNotes: directiveList(treatment.grammar.transitions, construction.transitionRules.slice(0, 4)),
         assetRequirements: treatment.assets
           .filter((asset) => asset.productionDecision === "use" || asset.productionDecision === "upgrade" || asset.productionDecision === "create")
           .slice(0, 12)
           .map((asset) => `${asset.label}: ${asset.productionDecision} — ${asset.role}`.slice(0, 300)),
-        implementationNotes: [
-          `Intensity target: ${beat.intensity}/10.`,
-          `Information density: ${beat.informationDensity}/10.`,
-          `Interaction level: ${beat.interactionLevel}/10.`,
-          ...(signature ? [`Protected signature moment: ${treatment.signatureMoment.name}.`] : []),
-        ],
-        mobileNotes: treatment.mobileInterpretation.slice(0, 32),
-        negativeDirectives: treatment.noGoRules.slice(0, 32),
+        implementationNotes: directiveList(
+          [
+            `Intensity target: ${beat.intensity}/10.`,
+            `Information density: ${beat.informationDensity}/10.`,
+            `Interaction level: ${beat.interactionLevel}/10.`,
+            `Construction patterns: ${construction.patternIds.join(", ")}.`,
+            ...(signature ? [`Protected signature moment: ${treatment.signatureMoment.name}.`] : []),
+          ],
+          construction.implementationRules.slice(0, 6),
+        ),
+        mobileNotes: directiveList(treatment.mobileInterpretation, construction.mobileRules.slice(0, 5)),
+        negativeDirectives: directiveList(treatment.noGoRules, construction.forbiddenPatterns.slice(0, 6)),
       },
       runtime: {
         motionPreset: runtimePreset,
@@ -124,19 +130,22 @@ export function compileDirectorTreatment(input: unknown): DirectorCompilation {
         "One primary subject per frame.",
         `Protect ${treatment.signatureMoment.name} as the highest-intensity moment.`,
       ],
-      compositionRules: treatment.grammar.composition.slice(0, 32),
+      compositionRules: directiveList(treatment.grammar.composition, construction.compositionRules),
       cameraLanguage: treatment.grammar.camera.slice(0, 32),
       lightingLanguage: treatment.grammar.lighting.slice(0, 32),
       materialLanguage: treatment.grammar.materials.slice(0, 32),
-      motionLanguage: treatment.grammar.motion.slice(0, 32),
-      transitionLanguage: treatment.grammar.transitions.slice(0, 32),
-      interactionLanguage: treatment.grammar.interaction.slice(0, 32),
+      motionLanguage: directiveList(treatment.grammar.motion, construction.motionRules),
+      transitionLanguage: directiveList(treatment.grammar.transitions, construction.transitionRules),
+      interactionLanguage: directiveList(treatment.grammar.interaction, construction.interactionRules),
       soundLanguage: treatment.grammar.sound.slice(0, 32),
       spatialRules: treatment.grammar.spatial.slice(0, 32),
-      continuityRules: [
-        "Carry a meaningful visual or spatial anchor across major transitions.",
-        "Do not introduce a new motion grammar without an emotional-state reason.",
-      ],
+      continuityRules: directiveList(
+        [
+          "Carry a meaningful visual or spatial anchor across major transitions.",
+          "Do not introduce a new motion grammar without an emotional-state reason.",
+        ],
+        construction.transitionRules,
+      ),
       realismRules: [
         "Physical subjects should preserve believable scale, light response and camera behavior.",
         "Stylization must be consistent with the locked thesis rather than arbitrary spectacle.",
@@ -144,16 +153,21 @@ export function compileDirectorTreatment(input: unknown): DirectorCompilation {
       assetRules: treatment.assets.slice(0, 32).map((asset) => `${asset.label}: ${asset.productionDecision} (${asset.quality})`.slice(0, 300)),
       typographyRules: treatment.grammar.typography.slice(0, 32),
       colorRules: treatment.grammar.color.slice(0, 32),
-      mobileRules: treatment.mobileInterpretation.slice(0, 32),
-      performanceRules: [
-        "Spend performance budget on the signature moment and hero assets before decorative effects.",
-        "Use progressive enhancement for optional immersive systems.",
-      ],
+      mobileRules: directiveList(treatment.mobileInterpretation, construction.mobileRules),
+      performanceRules: directiveList(
+        [
+          "Spend performance budget on the signature moment and hero assets before decorative effects.",
+          "Use progressive enhancement for optional immersive systems.",
+        ],
+        construction.patternIds.includes("prewarm-signature-systems")
+          ? ["Prewarm signature visual states before first scroll and compare cold-scroll against warm-scroll before calling the experience smooth."]
+          : [],
+      ),
       accessibilityRules: [
         "Narrative meaning must remain available with reduced motion.",
         "Primary navigation and conversion controls must remain keyboard-operable and legible.",
       ],
-      forbiddenPatterns: treatment.noGoRules.slice(0, 32),
+      forbiddenPatterns: directiveList(treatment.noGoRules, construction.forbiddenPatterns),
     },
     constraints: {
       approved: [
@@ -170,7 +184,13 @@ export function compileDirectorTreatment(input: unknown): DirectorCompilation {
   provenance.concept = "director.thesis";
   provenance.artDirection = "director.artBible + director.grammar";
   provenance.scenes = "director.emotionalArc + director.shotBible";
+  provenance.construction = "director-intelligence.constructionKnowledge";
   return { treatment, creativePlan, provenance };
+}
+
+function directiveList(...groups: string[][]) {
+  const values = groups.flat().map((value) => value.slice(0, 300));
+  return values.filter((value, index) => value && values.indexOf(value) === index).slice(0, 32);
 }
 
 function presetForIntensity(intensity: number): CreativeMotionPreset {
