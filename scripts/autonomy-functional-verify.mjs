@@ -66,7 +66,7 @@ try {
     const root=page.locator("[data-autonomy-runtime]").first();
     const probe=page.locator("[data-autonomy-probe]").first();
     await root.waitFor({ state:"visible",timeout:15000 });
-    await page.waitForFunction(()=>document.querySelector("[data-autonomy-probe]")?.getAttribute("data-profile-ready")==="true",{ timeout:12000 }).catch(()=>{});
+    await page.waitForFunction(()=>document.querySelector("[data-autonomy-probe]")?.getAttribute("data-profile-ready")==="true",null,{ timeout:12000 }).catch(()=>{});
     await page.evaluate(()=>document.fonts.ready);
     await page.waitForTimeout(600);
 
