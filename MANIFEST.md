@@ -75,7 +75,9 @@ Immersive Site Forge 5.0 is organized as a multi-project production platform rat
 - repository doctor
 - configuration tests
 - Claude Code operating contract
-- eight Claude command playbooks
+- immersive construction intelligence for composition, motion, transition, interaction, mobile translation and first-use performance
+- reference-deconstruction workflow that maps immersive precedents onto existing Forge systems before new dependencies
+- nine Claude command playbooks
 - project, scene and asset templates
 - GitHub CI and contribution templates
 
