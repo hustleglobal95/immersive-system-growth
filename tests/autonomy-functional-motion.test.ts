@@ -116,6 +116,7 @@ test("motion-sequence critic requests and responses stay schema constrained",()=
       maxHeroStep:0.2,
       maxCameraVelocityRatio:1.8,
       maxHeroVelocityRatio:1.5,
+      maxRuntimeCameraDrift:0.12,
     },
   });
   assert.equal(request.mode,"motion-sequence");
