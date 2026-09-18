@@ -648,6 +648,331 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
     avoid: ["Invented metrics.", "A wall of badges or statistics before the main proposition is legible."],
   },
   {
+    id: "interaction-as-thesis",
+    title: "Interaction expresses the concept",
+    signals: ["interaction", "cursor", "gesture", "magnetic", "choice", "switch", "drag", "story"],
+    composition: [
+      "Treat the primary interaction as part of the brand or narrative premise; the visual system should look as if it expects that action.",
+    ],
+    motion: [
+      "Let the interaction change a meaningful state of the subject, sentence, world or interface rather than only adding hover motion.",
+    ],
+    transitions: [
+      "If the interaction changes narrative state, make the transition reveal the consequence clearly before introducing another control.",
+    ],
+    interaction: [
+      "Define what the visitor causes. Prefer one memorable causal relationship over many decorative micro-interactions.",
+      "Use the same input to coordinate related visual, audio or content emphasis when they express one idea.",
+    ],
+    implementation: [
+      "Model the interaction as explicit state in Forge's interaction graph so DOM, WebGL and audio can respond deterministically.",
+    ],
+    mobile: [
+      "Translate the causal action to touch or scroll without changing what the interaction means.",
+    ],
+    avoid: ["Cursor effects with no brand/story reason.", "Several unrelated hover behaviors competing for attention."],
+  },
+  {
+    id: "multi-subscene-transition-budget",
+    title: "Budget transitions between heavy subscenes",
+    signals: ["subscene", "scene", "world", "transition", "3d", "webgl", "environment"],
+    composition: [
+      "Treat each heavy environment as a chapter in one experience and design a visible handoff so the visitor understands how one world becomes the next.",
+    ],
+    motion: [
+      "Schedule unload, preload, camera travel and material/environment changes around the transition rather than letting them collide unpredictably.",
+    ],
+    transitions: [
+      "Use overlap, occlusion, shared anchors or camera travel to hide asset swaps; transitions are both visual choreography and resource scheduling.",
+    ],
+    interaction: [],
+    implementation: [
+      "Preload the next scene's critical assets before the boundary and release previous-scene resources after the handoff has completed.",
+      "Do not keep multiple expensive worlds fully active merely to make transitions easier.",
+    ],
+    mobile: [
+      "Shorten overlap windows and reduce scene fidelity while preserving the same handoff logic.",
+    ],
+    avoid: ["Loading a heavy scene at the exact moment it becomes visible.", "Keeping every world resident for the entire experience."],
+  },
+  {
+    id: "context-layer-over-world",
+    title: "Context layers over an explorable world",
+    signals: ["hotspot", "card", "media", "audio", "explore", "world", "content", "annotation"],
+    composition: [
+      "Let spatial media carry place and mood while lightweight DOM cards or hotspots deliver explanation, proof and deeper context on demand.",
+    ],
+    motion: [
+      "Context panels should enter after the spatial subject is legible and leave without destroying the visitor's sense of position.",
+    ],
+    transitions: [],
+    interaction: [
+      "Hotspots should reveal information tied to a real location or subject in the scene, not function as generic floating buttons.",
+      "Offer a direct content path when the visitor does not want to explore spatially.",
+    ],
+    implementation: [
+      "Keep contextual content semantic and addressable in DOM; the WebGL trigger only opens or focuses that content.",
+    ],
+    mobile: [
+      "Increase hotspot hit areas and allow the same information to be reached through linear DOM navigation.",
+    ],
+    avoid: ["Essential information available only through precise 3D clicking.", "Floating labels with no spatial or narrative relationship."],
+  },
+  {
+    id: "simulated-expensive-lighting",
+    title: "Simulate expensive optics when perception is enough",
+    signals: ["reflection", "lighting", "environment", "realtime", "performance", "luxury", "metal", "glass"],
+    composition: [],
+    motion: [
+      "When the viewer mainly perceives changing light/reflection, transition among precomputed lighting states instead of solving the full lighting problem every frame.",
+    ],
+    transitions: [
+      "Blend lighting or reflection representations continuously with camera/subject state so the approximation is not visible as a mode switch.",
+    ],
+    interaction: [],
+    implementation: [
+      "Prefer baked light, environment maps, light probes or precomputed reflection states when they preserve the visual result at a fraction of realtime cost.",
+      "Reserve true realtime reflection/refraction for moments where the visitor can actually perceive the difference.",
+    ],
+    mobile: [
+      "Use the same visual logic with fewer/lower-resolution environment states and reduced update frequency.",
+    ],
+    avoid: ["Realtime optical effects chosen only because they are technically impressive.", "Visible lighting-state pops during camera movement."],
+  },
+  {
+    id: "authored-camera-corridor",
+    title: "Author camera as a constrained narrative corridor",
+    signals: ["camera", "spline", "film", "cinematic", "angle", "framing", "path", "shot"],
+    composition: [
+      "Design the set and subject around the camera's reachable corridor; every frame along the path should preserve a deliberate composition.",
+    ],
+    motion: [
+      "Use authored splines or shot-to-shot interpolation when framing is more important than free navigation.",
+      "Allow small visitor offsets only when they do not break the composition or reveal unprepared geometry.",
+    ],
+    transitions: [
+      "Camera path changes should correspond to narrative thresholds or changes in subject scale, not arbitrary orbiting.",
+    ],
+    interaction: [
+      "If users may offset the camera, constrain movement around the authored path rather than granting unrestricted free flight.",
+    ],
+    implementation: [
+      "For complex scenes, author splines and physical camera settings in the DCC tool and preserve those semantics in the web runtime.",
+    ],
+    mobile: [
+      "Retarget the corridor for portrait framing rather than scaling desktop camera coordinates.",
+    ],
+    avoid: ["Unrestricted orbit in a scene composed for filmic shots.", "Camera movement that exposes unart-directed back sides of the set."],
+  },
+  {
+    id: "camera-corridor-culling",
+    title: "Cull against the reachable camera volume",
+    signals: ["camera", "cull", "polygon", "geometry", "performance", "spline", "scene"],
+    composition: [],
+    motion: [],
+    transitions: [],
+    interaction: [],
+    implementation: [
+      "When the camera follows a constrained path, remove or simplify geometry that can never be seen from the reachable camera volume.",
+      "Build optimization around actual authored viewpoints instead of preserving full-scene geometry by default.",
+    ],
+    mobile: [
+      "Use an even tighter camera volume or stronger LOD policy on mobile if composition remains intact.",
+    ],
+    avoid: ["Shipping hidden backsides/interiors that no permitted camera can reveal.", "Culling based on one frame when the camera travels through a wider corridor."],
+  },
+  {
+    id: "source-structure-to-runtime-format",
+    title: "Convert authoring structure into a runtime format",
+    signals: ["houdini", "blender", "instancing", "data", "geometry", "asset", "compression", "pipeline"],
+    composition: [],
+    motion: [],
+    transitions: [],
+    interaction: [],
+    implementation: [
+      "Do not assume the DCC scene graph is the right delivery format. Flatten, quantize, instance or encode repeated structure into data shaped for the runtime.",
+      "Use GPU instancing or texture/data-driven reconstruction when repeated geometry would otherwise dominate download size or draw calls.",
+    ],
+    mobile: [
+      "Choose a smaller runtime dataset or lower instance density before changing the conceptual structure.",
+    ],
+    avoid: ["Shipping authoring metadata and redundant transforms that the web experience never uses.", "Duplicating identical geometry as separate meshes."],
+  },
+  {
+    id: "data-drives-world-state",
+    title: "Meaningful data drives the visual world",
+    signals: ["data", "api", "live", "timeline", "map", "globe", "metrics", "events"],
+    composition: [
+      "Place data where it changes the interpretation of the world rather than presenting it as detached dashboard chrome.",
+    ],
+    motion: [
+      "Map real changes to bounded visual parameters so activity feels alive without becoming noisy or unreadable.",
+    ],
+    transitions: [],
+    interaction: [
+      "Let visitors inspect or filter data at the spatial level where it is represented.",
+    ],
+    implementation: [
+      "Use real data when the visual story claims to show real activity; encode dense datasets in GPU-friendly buffers/textures instead of thousands of DOM nodes.",
+    ],
+    mobile: [
+      "Reduce visual density while preserving the same data truth and interaction semantics.",
+    ],
+    avoid: ["Fake live activity presented as real.", "One DOM element per dense spatial datum when the GPU can represent the field directly."],
+  },
+  {
+    id: "mixed-media-world",
+    title: "Build one world from intentionally mixed media",
+    signals: ["illustration", "sketch", "2d", "3d", "collage", "stylized", "hand-drawn", "mixed"],
+    composition: [
+      "Assign each medium a role—subject, atmosphere, interface, texture or annotation—so mixed-media work reads as one art direction.",
+    ],
+    motion: [
+      "Use motion style to bridge the mediums; the 2D and 3D elements should react to the same world rules even if rendered differently.",
+    ],
+    transitions: [
+      "Let one medium transform into or reveal another when the transition reinforces the project's concept.",
+    ],
+    interaction: [],
+    implementation: [
+      "Do not force 2D assets into photorealistic 3D; preserve their character through planes, shaders, cutouts, projection or compositing.",
+    ],
+    mobile: [
+      "Keep the medium contrast even if the 3D implementation is simplified.",
+    ],
+    avoid: ["A collage of unrelated visual techniques.", "Photoreal lighting applied to intentionally flat illustration without a reason."],
+  },
+  {
+    id: "choose-medium-by-capability",
+    title: "Choose the lightest medium that provides the required capability",
+    signals: ["video", "360", "webgl", "3d", "media", "performance", "mobile", "immersive"],
+    composition: [],
+    motion: [],
+    transitions: [],
+    interaction: [],
+    implementation: [
+      "Choose DOM when the need is layout and text, video when the need is authored cinematic motion, 360 media when presence matters without free geometry, shaders when the need is procedural material, and full 3D when perspective or spatial interaction requires it.",
+      "Do not promote an effect to full 3D when a lighter medium can provide the same perceived result.",
+    ],
+    mobile: [
+      "Substitute a lighter rendering medium when necessary while preserving the same composition, motion grammar and narrative role.",
+    ],
+    avoid: ["Using WebGL as a status symbol.", "Rebuilding deterministic video motion as realtime 3D with no interaction benefit."],
+  },
+  {
+    id: "timeline-as-exhibition",
+    title: "Turn chronology into a spatial exhibition",
+    signals: ["timeline", "history", "archive", "years", "anniversary", "museum", "chronology"],
+    composition: [
+      "Use chronology as the organizing spatial axis so media, proof and context feel like stops in one exhibition rather than cards in a feed.",
+    ],
+    motion: [
+      "Let travel through time change framing, density or environment; avoid identical animation at every date marker.",
+    ],
+    transitions: [
+      "Use year/era boundaries as meaningful scene transitions with a clear carried visual or narrative anchor.",
+    ],
+    interaction: [
+      "Provide direct navigation to important dates in addition to the immersive path.",
+    ],
+    implementation: [
+      "Keep archival content structured in data/CMS while the runtime maps that data into the spatial chronology.",
+    ],
+    mobile: [
+      "Flatten travel distance but preserve chronological ordering and direct date navigation.",
+    ],
+    avoid: ["A horizontal timeline that is only a stretched list.", "Making chronology immersive at the cost of findability."],
+  },
+  {
+    id: "gesture-gates-world",
+    title: "Use a gesture as the threshold only when it teaches the concept",
+    signals: ["gesture", "draw", "enter", "unlock", "threshold", "intro"],
+    composition: [
+      "Keep the entry state visually simple enough that the required gesture is obvious and feels intentional.",
+    ],
+    motion: [
+      "The completed gesture should directly seed or cause the first transformation so the visitor understands the relationship.",
+    ],
+    transitions: [
+      "Treat the gesture as a threshold into the world, not as a detached mini-game before the site.",
+    ],
+    interaction: [
+      "Validate semantic properties of the gesture—closure, direction, scale, speed—rather than comparing exact pointer coordinates.",
+    ],
+    implementation: [
+      "Always provide an accessible alternate entry method when a gesture may be difficult or unavailable.",
+    ],
+    mobile: [
+      "Retune tolerances for touch and preserve a simple alternate entry control.",
+    ],
+    avoid: ["Novelty gates that delay content without teaching the experience.", "Pixel-perfect gesture matching."],
+  },
+  {
+    id: "scroll-velocity-material-response",
+    title: "Separate narrative position from scroll velocity",
+    signals: ["velocity", "scroll", "shader", "blur", "speed", "field", "motion"],
+    composition: [],
+    motion: [
+      "Use absolute scroll progress to define where the story is and scroll velocity to modulate atmosphere, distortion, blur or energy.",
+      "Velocity response should decay smoothly back to the resting material state.",
+    ],
+    transitions: [],
+    interaction: [],
+    implementation: [
+      "Keep velocity as a secondary transient signal; it must not alter deterministic scene ownership or make reverse reconstruction ambiguous.",
+    ],
+    mobile: [
+      "Clamp velocity response more aggressively on touch to avoid spikes from flick gestures.",
+    ],
+    avoid: ["Using velocity as the only source of scene position.", "Unbounded shader energy from fast wheel/touch input."],
+  },
+  {
+    id: "mobile-medium-substitution",
+    title: "Preserve the motion grammar while changing the rendering medium",
+    signals: ["mobile", "video", "webgl", "fallback", "responsive", "touch"],
+    composition: [
+      "Keep subject scale, reading order and visual hierarchy consistent even when desktop and mobile use different rendering technology.",
+    ],
+    motion: [
+      "Match the timing and directional language of the desktop experience rather than treating mobile as a static fallback.",
+    ],
+    transitions: [],
+    interaction: [
+      "Replace unsupported or expensive interactions with touch/scroll equivalents that lead to the same state changes.",
+    ],
+    implementation: [
+      "A mobile video/image/DOM path is acceptable when it preserves the concept better than a degraded realtime scene.",
+    ],
+    mobile: [
+      "Choose substitution intentionally by device tier and asset budget; do not wait for runtime failure.",
+    ],
+    avoid: ["Calling a static poster equivalent to an interactive desktop scene when the interaction is central to the idea."],
+  },
+  {
+    id: "immersive-rational-duality",
+    title: "Pair emotional spatial storytelling with rational product proof",
+    signals: ["product", "luxury", "commerce", "information", "panel", "spec", "proof", "3d"],
+    composition: [
+      "Give the immersive subject its own visual stage and the rational product information its own quieter plane; connect them through deliberate transitions.",
+    ],
+    motion: [
+      "Move into proof mode by reducing camera/environment energy and increasing information stability.",
+    ],
+    transitions: [
+      "Use the subject, its silhouette, color or camera direction to bridge emotional and rational modes so they feel like one experience.",
+    ],
+    interaction: [
+      "Let high-intent users access product information directly without replaying the cinematic sequence.",
+    ],
+    implementation: [
+      "Keep specifications, prices and purchase controls semantic DOM even if the surrounding story is WebGL-heavy.",
+    ],
+    mobile: [
+      "Prioritize proof legibility while preserving at least one immersive product beat.",
+    ],
+    avoid: ["Specs floating unreadably inside a busy 3D world.", "A hard cut from spectacle to generic ecommerce template."],
+  },
+  {
     id: "prewarm-signature-systems",
     title: "Prewarm signature systems",
     signals: ["shader", "3d", "video", "particles", "postprocessing", "cinematic", "performance"],
