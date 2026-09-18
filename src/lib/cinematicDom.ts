@@ -10,6 +10,9 @@ export type CinematicPreset =
   | "headline-slide"
   | "headline-fracture"
   | "headline-drop"
+  | "headline-unfold"
+  | "headline-converge"
+  | "type-disperse"
   | "lede-words"
   | "lede-scatter"
   | "list-unfold"
@@ -24,7 +27,8 @@ export type CinematicPreset =
 /** Presets that carry primary copy, so they are allowed to animate accessible content. */
 const COPY_PRESETS = new Set<CinematicPreset>([
   "text-settle", "headline-reveal", "headline-words", "headline-chars", "headline-swing",
-  "headline-slide", "headline-fracture", "headline-drop", "lede-words", "lede-scatter",
+  "headline-slide", "headline-fracture", "headline-drop", "headline-unfold",
+  "headline-converge", "type-disperse", "lede-words", "lede-scatter",
   "list-unfold", "plate-rise", "section-collapse", "section-lift", "label-track", "copy-drift",
 ]);
 /** Presets whose targets are split into per-word or per-character boxes before animating. */
@@ -35,6 +39,8 @@ const SPLIT_PRESETS: Partial<Record<CinematicPreset, "word" | "char">> = {
   "headline-slide": "word",
   "headline-fracture": "char",
   "headline-drop": "char",
+  "headline-unfold": "char",
+  "headline-converge": "word",
   "lede-words": "word",
   "lede-scatter": "word",
 };
@@ -46,6 +52,10 @@ interface SplitTarget { element: HTMLElement; html: string }
  * original markup is restored on teardown -- gsap.context() reverts styles, not DOM surgery.
  */
 function splitText(element: HTMLElement, unit: "word" | "char") {
+  // Idempotent: a second cue on the same element reuses the boxes rather than rebuilding them
+  // and stranding the first cue's targets.
+  const existing = element.querySelectorAll<HTMLElement>(".forge-split__inner");
+  if (existing.length) return { parts: Array.from(existing), record: null };
   const html = element.innerHTML;
   const text = element.textContent ?? "";
   const fragment = document.createDocumentFragment();
@@ -106,7 +116,7 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
     for (const element of root.querySelectorAll<HTMLElement>(cue.selector)) {
       const split = splitText(element, unit);
       if (!split) continue;
-      splits.push(split.record);
+      if (split.record) splits.push(split.record);
       parts.push(...split.parts);
     }
     if (parts.length) splitParts.set(cue, parts);
@@ -231,6 +241,32 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
           yPercent: compact ? -7 : -14,
           rotateX: compact ? 3 : 7,
           duration: 1, ease: "power2.in", immediateRender: true,
+        });
+      } else if (cue.preset === "headline-unfold") {
+        // Each glyph turns in on its own vertical axis, so the line unfolds letter by letter.
+        timeline.fromTo(targets, {
+          rotateY: compact ? -64 : -96, opacity: 0, xPercent: 24,
+          transformPerspective: 760, transformOrigin: "0% 50%",
+        }, {
+          rotateY: 0, opacity: 1, xPercent: 0, duration: 1,
+          stagger: { amount: compact ? .44 : .78 }, ease: "power3.out", immediateRender: true,
+        });
+      } else if (cue.preset === "headline-converge") {
+        // Words arrive from far out on alternating sides and converge into the line.
+        timeline.fromTo(targets, {
+          xPercent: (index: number) => (index % 2 ? 1 : -1) * (compact ? 120 : 260),
+          opacity: 0, filter: "blur(16px)", scale: 1.12,
+        }, {
+          xPercent: 0, opacity: 1, filter: "blur(0px)", scale: 1, duration: 1,
+          stagger: { amount: compact ? .4 : .7, from: "edges" }, ease: "power4.out",
+          immediateRender: true,
+        });
+      } else if (cue.preset === "type-disperse") {
+        // The exit treatment. Opacity and blur only: the entrance timeline owns these tokens'
+        // transforms, and two GSAP timelines on one matrix contend.
+        timeline.fromTo(targets, { opacity: 1, filter: "blur(0px)" }, {
+          opacity: 0, filter: `blur(${compact ? 5 : 9}px)`, duration: 1,
+          stagger: { amount: compact ? .3 : .56 }, ease: "power2.in", immediateRender: true,
         });
       } else if (cue.preset === "list-unfold") {
         // Rows unfold from their own left edge, so the schedule builds line by line.

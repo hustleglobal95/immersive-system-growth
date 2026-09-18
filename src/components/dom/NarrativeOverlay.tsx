@@ -15,14 +15,14 @@ const CHAPTER_MOTION: Record<string, { label: CinematicPreset; headline: Cinemat
   // for a beat before the ring itself goes.
   parti: {
     label: "label-track", headline: "headline-words", lede: "lede-words", pace: .9,
-    collapse: "section-lift", collapseAt: [.52, .6],
+    collapse: "section-lift", collapseAt: [.56, .64],
   },
-  threshold: { label: "text-settle", headline: "headline-reveal", lede: "copy-drift", pace: .6, lead: .03 },
+  threshold: { label: "text-settle", headline: "headline-unfold", lede: "copy-drift", pace: 1, lead: .04 },
   living: { label: "label-track", headline: "headline-drop", lede: "lede-words", pace: 1, lead: .1, rows: "list-unfold", plates: "plate-rise" },
   material: { label: "label-track", headline: "headline-fracture", lede: "lede-scatter", pace: 1, lead: .1, rows: "list-unfold" },
   wellness: { label: "label-track", headline: "headline-swing", lede: "copy-drift", pace: .9 },
   studio: { label: "text-settle", headline: "headline-words", lede: "lede-scatter", pace: 1.1 },
-  horizon: { label: "label-track", headline: "headline-reveal", lede: "lede-words", pace: .72 },
+  horizon: { label: "label-track", headline: "headline-converge", lede: "lede-words", pace: 1 },
   inquiry: { label: "text-settle", headline: "headline-chars", lede: "copy-drift", pace: 1.24 },
 };
 const FALLBACK_MOTION = { label: "label-track", headline: "headline-words", lede: "lede-words", pace: 1 } as const;
@@ -54,8 +54,13 @@ const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
     { selector: scope + "[data-motion-aside]", range: [at(lead + .05), at(lead + .13)], preset: "copy-drift" },
     { selector: scope + "[data-motion-cta]", range: [at(lead + .06), at(lead + .14)], preset: "copy-drift" },
     {
+      selector: scope + "[data-motion-headline] .forge-split",
+      range: [at((motion.collapseAt?.[0] ?? .72) - .06), at((motion.collapseAt?.[1] ?? .8) - .05)],
+      preset: "type-disperse",
+    },
+    {
       selector: scope + "[data-motion-panel]",
-      range: [at(motion.collapseAt?.[0] ?? .68), at(motion.collapseAt?.[1] ?? .78)],
+      range: [at(motion.collapseAt?.[0] ?? .72), at(motion.collapseAt?.[1] ?? .8)],
       preset: motion.collapse ?? "section-collapse",
     },
   ];
