@@ -252,6 +252,188 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
     avoid: ["Hiding the immersive scene on mobile by default.", "Desktop camera coordinates reused unchanged in portrait."],
   },
   {
+    id: "immersive-without-webgl",
+    title: "Immersion without mandatory WebGL",
+    signals: ["editorial", "calm", "typography", "premium", "pedigree", "content", "story"],
+    composition: [
+      "Start with art direction, hierarchy, crop, overlap and whitespace; only introduce WebGL when it adds a capability the composition actually needs.",
+    ],
+    motion: [
+      "A restrained sequence of DOM/media reveals can be more immersive than a permanent 3D scene when the content depends on confidence, pedigree or editorial rhythm.",
+    ],
+    transitions: [
+      "Use media edges, tonal changes, sticky composition and controlled overlap before reaching for a full 3D transition.",
+    ],
+    interaction: [],
+    implementation: [
+      "Prefer the lightest Forge-native medium that can express the idea: DOM transforms and masks first, video or shader atmosphere second, full 3D when perspective/material/spatial continuity requires it.",
+    ],
+    mobile: [
+      "DOM-first immersive chapters should keep the same hierarchy and reading rhythm on mobile with reduced travel and overlap.",
+    ],
+    avoid: ["Adding WebGL merely to make a page qualify as immersive.", "Using technical complexity as a substitute for visual hierarchy."],
+  },
+  {
+    id: "single-world-under-interface",
+    title: "Single persistent world under interface",
+    signals: ["planet", "world", "environment", "persistent", "saas", "interface", "hero", "scene"],
+    composition: [
+      "Let one persistent spatial subject or world carry multiple chapters while semantic interface and copy change above it.",
+      "Add local detail to the same world before introducing unrelated hero objects.",
+    ],
+    motion: [
+      "Reframe, rotate, sink, raise or move the persistent world with narrative progress instead of remounting a new scene for every section.",
+    ],
+    transitions: [
+      "Use camera framing, lighting, atmosphere and object position to signal chapter changes while the world remains continuous.",
+    ],
+    interaction: [
+      "Pointer response should modify the persistent world subtly without taking ownership away from scroll progression.",
+    ],
+    implementation: [
+      "Keep the persistent scene on Forge's shared canvas and let DOM chapters sample the same normalized progress.",
+    ],
+    mobile: [
+      "Crop and reframe the world for portrait while preserving its continuity across chapters.",
+    ],
+    avoid: ["Mounting a separate 3D canvas per section.", "Replacing the central world with unrelated effects at every scroll boundary."],
+  },
+  {
+    id: "responsive-organic-backdrop",
+    title: "Responsive organic backdrop",
+    signals: ["organic", "flower", "fluid", "field", "cursor", "background", "living"],
+    composition: [
+      "Place the responsive organic system behind semantic typography so it provides atmosphere and depth without taking over the reading plane.",
+    ],
+    motion: [
+      "Use slow autonomous motion as the baseline and let visitor input perturb it locally rather than drive the entire frame directly.",
+    ],
+    transitions: [
+      "Fade or morph the field's energy, scale or color as a chapter handoff while preserving the same underlying system when continuity helps.",
+    ],
+    interaction: [
+      "Treat cursor position or velocity as one coherent force with damping and a clear return to rest.",
+    ],
+    implementation: [
+      "A shader or lightweight particle field is sufficient when the effect needs response and atmosphere but not full 3D geometry.",
+    ],
+    mobile: [
+      "Translate hover response into low-amplitude autonomous motion, scroll influence or touch position rather than leaving a dead effect.",
+    ],
+    avoid: ["Cursor-following noise on every decorative element.", "Putting high-frequency shader detail directly behind body copy."],
+  },
+  {
+    id: "scroll-reposition-not-reset",
+    title: "Scroll repositions instead of resetting",
+    signals: ["scroll", "persistent", "camera", "object", "planet", "product", "world"],
+    composition: [
+      "Treat consecutive sections as different framings of the same stage when a shared subject can maintain continuity.",
+    ],
+    motion: [
+      "Use scroll to change camera, subject position, crop and scale continuously; avoid resetting transforms at section boundaries.",
+    ],
+    transitions: [
+      "A chapter boundary may be expressed by crossing a framing threshold rather than fading one scene out and another in.",
+      "Large scroll jumps must resolve deterministically to the correct framing without replaying intermediate time-based animation.",
+    ],
+    interaction: [],
+    implementation: [
+      "Author the whole movement from normalized progress and deterministic motion tracks so forward, reverse and restored scroll positions agree.",
+    ],
+    mobile: [
+      "Retune path distance and framing per viewport but preserve the same sequence of spatial states.",
+    ],
+    avoid: ["Scene-local transform ownership that snaps at boundaries.", "Time-based transition playback detached from scroll position."],
+  },
+  {
+    id: "gpu-progress-transforms",
+    title: "GPU progress transforms",
+    signals: ["particles", "points", "shader", "scroll", "morph", "field", "logo"],
+    composition: [],
+    motion: [
+      "For large repeated systems, encode stable per-instance or per-particle attributes once and drive deformation from one normalized progress uniform.",
+    ],
+    transitions: [
+      "Morph large particle or repeated-geometry fields through GPU interpolation rather than per-object JavaScript loops.",
+    ],
+    interaction: [
+      "Pointer uniforms should remain bounded and shared; do not allocate or mutate thousands of vectors per event.",
+    ],
+    implementation: [
+      "Prefer vertex-shader transforms, instancing or merged geometry for repeated scroll-driven content when visual identity does not require independent CPU objects.",
+    ],
+    mobile: [
+      "Keep the same shader logic but reduce draw range, texture resolution, DPR or point count by device tier.",
+    ],
+    avoid: ["Per-frame CPU loops over large particle sets.", "Allocating temporary vectors or matrices inside the render loop."],
+  },
+  {
+    id: "adaptive-fidelity-not-removal",
+    title: "Adaptive fidelity, not concept removal",
+    signals: ["mobile", "performance", "3d", "particles", "postprocessing", "scene", "quality"],
+    composition: [],
+    motion: [
+      "Preserve the defining motion behavior across tiers while lowering render frequency, travel detail or simultaneous effects.",
+    ],
+    transitions: [],
+    interaction: [
+      "Bind pointer listeners only on devices that can use them and replace hover-only meaning with touch or scroll semantics.",
+    ],
+    implementation: [
+      "Use one device-quality decision source for DPR, frame budget, particles, postprocessing, shadows and interaction policy.",
+      "Gate rendering by visibility and hidden-tab state rather than deleting the authored scene from mobile.",
+    ],
+    mobile: [
+      "Reduce DPR, particles, postprocessing passes and frame budget before removing the subject or signature interaction.",
+    ],
+    avoid: ["Desktop-quality settings on every device.", "A static blank replacement where the immersive concept could be preserved more cheaply."],
+  },
+  {
+    id: "anchor-section-sets-system",
+    title: "Anchor section sets the system",
+    signals: ["section", "layout", "spacing", "motion", "system", "style", "compose"],
+    composition: [
+      "Choose the strongest or most distinctive chapter as the anchor for spacing, density, alignment and visual tension, then tune supporting chapters to belong to the same system.",
+    ],
+    motion: [
+      "Let the anchor chapter establish the primary motion character; supporting sections should vary intensity without introducing unrelated animation grammar.",
+    ],
+    transitions: [
+      "Align surrounding sections to the anchor's edges, rhythm or carried state so composition feels accumulated rather than pasted together.",
+    ],
+    interaction: [],
+    implementation: [
+      "Before adding a new section, identify which existing chapter sets the design system and inherit its tokens, timing character and spatial rules.",
+    ],
+    mobile: [
+      "Preserve the anchor chapter's hierarchy and motion character when simplifying surrounding sections.",
+    ],
+    avoid: ["Treating every section as a separate template.", "Introducing a new spacing or motion grammar for each block."],
+  },
+  {
+    id: "density-rhythm-and-silence",
+    title: "Density rhythm and visual silence",
+    signals: ["calm", "premium", "editorial", "gallery", "luxury", "pedigree", "story"],
+    composition: [
+      "Alternate dense evidence or imagery with quieter frames so the page has visual breathing room and a readable hierarchy of importance.",
+      "Use whitespace, stillness or low-detail fields as intentional pacing devices.",
+    ],
+    motion: [
+      "Reduce simultaneous motion between major peaks; a quiet chapter is an authored state, not unfinished space.",
+    ],
+    transitions: [
+      "Use tonal or density change as a reset before the next high-information or high-motion chapter.",
+    ],
+    interaction: [],
+    implementation: [
+      "Track chapter intensity explicitly so decorative effects do not accumulate until every viewport is equally busy.",
+    ],
+    mobile: [
+      "Mobile often needs even stronger density separation because fewer elements can coexist legibly in one frame.",
+    ],
+    avoid: ["Constant maximum density.", "Filling every quiet area with particles, badges or secondary copy."],
+  },
+  {
     id: "prewarm-signature-systems",
     title: "Prewarm signature systems",
     signals: ["shader", "3d", "video", "particles", "postprocessing", "cinematic", "performance"],
