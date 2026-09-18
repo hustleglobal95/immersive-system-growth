@@ -177,6 +177,7 @@ export function compileDirectorTreatment(input: unknown): DirectorCompilation {
           ? ["Prewarm signature visual states before first scroll and compare cold-scroll against warm-scroll before calling the experience smooth."]
           : [],
         constructionPlan.criticalBootStrategy,
+        construction.technicalVerification,
       ),
       accessibilityRules: [
         "Narrative meaning must remain available with reduced motion.",
