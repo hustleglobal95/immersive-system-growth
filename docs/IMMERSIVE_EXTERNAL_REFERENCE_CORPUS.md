@@ -4,9 +4,9 @@ Reviewed: **2026-09-18**
 
 This corpus expands Forge beyond GetLayers so Director does not overfit to one marketplace, one studio, one visual trend or one implementation style.
 
-It contains **84 public studio case studies, technical breakdowns and source studies** from Dogstudio, Lusion, makemepulse, Bonhomme, 14islands and Codrops.
+It contains **95 public studio case studies, technical breakdowns and source studies** from Dogstudio, Lusion, makemepulse, Bonhomme, 14islands and Codrops.
 
-Combined with the 49-template GetLayers corpus, Forge now has **133 immersive references** and **78 executable construction patterns**.
+Combined with the 49-template GetLayers corpus, Forge now has **144 immersive references** and **81 executable construction patterns**.
 
 ## What this corpus is for
 
@@ -98,7 +98,7 @@ The goal is **not** to copy a studio's exact visual identity, proprietary engine
 
 ## New construction intelligence extracted
 
-This expansion first added 15 patterns on top of the original 29, then the second research pass added 8 more. The current library contains **78 patterns**:
+This expansion first added 15 patterns on top of the original 29, then the second research pass added 8 more. The current library contains **81 patterns**:
 
 1. **interaction-as-thesis**
 2. **multi-subscene-transition-budget**
@@ -179,6 +179,28 @@ This pass adds construction knowledge for:
 - gamified progression with a direct skip path.
 
 The important principle is that these are **capability decisions**, not dependency recommendations. Forge should know when a technique is appropriate and express it with its existing runtime where possible.
+
+### Third wave: official studio process evidence
+
+The aggressive pass then widened beyond Codrops-heavy technical material with official studio case studies from **Unseen Studio, Hello Monday and UNIT9**:
+
+- **Superlist** — hidden-surface culling in Houdini, baked animation and compact matcap materials.
+- **Letter** — a deliberate choice of scroll-linked pre-rendered sequences over realtime 3D where offline material fidelity mattered more.
+- **BlueYard** — Houdini particle motion converted into compressed texture/data formats for WebGL.
+- **Quai Network** — a building/city construction metaphor used as the product narrative itself.
+- **Dala.AI** — one persistent particle language morphs between metaphors for fragmented knowledge.
+- **Contra** — report data becomes interactive 3D evidence instead of decorative WebGL.
+- **Lewa House** — a destination map remains immersive on mobile rather than being removed.
+- **Google Cloud Infrastructure** — repeated infrastructure is instanced, models are simplified through browser iteration, and parse cost is treated as an asset-budget concern.
+- **Bang & Olufsen / See Yourself in Sound** — profile data is normalized into an art-directed realtime avatar with a manual fallback and shareable output.
+- **Lightsaber Escape** — a phone becomes a realtime companion controller for the desktop spatial world.
+- **Volkswagen Virtual Test Drive** — 360 media and WebGL are mixed so exploration reveals concrete vehicle features and then hands into configuration.
+
+This adds three more construction rules:
+
+- **pre-rendered-sequence-for-fidelity** — choose offline-rendered frames when fixed cinematography/material quality is the requirement;
+- **cross-device-companion-control** — use a second device only when its sensors/control role meaningfully improves the interaction;
+- **personalization-to-render-state** — map user/profile data into bounded art-directed render parameters with a non-connected fallback.
 
 ## Important cross-studio lessons
 
@@ -284,7 +306,7 @@ This is exactly the level Forge should keep accumulating: not another dependency
 
 ## Retrieval policy
 
-Director now retrieves from the combined **133-reference corpus**, not the GetLayers set alone.
+Director now retrieves from the combined **144-reference corpus**, not the GetLayers set alone.
 
 Retrieval deliberately limits source monoculture: when enough candidates exist, no single source host can dominate the selected precedent set. The Director can therefore combine, for example:
 
