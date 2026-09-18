@@ -4,7 +4,7 @@ Forge already has the runtime systems required to build high-end immersive websi
 
 The objective is not to add another animation library or replace Forge's cinematic architecture. The objective is to make Director understand how strong immersive sites are composed so it can choose the right existing Forge systems with much less trial and error.
 
-The current research base contains **155 evidence-graded references** and **84 executable construction patterns**. Reference selection is source-diversified and recurring patterns are ranked by evidence strength plus independent source support rather than by a single favorite studio.
+The current research base contains **170 evidence-graded references** and **92 executable construction patterns**. Reference selection is source-diversified and recurring patterns are ranked by evidence strength plus independent source support rather than by a single favorite studio.
 
 ## Operating rule
 
