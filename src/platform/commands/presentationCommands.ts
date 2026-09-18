@@ -155,9 +155,11 @@ class RestoreScenePresentationCommand implements ForgeCommand<
   }
 }
 
-function applyNumber<T extends Record<string,number>>(target:T,key:keyof T,delta:number|undefined,min:number,max:number,adjusted:string[]) {
+function applyNumber(target:Record<string,unknown>,key:string,delta:number|undefined,min:number,max:number,adjusted:string[]) {
   if(typeof delta!=="number" || delta===0) return;
-  target[key]=clamp(target[key]+delta,min,max) as T[keyof T];
-  adjusted.push(String(key));
+  const current=target[key];
+  if(typeof current!=="number") return;
+  target[key]=clamp(current+delta,min,max);
+  adjusted.push(key);
 }
 function clamp(value:number,min:number,max:number){ return Math.max(min,Math.min(max,value)); }
