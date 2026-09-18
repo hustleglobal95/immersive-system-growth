@@ -83,6 +83,11 @@ export function ProductionStudioWorkbench() {
     setGuidedOpen(false);
     setGuideDismissed(true);
     try { window.localStorage.setItem("forge-studio-guided-first-run-v1", "seen"); } catch { /* storage can be blocked */ }
+    queueMicrotask(() => document.getElementById("studio-guided-build-button")?.focus());
+  };
+  const closeCommandPalette = () => {
+    setCommandPaletteOpen(false);
+    queueMicrotask(() => document.querySelector<HTMLButtonElement>(".production-command-shortcut")?.focus());
   };
 
   const selectScene = (index: number) => {
@@ -275,7 +280,7 @@ export function ProductionStudioWorkbench() {
         event.preventDefault();
         setCommandPaletteOpen(true);
       } else if (event.key === "Escape") {
-        setCommandPaletteOpen(false);
+        closeCommandPalette();
       }
     };
     window.addEventListener("keydown", onKeyDown);
@@ -320,7 +325,7 @@ export function ProductionStudioWorkbench() {
     else if (value.includes("clear motion") || value.includes("reset motion")) resetSceneMotion();
     else setNotice("Command not matched. Try Guided Build, Creative Agent, Ship, architectural build, product hero, add scene, or reset motion.");
     setCommand("");
-    setCommandPaletteOpen(false);
+    closeCommandPalette();
   };
   const runCommand = () => runCommandValue(command);
 
@@ -346,7 +351,7 @@ export function ProductionStudioWorkbench() {
           {workspaces.map((item) => <button key={item} type="button" aria-current={workspace === item ? "page" : undefined} onClick={() => { setWorkspace(item); setAdvanced(item !== "Create"); }}>{item}</button>)}
         </nav>
         <div className="production-top-actions">
-          <button type="button" className="production-guided-button" onClick={() => setGuidedOpen(true)}><span>Guided Build</span><strong>{workflow.completed}/6</strong></button>
+          <button id="studio-guided-build-button" type="button" className="production-guided-button" onClick={() => setGuidedOpen(true)}><span>Guided Build</span><strong>{workflow.completed}/6</strong></button>
           <span className="production-status" data-valid={!draft.validation.length}><i />{draft.validation.length ? `${draft.validation.length} issue` : "Ready"}</span>
           <details className="production-assist"><summary>Assist</summary><div><Link href="/studio/agent"><strong>Creative Agent</strong><span>Turn the idea into a production strategy.</span></Link><Link href="/director"><strong>Director</strong><span>Critique and strengthen the creative direction.</span></Link><Link href="/studio/assets/create"><strong>Asset Creator</strong><span>Create a missing image, video or 3D asset.</span></Link></div></details>
           <details><summary>Project</summary><div><button type="button" onClick={() => setNewProjectOpen(true)}>New project</button><button type="button" onClick={() => importRef.current?.click()}>Import</button><button type="button" onClick={draft.reset}>Reset draft</button></div></details>
@@ -400,9 +405,9 @@ export function ProductionStudioWorkbench() {
         </div>
       )}
 
-      {commandPaletteOpen && <div className="production-command-palette-backdrop" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) setCommandPaletteOpen(false); }}>
+      {commandPaletteOpen && <div className="production-command-palette-backdrop" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) closeCommandPalette(); }}>
         <section className="production-command-palette" role="dialog" aria-modal="true" aria-labelledby="command-palette-title">
-          <header><div><span>FORGE COMMAND</span><h2 id="command-palette-title">Go anywhere. Do anything.</h2></div><button type="button" aria-label="Close command palette" onClick={() => setCommandPaletteOpen(false)}>×</button></header>
+          <header><div><span>FORGE COMMAND</span><h2 id="command-palette-title">Go anywhere. Do anything.</h2></div><button type="button" aria-label="Close command palette" onClick={closeCommandPalette}>×</button></header>
           <form onSubmit={(event) => { event.preventDefault(); runCommandValue(command); }}><input autoFocus aria-label="Search Forge commands" value={command} onChange={(event) => setCommand(event.target.value)} placeholder="Try “ship”, “Creative Agent”, “add scene”, “product hero”…" /><kbd>ESC</kbd></form>
           <div className="production-command-groups">
             <section><span>NAVIGATE</span><button type="button" onClick={() => runCommandValue("create workspace")}>Create</button><button type="button" onClick={() => runCommandValue("motion workspace")}>Motion</button><button type="button" onClick={() => runCommandValue("interact")}>Interact</button><button type="button" onClick={() => runCommandValue("assets")}>Assets</button><button type="button" onClick={() => runCommandValue("ship")}>Ship</button></section>
