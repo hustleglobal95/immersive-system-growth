@@ -35,6 +35,9 @@ Build cinematic, spatial, interactive websites that feel like one continuous exp
 25. Reference-driven immersive work must deconstruct composition, typography, depth, motion, continuity, interaction, DOM/WebGL roles, mobile translation and first-use performance before implementation. Consult `docs/IMMERSIVE_CONSTRUCTION_INTELLIGENCE.md` and map the principles to existing Forge systems before proposing a new dependency.
 26. Short-prompt autonomy must compile an evidence-aware brief before Director runs. Do not silently replace unknown project type, audience, conversion intent or brand truth with high-confidence generic defaults.
 27. Autonomous repair uses forced optimization: a candidate may replace the incumbent only after hard gates pass and comparative review establishes improvement. Newer output is not automatically better.
+28. Visual Director repairs must stay inside registered reversible Forge commands. Do not let autonomous visual repair rewrite scene structure, semantic copy, CTA identity, scene ranges or factual claims.
+29. Incumbent and candidate visual comparisons must use the same review surface, viewport, progress state and dimensions. Cross-surface A/B judgments are invalid.
+30. Without a configured comparative visual judge, Forge must fail closed and keep the incumbent.
 
 ## Before implementation
 

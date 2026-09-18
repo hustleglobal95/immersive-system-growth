@@ -84,6 +84,8 @@ Immersive Site Forge 6.0 is organized as a multi-project production platform rat
 - eight-layer hierarchy intelligence spanning strategy, narrative, section, information, visual, interaction, motion/spatial and semantic/accessibility priority
 - autonomy foundation with grounded short-prompt brief inference, decision-time construction guidance, five autonomy levels, deterministic render-review plans, functional verification contracts and forced-improvement candidate selection
 - 30-case one-line commercial prompt benchmark enforced by `npm run check`
+- Visual Director with specialist critic contracts, isolated incumbent/candidate preview rendering, bounded reversible presentation repair, reversed-order pairwise judging and forced-optimization acceptance
+- end-to-end local autonomy repair loop that writes accepted candidates as artifacts without overwriting checked-in production config
 - nine Claude command playbooks
 - project, scene and asset templates
 - GitHub CI and contribution templates

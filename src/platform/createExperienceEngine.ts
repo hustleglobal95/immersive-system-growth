@@ -6,6 +6,7 @@ import { registerSceneCommands } from "@/src/domain/scene/registerSceneCommands"
 import { ReplaceExperienceCommand } from "@/src/domain/project/commands";
 import { ApplyMotionArchetypeCommand, ResetSceneMotionCommand } from "@/src/platform/commands/motionCommands";
 import { ApplyCameraChoreographyCommand } from "@/src/platform/commands/cameraCommands";
+import { AdjustScenePresentationCommand, type ScenePresentationAdjustment } from "@/src/platform/commands/presentationCommands";
 import { motionArchetypeCatalog, type MotionArchetypeName } from "@/src/platform/motionArchetypes";
 import { cameraChoreographyCatalog, type CameraChoreographyName } from "@/src/platform/cameraChoreography";
 import { createDefaultCapabilityRegistry } from "@/src/platform/defaultCapabilities";
@@ -33,6 +34,32 @@ export function createExperienceEngine(initialState: ExperienceConfig, options: 
         reason: { type: "string", minLength: 1, maxLength: 240, description: "Optional audit reason for replacing the experience." },
       },
     },
+  });
+  commands.register("scene.adjustPresentation", (input) => {
+    return new AdjustScenePresentationCommand(input as ScenePresentationAdjustment);
+  }, {
+    label: "Adjust scene presentation",
+    description: "Apply a bounded reversible Visual Director repair to lighting, post, hero framing or media framing.",
+    category: "visual", impact: "local", approval: "auto", reversible: true, agentVisible: true,
+    inputSchema: {
+      type: "object", required: ["sceneId"],
+      properties: {
+        sceneId: sceneIdField,
+        exposureDelta: { type: "number", minimum: -0.4, maximum: 0.4 },
+        ambientDelta: { type: "number", minimum: -2, maximum: 2 },
+        keyDelta: { type: "number", minimum: -5, maximum: 5 },
+        rimDelta: { type: "number", minimum: -5, maximum: 5 },
+        bloomDelta: { type: "number", minimum: -0.5, maximum: 0.5 },
+        vignetteDelta: { type: "number", minimum: -0.3, maximum: 0.3 },
+        heroScaleMultiplier: { type: "number", minimum: 0.75, maximum: 1.25 },
+        heroXDelta: { type: "number", minimum: -1.5, maximum: 1.5 },
+        heroYDelta: { type: "number", minimum: -1.5, maximum: 1.5 },
+        mediaXDelta: { type: "number", minimum: -20, maximum: 20 },
+        mediaYDelta: { type: "number", minimum: -20, maximum: 20 },
+        mobileMediaXDelta: { type: "number", minimum: -20, maximum: 20 },
+        mobileMediaYDelta: { type: "number", minimum: -20, maximum: 20 }
+      }
+    }
   });
   commands.register("motion.applyArchetype", (input) => {
     const value = input as { sceneId: string; archetype: MotionArchetypeName };

@@ -2,6 +2,8 @@
 
 ## 6.0.0
 
+- Added Forge Visual Director v1: specialist rendered-frame critique, bounded reversible presentation repair, isolated A/B preview rendering, reversed-order pairwise judging and fail-closed forced optimization.
+- Added the end-to-end `autonomy:repair-loop` workflow; accepted candidates are emitted as artifacts rather than silently replacing production config.
 - Added Forge Autonomy v1: evidence-aware short-prompt inference, decision-time guidance routing, five autonomy levels, deterministic render/functional review contracts and forced-optimization candidate acceptance.
 - Added a 30-case commercial one-line prompt benchmark and made it part of the full Forge check gate.
 - Added Forge Director immersive construction intelligence with 196 evidence-graded references, 98 executable construction patterns and 16 primary technical doctrine groups.
