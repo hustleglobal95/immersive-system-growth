@@ -9,13 +9,58 @@ This corpus exists to make Forge better at **constructing** premium immersive we
 Every reference has an explicit evidence level:
 
 - `catalog` — public catalog confirms only name/category/access. No visual or technical traits are invented.
+- `visual-preview` — the public GetLayers preview still was inspected directly. Only visible composition/material/typography traits are recorded; motion and implementation are not inferred from a still.
 - `public-description` — a public layer description supports construction observations.
 - `public-case-study` — an independent public build report supports observations.
 - `technical-reference` — public technical documentation identifies implementation patterns associated with the reference.
 
-Only records with supported observations and transferable lessons can influence Director construction decisions.
+Only records with supported observations and transferable lessons can influence Director construction decisions. The current corpus therefore gives Director evidence-backed construction access to 48 template previews while leaving the one unresolved preview out of the decision loop.
 
 This prevents a catalog thumbnail or name from turning into made-up design intelligence.
+
+## Visual review coverage
+
+Forge now carries a direct visual deconstruction of **48 of the 49 current public GetLayers template previews**.
+
+The review covers every visible public template preview except **Northwall**. Its public preview image endpoint returned a cache miss during this pass, so Northwall deliberately remains `catalog` evidence rather than receiving guessed construction traits.
+
+The 48 reviewed previews are not treated as proof of hidden implementation. A static still can establish:
+
+- composition and negative-space strategy;
+- subject scale and cropping;
+- typography/media overlap;
+- visible depth planes and occlusion;
+- location of proof, CTA and navigation;
+- material / atmospheric language;
+- whether the frame is DOM/editorial, image/video-led, object-led or procedural-field-led.
+
+A still **cannot** establish:
+
+- scroll timing;
+- pointer mechanics;
+- shader implementation;
+- exact library choice;
+- performance architecture;
+- reverse-scroll behavior.
+
+Those claims require public descriptions, technical references or direct behavioral inspection.
+
+### Recurring visual patterns found across the 48 previews
+
+The visual pass added or reinforced these transferable construction ideas:
+
+- **subject occludes display type** — visible in AI Creator, Marcus Vane, AI Studio, Clarix and related portrait/object compositions;
+- **atmosphere as layout** — House, Longplay, Altitude, Lumea, Halcyon and several spatial product stages use the world itself to determine copy placement;
+- **edge utility around a central spectacle** — Vesper, Stride, Auralis, Noema, GringX, Stackside and others push proof/CTA outward while one visual owns the center;
+- **technical chrome as world language** — Kimi, Artefakt, Codescan, Fromzero, Evolve, Negantropy and Neural Monitor use grids/HUD/status elements as one coherent framing system;
+- **procedural field as hero** — Vesper, New Era, Auralis, Noema, Helion, Evolve, Negantropy, Vexon, Creative Studio, Neural Monitor and Flowstate rely on one large field/form rather than many unrelated effects;
+- **object + prop depth staging** — Soda, GringX and related product compositions build depth with one authority object plus a few supporting forms;
+- **small subject / large environment** — House, Wanderlust and Altitude create cinematic scale by letting environment dominate;
+- **split-stage editorial composition** — Laocoon, Dringle, Kai Nomura and other layouts pair a quiet information plane with a higher-energy visual plane;
+- **embedded proof inside the hero** — Stride, Stride Nine, Stackside, Creative Studio, Altitude and others make metrics part of the composition rather than postponing credibility to a later card grid;
+- **immersion without mandatory WebGL** — Baseline, Halden, Kai Nomura and other strongly art-directed frames demonstrate that typography, crop, image scale and pacing can carry premium immersion on their own.
+
+The executable observations live in `src/platform/director-intelligence/referenceCorpus.ts`. Director retrieves from them by project type and construction signals, then maps their lessons to Forge-native systems.
 
 ## Current GetLayers template catalog
 
