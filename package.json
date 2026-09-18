@@ -84,7 +84,8 @@
     "visual:baseline:update": "node scripts/visual-regression.mjs --update",
     "performance:audit": "node --import tsx scripts/performance-audit.mjs",
     "release:report": "node --import tsx scripts/release-report.mjs",
-    "experience:modes:audit": "node --import tsx scripts/experience-mode-audit.mjs"
+    "experience:modes:audit": "node --import tsx scripts/experience-mode-audit.mjs",
+    "verify": "bash scripts/verify.sh"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "5.3.0",

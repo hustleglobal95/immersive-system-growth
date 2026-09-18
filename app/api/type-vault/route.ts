@@ -18,12 +18,27 @@ interface FontsourceFont {
 
 export async function GET() {
   try {
-    const response = await fetch("https://api.fontsource.org/v1/fonts", {
-      headers: { accept: "application/json" },
-      next: { revalidate: 86400 },
-    });
-    if (!response.ok) throw new Error(`Fontsource returned ${response.status}`);
-    const data = (await response.json()) as FontsourceFont[];
+    // Bounded, per the contract: a remote endpoint gets a timeout, a redirect refusal and a
+    // size ceiling. Without them a slow or hostile response holds this route open indefinitely.
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5_000);
+    let payload: string;
+    try {
+      const response = await fetch("https://api.fontsource.org/v1/fonts", {
+        headers: { accept: "application/json" },
+        next: { revalidate: 86400 },
+        signal: controller.signal,
+        redirect: "error",
+      });
+      if (!response.ok) throw new Error(`Fontsource returned ${response.status}`);
+      const size = Number(response.headers.get("content-length") ?? 0);
+      if (Number.isFinite(size) && size > 4_000_000) throw new Error("Fontsource response too large");
+      payload = await response.text();
+      if (payload.length > 4_000_000) throw new Error("Fontsource response too large");
+    } finally {
+      clearTimeout(timer);
+    }
+    const data = JSON.parse(payload) as FontsourceFont[];
     const fonts = data
       .filter((font) => font.type !== "icons")
       .map((font) => ({
