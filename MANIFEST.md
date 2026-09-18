@@ -75,7 +75,7 @@ Immersive Site Forge 5.0 is organized as a multi-project production platform rat
 - repository doctor
 - configuration tests
 - Claude Code operating contract
-- immersive construction intelligence backed by 155 evidence-graded references and 84 reusable construction patterns for composition, motion, camera, interaction, mobile translation and first-use performance
+- immersive construction intelligence backed by 170 evidence-graded references and 92 reusable construction patterns for composition, motion, camera, interaction, mobile translation and first-use performance
 - seven primary-source technical doctrines for shader/texture prewarm, demand rendering, video-frame sync, worker canvas isolation, shared GSAP timing, hot-path setters and refresh-rate-independent motion
 - reference-deconstruction workflow that maps immersive precedents onto existing Forge systems before new dependencies
 - evidence-weighted, source-diverse precedent retrieval plus a reference corpus integrity audit
