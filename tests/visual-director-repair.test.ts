@@ -85,6 +85,32 @@ test("Visual Director turns high-confidence findings into a bounded candidate",(
   assert.deepEqual(applied.candidate.hotspots,initial.hotspots);
 });
 
+
+
+test("multiple Visual Director findings clamp combined repair deltas to command limits",()=>{
+  const reviewPlan=buildRenderReviewPlan(initial,2);
+  const capture=reviewPlan.captures.find((item)=>item.viewport==="desktop")!;
+  const findings=[0,1,2,3].map((index)=>({
+    id:"bright-"+index,
+    critic:"composition" as const,
+    captureId:capture.id,
+    severity:"major" as const,
+    finding:"The hero is washed out by harsh highlights and the frame is too bright.",
+    evidence:["Highlight detail is visibly clipped."],
+    affectedSystems:["lighting","composition"],
+    repair:"Lower exposure and bloom while preserving the product reveal.",
+    confidence:0.9,
+  }));
+  const plan=planVisualRepairs({ findings,reviewPlan,experience:initial });
+  const presentation=plan.commands.find((command)=>command.type==="scene.adjustPresentation");
+  assert.ok(presentation);
+  const input=presentation!.input as { exposureDelta?:number; bloomDelta?:number };
+  assert.ok((input.exposureDelta ?? 0) >= -0.4);
+  assert.ok((input.bloomDelta ?? 0) >= -0.5);
+  const applied=applyVisualRepairPlan(initial,plan);
+  assert.equal(applied.ok,true,applied.errors.join("; "));
+});
+
 test("unmapped visual blockers prevent autonomous candidate generation",()=>{
   const reviewPlan=buildRenderReviewPlan(initial,3);
   const capture=reviewPlan.captures[0];
