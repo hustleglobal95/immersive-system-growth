@@ -2,6 +2,7 @@ import type { DirectorTreatment } from "@/src/platform/directorSchema";
 import { immersiveReferenceCorpus, retrieveImmersiveReferences } from "@/src/platform/director-intelligence/referenceCorpus";
 import { doctrineForPatterns } from "@/src/platform/director-intelligence/technicalDoctrine";
 import { failureLessonsForTreatment } from "@/src/platform/director-intelligence/failureKnowledge";
+import { buildReferenceLensCoverage, type ImmersiveReferenceLensCoverage } from "@/src/platform/director-intelligence/constructionLenses";
 
 export interface ImmersiveConstructionPattern {
   id: string;
@@ -2291,6 +2292,132 @@ export const immersiveConstructionPatterns: ImmersiveConstructionPattern[] = [
     avoid: ["Maximum WebGL intensity on every route.", "Flattening visionary chapters into the same quiet template used for dense information."],
   },
   {
+    id: "dom-proxy-spatial-alignment",
+    title: "Use semantic DOM proxies to align spatial rendering",
+    signals: ["dom", "webgl", "alignment", "proxy", "scroll", "viewport", "image", "card"],
+    composition: [
+      "Let semantic DOM own layout and use measured proxy elements to place matching WebGL objects, so editorial composition remains accessible and responsive.",
+      "Treat DOM and WebGL as two renderers of one composition rather than independently eyeballing their positions.",
+    ],
+    motion: [
+      "Derive spatial position from stable layout measurements plus the shared scroll coordinate instead of forcing layout reads every animation frame.",
+    ],
+    transitions: [
+      "When a DOM item becomes a spatial transition subject, preserve the same measured bounds/anchor through the handoff.",
+    ],
+    interaction: [
+      "Connect pointer events to the semantic DOM region that owns the spatial object so hit areas remain predictable and accessible.",
+    ],
+    implementation: [
+      "Measure stable proxy bounds on mount/reflow, update them through ResizeObserver or explicit layout invalidation, and combine them with the shared scroll state.",
+      "Use one persistent canvas and viewport/scissor regions when many DOM-owned components need separate spatial cameras or materials.",
+    ],
+    mobile: [
+      "Re-measure against the authored mobile layout rather than scaling desktop proxy coordinates.",
+    ],
+    avoid: ["Calling getBoundingClientRect every frame for every spatial item.", "Separate DOM and WebGL layouts that drift after fonts, CMS content or breakpoints change."],
+  },
+  {
+    id: "screen-space-effect-substitution",
+    title: "Replace geometry-heavy deformation with screen-space math when true depth is unnecessary",
+    signals: ["bulge", "distortion", "warp", "push", "shader", "deformation", "tactile", "performance"],
+    composition: [
+      "Preserve the same perceived tactile deformation while choosing the representation that best matches what the camera can actually reveal.",
+    ],
+    motion: [
+      "Drive the screen-space deformation from the same pointer/press impulse and falloff curve the heavier geometry version would have used.",
+    ],
+    transitions: [],
+    interaction: [
+      "Use screen-space distortion when the visitor needs responsive tactile feedback but not changed silhouette, self-occlusion or parallax from true displaced geometry.",
+    ],
+    implementation: [
+      "Prefer fragment/UV or lightweight vertex deformation over dense CPU-updated geometry when the visible result is fundamentally image-space.",
+      "Escalate back to real geometry only when silhouette, lighting, occlusion or viewpoint changes make the difference perceptible.",
+    ],
+    mobile: [
+      "Reduce resolution or deformation frequency before removing the tactile response.",
+    ],
+    avoid: ["Subdividing large geometry solely to create a 2D bulge.", "Claiming screen-space distortion is equivalent when the camera exposes missing depth cues."],
+  },
+  {
+    id: "bounded-parametric-character-system",
+    title: "Create many identities from one optimized character system",
+    signals: ["character", "avatar", "customizer", "fur", "rig", "variation", "personalization", "generator"],
+    composition: [
+      "Keep one recognizable character silhouette/rig as the continuity anchor while bounded parameters create visual individuality.",
+    ],
+    motion: [
+      "Reuse a curated animation vocabulary so variation comes from character state and styling rather than duplicated animation infrastructure.",
+    ],
+    transitions: [
+      "Parameter changes should settle into a stable recognizable character state before the next narrative beat.",
+    ],
+    interaction: [
+      "Expose a small meaningful parameter set—shape, material, color, accessories, mood or energy—instead of raw engine controls.",
+    ],
+    implementation: [
+      "Share rig, base geometry/material logic and animation clips across variants; merge or instance submeshes/material regions where independent ownership is unnecessary.",
+      "Keep the parameter space bounded enough that every generated state remains art-directed and performant.",
+    ],
+    mobile: [
+      "Reduce fur/material complexity and animation concurrency while preserving the selected identity and silhouette.",
+    ],
+    avoid: ["A unique heavy mesh/material stack for every cosmetic variation.", "Unbounded randomization that produces visually broken or off-brand characters."],
+  },
+  {
+    id: "remote-rendered-fidelity",
+    title: "Remote-render only when local delivery cannot satisfy the required capability",
+    signals: ["pixel streaming", "unreal", "remote render", "stream", "high fidelity", "simulation", "cloud"],
+    composition: [
+      "Keep the web interface and interaction model understandable even if the high-fidelity visual stream is delayed or unavailable.",
+    ],
+    motion: [
+      "Budget network latency into interaction design; do not present remote-rendered controls as if they were zero-latency local manipulation.",
+    ],
+    transitions: [
+      "Gate entry into the streamed mode on connection/readiness and provide a coherent local fallback or alternate representation.",
+    ],
+    interaction: [
+      "Use remote rendering for visual/simulation capabilities that genuinely cannot run acceptably on target devices, not as a shortcut around web optimization.",
+    ],
+    implementation: [
+      "Treat streaming bandwidth, input round-trip latency, concurrency and server cost as part of the experience budget.",
+      "Keep semantic UI, navigation and fallback content local even when the signature simulation is streamed.",
+    ],
+    mobile: [
+      "Test real cellular latency/bandwidth and provide a lighter local path when streaming quality cannot be guaranteed.",
+    ],
+    avoid: ["Pixel streaming a scene that could run locally with sensible optimization.", "Making essential content inaccessible when the remote session fails."],
+  },
+  {
+    id: "branching-authored-film",
+    title: "Turn authored film into an explicit interactive state graph",
+    signals: ["film", "video", "choice", "branch", "interactive film", "cinematic", "decision"],
+    composition: [
+      "Keep the authored cinematography visually dominant while controls appear only at decision points where the visitor can meaningfully alter the next state.",
+      "Use one stable visual anchor or framing motif across branches so choice does not make the experience feel like unrelated clips.",
+    ],
+    motion: [
+      "Prepare branch points inside the film edit so user choice lands on clean visual/audio boundaries instead of fighting the footage.",
+    ],
+    transitions: [
+      "Preload likely next branches before the choice resolves and stitch the selected branch at prepared cut/loop points.",
+      "Use short transition masks, audio bridges or matched motion to hide media-state swaps when a literal hard cut would expose buffering.",
+    ],
+    interaction: [
+      "Make each choice change narrative, evidence, reward or personalization state; do not interrupt film only to ask decorative questions.",
+    ],
+    implementation: [
+      "Model the authored film as a finite state graph with explicit media nodes, decision edges, preload priorities and completion outcomes.",
+      "Keep branch metadata/content outside the video binary so editorial changes do not require rebuilding the interaction engine.",
+    ],
+    mobile: [
+      "Keep tap targets simple and shorten branch preloads; preserve the same narrative consequences even when media resolution drops.",
+    ],
+    avoid: ["Unbounded video seeking used as a substitute for designed branch points.", "Choices that have no visible consequence beyond changing a label."],
+  },
+  {
     id: "prewarm-signature-systems",
     title: "Prewarm signature systems",
     signals: ["shader", "3d", "video", "particles", "postprocessing", "cinematic", "performance"],
@@ -2333,6 +2460,7 @@ export interface ImmersiveConstructionDirectives {
   technicalVerification: string[];
   failureLessonIds: string[];
   failureAvoidance: string[];
+  referenceLensCoverage: ImmersiveReferenceLensCoverage[];
   referenceIds: string[];
   referenceLessons: string[];
   compositionRules: string[];
@@ -2410,6 +2538,9 @@ export function buildConstructionDirectives(
     treatment,
     patterns.map((pattern) => pattern.id),
   );
+  const referenceLensCoverage = buildReferenceLensCoverage(
+    references.map(({ reference }) => reference),
+  );
 
   return {
     patternIds: patterns.map((pattern) => pattern.id),
@@ -2423,6 +2554,7 @@ export function buildConstructionDirectives(
         ...item.recovery,
       ]),
     ),
+    referenceLensCoverage,
     referenceIds: references.map(({ reference }) => reference.id),
     referenceLessons: unique(
       references.flatMap(({ reference }) => reference.transferableLessons),
