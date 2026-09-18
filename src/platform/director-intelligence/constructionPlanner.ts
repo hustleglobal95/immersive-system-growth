@@ -15,6 +15,7 @@ export type ExperienceConstructionMode =
   | "editorial-immersive"
   | "cinematic-media"
   | "spatial-hybrid"
+  | "multi-view-hybrid"
   | "persistent-world";
 
 export interface SceneConstructionDecision {
@@ -74,15 +75,18 @@ export function planImmersiveConstruction(
 
   const mode: ExperienceConstructionMode = persistentWorld
     ? "persistent-world"
-    : hasModel || procedural
-      ? "spatial-hybrid"
-      : hasVideo
-        ? "cinematic-media"
-        : "editorial-immersive";
+    : patternSet.has("single-canvas-multi-view") && (hasModel || procedural)
+      ? "multi-view-hybrid"
+      : hasModel || procedural
+        ? "spatial-hybrid"
+        : hasVideo
+          ? "cinematic-media"
+          : "editorial-immersive";
 
   const persistentCanvasRecommended =
     mode === "persistent-world" ||
-    mode === "spatial-hybrid";
+    mode === "spatial-hybrid" ||
+    mode === "multi-view-hybrid";
 
   const sceneDecisions = treatment.emotionalArc.map((beat, index) => {
     const shot =
@@ -132,7 +136,11 @@ export function planImmersiveConstruction(
     mode,
     persistentCanvasRecommended,
     maxSimultaneousHeavySystems:
-      mode === "persistent-world" ? 2 : mode === "spatial-hybrid" ? 1 : 0,
+      mode === "persistent-world"
+        ? 2
+        : mode === "spatial-hybrid" || mode === "multi-view-hybrid"
+          ? 1
+          : 0,
     criticalBootStrategy: criticalBootStrategy(patternSet, sceneDecisions),
     sceneDecisions,
     globalRules: globalRules(patternSet, directives),
@@ -173,6 +181,14 @@ function chooseMedium(input: {
 
   if (mode === "persistent-world") {
     // The world can persist, but semantic information still lives in DOM.
+    return "hybrid";
+  }
+
+  if (
+    mode === "multi-view-hybrid" &&
+    beat.intensity >= 6 &&
+    beat.informationDensity <= 7
+  ) {
     return "hybrid";
   }
 
@@ -331,6 +347,12 @@ function performancePolicy(
   if (patterns.has("source-structure-to-runtime-format")) {
     rules.push("Convert source assets into runtime-specific compressed/instanced representations before shipping.");
   }
+  if (patterns.has("render-pass-ownership")) {
+    rules.push("Inactive scenes must skip their owned simulation/render/composite passes, not merely hide final output.");
+  }
+  if (patterns.has("single-canvas-multi-view")) {
+    rules.push("Use one shared renderer for section-scoped 3D views and render only active view rectangles.");
+  }
   return rules;
 }
 
@@ -385,6 +407,9 @@ function criticalBootStrategy(
   if (patterns.has("staged-resource-boot")) {
     rules.push("Split later chapters into subsequent resource batches and initialize dependent systems only after their assets resolve.");
   }
+  if (patterns.has("transition-readiness-gate")) {
+    rules.push("Gate visible scene/page handoffs on the destination's critical code/media/render readiness instead of fixed delays.");
+  }
   if (firstHeavy) {
     rules.push(`Prewarm the first heavy chapter (${firstHeavy.sceneId}) before it becomes interactive.`);
   }
@@ -407,6 +432,12 @@ function globalRules(
   }
   if (patterns.has("semantic-input-actions")) {
     rules.push("Map device inputs to semantic actions so controls can adapt without duplicating interaction logic.");
+  }
+  if (patterns.has("composable-rendering-systems")) {
+    rules.push("Build scene variety from composable render/material/particle/transition capabilities instead of duplicating whole pipelines.");
+  }
+  if (patterns.has("prototype-prune-converge")) {
+    rules.push("Prototype signature ideas modularly and cut any effect that no longer strengthens the final thesis.");
   }
   if (directives.patternEvidence.some((item) => item.sourceCount >= 2)) {
     rules.push("Prefer construction principles supported by multiple independent sources when they also fit the client thesis.");
