@@ -2330,7 +2330,7 @@ export const broaderImmersiveReferenceCorpus: ImmersiveReference[] = [
       "When the source material is already excellent motion work, let authored media remain the hero and use WebGL to support/transition it rather than replacing it.",
       "Match site rhythm to the emotional tempo of the source work.",
     ],
-    ["choose-medium-by-capability", "cinematic-media", "single-signature-peak"],
+    ["choose-medium-by-capability", "dom-webgl-contract", "single-signature-peak"],
     ["Codrops case study describes full-screen video, fluid transitions, OGL and performance as the central construction challenge."],
     0.93,
     "public-case-study",
