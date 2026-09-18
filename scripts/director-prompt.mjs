@@ -1,10 +1,23 @@
 import fs from "node:fs/promises";
 import { parseDirectorBrief } from "../src/platform/directorSchema.ts";
 import { directProject } from "../src/platform/directorEngine.ts";
+import { buildConstructionDirectives } from "../src/platform/director-intelligence/constructionKnowledge.ts";
+import { planImmersiveConstruction } from "../src/platform/director-intelligence/constructionPlanner.ts";
+import { retrieveImmersiveReferences } from "../src/platform/director-intelligence/referenceCorpus.ts";
 
 const inputPath = process.argv[2] || "config/director-brief.example.json";
 const brief = parseDirectorBrief(JSON.parse(await fs.readFile(inputPath, "utf8")));
 const baseline = directProject(brief);
+const constructionResearch = buildConstructionDirectives(baseline);
+const constructionPlan = planImmersiveConstruction(baseline, constructionResearch);
+const immersiveReferences = retrieveImmersiveReferences(baseline, 5).map(({ reference, reasons }) => ({
+  id: reference.id,
+  title: reference.title,
+  evidenceLevel: reference.evidenceLevel,
+  observedTraits: reference.observedTraits,
+  transferableLessons: reference.transferableLessons,
+  reasons,
+}));
 
 const prompt = `# FORGE DIRECTOR — EXECUTIVE CREATIVE TREATMENT
 
@@ -26,6 +39,45 @@ Do not produce a menu of interchangeable ideas. Develop exactly three genuinely 
 ## PROJECT BRIEF
 ${JSON.stringify(brief, null, 2)}
 
+## RETRIEVED IMMERSIVE CONSTRUCTION PRECEDENTS
+These are evidence-scored construction precedents from Forge's reviewed corpus. Use the transferable lessons only. Do not reproduce the reference's surface styling or branded execution.
+
+${JSON.stringify(immersiveReferences, null, 2)}
+
+## FORGE CONSTRUCTION RESEARCH
+The following is retrieved from Forge's evidence-graded immersive reference corpus for this brief. Treat it as precedent knowledge, not a style recipe.
+
+${JSON.stringify({
+  references: constructionResearch.referenceIds,
+  lessons: constructionResearch.referenceLessons,
+  patternEvidence: constructionResearch.patternEvidence.slice(0, 12),
+  compositionRules: constructionResearch.compositionRules.slice(0, 12),
+  motionRules: constructionResearch.motionRules.slice(0, 12),
+  transitionRules: constructionResearch.transitionRules.slice(0, 10),
+  interactionRules: constructionResearch.interactionRules.slice(0, 10),
+  implementationRules: constructionResearch.implementationRules.slice(0, 16),
+  technicalDoctrine: constructionResearch.technicalDoctrineIds,
+  technicalVerification: constructionResearch.technicalVerification.slice(0, 12),
+  failureLessons: constructionResearch.failureLessonIds,
+  failureAvoidance: constructionResearch.failureAvoidance.slice(0, 14),
+  mobileRules: constructionResearch.mobileRules.slice(0, 10),
+  avoid: constructionResearch.forbiddenPatterns.slice(0, 12),
+  experienceMode: constructionPlan.mode,
+  persistentCanvasRecommended: constructionPlan.persistentCanvasRecommended,
+  criticalBootStrategy: constructionPlan.criticalBootStrategy,
+  sceneConstruction: constructionPlan.sceneDecisions.map((scene) => ({
+    sceneId: scene.sceneId,
+    medium: scene.medium,
+    continuityAnchor: scene.continuityAnchor,
+    depthStrategy: scene.depthStrategy,
+    motionStrategy: scene.motionStrategy,
+    interactionStrategy: scene.interactionStrategy,
+    mobileTranslation: scene.mobileTranslation,
+  })),
+}, null, 2)}
+
+Use these principles to sharpen the treatment, but do not mention precedent names in client-facing creative concepts unless explicitly asked. Combine principles into a new client-specific direction rather than imitating any single reference.
+
 ## NON-NEGOTIABLE CREATIVE STANDARD
 1. The project must have one controlling thesis that can govern camera, motion, typography, composition, transitions, interaction and asset decisions.
 2. Create exactly three territories. They must differ at the conceptual and experiential level—not merely color, typography or copy.
@@ -42,6 +94,24 @@ ${JSON.stringify(brief, null, 2)}
 13. Conversion must be earned through desire/proof and remain usable.
 14. Never invent client facts, product claims, dimensions, awards, testimonials, asset availability or business results.
 15. If evidence is missing, direct around the gap or identify the asset dependency.
+
+## IMMERSIVE CONSTRUCTION STANDARD
+When the brief contains references, treat them as construction evidence rather than implementation dependencies.
+
+For each reference:
+- identify the dominant composition and negative-space strategy
+- identify typography/media layering
+- identify what creates depth: crop, scale, parallax, occlusion, camera, lighting or real geometry
+- identify the persistent visual anchor across sections
+- identify scroll and pointer behavior separately
+- identify the single highest-intensity signature moment and the intentionally quiet moments
+- identify the DOM/WebGL boundary
+- identify how the behavior should translate to mobile
+- identify likely first-use costs that must be preloaded or prewarmed
+
+Transfer the underlying principle, never the exact palette, typeface, branded layout, assets or signature interaction.
+
+Do not recommend or add a new library merely because a reference appears to use one. Express the idea through Forge's existing camera, R3F/Three, GSAP, deterministic motion tracks, media/mask, shader and interaction systems unless a genuinely missing primitive is documented.
 
 ## ORIGINALITY TEST
 Ask: “Could this treatment be reused for another client by replacing the logo, colors and copy?”

@@ -1,4 +1,5 @@
 import type { DirectorBrief, DirectorTreatment, DirectorTerritory } from "@/src/platform/directorSchema";
+import type { HierarchyReport } from "@/src/platform/director-intelligence/hierarchy";
 
 export type EvidenceClass = "client-brief" | "client-asset" | "brand-system" | "reference" | "public-research" | "forge-history" | "director-inference" | "creative-hypothesis";
 export interface DirectorEvidence { id: string; claim: string; evidenceClass: EvidenceClass; sourceIds: string[]; confidence: number; verified: boolean; affects: string[]; }
@@ -57,6 +58,6 @@ export interface LearningObservation { id: string; observation: string; sampleSi
 export interface CalibrationCase { id: string; label: string; expectedDisposition: EvaluationReport["recommendation"]; benchmarkScores: Partial<EvaluationScores>; notes: string[]; }
 
 export interface DirectorIntelligenceInput { brief: DirectorBrief; precedents?: CreativePrecedent[]; portfolio?: CreativeFingerprint[]; memory?: CreativeMemoryGraph; taste?: TasteProfile; decisions?: DecisionLedger; }
-export interface DirectorIntelligenceReport { brief: DirectorBrief; treatment: DirectorTreatment; evidence: EvidenceReport; precedents: RetrievedPrecedent[]; fingerprint: CreativeFingerprint; collisions: PortfolioCollision[]; evaluations: EvaluationReport[]; selectedEvaluation: EvaluationReport; originality: OriginalityFingerprint; cliches: ClicheScan; stress: StressLabReport; ceiling: CreativeCeiling; assetGap: AssetGapReport; leverage: ProductionLeverageItem[]; whyLadders: WhyLadder[]; decisions: DecisionLedger; defense: DefensePacket; verdict: EvaluationReport["recommendation"]; blockers: string[]; generatedAt: string; }
+export interface DirectorIntelligenceReport { brief: DirectorBrief; treatment: DirectorTreatment; evidence: EvidenceReport; precedents: RetrievedPrecedent[]; fingerprint: CreativeFingerprint; collisions: PortfolioCollision[]; evaluations: EvaluationReport[]; selectedEvaluation: EvaluationReport; originality: OriginalityFingerprint; cliches: ClicheScan; stress: StressLabReport; ceiling: CreativeCeiling; assetGap: AssetGapReport; leverage: ProductionLeverageItem[]; hierarchy: HierarchyReport; whyLadders: WhyLadder[]; decisions: DecisionLedger; defense: DefensePacket; verdict: EvaluationReport["recommendation"]; blockers: string[]; generatedAt: string; }
 
 export type { DirectorBrief, DirectorTreatment, DirectorTerritory };

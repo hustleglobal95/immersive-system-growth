@@ -2,6 +2,9 @@
 
 ## 6.0.0
 
+- Added Forge Director immersive construction intelligence with 196 evidence-graded references, 98 executable construction patterns and 16 primary technical doctrine groups.
+- Added an eight-layer Hierarchy Engine that can block production when strategy, narrative, visual, interaction, motion/spatial or semantic priorities compete.
+- Added Guided Build inside Studio plus direct Asset Creator handoffs from Creative Agent, including Meshy 3D and Higgsfield image/video generation paths with server-only credentials.
 - Added a deterministic visual interaction graph with trigger, condition, action and state nodes, bounded execution, cycle guards, variables, branch priorities, mobile substitutions and Studio simulation.
 - Added production sequence consumers with play, pause, stop, looping, bounded duration, exact cinematic progress ownership and optional release back to scroll.
 - Added named camera command playback with live-camera blending, reset handoff, scene-shot resolution, built-in shot presets and completion/cancellation lifecycle events.
