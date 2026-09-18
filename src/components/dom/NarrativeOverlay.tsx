@@ -40,7 +40,7 @@ const CHAPTER_MOTION: Record<string, { label: CinematicPreset; headline: Cinemat
 // empties the panel at 0.86. Both have to land together or whichever fires first decides when
 // the chapter stops being readable, which is what left 02 into 03 a third longer than its
 // neighbours: the disperse was ending at 0.76 while the track ran on to 0.86.
-const RHYTHM = { lead: 0, pace: 1, collapseAt: [.82, .92] as const };
+const RHYTHM = { lead: 0, pace: 1, entrance: .62, collapseAt: [.82, .92] as const };
 const FALLBACK_MOTION = { label: "label-track", headline: "headline-words", lede: "lede-words" } as const;
 
 // Every cue is seeked by the one scroll clock, so scrubbing backwards reconstructs the same frame.
@@ -59,16 +59,22 @@ const cues: CinematicCue[] = experience.scenes.flatMap((scene, index) => {
   const lead = motion.lead ?? RHYTHM.lead;
   const pace = Math.min(1.15, motion.pace ?? RHYTHM.pace);
   const at = (fraction: number) => start + span * Math.min(1, fraction);
+  // The cues used to be authored against playback eases that front-loaded their movement, so a
+  // headline was readable almost as soon as its cue began. On the shared scrubbed curve the
+  // motion starts from rest instead, which pushed legibility later and cost about 34vh a
+  // handover. The windows are compressed to give that back: the same distance, travelled over
+  // less scroll, still starting and settling at rest.
+  const ent = (fraction: number) => at(lead + fraction * RHYTHM.entrance * pace);
   return [
-    { selector: scope + "[data-motion-index]", range: [at(lead), at(lead + .05 * pace)], preset: motion.label },
-    { selector: scope + "[data-motion-copy]", range: [at(lead + .01), at(lead + .07 * pace)], preset: motion.label },
-    { selector: scope + "[data-motion-headline]", range: [at(lead), at(lead + .11 * pace)], preset: motion.headline },
-    { selector: scope + "[data-motion-lede]", range: [at(lead + .03), at(lead + .13 * pace)], preset: motion.lede },
-    { selector: scope + "[data-motion-block]", range: [at(lead + .02), at(lead + .12)], preset: "copy-drift" },
-    { selector: scope + "[data-motion-row]", range: [at(lead + .03), at(lead + .13)], preset: motion.rows ?? "copy-drift" },
-    { selector: scope + "[data-motion-plate]", range: [at(lead + .04), at(lead + .14)], preset: motion.plates ?? "copy-drift" },
-    { selector: scope + "[data-motion-aside]", range: [at(lead + .05), at(lead + .13)], preset: "copy-drift" },
-    { selector: scope + "[data-motion-cta]", range: [at(lead + .06), at(lead + .14)], preset: "copy-drift" },
+    { selector: scope + "[data-motion-index]", range: [ent(0), ent(.05)], preset: motion.label },
+    { selector: scope + "[data-motion-copy]", range: [ent(.01), ent(.07)], preset: motion.label },
+    { selector: scope + "[data-motion-headline]", range: [ent(0), ent(.11)], preset: motion.headline },
+    { selector: scope + "[data-motion-lede]", range: [ent(.03), ent(.13)], preset: motion.lede },
+    { selector: scope + "[data-motion-block]", range: [ent(.02), ent(.12)], preset: "copy-drift" },
+    { selector: scope + "[data-motion-row]", range: [ent(.03), ent(.13)], preset: motion.rows ?? "copy-drift" },
+    { selector: scope + "[data-motion-plate]", range: [ent(.04), ent(.14)], preset: motion.plates ?? "copy-drift" },
+    { selector: scope + "[data-motion-aside]", range: [ent(.05), ent(.13)], preset: "copy-drift" },
+    { selector: scope + "[data-motion-cta]", range: [ent(.06), ent(.14)], preset: "copy-drift" },
     {
       selector: scope + "[data-motion-headline] .forge-split",
       range: [at((motion.collapseAt?.[0] ?? RHYTHM.collapseAt[0]) - .04), at((motion.collapseAt?.[1] ?? RHYTHM.collapseAt[1]) - .06)],

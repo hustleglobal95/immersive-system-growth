@@ -1,4 +1,22 @@
 import gsap from "gsap";
+import { easeSmoother } from "@/src/lib/easing";
+
+/**
+ * The ease for anything scrubbed by scroll.
+ *
+ * These timelines are seeked by scroll position rather than played, so an ease's slope is felt
+ * directly as the reader moves. The presets here were authored with playback eases: expo.out put
+ * half of a cue's movement into the first tenth of its scroll window and power4.out 41%, so the
+ * type snapped most of the way into place and then crawled. The three power2.in exits were the
+ * mirror, arriving at the cue's end still travelling at three times linear and stopping dead.
+ *
+ * The quintic comes to rest at both ends, which is what lets a cue start and settle instead of
+ * lurching, and it is the same curve the masks, panels, carousel and site plan already use -- so
+ * the whole page shares one motion language. Character still comes from what each preset moves,
+ * not from how it accelerates. A genuine parallax stays linear, because it should track scroll
+ * one to one.
+ */
+const scrub = easeSmoother;
 import { cueProgress } from "./cinematicProgress";
 
 export type CinematicPreset =
@@ -129,7 +147,7 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
       const distance = compact ? 10 : 28;
       if (cue.preset === "text-settle") {
         timeline.fromTo(targets, { y: distance }, {
-          y: 0, duration: 1, stagger: { amount: .18 }, ease: "power2.out", immediateRender: true,
+          y: 0, duration: 1, stagger: { amount: .18 }, ease: scrub, immediateRender: true,
         });
       } else if (cue.preset === "headline-reveal") {
         // A masked rise: the headline wipes up out of its own box and settles from a slight
@@ -145,7 +163,7 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
           scale: 1,
           duration: 1,
           stagger: { amount: compact ? .06 : .12 },
-          ease: "expo.out",
+          ease: scrub,
           immediateRender: true,
         });
       } else if (cue.preset === "headline-words") {
@@ -153,13 +171,13 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
         timeline.fromTo(targets, { yPercent: 118, rotate: compact ? 0 : 2.4 }, {
           yPercent: 0, rotate: 0, duration: 1,
           stagger: { amount: compact ? .36 : .62, from: "start" },
-          ease: "expo.out", immediateRender: true,
+          ease: scrub, immediateRender: true,
         });
       } else if (cue.preset === "headline-chars") {
         timeline.fromTo(targets, { yPercent: 108, rotateX: compact ? 0 : -62, opacity: 0, transformPerspective: 620, transformOrigin: "50% 100%" }, {
           yPercent: 0, rotateX: 0, opacity: 1, duration: 1,
           stagger: { amount: compact ? .42 : .74, from: "start" },
-          ease: "power4.out", immediateRender: true,
+          ease: scrub, immediateRender: true,
         });
       } else if (cue.preset === "headline-swing") {
         // Words hinge down from their top edge, last word first, so the line closes backwards.
@@ -169,7 +187,7 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
         }, {
           rotateX: 0, yPercent: 0, opacity: 1, duration: 1,
           stagger: { amount: compact ? .34 : .58, from: "end" },
-          ease: "power4.out", immediateRender: true,
+          ease: scrub, immediateRender: true,
         });
       } else if (cue.preset === "headline-slide") {
         // Alternating words slide in from opposite sides inside their masks.
@@ -179,13 +197,13 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
         }, {
           xPercent: 0, opacity: 1, duration: 1,
           stagger: { amount: compact ? .3 : .5, from: "start" },
-          ease: "power4.out", immediateRender: true,
+          ease: scrub, immediateRender: true,
         });
       } else if (cue.preset === "lede-scatter") {
         timeline.fromTo(targets, { yPercent: 38, scale: .92, opacity: 0 }, {
           yPercent: 0, scale: 1, opacity: 1, duration: 1,
           stagger: { amount: compact ? .46 : .82, from: "random" },
-          ease: "power2.out", immediateRender: true,
+          ease: scrub, immediateRender: true,
         });
       } else if (cue.preset === "headline-fracture") {
         // The most worked headline on the site: characters arrive from alternating sides of the
@@ -200,7 +218,7 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
         }, {
           yPercent: 0, rotate: 0, scale: 1, opacity: 1, filter: "blur(0px)", duration: 1,
           stagger: { amount: compact ? .5 : .86, from: "start" },
-          ease: "expo.out", immediateRender: true,
+          ease: scrub, immediateRender: true,
         });
       } else if (cue.preset === "headline-drop") {
         // Characters fall in from above behind their own mask, last letter first, so the line
@@ -210,7 +228,7 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
         }, {
           yPercent: 0, scale: 1, opacity: 1, duration: 1,
           stagger: { amount: compact ? .46 : .8, from: "end" },
-          ease: "power4.out", immediateRender: true,
+          ease: scrub, immediateRender: true,
         });
       } else if (cue.preset === "plate-rise") {
         // Square plates rise out of their own frame and settle from a slight over-scale.
@@ -218,7 +236,7 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
           clipPath: "inset(100% 0% 0% 0%)", scale: 1.22, yPercent: 26,
         }, {
           clipPath: "inset(0% 0% 0% 0%)", scale: 1, yPercent: 0, duration: 1,
-          stagger: { amount: compact ? .34 : .6 }, ease: "expo.out", immediateRender: true,
+          stagger: { amount: compact ? .34 : .6 }, ease: scrub, immediateRender: true,
         });
       } else if (cue.preset === "section-collapse") {
         // The chapter folds away from its own base rather than being replaced: it settles back,
@@ -229,7 +247,7 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
           scale: compact ? 0.955 : 0.918,
           rotateX: compact ? 2.2 : 5.2,
           yPercent: compact ? -1.4 : -3,
-          duration: 1, ease: "power2.in", immediateRender: true,
+          duration: 1, ease: scrub, immediateRender: true,
         });
       } else if (cue.preset === "section-lift") {
         // A harder version of the collapse: the words compress and carry upward out of the
@@ -240,7 +258,7 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
           scale: compact ? 0.93 : 0.872,
           yPercent: compact ? -7 : -14,
           rotateX: compact ? 3 : 7,
-          duration: 1, ease: "power2.in", immediateRender: true,
+          duration: 1, ease: scrub, immediateRender: true,
         });
       } else if (cue.preset === "headline-unfold") {
         // Each glyph turns in on its own vertical axis, so the line unfolds letter by letter.
@@ -249,7 +267,7 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
           transformPerspective: 760, transformOrigin: "0% 50%",
         }, {
           rotateY: 0, opacity: 1, xPercent: 0, duration: 1,
-          stagger: { amount: compact ? .44 : .78 }, ease: "power3.out", immediateRender: true,
+          stagger: { amount: compact ? .44 : .78 }, ease: scrub, immediateRender: true,
         });
       } else if (cue.preset === "headline-converge") {
         // Words arrive from far out on alternating sides and converge into the line.
@@ -258,7 +276,7 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
           opacity: 0, filter: "blur(16px)", scale: 1.12,
         }, {
           xPercent: 0, opacity: 1, filter: "blur(0px)", scale: 1, duration: 1,
-          stagger: { amount: compact ? .4 : .7, from: "edges" }, ease: "power4.out",
+          stagger: { amount: compact ? .4 : .7, from: "edges" }, ease: scrub,
           immediateRender: true,
         });
       } else if (cue.preset === "type-disperse") {
@@ -266,7 +284,7 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
         // transforms, and two GSAP timelines on one matrix contend.
         timeline.fromTo(targets, { opacity: 1, filter: "blur(0px)" }, {
           opacity: 0, filter: `blur(${compact ? 5 : 9}px)`, duration: 1,
-          stagger: { amount: compact ? .3 : .56 }, ease: "power2.in", immediateRender: true,
+          stagger: { amount: compact ? .3 : .56 }, ease: scrub, immediateRender: true,
         });
       } else if (cue.preset === "list-unfold") {
         // Rows unfold from their own left edge, so the schedule builds line by line.
@@ -274,13 +292,13 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
           clipPath: "inset(0% 100% 0% 0%)", x: compact ? -18 : -46, opacity: 0,
         }, {
           clipPath: "inset(0% 0% 0% 0%)", x: 0, opacity: 1, duration: 1,
-          stagger: { amount: compact ? .3 : .52 }, ease: "power3.out", immediateRender: true,
+          stagger: { amount: compact ? .3 : .52 }, ease: scrub, immediateRender: true,
         });
       } else if (cue.preset === "lede-words") {
         timeline.fromTo(targets, { yPercent: 64, opacity: 0, filter: "blur(5px)" }, {
           yPercent: 0, opacity: 1, filter: "blur(0px)", duration: 1,
           stagger: { amount: compact ? .4 : .72, from: "start" },
-          ease: "power3.out", immediateRender: true,
+          ease: scrub, immediateRender: true,
         });
       } else if (cue.preset === "label-track") {
         // Small caps settle by tightening their tracking rather than sliding. The authored
@@ -289,16 +307,16 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
         timeline.fromTo(targets, { letterSpacing: compact ? "0.5em" : "0.72em", opacity: 0, x: compact ? -6 : -14 }, {
           letterSpacing: (index: number) => settled[index] === "normal" ? "0em" : settled[index],
           opacity: 1, x: 0, duration: 1,
-          stagger: { amount: .12 }, ease: "power2.out", immediateRender: true,
+          stagger: { amount: .12 }, ease: scrub, immediateRender: true,
         });
       } else if (cue.preset === "copy-drift") {
         timeline.fromTo(targets, { y: compact ? 14 : 34, filter: "blur(7px)" }, {
           y: 0, filter: "blur(0px)", duration: 1, stagger: { amount: compact ? .1 : .22 },
-          ease: "power3.out", immediateRender: true,
+          ease: scrub, immediateRender: true,
         });
       } else if (cue.preset === "curtain") {
         timeline.fromTo(targets, { clipPath: "inset(0 0 100% 0)" }, {
-          clipPath: "inset(0 0 0% 0)", duration: 1, ease: "power2.inOut", immediateRender: true,
+          clipPath: "inset(0 0 0% 0)", duration: 1, ease: scrub, immediateRender: true,
         });
       } else if (cue.preset === "image-depth") {
         timeline.fromTo(targets, { yPercent: compact ? 2 : 6, scale: compact ? 1.03 : 1.08 }, {
@@ -306,7 +324,7 @@ export function createCinematicDom(root: HTMLElement, cues: readonly CinematicCu
         });
       } else {
         timeline.fromTo(targets, { y: distance, rotation: compact ? 0 : 2 }, {
-          y: 0, rotation: 0, duration: 1, stagger: { amount: .3 }, ease: "power2.out", immediateRender: true,
+          y: 0, rotation: 0, duration: 1, stagger: { amount: .3 }, ease: scrub, immediateRender: true,
         });
       }
       tracks.push({ timeline, range: cue.range });
