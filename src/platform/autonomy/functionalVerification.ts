@@ -28,6 +28,22 @@ export function buildFunctionalVerificationPlan(packet: PromptIntelligencePacket
       passCondition:"Forward and reverse progression remain coherent and the visitor never becomes trapped.",
     },
     {
+      id:"keyboard-navigation",
+      label:"Keyboard navigation can advance and reverse scene focus",
+      viewport:"desktop",
+      required:true,
+      steps:["Focus the document rather than an interactive control.","Use ArrowRight to advance one scene.","Use ArrowLeft to return."],
+      passCondition:"Keyboard navigation moves between authored scenes without trapping focus or requiring pointer precision.",
+    },
+    {
+      id:"interaction",
+      label:"Semantic interaction surfaces remain operable",
+      viewport:"both",
+      required:true,
+      steps:["Locate any declared hotspot or disclosure.","Activate it using an ordinary semantic control.","Confirm the disclosure/action state changes without requiring 3D raycast precision."],
+      passCondition:"Declared semantic interaction surfaces remain directly operable; projects with no declared hotspot treat this check as not applicable.",
+    },
+    {
       id:"primary-action",
       label:"Primary commercial action is reachable",
       viewport:"both",
@@ -52,4 +68,24 @@ export function buildFunctionalVerificationPlan(packet: PromptIntelligencePacket
       passCondition:"The experience remains understandable and operable without relying on motion for meaning.",
     },
   ];
+}
+
+
+export interface FunctionalVerificationResult {
+  id:string;
+  label:string;
+  viewport:"desktop"|"mobile";
+  reducedMotion:boolean;
+  passed:boolean;
+  details:string[];
+}
+
+export interface FunctionalVerificationReport {
+  version:1;
+  variant:"incumbent"|"candidate";
+  project:string;
+  results:FunctionalVerificationResult[];
+  hardGateFailures:string[];
+  runtimeErrors:Array<{ viewport:string; reducedMotion:boolean; type:string; message:string }>;
+  passed:boolean;
 }

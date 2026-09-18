@@ -2,11 +2,15 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { buildPairwiseCriticRequests, pairwiseJudgmentFromResponse } from "../src/platform/autonomy/visualDirector.ts";
 import { forcedOptimizationDecision } from "../src/platform/autonomy/forcedOptimization.ts";
+import { evaluateCandidateGates } from "../src/platform/autonomy/candidateGates.ts";
 
 const options=args(process.argv.slice(2));
 const incumbentReportPath=String(options.incumbent || "test-results/autonomy/review-report.json");
 const candidateReportPath=String(options.candidate || "test-results/autonomy-candidate/review-report.json");
 const outputPath=String(options.output || "test-results/autonomy-candidate/comparison-report.json");
+const functionalPath=options.functional ? String(options.functional) : null;
+const incumbentMotionPath=options["incumbent-motion"] ? String(options["incumbent-motion"]) : null;
+const candidateMotionPath=options["candidate-motion"] ? String(options["candidate-motion"]) : null;
 const criticUrl=process.env.FORGE_VISUAL_CRITIC_URL;
 const criticToken=process.env.FORGE_VISUAL_CRITIC_TOKEN;
 if(!criticUrl) {
@@ -15,6 +19,9 @@ if(!criticUrl) {
 }
 const incumbent=JSON.parse(await fs.readFile(incumbentReportPath,"utf8"));
 const candidate=JSON.parse(await fs.readFile(candidateReportPath,"utf8"));
+const functional=functionalPath ? JSON.parse(await fs.readFile(functionalPath,"utf8")) : null;
+const incumbentMotion=incumbentMotionPath ? JSON.parse(await fs.readFile(incumbentMotionPath,"utf8")) : null;
+const candidateMotion=candidateMotionPath ? JSON.parse(await fs.readFile(candidateMotionPath,"utf8")) : null;
 const projectContext=String(options.context || process.env.FORGE_AUTONOMY_CONTEXT || incumbent.project || candidate.project || "Forge experience");
 const incumbentId=String(options["incumbent-id"] || "incumbent");
 const candidateId=String(options["candidate-id"] || "candidate");
@@ -56,14 +63,39 @@ for(const captureId of common) {
   }
 }
 
-const candidateHardGateFailures=[...new Set([
-  ...hardGateFailures(candidate),
-  ...judgments.flatMap((item)=>item.hardGateFailures),
-  ...missingMatchedCaptures.map((id)=>id + ": missing matched A/B capture"),
-])];
+const gateReport=evaluateCandidateGates({
+  visualHardGateFailures:hardGateFailures(candidate),
+  judgeHardGateFailures:judgments.flatMap((item)=>item.hardGateFailures),
+  missingMatchedCaptures,
+  functionalHardGateFailures:functional?.hardGateFailures ?? [],
+  candidateMotionHardGateFailures:candidateMotion?.hardGateFailures ?? [],
+  incumbentMotionScore:incumbentMotion?.qualityScore ?? null,
+  candidateMotionScore:candidateMotion?.qualityScore ?? null,
+});
+const candidateHardGateFailures=gateReport.failures;
+const motionRegression=gateReport.motionRegression;
 const decision=forcedOptimizationDecision({ incumbentId,candidateId,judgments,candidateHardGateFailures });
 await fs.mkdir(path.dirname(outputPath),{ recursive:true });
-await fs.writeFile(outputPath,JSON.stringify({ version:1,projectContext,expectedCaptureCount:expectedIds.length,commonCaptureCount:common.length,missingMatchedCaptures,candidateHardGateFailures,decision },null,2)+"\n");
+await fs.writeFile(outputPath,JSON.stringify({
+  version:1,
+  projectContext,
+  expectedCaptureCount:expectedIds.length,
+  commonCaptureCount:common.length,
+  missingMatchedCaptures,
+  functional:{
+    supplied:Boolean(functional),
+    passed:functional?.passed ?? null,
+    hardGateFailures:functional?.hardGateFailures ?? [],
+  },
+  motion:{
+    incumbentScore:incumbentMotion?.qualityScore ?? null,
+    candidateScore:candidateMotion?.qualityScore ?? null,
+    candidatePassed:candidateMotion?.passed ?? null,
+    regression:motionRegression,
+  },
+  candidateHardGateFailures,
+  decision,
+},null,2)+"\n");
 console.log("Pairwise decision: " + decision.winner + " / accepted=" + decision.accepted + " / agreement=" + decision.agreement);
 console.log(decision.reason);
 if(!decision.accepted) process.exitCode=1;

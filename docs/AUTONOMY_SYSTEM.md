@@ -98,6 +98,14 @@ Findings must point to a capture, affected Forge systems and an actionable repai
 
 ## Functional verification
 
+Autonomy Level 4 now includes an executable Playwright verifier against the candidate-aware full runtime at `/studio/autonomy-runtime`.
+
+Run:
+
+npm run autonomy:functional-verify
+
+It verifies boot, semantic scene structure, forward traversal, reverse traversal, keyboard navigation, declared CTA reachability, hotspot disclosure, mobile overflow/final-scene reachability and reduced-motion preservation.
+
 A visually strong candidate still fails autonomy if:
 
 - the experience cannot boot;
@@ -135,11 +143,24 @@ npm run autonomy:repair-loop
 
 The accepted candidate is written as an artifact; the loop never overwrites the checked-in production experience automatically.
 
+## Motion-quality verification
+
+Autonomy Level 4 also includes deterministic fixed-timestep motion review.
+
+Run:
+
+npm run autonomy:motion-review
+
+The motion review samples camera and hero state across every scene on desktop and mobile, checks identical-progress forward/reverse determinism, inspects both sides of every scene boundary, detects large velocity spikes and reports renderer frame-time observations. Severe boundary discontinuity or reverse-state drift is a hard gate.
+
+An optional server-only motion-sequence critic can be configured with `FORGE_MOTION_CRITIC_URL` and `FORGE_MOTION_CRITIC_TOKEN`. It receives ordered fixed-timestep frames and evaluates easing, camera motivation, subject continuity, timing and visual cadence.
+
+The full `autonomy:repair-loop` now requires candidate functional verification and motion review before pairwise visual acceptance.
+
 ## Next implementation stages
 
-1. Browser execution of the full functional-verification plan against accepted candidates.
-2. Fixed-timestep motion/video comparison.
-3. Multi-candidate repair search and tournament selection.
-4. Multi-candidate asset generation and selection.
-5. Pairwise studio-taste learning.
-6. Production-trace clustering and failure-pattern mining.
+1. Multi-candidate repair search and tournament selection.
+2. Multi-candidate asset generation and selection.
+3. Pairwise studio-taste learning and judge calibration.
+4. Production-trace clustering and failure-pattern mining.
+5. Real-device motion/performance calibration beyond headless browser metrics.

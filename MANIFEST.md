@@ -86,6 +86,8 @@ Immersive Site Forge 6.0 is organized as a multi-project production platform rat
 - 30-case one-line commercial prompt benchmark enforced by `npm run check`
 - Visual Director with specialist critic contracts, isolated incumbent/candidate preview rendering, bounded reversible presentation repair, reversed-order pairwise judging and forced-optimization acceptance
 - end-to-end local autonomy repair loop that writes accepted candidates as artifacts without overwriting checked-in production config
+- candidate-aware full runtime verification route with Playwright checks for forward/reverse traversal, keyboard navigation, CTA/hotspot access, mobile equivalence and reduced motion
+- deterministic desktop/mobile motion-quality review with fixed-timestep camera/hero sampling, reverse-state determinism, scene-boundary continuity and optional multimodal ordered-frame critique
 - nine Claude command playbooks
 - project, scene and asset templates
 - exact-project preview/deployment safety with CODEOWNERS and current-tree integrity locks

@@ -93,7 +93,9 @@
     "autonomy:preview:capture": "node --import tsx scripts/autonomy-candidate-capture.mjs",
     "autonomy:compare": "node --import tsx scripts/autonomy-compare.mjs",
     "autonomy:repair-loop": "node --import tsx scripts/autonomy-repair-loop.mjs",
-    "project:integrity": "node scripts/project-integrity-audit.mjs"
+    "project:integrity": "node scripts/project-integrity-audit.mjs",
+    "autonomy:functional-verify": "node --import tsx scripts/autonomy-functional-verify.mjs",
+    "autonomy:motion-review": "node --import tsx scripts/autonomy-motion-review.mjs"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "5.3.0",
