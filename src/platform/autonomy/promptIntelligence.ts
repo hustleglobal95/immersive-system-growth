@@ -149,7 +149,8 @@ function objectiveFor(type: AutonomyProjectType) {
   return values[type];
 }
 function extractClaims(prompt: string) { return prompt.split(/[.;]|\bbut\b|\bwithout\b/i).map((item) => item.trim()).filter((item) => item.length >= 12 && item.length <= 180).slice(0,3); }
-function scoreSignals(lower: string, signals: string[]) { return signals.reduce((score,signal) => score + (lower.includes(signal) ? Math.max(1,signal.split(/\s+/).length) : 0),0); }
+const genericSignals = new Set(["product","camera","brand","company","story","launch","event","platform","collection","shop","store"]);
+function scoreSignals(lower: string, signals: string[]) { return signals.reduce((score,signal) => score + (lower.includes(signal) ? (genericSignals.has(signal) ? 0.35 : Math.max(1,signal.split(/\s+/).length)) : 0),0); }
 function makeField<T>(value:T, confidence:number, evidenceClass:InferredField<T>["evidenceClass"], evidence:string[], requiresConfirmation:boolean):InferredField<T> { return { value, confidence:clamp(confidence), evidenceClass, evidence, requiresConfirmation }; }
 function stripLeadVerb(value:string) { return value.replace(/^(make|create|build)\s+/i,"").trim(); }
 function normalize(value:string) { return value.trim().replace(/\s+/g," ").slice(0,4000) || "Create a memorable immersive experience."; }
