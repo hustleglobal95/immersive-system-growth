@@ -40,7 +40,7 @@ try {
     const response=await page.goto(url.toString(),{ waitUntil:"domcontentloaded",timeout:25000 });
     if(response && response.status()===404) throw new Error("Autonomy preview route returned 404. Start Forge with FORGE_AUTONOMY_PREVIEW=1.");
     await page.locator("[data-autonomy-preview]").waitFor({ state:"visible",timeout:15000 });
-    await page.waitForFunction(()=>Boolean(window.__FORGE_AUTONOMY_REVIEW__),{ timeout:12000 });
+    await page.waitForFunction(()=>Boolean(window.__FORGE_AUTONOMY_REVIEW__),null,{ timeout:12000 });
     await page.evaluate(()=>document.fonts.ready);
     await page.waitForTimeout(800);
 
