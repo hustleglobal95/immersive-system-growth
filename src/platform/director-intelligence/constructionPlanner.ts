@@ -336,6 +336,12 @@ function interactionStrategy(patterns: Set<string>, interactionLevel: number) {
   if (patterns.has("cross-device-companion-control") && interactionLevel >= 6) {
     return "Map the companion device to semantic actions through a low-latency control channel, expose pairing/calibration state, and keep a local fallback.";
   }
+  if (patterns.has("networked-presence-as-atmosphere") && interactionLevel >= 6) {
+    return "Keep remote visitors as a secondary presence layer and interpolate their compact semantic state locally; direct multiplayer actions are optional unless community is the thesis.";
+  }
+  if (patterns.has("commerce-inside-world") && interactionLevel >= 5) {
+    return "Let exploration reveal/select products, then stabilize the selected subject and hand purchase intent to clear semantic commerce controls.";
+  }
   if (patterns.has("gamified-progress-with-skip") && interactionLevel >= 6) {
     return "Track explicit progression/unlock state, make rewards visibly consequential, and keep a direct skip route available for high-intent visitors.";
   }
@@ -410,6 +416,12 @@ function performancePolicy(
   }
   if (patterns.has("physics-proxy-dom") && medium === "dom") {
     rules.push("If physics drives semantic DOM, run the invisible simulation only while the section can affect visible pixels and rebuild colliders after layout changes.");
+  }
+  if (patterns.has("transition-render-decimation") && ["3d", "hybrid", "shader"].includes(medium)) {
+    rules.push("During visually busy multi-scene overlap, secondary scene render targets may update at a reduced cadence while transition progress remains full-rate; restore full cadence before the scene settles.");
+  }
+  if (patterns.has("networked-presence-as-atmosphere")) {
+    rules.push("Represent remote visitors with compact network state and cap/interpolate visible peers locally so presence does not become a render/network bottleneck.");
   }
   return rules;
 }
@@ -541,6 +553,15 @@ function globalRules(
   }
   if (patterns.has("sound-as-continuity-layer")) {
     rules.push("Treat ambience, interaction cues and score as stateful continuity layers tied to the same narrative phases as the visual experience.");
+  }
+  if (patterns.has("content-intensity-render-mode")) {
+    rules.push("Match rendering intensity to the chapter's information job: practical/high-density reading gets a quieter plane, while spatial intensity is reserved for identity, system explanation and signature beats.");
+  }
+  if (patterns.has("commerce-inside-world")) {
+    rules.push("Keep catalog, inventory, pricing and checkout in semantic commerce/data systems while the immersive world owns discovery and product context.");
+  }
+  if (patterns.has("networked-presence-as-atmosphere")) {
+    rules.push("A shared world must remain complete in single-user mode; networked presence enriches atmosphere without becoming a hard dependency.");
   }
   if (patterns.has("design-grid-runtime-contract")) {
     rules.push("Store desktop/mobile grid geometry as runtime project data and make a development overlay inspect the exact production columns, gutters and rows.");
