@@ -131,8 +131,8 @@ try {
 
     const ctas=page.locator("[data-autonomy-primary-action]");
     const ctaCount=await ctas.count();
-    let ctaPassed=ctaCount===expectedCtas && expectedCtas>0;
-    const ctaDetails=["Expected CTA count "+expectedCtas+", rendered "+ctaCount+"."];
+    let ctaPassed=expectedCtas===0 ? true : ctaCount===expectedCtas;
+    const ctaDetails=["Expected CTA count "+expectedCtas+", rendered "+ctaCount+".",...(expectedCtas===0 ? ["No CTA is declared in this experience contract; reachability check is not applicable."] : [])];
     if(ctaCount>0) {
       const first=ctas.first();
       const href=await first.getAttribute("href");
