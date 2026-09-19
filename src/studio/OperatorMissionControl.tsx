@@ -48,7 +48,7 @@ export function OperatorMissionControl({
         aria-pressed={mode===value}
         className={mode===value ? "is-active" : undefined}
         onClick={()=>setMode(value)}
-      >{value}</button>)}
+      >{value==="guide" ? "Guide" : value==="copilot" ? "Copilot" : "Autopilot"}</button>)}
     </div>
 
     <div className="operator-mission__summary">
