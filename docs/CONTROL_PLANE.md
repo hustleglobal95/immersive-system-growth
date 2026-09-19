@@ -247,3 +247,32 @@ The Loop command carries `--proposal-id`, `--selection-key`, `--baseline-fingerp
 ## PRO+ invariant
 
 New capability should not increase default Studio navigation. It must be discoverable from context, expressible through intent, represented by a proposal, previewable when risk requires it, verifiable by the owning Forge system and available in an expert surface only when deeper control is necessary.
+
+
+## Operator Intelligence layer
+
+The PRO+ Control Plane now has a project-wide orchestration layer above selection context.
+
+```text
+Mission Contract
+  ↓
+Plan Graph
+  ↓
+Outcome Engine V2
+  ↓
+Guide / Copilot / Autopilot policy
+  ↓
+existing Capability Registry + Proposal Contract
+  ↓
+Continuous Critic
+```
+
+This layer does not change the core safety model. A Mission step resolves a target Selection Context and then enters the same capability dispatch, proposal, verification and candidate-review machinery as a manually selected action.
+
+Autopilot is bounded by capability risk:
+
+- instant-reversible work may execute;
+- preview-required work may be prepared and verified but not silently accepted;
+- approval-required work and explicit creative/taste decisions stop for the operator.
+
+The original Next Best Action remains the contextual fallback. Outcome Engine V2 ranks the next **project-wide** result when a Mission exists.
