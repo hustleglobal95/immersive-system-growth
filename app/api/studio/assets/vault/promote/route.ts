@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { AssetVaultNotConfiguredError, assetVaultConfiguration, promoteGeneratedAsset } from "@/src/platform/assetVault";
 import { requireStudioRole, studioAccessErrorResponse } from "@/src/platform/studioAccess";
+import { appendVaultJournal } from "@/src/platform/studioVault";
 
 export const runtime = "nodejs";
 
@@ -26,7 +27,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    await requireStudioRole(request, "designer");
+    const identity = await requireStudioRole(request, "designer");
     const size = Number(request.headers.get("content-length") ?? 0);
     if (!Number.isFinite(size) || size > 16_000) return Response.json({ ok: false, error: "Asset promotion request is too large" }, { status: 413 });
     const input = inputSchema.parse(await request.json());
