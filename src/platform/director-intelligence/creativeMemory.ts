@@ -31,7 +31,9 @@ export function reviewCreativeMemory(dna:CreativeDNA,memory?:CreativeMemoryGraph
   ].join(" ");
   const nodes=memory.nodes.filter((node)=>creativeTypes.has(node.type));
   const signals=nodes.map((node)=>{
-    const similarity=similarityPct(dnaText,node.label+" "+node.text+" "+node.tags.join(" "));
+    const rawSimilarity=similarityPct(dnaText,node.label+" "+node.text+" "+node.tags.join(" "));
+    const confidence=node.confidence ?? .6;
+    const similarity=Math.round(rawSimilarity*(.72+.28*confidence));
     return {
       nodeId:node.id,type:node.type,label:node.label,similarity,
       reason:similarity>=72 ? "This creative signal materially overlaps the proposed project DNA."
@@ -50,9 +52,11 @@ export function reviewCreativeMemory(dna:CreativeDNA,memory?:CreativeMemoryGraph
 
 function similarityPct(a:string,b:string) {
   const left=new Set(tokens(a));const right=new Set(tokens(b));
-  if(!left.size||!right.size) return 0;
+  if(left.size<4||right.size<4) return 0;
   let intersection=0;for(const item of left) if(right.has(item)) intersection++;
-  return Math.round((intersection/(left.size+right.size-intersection))*100);
+  const containment=intersection/Math.max(1,Math.min(left.size,right.size));
+  const jaccard=intersection/Math.max(1,left.size+right.size-intersection);
+  return Math.round((containment*.82+jaccard*.18)*100);
 }
 function tokens(value:string) {
   const stop=new Set(["the","and","that","with","from","this","into","should","only","when","where","project","creative","system"]);
