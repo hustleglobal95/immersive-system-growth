@@ -5,7 +5,7 @@ import { appendVaultJournal, readVaultJournal } from "@/src/platform/studioVault
 export const runtime = "nodejs";
 
 const inputSchema = z.object({
-  action: z.enum(["save", "restore", "archive", "unarchive", "publish", "asset-promote"]),
+  action: z.enum(["save", "restore", "archive", "unarchive", "publish", "asset-promote", "lesson"]),
   detail: z.string().min(1).max(1000),
 }).strict();
 
