@@ -46,6 +46,7 @@ let report=createLoopRunReport({
   runId:"loop-"+stamp+"-"+loopId,
   definition,
   projectId,
+  sourceVersionId:source.versionId,
   source:source.label,
   baselineFingerprint,
 });
@@ -296,6 +297,7 @@ async function resolveSource({ projectId,experiencePath,workRoot }) {
     return {
       experience:snapshot.experience,
       label:"Project Vault "+projectId+" @ "+snapshot.versionId,
+      versionId:snapshot.versionId,
       context:snapshot.project.name+". "+snapshot.experience.meta.description,
     };
   }
