@@ -9,6 +9,9 @@ export function ControlPlaneReview({
   onPreviewMode,
   onAccept,
   onReject,
+  onContinue,
+  canRevert=false,
+  onRevert,
 }:{
   proposal:ForgeProposal|null;
   hasCandidate:boolean;
@@ -16,10 +19,15 @@ export function ControlPlaneReview({
   onPreviewMode:(mode:"current"|"candidate")=>void;
   onAccept:()=>void;
   onReject:()=>void;
+  onContinue?:()=>void;
+  canRevert?:boolean;
+  onRevert?:()=>void;
 }) {
   if(!proposal) return null;
   const ready=proposal.state==="ready";
   const candidateReview=hasCandidate && ready;
+  const verificationPending=proposal.executionClass==="deep" && proposal.state==="verifying" && !hasCandidate;
+  const accepted=proposal.state==="accepted";
 
   return <section className="production-proposal-review" aria-label="Forge proposal review" data-risk={proposal.riskClass}>
     <header>
@@ -54,12 +62,16 @@ export function ControlPlaneReview({
     </div>
 
     <footer>
-      {candidateReview
-        ? <>
-            <button type="button" onClick={onReject}>Reject</button>
-            <button type="button" className="primary" onClick={onAccept}>Accept candidate</button>
-          </>
-        : <button type="button" onClick={onReject}>Dismiss</button>}
+      {candidateReview ? <>
+        <button type="button" onClick={onReject}>Reject</button>
+        <button type="button" className="primary" onClick={onAccept}>Accept candidate</button>
+      </> : accepted && canRevert && onRevert ? <>
+        <button type="button" onClick={onReject}>Close</button>
+        <button type="button" className="primary" onClick={onRevert}>Revert accepted change</button>
+      </> : verificationPending && onContinue ? <>
+        <button type="button" onClick={onReject}>Dismiss</button>
+        <button type="button" className="primary" onClick={onContinue}>Open verification</button>
+      </> : <button type="button" onClick={onReject}>Dismiss</button>}
     </footer>
   </section>;
 }
