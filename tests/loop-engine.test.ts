@@ -145,6 +145,19 @@ test("Asset Quality consolidates exact duplicate aliases without changing binary
   assert.ok(candidate.profileAfter.intelligence.score>candidate.profileBefore.intelligence.score);
 });
 
+test("Asset Quality never consolidates matching hashes across asset classes",()=>{
+  const manifest:AssetManifest={
+    models:[{path:"/models/shared.glb",bytes:1024,sha256:"d".repeat(64)}],
+    textures:[{path:"/textures/shared.webp",bytes:1024,sha256:"d".repeat(64)}],
+    hdr:[],
+    video:[],
+    budgets:{modelMb:10,textureMb:10,hdrMb:10,videoMb:10,totalMb:40},
+  };
+  const candidate=buildAssetQualityCandidate(parseExperience(rawExperience),manifest,"canonical-reuse");
+  assert.equal(candidate.changed,false);
+  assert.equal(candidate.removedManifestPaths.length,0);
+});
+
 test("Asset Quality prefers registered derivatives only when lineage and savings are explicit",()=>{
   const manifest:AssetManifest=structuredClone(rawManifest);
   const source=manifest.textures.find((item)=>item.path==="/textures/reference/reveal-field.svg")!;
