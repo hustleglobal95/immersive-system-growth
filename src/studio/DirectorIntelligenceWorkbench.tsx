@@ -24,7 +24,7 @@ const starterBrief: DirectorBrief = {
   references: [{ label: "Architectural film", lesson: "Use patient threshold movement and stable horizon; do not copy grading or composition." }],
 };
 
-type IntelligenceTab = "verdict" | "hierarchy" | "council" | "memory" | "originality" | "stress" | "production" | "decisions";
+type IntelligenceTab = "verdict" | "dna" | "art" | "disciplines" | "mutations" | "hierarchy" | "council" | "memory" | "originality" | "stress" | "production" | "decisions";
 
 export function DirectorIntelligenceWorkbench() {
   const [brief, setBrief] = useState<DirectorBrief>(starterBrief);
@@ -61,12 +61,12 @@ export function DirectorIntelligenceWorkbench() {
       <label>Brand truth<textarea value={brief.brandTruth} onChange={(e) => setBrief({ ...brief, brandTruth: e.target.value })} /></label>
       <label>Differentiators<textarea value={brief.differentiators.join("\n")} onChange={(e) => setBrief({ ...brief, differentiators: e.target.value.split("\n").map((x) => x.trim()).filter(Boolean) })} /></label>
       <button className="director-generate" onClick={() => run()}>Run full intelligence</button>
-      <div className="director-intelligence__status"><span>Verdict</span><strong>{report.verdict}</strong><span>Hierarchy</span><strong>{report.hierarchy.overallScore}/10</strong><span>Ceiling</span><strong>{report.ceiling.current} → {report.ceiling.projected}</strong><span>Stress</span><strong>{report.stress.resilienceScore}/10</strong><span>Evidence</span><strong>{Math.round(report.evidence.confidence * 100)}%</strong><span>Production</span><strong>{result.productionPlan.readiness.readyForProduction ? "AUTHORIZED" : "HELD"}</strong></div>
+      <div className="director-intelligence__status"><span>Verdict</span><strong>{report.verdict}</strong><span>Hierarchy</span><strong>{report.hierarchy.overallScore}/10</strong><span>Creative ceiling</span><strong>{result.creativeCeiling.current} → {result.creativeCeiling.projected}</strong><span>Stress</span><strong>{report.stress.resilienceScore}/10</strong><span>Evidence</span><strong>{Math.round(report.evidence.confidence * 100)}%</strong><span>Production</span><strong>{result.productionPlan.readiness.readyForProduction ? "AUTHORIZED" : "HELD"}</strong></div>
     </aside>
 
     <div className="director-intelligence__stage">
       <header className="director-intelligence__hero"><div><span className="director-kicker">SELECTED DIRECTION</span><h2>{selected.name}</h2><p>{report.treatment.thesis}</p></div><div className={`director-intelligence__verdict is-${report.verdict.toLowerCase().replaceAll(" ", "-")}`}><span>DIRECTOR VERDICT</span><strong>{report.verdict}</strong><small>{report.blockers.length} creative blocker{report.blockers.length === 1 ? "" : "s"} · {result.humanGates.pending.length} human gate{result.humanGates.pending.length === 1 ? "" : "s"}</small></div></header>
-      <nav className="director-tabs">{(["verdict","hierarchy","council","memory","originality","stress","production","decisions"] as const).map((item) => <button key={item} className={tab === item ? "is-active" : ""} onClick={() => setTab(item)}>{item}</button>)}</nav>
+      <nav className="director-tabs">{(["verdict","dna","art","disciplines","mutations","hierarchy","council","memory","originality","stress","production","decisions"] as const).map((item) => <button key={item} className={tab === item ? "is-active" : ""} onClick={() => setTab(item)}>{item}</button>)}</nav>
 
       {tab === "verdict" && <Panel title="Verdict & evidence"><MetricGrid items={[["Concept", report.selectedEvaluation.scores.conceptualClarity],["Brand",report.selectedEvaluation.scores.brandAdherence],["Distinctive",report.selectedEvaluation.scores.distinctiveness],["Portfolio novelty",report.selectedEvaluation.scores.portfolioNovelty],["Feasibility",report.selectedEvaluation.scores.productionFeasibility],["Mobile",report.selectedEvaluation.scores.mobileIntegrity]]} />
         <List title="Creative blockers" items={report.blockers} /><List title="Unknowns" items={report.evidence.unknowns} /><List title="Unsupported hypotheses" items={report.evidence.unsupportedClaims} />
