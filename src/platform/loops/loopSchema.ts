@@ -79,6 +79,7 @@ export const loopRunReportSchema=z.object({
   runId:z.string().min(1).max(160),
   loopId:z.string().min(1).max(100),
   projectId:z.string().max(100).optional(),
+  sourceVersionId:z.string().max(160).optional(),
   objective:z.string().min(1).max(1200),
   status:loopStatusSchema,
   startedAt:z.iso.datetime(),
