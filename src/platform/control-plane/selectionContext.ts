@@ -7,7 +7,7 @@ export type ForgeSelection =
   | { kind:"scene"; index:number }
   | { kind:"camera"; index:number }
   | { kind:"node"; index:number; name:string }
-  | { kind:"asset"; index:number }
+  | { kind:"asset"; index:number; sceneIndex:number }
   | { kind:"environment"; index:number };
 
 export type SelectionIssueSeverity="info"|"warning"|"blocker";
@@ -61,7 +61,7 @@ export function resolveSelectionContext(input:{
   selection:ForgeSelection;
   validationIssues?:string[];
 }):SelectionContext {
-  const sceneIndex=clampSceneIndex(input.selection.index,input.experience.scenes.length);
+  const sceneIndex=clampSceneIndex(input.selection.kind==="asset" ? input.selection.sceneIndex : input.selection.index,input.experience.scenes.length);
   const scene=input.experience.scenes[sceneIndex];
   const manifestHealth=analyzeAssetManifest(input.manifest);
   const assets=flattenAssets(input.manifest);
@@ -139,7 +139,7 @@ export function resolveSelectionContext(input:{
 }
 
 function normalizeSelection(selection:ForgeSelection,index:number):ForgeSelection {
-  if(selection.kind==="node") return {...selection,index};
+  if(selection.kind==="asset") return {...selection,sceneIndex:index};
   return {...selection,index};
 }
 
