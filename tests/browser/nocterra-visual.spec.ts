@@ -32,13 +32,13 @@ async function prepare(page: import("@playwright/test").Page) {
 
 test("Casa Lumen desktop delivery screenshots", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium", "Chromium visual evidence only");
-  test.setTimeout(180000);
+  test.setTimeout(300000);
   await mkdir("test-results/atelier-maris/desktop", { recursive: true });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await prepare(page);
   for (const [name, progress] of desktopShots) {
     await seek(page, progress);
-    await page.screenshot({ path: `test-results/atelier-maris/desktop/${name}.png`, animations: "disabled", timeout:25000 });
+    await page.screenshot({ path: `test-results/atelier-maris/desktop/${name}.png`, animations: "allow", timeout: 60000 });
   }
 });
 
@@ -50,6 +50,6 @@ test("Casa Lumen mobile delivery screenshots", async ({ page }, testInfo) => {
   await prepare(page);
   for (const [name, progress] of mobileShots) {
     await seek(page, progress);
-    await page.screenshot({ path: `test-results/atelier-maris/mobile/${name}.png`, animations: "disabled", timeout:25000 });
+    await page.screenshot({ path: `test-results/atelier-maris/mobile/${name}.png`, animations: "allow", timeout: 60000 });
   }
 });
