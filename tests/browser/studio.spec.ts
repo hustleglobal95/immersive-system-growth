@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 async function openAdvanced(page:import("@playwright/test").Page,label:RegExp) {
-  await page.getByText("Advanced", { exact: true }).click();
+  await page.getByRole("button", { name: "Advanced", exact: true }).click();
   await page.getByRole("button", { name: label }).click();
 }
 
