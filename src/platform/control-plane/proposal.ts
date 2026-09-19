@@ -40,6 +40,12 @@ export const forgeProposalSchema=z.object({
     }).strict()).max(8).default([]),
   }).strict(),
   explanation:z.string().min(1).max(1200),
+  changes:z.array(z.object({
+    path:z.string().min(1).max(300),
+    before:z.string().max(300),
+    after:z.string().max(300),
+    summary:z.string().min(1).max(500),
+  }).strict()).max(48).default([]),
   candidate:z.object({
     experiencePath:z.string().max(1000).optional(),
     assetManifestPath:z.string().max(1000).optional(),
@@ -81,6 +87,7 @@ export function createProposalDraft(input:{
       results:input.capability.verifiers.map((verifier)=>({verifier,status:"pending",detail:""})),
     },
     explanation:`${input.capability.description} Target: ${input.context.label}.`,
+    changes:[],
   });
 }
 
@@ -89,7 +96,9 @@ export function proposalRequiresPreview(proposal:ForgeProposal) {
 }
 
 export function proposalCanMutateAuthoritativeState(proposal:ForgeProposal) {
-  return proposal.riskClass==="approval-required" && proposal.state==="accepted";
+  if(proposal.riskClass!=="approval-required" || proposal.state!=="accepted") return false;
+  const results=new Map(proposal.verification.results.map((result)=>[result.verifier,result.status]));
+  return proposal.verification.required.every((verifier)=>results.get(verifier)==="passed");
 }
 
 function mutationScope(capability:ResolvedCapability,context:SelectionContext) {
