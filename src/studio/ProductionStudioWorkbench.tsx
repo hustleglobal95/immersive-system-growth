@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { readStored, useClientValue, useStoredValue } from "@/src/lib/useClientValue";
+import { readStored, useClientValue, useStoredValue, writeStored } from "@/src/lib/useClientValue";
 import rawExperience from "@/config/experience.json";
 import rawProject from "@/config/studio-project.json";
 import rawAssetManifest from "@/config/asset-manifest.json";
@@ -80,7 +80,6 @@ export function ProductionStudioWorkbench() {
   const [candidateAssetManifest, setCandidateAssetManifest] = useState<AssetManifest | null>(null);
   const [candidateInteractionGraph, setCandidateInteractionGraph] = useState<typeof initialGraph | null>(null);
   const [previewMode, setPreviewMode] = useState<"current"|"candidate">("current");
-  const [missionDecisionIds,setMissionDecisionIds] = useState<string[]>([]);
   const importRef = useRef<HTMLInputElement>(null);
 
   const sceneIndex = Math.min(activeScene, draft.experience.scenes.length - 1);
@@ -120,27 +119,22 @@ export function ProductionStudioWorkbench() {
       return null;
     }
   }, [draft.assetManifest,draft.experience,draft.project.name,guideBrief]);
-  useEffect(() => {
-    if(!mission) {
-      setMissionDecisionIds([]);
-      return;
-    }
+  const missionDecisionKey=mission ? `forge-mission-decisions-${mission.id}` : "forge-mission-decisions-none";
+  const missionDecisionRaw=useStoredValue(missionDecisionKey);
+  const missionDecisionIds=useMemo(()=>{
+    if(!missionDecisionRaw) return [];
     try {
-      const stored=window.localStorage.getItem(`forge-mission-decisions-${mission.id}`);
-      const parsed=stored ? JSON.parse(stored) : [];
-      setMissionDecisionIds(Array.isArray(parsed) ? parsed.filter((item):item is string=>typeof item==="string") : []);
+      const parsed=JSON.parse(missionDecisionRaw);
+      return Array.isArray(parsed) ? parsed.filter((item):item is string=>typeof item==="string") : [];
     } catch {
-      setMissionDecisionIds([]);
+      return [];
     }
-  }, [mission?.id]);
+  },[missionDecisionRaw]);
   const missionPlan = useMemo(() => mission ? buildMissionPlan({mission,health:projectHealth,completedDecisionIds:missionDecisionIds}) : null, [mission,missionDecisionIds,projectHealth]);
   const approveMissionDecision = (id:string) => {
     if(!mission) return;
-    setMissionDecisionIds((current)=>{
-      const next=current.includes(id) ? current : [...current,id];
-      try { window.localStorage.setItem(`forge-mission-decisions-${mission.id}`,JSON.stringify(next)); } catch { /* persistence can be blocked */ }
-      return next;
-    });
+    const next=missionDecisionIds.includes(id) ? missionDecisionIds : [...missionDecisionIds,id];
+    writeStored(missionDecisionKey,JSON.stringify(next));
     setNotice("Mission decision approved. Forge recalculated the dependent production plan.");
   };
   const guideSeen = useClientValue(() => readStored("forge-studio-guided-first-run-v1"), "");
