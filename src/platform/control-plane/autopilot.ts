@@ -36,8 +36,8 @@ export function decideAutopilot(step:MissionPlanStep,mode:OperatorMode):Autopilo
   if(capability.riskClass==="preview-required" || step.autonomy==="preview") {
     return {stepId:step.id,disposition:"prepare-review",reason:"Forge may prepare and verify the candidate, but acceptance stays human."};
   }
-  if(mode==="copilot" || mode==="autopilot") {
-    return {stepId:step.id,disposition:"execute",reason:"Capability is bounded and reversible, so Forge may execute the operation."};
+  if(capability.riskClass==="instant-reversible" && (mode==="copilot" || mode==="autopilot")) {
+    return {stepId:step.id,disposition:"execute",reason:"Capability is explicitly instant-reversible, so Forge may execute the operation."};
   }
   return {stepId:step.id,disposition:"recommend",reason:"Operation remains advisory."};
 }
