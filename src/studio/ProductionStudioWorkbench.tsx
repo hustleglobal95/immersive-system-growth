@@ -353,6 +353,7 @@ export function ProductionStudioWorkbench() {
           if (!response.ok) throw new Error(payload.error ?? "Project could not be opened.");
           draft.setExperience(parseExperience(payload.experience));
           draft.setProject(parseStudioProject(payload.project));
+          draft.setAssetManifest(parseAssetManifest(payload.assetManifest));
           draft.setInteractionGraph(parseInteractionGraph(payload.interactionGraph));
           setActiveScene(0);
           setSelection({ kind: "scene", index: 0 });
