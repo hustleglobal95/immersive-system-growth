@@ -2,8 +2,17 @@ import { loopDefinitionSchema, type LoopDefinition } from "@/src/platform/loops/
 
 const common={
   version:1 as const,
-  acceptance:{ requireHardGates:true as const,requireCandidateWin:true as const,minPreferenceAgreement:0.67,maxMotionRegression:3 },
-  memory:{ runEvidence:true as const,projectJournal:"summary" as const,forgeLearning:"manual-promotion" as const },
+  acceptance:{
+    requireHardGates:true as const,
+    requireCandidateWin:true as const,
+    minPreferenceAgreement:0.67,
+    maxMotionRegression:3,
+  },
+  memory:{
+    runEvidence:true as const,
+    projectJournal:"summary" as const,
+    forgeLearning:"manual-promotion" as const,
+  },
   humanGates:[
     "Never overwrite the authoritative production experience automatically.",
     "Human approval is required before a loop artifact replaces a Project Vault checkpoint or production config.",
@@ -21,6 +30,7 @@ const definitions:LoopDefinition[]=[
     worker:"visual-repair",
     executable:true,
     verifiers:["schema","functional","motion","mobile","visual"],
+    allowedRepairCommands:["scene.adjustPresentation","motion.applyArchetype","camera.applyChoreography"],
     strategies:[
       { id:"hierarchy-first",label:"Hierarchy first",instruction:"Prioritize focal hierarchy, negative space, crop, copy/subject separation and restrained presentation. Preserve the defining visual idea." },
       { id:"camera-first",label:"Camera first",instruction:"Prioritize lens character, framing, motivated camera travel and subject presence. Avoid gratuitous movement or changing narrative meaning." },
@@ -37,6 +47,7 @@ const definitions:LoopDefinition[]=[
     worker:"visual-repair",
     executable:true,
     verifiers:["schema","functional","motion","mobile","visual"],
+    allowedRepairCommands:["scene.adjustPresentation","motion.applyArchetype","camera.applyChoreography"],
     strategies:[
       { id:"mobile-composition",label:"Mobile composition",instruction:"Judge mobile first. Repair crop, negative space, type/subject separation and visual hierarchy without flattening the concept into a generic stacked layout." },
       { id:"mobile-camera",label:"Mobile camera",instruction:"Judge mobile first. Reduce or redirect camera travel only when necessary to preserve subject readability, orientation and the intended cinematic beat." },
@@ -53,6 +64,7 @@ const definitions:LoopDefinition[]=[
     worker:"visual-repair",
     executable:true,
     verifiers:["schema","functional","motion","mobile","visual"],
+    allowedRepairCommands:["motion.applyArchetype","camera.applyChoreography"],
     strategies:[
       { id:"continuity-first",label:"Continuity first",instruction:"Prioritize boundary continuity, reversible state, motivated handoffs and elimination of abrupt spatial or temporal changes." },
       { id:"camera-cadence",label:"Camera cadence",instruction:"Prioritize camera velocity, lens/framing rhythm, settling behavior and coordination with subject movement." },
@@ -69,7 +81,10 @@ const definitions:LoopDefinition[]=[
     worker:"performance-repair",
     executable:false,
     verifiers:["schema","functional","performance","mobile","visual"],
-    allowedRepairCommands:["scene.adjustPresentation"],\n    strategies:[{ id:"lowest-risk",label:"Lowest-risk optimization",instruction:"Optimize the dominant measured bottleneck first and preserve visual equivalence. Do not guess at performance work without measurement." }],
+    allowedRepairCommands:["scene.adjustPresentation"],
+    strategies:[
+      { id:"lowest-risk",label:"Lowest-risk optimization",instruction:"Optimize the dominant measured bottleneck first and preserve visual equivalence. Do not guess at performance work without measurement." },
+    ],
     budgets:{ maxCycles:4,maxCandidatesPerCycle:2,maxCandidateAttempts:8,maxWallTimeMs:1_200_000,noProgressLimit:2 },
   },
   {
@@ -81,7 +96,10 @@ const definitions:LoopDefinition[]=[
     worker:"asset-repair",
     executable:false,
     verifiers:["schema","assets","performance","visual"],
-    allowedRepairCommands:["scene.adjustPresentation"],\n    strategies:[{ id:"production-suitability",label:"Production suitability",instruction:"Prioritize geometry, topology, materials, texture resolution, rig semantics and camera suitability before aesthetic variation." }],
+    allowedRepairCommands:["scene.adjustPresentation"],
+    strategies:[
+      { id:"production-suitability",label:"Production suitability",instruction:"Prioritize geometry, topology, materials, texture resolution, rig semantics and camera suitability before aesthetic variation." },
+    ],
     budgets:{ maxCycles:3,maxCandidatesPerCycle:3,maxCandidateAttempts:9,maxWallTimeMs:1_800_000,noProgressLimit:1 },
   },
   {
@@ -93,7 +111,10 @@ const definitions:LoopDefinition[]=[
     worker:"construction",
     executable:false,
     verifiers:["schema","functional","assets","motion","mobile","performance","accessibility","visual"],
-    allowedRepairCommands:["scene.adjustPresentation","motion.applyArchetype","camera.applyChoreography"],\n    strategies:[{ id:"full-system",label:"Full-system construction",instruction:"Resolve hierarchy and asset blockers before polish. Build the smallest coherent system that satisfies the creative thesis and production contract." }],
+    allowedRepairCommands:["scene.adjustPresentation","motion.applyArchetype","camera.applyChoreography"],
+    strategies:[
+      { id:"full-system",label:"Full-system construction",instruction:"Resolve hierarchy and asset blockers before polish. Build the smallest coherent system that satisfies the creative thesis and production contract." },
+    ],
     budgets:{ maxCycles:5,maxCandidatesPerCycle:3,maxCandidateAttempts:15,maxWallTimeMs:3_600_000,noProgressLimit:2 },
   },
 ].map((definition)=>loopDefinitionSchema.parse(definition));
