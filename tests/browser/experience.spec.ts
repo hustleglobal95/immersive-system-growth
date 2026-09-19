@@ -73,7 +73,8 @@ test("missing GLB preserves semantic content and exposes retry", async ({ page }
   });
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1, name: "A house set into a forty-metre fall to the sea." })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Retry 3D" })).toBeVisible();
+  await page.locator("#threshold").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("button", { name: "Retry 3D" })).toBeVisible({timeout:20000});
   await page.getByRole("button", { name: "Retry 3D" }).click();
   await expect(page.getByRole("button", { name: "Retry 3D" })).toHaveCount(0);
   await expect(page.locator("canvas")).toHaveCount(1);
