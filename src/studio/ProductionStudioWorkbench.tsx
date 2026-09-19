@@ -542,7 +542,7 @@ export function ProductionStudioWorkbench() {
               nextActions={nextActions}
               onCapability={(capability)=>runCapability(capability)}
             />
-            <Inspector selection={selection} experience={draft.experience} setExperience={draft.setExperience} sceneIndex={sceneIndex} archetype={archetype} setArchetype={setArchetype} applyArchetype={applyArchetype} buildSelectedNode={buildSelectedNode} resetSceneMotion={resetSceneMotion} openAdvanced={openAdvanced} />
+            <RefinePanel context={selectionContext} experience={draft.experience} setExperience={draft.setExperience} openAdvanced={openAdvanced} />
           </aside>
 
           <section className="production-bottom">
@@ -624,13 +624,62 @@ function ContextualDirection({ context, capabilities, proposal, nextActions, onC
   </section>;
 }
 
-function Inspector({ selection, experience, setExperience, sceneIndex, archetype, setArchetype, applyArchetype, buildSelectedNode, resetSceneMotion, openAdvanced }: { selection: Selection; experience: ExperienceConfig; setExperience: ReturnType<typeof useStudioDraft>["setExperience"]; sceneIndex: number; archetype: MotionArchetypeName; setArchetype: (value: MotionArchetypeName) => void; applyArchetype: (value?: MotionArchetypeName) => void; buildSelectedNode: (node: string) => void; resetSceneMotion: () => void; openAdvanced: (target?:Workspace) => void }) {
-  const scene = experience.scenes[sceneIndex];
-  if (selection.kind === "camera") return <div className="production-inspector"><Section title="Lens"><label>Start FOV<input type="number" min="12" max="100" value={scene.camera.from.fov} onChange={(event) => updateScene(setExperience, sceneIndex, (current) => ({ ...current, camera: { ...current.camera, from: { ...current.camera.from, fov: Number(event.target.value) } } }))} /></label><label>End FOV<input type="number" min="12" max="100" value={scene.camera.to.fov} onChange={(event) => updateScene(setExperience, sceneIndex, (current) => ({ ...current, camera: { ...current.camera, to: { ...current.camera.to, fov: Number(event.target.value) } } }))} /></label></Section><Section title="Camera motion"><select value={archetype} onChange={(event) => setArchetype(event.target.value as MotionArchetypeName)}>{motionArchetypeCatalog.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select><button type="button" className="primary" onClick={() => applyArchetype()}>Apply coordinated motion</button><button type="button" onClick={() => openAdvanced("Motion")}>Open camera sequencer</button></Section></div>;
-  if (selection.kind === "node") return <div className="production-inspector"><Section title="Selected rig node"><div className="production-readout"><span>Target</span><strong>{selection.name}</strong></div><div className="production-readout"><span>Existing tracks</span><strong>{scene.motionTracks.filter((track) => track.target.startsWith(`rig:${selection.name}:`)).length}</strong></div></Section><Section title="Motion"><button type="button" className="primary" onClick={() => buildSelectedNode(selection.name)}>Build + reveal</button><button type="button" onClick={() => openAdvanced("Motion")}>Fine tune tracks</button></Section></div>;
-  if (selection.kind === "environment") return <div className="production-inspector"><Section title="World"><label>Exposure<input type="range" min="0.2" max="2.5" step="0.01" value={scene.world.exposure} onChange={(event) => updateScene(setExperience, sceneIndex, (current) => ({ ...current, world: { ...current.world, exposure: Number(event.target.value) } }))} /></label><label>Key light<input type="range" min="0" max="10" step="0.05" value={scene.world.key} onChange={(event) => updateScene(setExperience, sceneIndex, (current) => ({ ...current, world: { ...current.world, key: Number(event.target.value) } }))} /></label><label>Ambient<input type="range" min="0" max="3" step="0.02" value={scene.world.ambient} onChange={(event) => updateScene(setExperience, sceneIndex, (current) => ({ ...current, world: { ...current.world, ambient: Number(event.target.value) } }))} /></label></Section><Section title="Post"><label>Bloom<input type="range" min="0" max="2" step="0.01" value={scene.post.bloom} onChange={(event) => updateScene(setExperience, sceneIndex, (current) => ({ ...current, post: { ...current.post, bloom: Number(event.target.value) } }))} /></label><label>Vignette<input type="range" min="0" max="1" step="0.01" value={scene.post.vignette} onChange={(event) => updateScene(setExperience, sceneIndex, (current) => ({ ...current, post: { ...current.post, vignette: Number(event.target.value) } }))} /></label></Section></div>;
-  if (selection.kind === "asset") return <div className="production-inspector"><Section title="Asset"><p className="production-muted">Asset diagnostics, replacement and assignment use Forge&apos;s advanced asset tools.</p><button type="button" className="primary" onClick={() => openAdvanced("Assets")}>Open asset tools</button></Section></div>;
-  return <div className="production-inspector"><Section title="Scene"><label>Name<input value={scene.label} onChange={(event) => updateScene(setExperience, sceneIndex, (current) => ({ ...current, label: event.target.value }))} /></label><label>Eyebrow<input value={scene.copy.eyebrow} onChange={(event) => updateScene(setExperience, sceneIndex, (current) => ({ ...current, copy: { ...current.copy, eyebrow: event.target.value } }))} /></label><label>Headline<textarea rows={3} value={scene.copy.headline} onChange={(event) => updateScene(setExperience, sceneIndex, (current) => ({ ...current, copy: { ...current.copy, headline: event.target.value } }))} /></label><label>Body<textarea rows={4} value={scene.copy.body} onChange={(event) => updateScene(setExperience, sceneIndex, (current) => ({ ...current, copy: { ...current.copy, body: event.target.value } }))} /></label></Section><Section title="Motion composer"><select value={archetype} onChange={(event) => setArchetype(event.target.value as MotionArchetypeName)}>{motionArchetypeCatalog.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select><p className="production-muted">{motionArchetypeCatalog.find((item) => item.id === archetype)?.description}</p><button type="button" className="primary" onClick={() => applyArchetype()}>Apply motion</button><button type="button" onClick={resetSceneMotion}>Reset scene motion</button><button type="button" onClick={() => openAdvanced("Motion")}>Advanced sequencer</button></Section></div>;
+function RefinePanel({ context, experience, setExperience, openAdvanced }: {
+  context:SelectionContext;
+  experience:ExperienceConfig;
+  setExperience:ReturnType<typeof useStudioDraft>["setExperience"];
+  openAdvanced:(target?:Workspace)=>void;
+}) {
+  const scene=experience.scenes[context.sceneIndex];
+
+  if(context.kind==="camera") return <div className="production-inspector">
+    <Section title="Shot state">
+      <div className="production-readout"><span>Path</span><strong>{scene.camera.path}</strong></div>
+      <div className="production-readout"><span>Lens</span><strong>{scene.camera.from.fov}° → {scene.camera.to.fov}°</strong></div>
+      <div className="production-readout"><span>Mobile translation</span><strong>{scene.mobileCamera ? "Authored" : "Needs direction"}</strong></div>
+    </Section>
+    <Section title="Fine tune"><p className="production-muted">Exact camera vectors, lens timing, curves and recording stay in the Sequencer.</p><button type="button" onClick={()=>openAdvanced("Motion")}>Open Sequencer</button></Section>
+  </div>;
+
+  if(context.kind==="node") return <div className="production-inspector">
+    <Section title="Selected object">
+      <div className="production-readout"><span>Rig node</span><strong>{context.selection.kind==="node" ? context.selection.name : context.label}</strong></div>
+      <div className="production-readout"><span>Authored tracks</span><strong>{context.state.selectedNodeTrackCount}</strong></div>
+      <div className="production-readout"><span>Interaction references</span><strong>{context.state.interactionReferenceCount}</strong></div>
+    </Section>
+    <Section title="Fine tune"><button type="button" onClick={()=>openAdvanced("Motion")}>Motion tracks</button><button type="button" onClick={()=>openAdvanced("Interact")}>Interaction behavior</button></Section>
+  </div>;
+
+  if(context.kind==="environment") return <div className="production-inspector">
+    <Section title="Environment state">
+      <div className="production-readout"><span>Exposure</span><strong>{scene.world.exposure.toFixed(2)}</strong></div>
+      <div className="production-readout"><span>Key light</span><strong>{scene.world.key.toFixed(2)}</strong></div>
+      <div className="production-readout"><span>Bloom</span><strong>{scene.post.bloom.toFixed(2)}</strong></div>
+      <div className="production-readout"><span>Pressure</span><strong>{context.state.postPressure}</strong></div>
+    </Section>
+    <Section title="Fine tune"><p className="production-muted">Exact lighting/post timing remains available without cluttering Build.</p><button type="button" onClick={()=>openAdvanced("Motion")}>Open Sequencer</button></Section>
+  </div>;
+
+  if(context.kind==="asset") {
+    const asset=context.selectedAsset;
+    return <div className="production-inspector"><Section title="Selected asset">
+      <div className="production-readout"><span>Type</span><strong>{asset?.kind ?? "Unavailable"}</strong></div>
+      <div className="production-readout"><span>File</span><strong>{asset?.entry.path.split("/").pop() ?? "Missing"}</strong></div>
+      <div className="production-readout"><span>Manifest health</span><strong>{Math.round(context.state.manifestHealth)}/100</strong></div>
+      <p className="production-muted">Replacement, optimization, provenance and GLB diagnostics stay in Asset tools.</p>
+      <button type="button" onClick={()=>openAdvanced("Assets")}>Open Asset tools</button>
+    </Section></div>;
+  }
+
+  return <div className="production-inspector">
+    <Section title="Content">
+      <label>Name<input value={scene.label} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,label:event.target.value}))} /></label>
+      <label>Eyebrow<input value={scene.copy.eyebrow} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,copy:{...current.copy,eyebrow:event.target.value}}))} /></label>
+      <label>Headline<textarea rows={3} value={scene.copy.headline} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,copy:{...current.copy,headline:event.target.value}}))} /></label>
+      <label>Body<textarea rows={4} value={scene.copy.body} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,copy:{...current.copy,body:event.target.value}}))} /></label>
+    </Section>
+    <Section title="Fine tune"><p className="production-muted">Outcome-level direction stays above; exact keyframes and curves are available when needed.</p><button type="button" onClick={()=>openAdvanced("Motion")}>Open Sequencer</button></Section>
+  </div>;
 }
 
 function ReviewSurface({ health, nextActions, proposal, onRun, onBuildScene, onBuild, onAssets, onTelemetry }: {
@@ -714,10 +763,6 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function updateScene(setExperience: ReturnType<typeof useStudioDraft>["setExperience"], index: number, change: (scene: SceneDefinition) => SceneDefinition) {
   setExperience((current) => parseExperience({ ...current, scenes: current.scenes.map((scene, sceneIndex) => sceneIndex === index ? change(scene) : scene) }));
-}
-
-function namespaceTrack(track: MotionTrack, prefix: string): MotionTrack {
-  return { ...track, id: `${prefix}-${track.id}`, keyframes: track.keyframes.map((key) => ({ ...key, id: `${prefix}-${key.id}` })) } as MotionTrack;
 }
 
 function normalizeRanges(scenes: SceneDefinition[]): SceneDefinition[] {
