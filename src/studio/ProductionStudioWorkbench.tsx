@@ -204,6 +204,9 @@ export function ProductionStudioWorkbench() {
       });
       setPreparedProposal(prepared.proposal);
       setCandidateExperience(prepared.candidateExperience);
+      setCandidateAssetManifest(null);
+      setCandidateInteractionGraph(null);
+      setRollbackBundle(null);
       setPreviewMode("candidate");
       setNotice(`${capability.label} prepared. Compare Current vs Candidate before accepting.`);
       return;
@@ -367,7 +370,8 @@ export function ProductionStudioWorkbench() {
     draft.setInteractionGraph(emptyInteractionGraph(id));
     setActiveScene(0);
     setSelection({ kind: "scene", index: 0 });
-    setWorkspace("Create");
+    setSurface("Build");
+    setWorkspace("Motion");
     setAdvanced(false);
     setNewProjectOpen(false);
     setNotice(`${name} created from zero with a valid Forge runtime and starter scene.`);
@@ -399,7 +403,8 @@ export function ProductionStudioWorkbench() {
           draft.setInteractionGraph(parseInteractionGraph(payload.interactionGraph));
           setActiveScene(0);
           setSelection({ kind: "scene", index: 0 });
-          setWorkspace("Create");
+          setSurface("Build");
+          setWorkspace("Motion");
           setAdvanced(false);
           setNotice(`${payload.project.name} opened.`);
         })
@@ -459,15 +464,18 @@ export function ProductionStudioWorkbench() {
     if (!value) return;
     if (value.includes("vault") || value.includes("versions") || value.includes("history")) setVaultOpen(true);
     else if (value.includes("guided")) setGuidedOpen(true);
+    else if (value==="review" || value.includes("project health") || value.includes("review project")) { setSurface("Review"); setAdvanced(false); }
+    else if (value==="build" || value==="create" || value.includes("build workspace") || value.includes("create workspace")) { setSurface("Build"); setAdvanced(false); }
+    else if (value.includes("ship") || value.includes("publish") || value.includes("review release")) { setSurface("Ship"); setAdvanced(false); }
+    else if (value.includes("loop engine") || value==="loops" || value.includes("improvement engine")) { setRequestedLoop(undefined); setLoopOpen(true); }
     else if (value.includes("creative agent")) window.location.assign("/studio/agent");
     else if (value === "director" || value.includes("open director")) window.location.assign("/director");
     else if (value.includes("asset creator") || value.includes("create asset")) window.location.assign("/studio/assets/create");
     else if (value.includes("new project")) setNewProjectOpen(true);
-    else if (value.includes("ship") || value.includes("publish") || value.includes("review release")) { setWorkspace("Ship"); setAdvanced(true); }
-    else if (value.includes("interact")) { setWorkspace("Interact"); setAdvanced(true); }
-    else if (value === "assets" || value.includes("asset workspace")) { setWorkspace("Assets"); setAdvanced(true); }
-    else if (value === "motion" || value.includes("motion workspace")) { setWorkspace("Motion"); setAdvanced(true); }
-    else if (value === "create" || value.includes("create workspace")) { setWorkspace("Create"); setAdvanced(false); }
+    else if (value.includes("interact")) openAdvanced("Interact");
+    else if (value === "assets" || value.includes("asset workspace")) openAdvanced("Assets");
+    else if (value === "motion" || value.includes("motion workspace") || value.includes("sequencer")) openAdvanced("Motion");
+    else if (value.includes("telemetry")) openAdvanced("Telemetry");
     else if (value.includes("new scene") || value.includes("add scene")) addScene();
     else if (value.includes("duplicate")) duplicateScene();
     else if (value.includes("clear motion") || value.includes("reset motion")) resetSceneMotion();
@@ -499,10 +507,10 @@ export function ProductionStudioWorkbench() {
         validationCount={draft.validation.length}
         onClose={closeGuide}
         onNewProject={() => { closeGuide(); setNewProjectOpen(true); }}
-        onOpenCreate={() => { closeGuide(); setWorkspace("Create"); setAdvanced(false); }}
-        onOpenAssets={() => { closeGuide(); setWorkspace("Assets"); setAdvanced(true); }}
-        onOpenMotion={() => { closeGuide(); setWorkspace("Motion"); setAdvanced(true); }}
-        onOpenShip={() => { closeGuide(); setWorkspace("Ship"); setAdvanced(true); }}
+        onOpenCreate={() => { closeGuide(); setSurface("Build"); setAdvanced(false); }}
+        onOpenAssets={() => { closeGuide(); setSurface("Build"); openAdvanced("Assets"); }}
+        onOpenMotion={() => { closeGuide(); setSurface("Build"); openAdvanced("Motion"); }}
+        onOpenShip={() => { closeGuide(); setSurface("Ship"); setAdvanced(false); }}
       />}
       <header className="production-topbar">
         <div className="production-brand"><Link href="/forge">FORGE</Link><span>STUDIO</span></div>
