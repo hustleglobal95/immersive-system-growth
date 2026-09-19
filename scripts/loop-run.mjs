@@ -272,7 +272,7 @@ try {
   else if(report.status==="failed") process.exitCode=2;
 } catch(error) {
   report.status="failed";
-  report.stopReason=error instanceof Error ? error.message : String(error);
+  report.stopReason=boundedReason(error instanceof Error ? error.message : String(error),1000);
   report.endedAt=new Date().toISOString();
   await writeReport().catch(()=>{});
   console.error(report.stopReason);
@@ -326,7 +326,7 @@ async function recordVaultSummary() {
   const detail=[
     report.loopId,
     report.stopReason,
-    report.acceptedImprovements+" accepted improvement(s)",
+    report.acceptedImprovements+" proven candidate improvement(s)",
     report.cycles.length+" cycle(s)",
     "run "+report.runId,
   ].filter(Boolean).join(" · ");
