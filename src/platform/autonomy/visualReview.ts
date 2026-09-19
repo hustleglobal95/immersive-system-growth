@@ -8,6 +8,14 @@ export type VisualCriticDimension =
   | "motion"
   | "continuity"
   | "brand"
+  | "art-direction"
+  | "color"
+  | "lighting"
+  | "material"
+  | "image-direction"
+  | "sound"
+  | "originality"
+  | "craft"
   | "interaction"
   | "mobile"
   | "performance";
@@ -40,7 +48,7 @@ export interface RenderReviewPlan {
 }
 
 const dimensions: VisualCriticDimension[] = [
-  "composition","typography","camera","motion","continuity","brand","interaction","mobile","performance",
+  "composition","typography","camera","motion","continuity","brand","art-direction","color","lighting","material","image-direction","sound","originality","craft","interaction","mobile","performance",
 ];
 
 export function buildRenderReviewPlan(experience: ExperienceConfig, maxSceneSamples = 8): RenderReviewPlan {
