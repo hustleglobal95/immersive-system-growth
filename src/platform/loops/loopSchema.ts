@@ -20,7 +20,7 @@ export const loopAcceptanceSchema=z.object({
   maxMotionRegression:z.number().min(0).max(20),
 }).strict();
 
-export const loopStrategySchema=z.object({
+export const loopRepairCommandSchema=z.enum(["scene.adjustPresentation","motion.applyArchetype","camera.applyChoreography"]);\n\nexport const loopStrategySchema=z.object({
   id:z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   label:z.string().min(1).max(80),
   instruction:z.string().min(12).max(800),
