@@ -5,6 +5,7 @@ import { loopDefinitions } from "@/src/platform/loops/loopRegistry";
 import { capabilityById } from "@/src/platform/control-plane/capabilityRegistry";
 import type { ForgeProposal } from "@/src/platform/control-plane/proposal";
 import type { VerifiedLoopCandidate } from "@/src/platform/control-plane/deepCandidate";
+import { projectStateFingerprint, type ControlPlaneProjectState } from "@/src/platform/control-plane/projectState";
 
 type VaultSummary={ id:string; updatedAt:string; versionCount:number; status:"active"|"archived" };
 
@@ -16,6 +17,7 @@ export function LoopEnginePanel({
   initialLoopId,
   proposal,
   onCandidateReady,
+  workingBundle,
 }:{
   projectId:string;
   projectName:string;
@@ -24,10 +26,12 @@ export function LoopEnginePanel({
   initialLoopId?:string;
   proposal?:ForgeProposal|null;
   onCandidateReady?:(candidate:VerifiedLoopCandidate)=>void;
+  workingBundle:ControlPlaneProjectState;
 }) {
   const initialId=loopDefinitions.find((item)=>item.id===initialLoopId)?.id ?? loopDefinitions[0]?.id ?? "visual-polish";
   const [selectedId,setSelectedId]=useState(initialId);
   const [vaultProject,setVaultProject]=useState<VaultSummary|null>(null);
+  const [vaultSnapshot,setVaultSnapshot]=useState<ControlPlaneProjectState|null|undefined>(undefined);
   const [vaultConfigured,setVaultConfigured]=useState<boolean|null>(null);
   const [criticConnected,setCriticConnected]=useState<boolean|null>(null);
   const [message,setMessage]=useState("");
@@ -61,23 +65,55 @@ export function LoopEnginePanel({
     }).catch(()=>{ if(!cancelled) { setVaultConfigured(false); setCriticConnected(false); } });
     return ()=>{ cancelled=true; };
   },[projectId]);
+  useEffect(()=>{
+    let cancelled=false;
+    if(!vaultProject) {
+      queueMicrotask(()=>{ if(!cancelled) setVaultSnapshot(null); });
+      return ()=>{ cancelled=true; };
+    }
+    setVaultSnapshot(undefined);
+    void fetch(`/api/studio/vault/projects/${encodeURIComponent(projectId)}`,{cache:"no-store"})
+      .then(async(response)=>{
+        const body=await response.json() as {ok?:boolean;snapshot?:ControlPlaneProjectState;error?:string};
+        if(!response.ok || !body.ok || !body.snapshot) throw new Error(body.error ?? "Vault checkpoint could not be read.");
+        if(!cancelled) setVaultSnapshot({
+          experience:body.snapshot.experience,
+          assetManifest:body.snapshot.assetManifest,
+          interactionGraph:body.snapshot.interactionGraph,
+        });
+      })
+      .catch(()=>{ if(!cancelled) setVaultSnapshot(null); });
+    return ()=>{ cancelled=true; };
+  },[projectId,vaultProject?.updatedAt]);
 
   if(!selected) return null;
   const proposalCapability=proposal ? capabilityById(proposal.capabilityId) : null;
+  const workingFingerprint=projectStateFingerprint(workingBundle);
   const proposalBound=Boolean(
     proposal
+    && proposal.baselineFingerprint
     && proposalCapability?.dispatch.type==="loop"
     && proposalCapability.dispatch.loop===selected.id
   );
+  const proposalBaselineMatches=!proposalBound || proposal?.baselineFingerprint===workingFingerprint;
+  const vaultFingerprint=vaultSnapshot ? projectStateFingerprint(vaultSnapshot) : null;
+  const vaultMatchesWorking=Boolean(vaultFingerprint && vaultFingerprint===workingFingerprint);
   const proposalContext=proposalBound && proposal
     ? [proposal.intent.raw,`Selected target: ${proposal.selectionKey}.`,proposal.explanation].join(" ")
     : "";
   const command=`npm run loop:run -- --loop ${selected.id} --project ${projectId}`
-    +(proposalBound && proposal
-      ? ` --proposal-id ${shellQuote(proposal.id)} --selection-key ${shellQuote(proposal.selectionKey)} --context ${shellQuote(proposalContext)}`
+    +(proposalBound && proposal?.baselineFingerprint
+      ? ` --proposal-id ${shellQuote(proposal.id)} --selection-key ${shellQuote(proposal.selectionKey)} --baseline-fingerprint ${shellQuote(proposal.baselineFingerprint)} --context ${shellQuote(proposalContext)}`
       : "");
-  const ready=selected.executable && vaultConfigured===true && vaultProject?.status==="active" && criticConnected===true;
-  const runLabel=criticConnected===false ? "Connect visual critic" : vaultProject?.status==="archived" ? "Unarchive project first" : !vaultProject ? "Save checkpoint first" : ready ? "Copy run command" : "Checking readiness…";
+  const sourceReady=!proposalBound || (proposalBaselineMatches && vaultMatchesWorking);
+  const ready=selected.executable && vaultConfigured===true && vaultProject?.status==="active" && criticConnected===true && sourceReady;
+  const runLabel=proposalBound && !proposalBaselineMatches ? "Proposal is stale — direct again"
+    : proposalBound && vaultProject && vaultSnapshot===undefined ? "Checking current checkpoint…"
+      : proposalBound && vaultProject && !vaultMatchesWorking ? "Save current checkpoint first"
+        : criticConnected===false ? "Connect visual critic"
+          : vaultProject?.status==="archived" ? "Unarchive project first"
+            : !vaultProject ? "Save checkpoint first"
+              : ready ? "Copy run command" : "Checking readiness…";
 
   const copy=async()=>{
     try {
@@ -175,8 +211,8 @@ export function LoopEnginePanel({
           {selected.executable ? <section className="production-loop-run">
             <div>
               <span>PROJECT SOURCE</span>
-              <strong>{criticConnected===false ? "Visual critic connection is required" : vaultProject?.status==="archived" ? "Project is archived in Vault" : vaultProject ? `Vault checkpoint · ${vaultProject.versionCount} version${vaultProject.versionCount===1?"":"s"}` : vaultConfigured===false ? "Project Vault is not configured" : "Save this project to Vault first"}</strong>
-              <p>The runner takes a durable Project Vault snapshot as the incumbent, writes all evidence under <code>test-results/forge-loops</code>, and returns a human-review artifact only if a candidate proves improvement.</p>
+              <strong>{proposalBound && !proposalBaselineMatches ? "Working draft changed after this proposal was prepared" : proposalBound && vaultProject && !vaultMatchesWorking ? "Current Vault checkpoint does not match this working draft" : criticConnected===false ? "Visual critic connection is required" : vaultProject?.status==="archived" ? "Project is archived in Vault" : vaultProject ? `Vault checkpoint · ${vaultProject.versionCount} version${vaultProject.versionCount===1?"":"s"}` : vaultConfigured===false ? "Project Vault is not configured" : "Save this project to Vault first"}</strong>
+              <p>{proposalBound && !proposalBaselineMatches ? "Dismiss and direct the intent again from the current working state." : proposalBound && vaultProject && !vaultMatchesWorking ? "Save the current working project to Vault before running this proposal so the Loop and Current preview share the same incumbent." : "The runner takes a durable Project Vault snapshot as the incumbent, writes all evidence under test-results/forge-loops, and returns a human-review artifact only if a candidate proves improvement."}</p>
             </div>
             <div className="production-loop-command"><code>{command}</code><button type="button" disabled={!ready} onClick={()=>void copy()}>{runLabel}</button></div>
             <div className="production-loop-result-actions">
