@@ -233,6 +233,10 @@ export function ProductionStudioWorkbench() {
       setNotice("The verified Loop result has no active Control Plane proposal to attach to.");
       return;
     }
+    if(!preparedProposal.baselineFingerprint || preparedProposal.baselineFingerprint!==workingFingerprint) {
+      setNotice("Working project changed after this proposal was prepared. Direct the intent again before loading Loop evidence.");
+      return;
+    }
     try {
       const proposal=attachVerifiedLoopCandidate(preparedProposal,candidate);
       setPreparedProposal(proposal);
