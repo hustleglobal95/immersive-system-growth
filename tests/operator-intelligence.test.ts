@@ -107,3 +107,22 @@ test("Continuous Critic converts health evidence into bounded repair recommendat
   assert.ok(report.findings.some((finding)=>finding.domain==="mobile"));
   assert.ok(report.topRepair);
 });
+
+
+test("human Mission gates block dependent automation until explicitly approved",()=>{
+  const experience=fixture();
+  const health=evaluateProjectHealth({experience,manifest,graph,validationIssues:[]});
+  const mission=compileMission({
+    statement:"Create a flagship mechanical watch launch with a precise warm visual world.",
+    projectName:"Decision Gate Test",
+    experience,
+    manifest,
+  });
+  const blocked=buildMissionPlan({mission,health});
+  assert.equal(blocked.steps.find((step)=>step.id==="creative-world")?.status,"ready");
+  assert.equal(blocked.steps.find((step)=>step.id==="motion-0")?.status,"blocked");
+
+  const approved=buildMissionPlan({mission,health,completedDecisionIds:["creative-world"]});
+  assert.equal(approved.steps.find((step)=>step.id==="creative-world")?.status,"complete");
+  assert.equal(approved.steps.find((step)=>step.id==="motion-0")?.status,"ready");
+});
