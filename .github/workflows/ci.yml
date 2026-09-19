@@ -33,7 +33,7 @@ jobs:
           cat /tmp/forge-next.log
           exit 1
       - name: Capture current showcase delivery evidence
-        run: timeout 150s node scripts/capture-showcase.mjs
+        run: timeout 180s node scripts/capture-showcase.mjs
       - name: Stop current Forge production server
         if: always()
         run: |
