@@ -41,7 +41,19 @@ if(criticUrl) {
 
 await fs.mkdir(outputRoot,{ recursive:true });
 const normalized=dedupeFindings(findings);
-const plan=planVisualRepairs({ findings:normalized,reviewPlan:report.plan,experience });
+const rawPlan=planVisualRepairs({ findings:normalized,reviewPlan:report.plan,experience });
+const allowedRaw=String(options["allowed-commands"] || "").trim();
+const allowed=allowedRaw ? new Set(allowedRaw.split(",").map((item)=>item.trim()).filter(Boolean)) : null;
+const allowedCommands=allowed ? rawPlan.commands.filter((command)=>allowed.has(command.type)) : rawPlan.commands;
+const plan=allowed ? {
+  ...rawPlan,
+  commands:allowedCommands,
+  affectedSceneIds:[...new Set(allowedCommands.map((command)=>String(command.input.sceneId)))],
+  summary:[
+    ...rawPlan.summary,
+    `Loop policy allowed ${[...allowed].join(", ")}; ${rawPlan.commands.length-allowedCommands.length} command(s) were withheld.`,
+  ],
+} : rawPlan;
 const result=applyVisualRepairPlan(experience,plan);
 await fs.writeFile(path.join(outputRoot,"visual-findings.json"),JSON.stringify({ version:1,projectContext,criticConnected:Boolean(criticUrl),findings:normalized },null,2)+"\n");
 await fs.writeFile(path.join(outputRoot,"repair-plan.json"),JSON.stringify(plan,null,2)+"\n");
