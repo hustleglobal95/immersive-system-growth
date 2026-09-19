@@ -7,13 +7,15 @@ It does not replace the runtime, Director, Sequencer, Interaction Graph, Asset I
 The default operating model is:
 
 ```text
-select
-→ understand context
-→ expose relevant capabilities
-→ prepare proposal
-→ route to the existing Forge system
-→ verify when required
-→ preview / accept
+Build
+  select → direct → preview → accept
+Review
+  Project Health → next best action → verified candidate
+Ship
+  readiness → checkpoint/review → protected release
+
+Advanced
+  Sequencer / Interactions / Asset tools / Telemetry
 ```
 
 ## Product rule
@@ -208,16 +210,27 @@ A new operator-facing action should:
 
 This keeps the default Studio surface simple even as Forge grows.
 
-## Next milestone
+## Completed PRO+ operating model
 
-The next Control Plane phase is the Intent Compiler + Next Action Engine.
+The Control Plane now implements the full product path:
 
-It should:
+- **Build / Review / Ship** are the only permanent Studio destinations.
+- Sequencer, Interaction Graph, Asset tools and Telemetry are summonable through **Advanced**.
+- the **Intent Compiler** maps short operator direction to capabilities valid for the current Selection Context;
+- the **Next Action Engine** ranks the highest-value unresolved action;
+- **Project Health** is the single readiness abstraction used by Review and enforced by Ship;
+- fast actions produce a reversible candidate before the working draft changes;
+- deep Loop-backed actions enter a verifying proposal state, run through the existing Loop Engine and can reload a verified winning bundle from local Loop evidence;
+- verified deep candidates return to the same **Current / Candidate** review surface as fast actions;
+- accepting a candidate changes only the working draft and can be reverted; Project Vault and release authority remain separate;
+- Guided Ship refuses readiness when Project Health is not ready.
 
-- turn short natural-language direction into a bounded capability selection;
-- rank the highest-value unresolved action;
-- generate proposal plans rather than directly mutating state;
-- introduce Current / Candidate preview for preview-required proposals;
-- preserve the same Capability Registry and Proposal Contract.
+### Deep-candidate bridge
 
-The foundation in this document should remain stable while that layer is added.
+`/api/studio/loops/results` is reviewer-protected and read-only. It scans local Forge Loop evidence, validates the run report, restricts artifact reads to `test-results/forge-loops`, validates the accepted experience/manifest/interaction bundle and returns only a verified winner for the requested project and Loop.
+
+This endpoint does not execute a Loop, accept a run into Project Vault or deploy anything. Its only purpose is to let Studio compare a proven local candidate against the working project before the human decides what to keep.
+
+## PRO+ invariant
+
+New capability should not increase default Studio navigation. It must be discoverable from context, expressible through intent, represented by a proposal, previewable when risk requires it, verifiable by the owning Forge system and available in an expert surface only when deeper control is necessary.
