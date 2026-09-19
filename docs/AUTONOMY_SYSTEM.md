@@ -82,7 +82,7 @@ Stable architecture stays global. Situation-specific knowledge arrives when the 
 
 ## Render review
 
-Visual review operates on deterministic capture states from the normalized Forge timeline. At minimum review:
+Visual review operates on deterministic capture states from the normalized Forge timeline. Creative Intelligence 2 expands the review contract to 17 dimensions:
 
 - composition;
 - typography;
@@ -90,9 +90,19 @@ Visual review operates on deterministic capture states from the normalized Forge
 - motion;
 - continuity;
 - brand specificity;
+- art direction;
+- color;
+- lighting;
+- material;
+- image direction;
+- sound intent;
+- originality;
+- craft;
 - interaction;
 - mobile equivalence;
 - performance.
+
+Originality, material and sound findings remain diagnostic until a truthful domain-specific repair exists; the autonomy layer must not convert those critiques into unrelated generic camera or presentation edits.
 
 Findings must point to a capture, affected Forge systems and an actionable repair. Avoid vague feedback such as "make it more premium."
 
