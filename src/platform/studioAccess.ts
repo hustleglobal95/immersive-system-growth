@@ -5,7 +5,7 @@ export const studioRoles = ["reviewer", "designer", "director", "developer", "ow
 export type StudioRole = (typeof studioRoles)[number];
 export interface StudioIdentity { id: string; name: string; role: StudioRole; }
 
-type StudioAccessEnvironment=Partial<Record<"FORGE_INTERNAL_ACCESS_ENABLED"|"FORGE_INTERNAL_USERS_JSON"|"FORGE_INTERNAL_SESSION_SECRET",string>>;
+type StudioAccessEnvironment={ [key:string]:string|undefined };
 
 const userSchema = z.object({
   id: z.string().regex(/^[a-z0-9][a-z0-9._-]{1,63}$/),
