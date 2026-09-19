@@ -21,7 +21,7 @@ export function resolveCreativeTaste(layers?:CreativeTasteLayers,fallback?:Taste
   if(!layers) return {profile:base,contributions:[],rule:"No learned taste supplied; Director stays brief/evidence led."};
   const entries=(Object.keys(weights) as Array<keyof typeof weights>)
     .map((layer)=>({layer,profile:layers[layer],weight:weights[layer]}))
-    .filter((item):item is {layer:keyof typeof weights;profile:TasteProfile;weight:number}=>Boolean(item.profile));
+    .filter((item):item is {layer:keyof typeof weights;profile:TasteProfile;weight:(typeof weights)[keyof typeof weights]}=>Boolean(item.profile));
   if(!entries.length) return {profile:base,contributions:[],rule:"No learned taste supplied; Director stays brief/evidence led."};
 
   const dimensions={} as Record<TasteDimension,number>;
