@@ -7,6 +7,7 @@ export function createLoopRunReport(input:{
   runId:string;
   definition:LoopDefinition;
   projectId?:string;
+  sourceVersionId?:string;
   source:string;
   baselineFingerprint:string;
   startedAt?:string;
@@ -17,6 +18,7 @@ export function createLoopRunReport(input:{
     runId:input.runId,
     loopId:input.definition.id,
     projectId:input.projectId,
+    sourceVersionId:input.sourceVersionId,
     objective:input.definition.objective,
     status:"running",
     startedAt,
