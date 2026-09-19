@@ -45,7 +45,6 @@ export function StudioVaultPanel({ draft, onClose }: { draft: Draft; onClose: ()
   };
 
   const refreshVersions = async (projectId: string) => {
-    if (!projects.some((project) => project.id === projectId)) { setVersions([]); setEvents([]); return; }
     try {
       const [versionsResponse, journalResponse] = await Promise.all([
         fetch(`/api/studio/vault/projects/${encodeURIComponent(projectId)}/versions`, { cache: "no-store" }),
@@ -63,7 +62,7 @@ export function StudioVaultPanel({ draft, onClose }: { draft: Draft; onClose: ()
   };
 
   useEffect(() => { void refresh(); }, []);
-  useEffect(() => { void refreshVersions(selectedId); }, [selectedId, projects.length]);
+  useEffect(() => { if (selected) void refreshVersions(selectedId); else { setVersions([]); setEvents([]); } }, [selectedId, selected?.versionCount]);
   useEffect(() => { dialogRef.current?.focus(); }, []);
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") onClose(); };
@@ -89,6 +88,7 @@ export function StudioVaultPanel({ draft, onClose }: { draft: Draft; onClose: ()
       setSelectedId(draft.project.id);
       setNote("");
       await refresh();
+      await refreshVersions(draft.project.id);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not save project");
     } finally { setBusy(false); }
@@ -117,6 +117,7 @@ export function StudioVaultPanel({ draft, onClose }: { draft: Draft; onClose: ()
       draft.loadDraft(data.snapshot);
       setMessage(`Restored ${version.label}. The restored state is now the Vault current version.`);
       await refresh();
+      await refreshVersions(selectedId);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not restore version");
     } finally { setBusy(false); }
@@ -146,6 +147,7 @@ export function StudioVaultPanel({ draft, onClose }: { draft: Draft; onClose: ()
       if (!response.ok || !data.ok) throw new Error(data.error ?? "Could not update project");
       setMessage(archived ? "Project archived." : "Project returned to active work.");
       await refresh();
+      await refreshVersions(selected.id);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not update project");
     } finally { setBusy(false); }
