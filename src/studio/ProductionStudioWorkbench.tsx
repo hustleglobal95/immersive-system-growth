@@ -693,6 +693,69 @@ function Inspector({ selection, experience, setExperience, sceneIndex, archetype
   return <div className="production-inspector"><Section title="Scene"><label>Name<input value={scene.label} onChange={(event) => updateScene(setExperience, sceneIndex, (current) => ({ ...current, label: event.target.value }))} /></label><label>Eyebrow<input value={scene.copy.eyebrow} onChange={(event) => updateScene(setExperience, sceneIndex, (current) => ({ ...current, copy: { ...current.copy, eyebrow: event.target.value } }))} /></label><label>Headline<textarea rows={3} value={scene.copy.headline} onChange={(event) => updateScene(setExperience, sceneIndex, (current) => ({ ...current, copy: { ...current.copy, headline: event.target.value } }))} /></label><label>Body<textarea rows={4} value={scene.copy.body} onChange={(event) => updateScene(setExperience, sceneIndex, (current) => ({ ...current, copy: { ...current.copy, body: event.target.value } }))} /></label></Section><Section title="Motion composer"><select value={archetype} onChange={(event) => setArchetype(event.target.value as MotionArchetypeName)}>{motionArchetypeCatalog.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select><p className="production-muted">{motionArchetypeCatalog.find((item) => item.id === archetype)?.description}</p><button type="button" className="primary" onClick={() => applyArchetype()}>Apply motion</button><button type="button" onClick={resetSceneMotion}>Reset scene motion</button><button type="button" onClick={openAdvanced}>Advanced sequencer</button></Section></div>;
 }
 
+function ReviewSurface({ health, nextActions, proposal, onRun, onBuildScene, onBuild, onAssets, onTelemetry }: {
+  health:ReturnType<typeof evaluateProjectHealth>;
+  nextActions:NextAction[];
+  proposal:ForgeProposal|null;
+  onRun:(capability:ResolvedCapability)=>void;
+  onBuildScene:(index:number)=>void;
+  onBuild:()=>void;
+  onAssets:()=>void;
+  onTelemetry:()=>void;
+}) {
+  const blockers=health.issues.filter((issue)=>issue.severity==="blocker").length;
+  const warnings=health.issues.filter((issue)=>issue.severity==="warning").length;
+  return <div className="production-primary-surface production-review-surface">
+    <header className="production-surface-hero">
+      <div><span>REVIEW / PROJECT HEALTH</span><h2>{health.status==="ready" ? "Ready for release review." : health.status==="blocked" ? "Resolve blockers before shipping." : "Production quality needs attention."}</h2><p>One health model combines validation, assets, motion, mobile and interaction readiness. Specialist audits remain underneath this surface.</p></div>
+      <output data-health={health.status}>{Math.round(health.score)}/100 · {health.status.toUpperCase()}</output>
+    </header>
+
+    <section className="production-health-metrics" aria-label="Project health metrics">
+      <article><span>Scenes</span><strong>{health.metrics.scenesWithMotion}/{health.metrics.scenes}</strong><small>with authored motion</small></article>
+      <article><span>Mobile</span><strong>{health.metrics.scenesWithMobileCamera}/{health.metrics.scenes}</strong><small>with mobile camera</small></article>
+      <article><span>Assets</span><strong>{Math.round(health.metrics.manifestHealth)}/100</strong><small>{health.metrics.registeredAssets} registered</small></article>
+      <article><span>Interactions</span><strong>{health.metrics.interactionNodes}</strong><small>graph nodes</small></article>
+    </section>
+
+    <section className="production-health-issues">
+      <div className="production-surface-section-head"><div><span>WHAT NEEDS ATTENTION</span><strong>{blockers} blocker{blockers===1?"":"s"} · {warnings} warning{warnings===1?"":"s"}</strong></div><button type="button" onClick={onBuild}>Back to Build</button></div>
+      {health.issues.length ? health.issues.map((issue)=><article key={issue.id} data-severity={issue.severity}>
+        <div><span>{issue.domain.toUpperCase()}</span><strong>{issue.title}</strong><p>{issue.detail}</p><small>{issue.recommendedAction}</small></div>
+        <div>{typeof issue.sceneIndex==="number" && <button type="button" onClick={()=>onBuildScene(issue.sceneIndex!)}>Open scene</button>}{issue.domain==="assets" && <button type="button" onClick={onAssets}>Asset tools</button>}</div>
+      </article>) : <div className="production-health-clear"><strong>No unresolved production-health issues.</strong><p>Forge still requires the normal release and real-device evidence appropriate to the project.</p></div>}
+    </section>
+
+    <section className="production-review-actions">
+      <div className="production-surface-section-head"><div><span>RECOMMENDED</span><strong>Highest-value next actions</strong></div><button type="button" onClick={onTelemetry}>Real-device evidence</button></div>
+      <div>{nextActions.map((action)=><button type="button" key={action.capability.id} data-urgency={action.urgency} onClick={()=>onRun(action.capability)}><span>{action.urgency.toUpperCase()}</span><strong>{action.capability.label}</strong><small>{action.reason}</small></button>)}</div>
+      {proposal && <aside className="production-review-proposal"><span>ACTIVE PROPOSAL</span><strong>{proposal.intent.raw}</strong><small>{proposal.state} · {proposal.riskClass.replaceAll("-"," ")}</small></aside>}
+    </section>
+  </div>;
+}
+
+function ShipSurface({ draft, health, onReview, onVault, onTelemetry }: {
+  draft:ReturnType<typeof useStudioDraft>;
+  health:ReturnType<typeof evaluateProjectHealth>;
+  onReview:()=>void;
+  onVault:()=>void;
+  onTelemetry:()=>void;
+}) {
+  const summary=health.status==="blocked"
+    ? `${health.issues.filter((issue)=>issue.severity==="blocker").length} blocker${health.issues.filter((issue)=>issue.severity==="blocker").length===1?"":"s"} must be resolved in Review.`
+    : health.status==="attention"
+      ? `${health.issues.filter((issue)=>issue.severity==="warning").length} production warning${health.issues.filter((issue)=>issue.severity==="warning").length===1?"":"s"} remain in Review.`
+      : "Project Health is ready.";
+  return <div className="production-primary-surface production-ship-surface">
+    <header className="production-surface-hero">
+      <div><span>SHIP</span><h2>Review, checkpoint and release.</h2><p>Shipping stays simple because Project Health owns production readiness and the protected release pipeline owns authority.</p></div>
+      <output data-health={health.status}>{Math.round(health.score)}/100 · {health.status.toUpperCase()}</output>
+    </header>
+    <div className="production-ship-actions"><button type="button" onClick={onReview}>Project Health</button><button type="button" onClick={onVault}>Project Vault</button><button type="button" onClick={onTelemetry}>Telemetry</button></div>
+    <PublishPanel project={draft.project} setProject={draft.setProject} experience={draft.experience} assetManifest={draft.assetManifest} validationCount={draft.validation.length} healthReady={health.status==="ready"} healthSummary={summary} />
+  </div>;
+}
+
 function AdvancedWorkspace({ workspace, draft, activeScene, setActiveScene, onClose }: { workspace: Workspace; draft: ReturnType<typeof useStudioDraft>; activeScene: number; setActiveScene: (index: number) => void; onClose: () => void }) {
   return <div className="production-advanced">
     <div className="production-advanced-head"><div><span>{workspace.toUpperCase()} / ADVANCED</span><strong>Full production controls</strong></div><button type="button" onClick={onClose}>← Back to Studio</button></div>
