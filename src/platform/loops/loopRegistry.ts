@@ -111,13 +111,15 @@ const definitions:LoopDefinition[]=[
     description:"Iterate from brief through structure and rendered verification using the full Forge production stack.",
     objective:"Construct a verified final-cut candidate from a grounded brief, then keep only changes that improve rendered output without breaking functional, mobile, performance or accessibility gates.",
     worker:"construction",
-    executable:false,
+    executable:true,
     verifiers:["schema","functional","assets","motion","mobile","performance","accessibility","visual"],
     allowedRepairCommands:["scene.adjustPresentation","motion.applyArchetype","camera.applyChoreography"],
     strategies:[
-      { id:"full-system",label:"Full-system construction",instruction:"Resolve hierarchy and asset blockers before polish. Build the smallest coherent system that satisfies the creative thesis and production contract." },
+      { id:"hierarchy-first",label:"Hierarchy first",instruction:"Use Director hierarchy and construction evidence to coordinate scene motion while protecting one signature peak and reducing decorative pressure in supporting chapters." },
+      { id:"camera-structure",label:"Camera structure",instruction:"Re-author camera interpolation and coordinated motion while preserving every authored camera endpoint, client fact and semantic scene boundary." },
+      { id:"signature-budget",label:"Signature budget",instruction:"Concentrate production intensity around the grounded signature beat and create stillness around it without deleting the core idea on mobile." },
     ],
-    budgets:{ maxCycles:5,maxCandidatesPerCycle:3,maxCandidateAttempts:15,maxWallTimeMs:3_600_000,noProgressLimit:2 },
+    budgets:{ maxCycles:4,maxCandidatesPerCycle:3,maxCandidateAttempts:12,maxWallTimeMs:2_400_000,noProgressLimit:2 },
   },
 ].map((definition)=>loopDefinitionSchema.parse(definition));
 
