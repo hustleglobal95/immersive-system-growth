@@ -66,7 +66,9 @@ test("a brochure grant is signed, expiring and not editable", () => {
   assert.deepEqual(verifyBrochureToken(token, secret), { brochureId: "casa-lumen-brochure" });
   // Wrong secret, tampered signature, tampered claim and an expired grant all fail.
   assert.equal(verifyBrochureToken(token, "another-secret"), null);
-  assert.equal(verifyBrochureToken(token.slice(0, -1) + "X", secret), null);
+  const [body, signature] = token.split(".");
+  const tamperedSignature = `${signature.slice(0, -1)}${signature.endsWith("A") ? "B" : "A"}`;
+  assert.equal(verifyBrochureToken(`${body}.${tamperedSignature}`, secret), null);
   const forged = Buffer.from(JSON.stringify({ b: "private-brochure", e: Date.now() + 60_000 })).toString("base64url");
   assert.equal(verifyBrochureToken(`${forged}.${token.split(".")[1]}`, secret), null);
   assert.equal(verifyBrochureToken(signBrochureToken("x", secret, 1_000, Date.now() - 5_000), secret), null);
