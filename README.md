@@ -27,7 +27,7 @@ The Sequence workspace provides a dope sheet, loopable real-time playback, in/ou
 
 The Interactions workspace authors deterministic trigger, condition, action and state graphs. It can react to scene entry and exit, DOM and WebGL clicks, hover, pointer movement, drag gestures, keyboard, wheel, device orientation, video time, hotspots, idle timers, custom events and runtime completion/cancellation events. Actions can drive sequences, named camera shots, audio, shaders/materials, 3D orbit modes, navigation, quality and motion policy. Every authored value is validated and the graph debugger simulates effects without executing production side effects.
 
-Drafts stay in local browser storage until exported or explicitly published. GitHub credentials remain server-side.
+Drafts stay in local browser storage as the fast working copy. Important projects can be saved to the GitHub-backed **Project Vault** for durable checkpoints, restore history and production memory. Generated provider assets can be promoted through **Asset Vault** before shipping. GitHub and asset-storage credentials remain server-side.
 
 ```bash
 npm run glb:inspect -- public/models/reference/burger.glb
@@ -38,7 +38,7 @@ npm run interaction:validate
 npm run content:sync -- config/studio-project.json
 ```
 
-Read [Studio](docs/STUDIO.md), [motion sequencer](docs/MOTION_SEQUENCER.md), [interaction graph](docs/INTERACTION_GRAPH.md), [mask reveals](docs/MASK_REVEALS.md), [integrations](docs/INTEGRATIONS.md), [telemetry](docs/TELEMETRY.md) and [deployment](docs/DEPLOYMENT.md) before configuring external systems.
+Read [Studio](docs/STUDIO.md), [internal product operations](docs/INTERNAL_PRODUCT.md), [motion sequencer](docs/MOTION_SEQUENCER.md), [interaction graph](docs/INTERACTION_GRAPH.md), [mask reveals](docs/MASK_REVEALS.md), [integrations](docs/INTEGRATIONS.md), [telemetry](docs/TELEMETRY.md) and [deployment](docs/DEPLOYMENT.md) before configuring external systems.
 
 ## Runtime interaction targets
 
