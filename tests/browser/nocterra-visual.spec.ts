@@ -25,7 +25,7 @@ async function seek(page: import("@playwright/test").Page, progress: number) {
 
 async function prepare(page: import("@playwright/test").Page) {
   await page.goto("/", { waitUntil: "domcontentloaded", timeout: 15000 });
-  await page.locator(".scene-canvas canvas").waitFor({ state: "attached", timeout: 10000 });
+  await page.locator("canvas").first().waitFor({ state: "attached", timeout: 10000 });
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(3000);
 }
