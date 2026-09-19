@@ -62,7 +62,7 @@ export function StudioVaultPanel({ draft, onClose }: { draft: Draft; onClose: ()
   };
 
   useEffect(() => { void refresh(); }, []);
-  useEffect(() => { if (selected) void refreshVersions(selectedId); else { setVersions([]); setEvents([]); } }, [selectedId, selected?.versionCount]);
+  useEffect(() => { if (selected) void refreshVersions(selectedId); }, [selectedId, selected?.versionCount]);
   useEffect(() => { dialogRef.current?.focus(); }, []);
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") onClose(); };
@@ -161,7 +161,7 @@ export function StudioVaultPanel({ draft, onClose }: { draft: Draft; onClose: ()
       <div className="production-vault-grid">
         <aside>
           <div className="production-vault-section-head"><span>PROJECTS</span><strong>{projects.filter((project) => project.status === "active").length} active</strong></div>
-          <button type="button" className="production-vault-current" onClick={() => setSelectedId(draft.project.id)}><span>CURRENT DRAFT</span><strong>{draft.project.name}</strong></button>
+          <button type="button" className="production-vault-current" onClick={() => { setSelectedId(draft.project.id); if (!projects.some((project) => project.id === draft.project.id)) { setVersions([]); setEvents([]); } }}><span>CURRENT DRAFT</span><strong>{draft.project.name}</strong></button>
           {projects.map((project) => <button type="button" key={project.id} data-selected={project.id === selectedId} onClick={() => setSelectedId(project.id)}><strong>{project.name}</strong><span>{project.sceneCount} scenes · {project.versionCount} versions</span><small>{project.status} · {new Date(project.updatedAt).toLocaleString()}</small></button>)}
         </aside>
 
