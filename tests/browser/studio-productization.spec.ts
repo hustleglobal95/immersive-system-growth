@@ -10,7 +10,7 @@ test("Studio exposes the guided product shell and keyboard command palette", asy
   await expect(page.getByRole("button", { name: "Build", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Review", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Ship", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Advanced", exact: true })).toBeVisible();
+  await expect(page.locator("details.production-advanced-menu > summary")).toBeVisible();
 
   await page.keyboard.press(process.platform === "darwin" ? "Meta+K" : "Control+K");
   await expect(page.getByRole("dialog", { name: "Go anywhere. Do anything." })).toBeVisible();
@@ -83,7 +83,7 @@ test("Review exposes Project Health and Advanced keeps specialist editors out of
   await expect(page.getByText("REVIEW / PROJECT HEALTH")).toBeVisible();
   await expect(page.getByRole("heading", { name: /Ready for release review|Resolve blockers|Production quality needs attention/ })).toBeVisible();
 
-  await page.getByRole("button", { name: "Advanced", exact: true }).click();
+  await page.locator("details.production-advanced-menu > summary").click();
   await expect(page.getByRole("button", { name: /Sequencer/ })).toBeVisible();
   await expect(page.getByRole("button", { name: /Interactions/ })).toBeVisible();
   await expect(page.getByRole("button", { name: /Asset tools/ })).toBeVisible();
