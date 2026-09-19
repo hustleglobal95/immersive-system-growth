@@ -25,17 +25,21 @@ import { STUDIO_GUIDE_BRIEF_KEY, STUDIO_GUIDE_SHIP_KEY, StudioWorkflowGuide } fr
 import { StudioVaultPanel } from "@/src/studio/StudioVaultPanel";
 import { StudioIdentityBadge } from "@/src/studio/StudioIdentityBadge";
 import { LoopEnginePanel } from "@/src/studio/LoopEnginePanel";
-import { capabilitiesForContext, type ResolvedCapability } from "@/src/platform/control-plane/capabilityRegistry";
+import { capabilitiesForContext, capabilityById, type ResolvedCapability } from "@/src/platform/control-plane/capabilityRegistry";
 import { createProposalDraft, type ForgeProposal } from "@/src/platform/control-plane/proposal";
-import { resolveSelectionContext, type ForgeSelection } from "@/src/platform/control-plane/selectionContext";
+import { resolveSelectionContext, type ForgeSelection, type SelectionContext } from "@/src/platform/control-plane/selectionContext";
 import { compileIntent, compiledCapability, motionArchetypeForIntent } from "@/src/platform/control-plane/intentCompiler";
 import { recommendNextActions } from "@/src/platform/control-plane/nextAction";
 import { evaluateProjectHealth } from "@/src/platform/control-plane/projectHealth";
+import { compileMission } from "@/src/platform/control-plane/mission";
+import { buildMissionPlan, type MissionPlanStep } from "@/src/platform/control-plane/planGraph";
+import { decideAutopilot, type OperatorMode } from "@/src/platform/control-plane/autopilot";
 import { prepareFastProposal } from "@/src/platform/control-plane/fastProposal";
 import { attachVerifiedLoopCandidate, type VerifiedLoopCandidate } from "@/src/platform/control-plane/deepCandidate";
 import { projectStateFingerprint } from "@/src/platform/control-plane/projectState";
 import { ControlPlaneReview } from "@/src/studio/ControlPlaneReview";
 import { ContextualDirection, RefinePanel, ReviewSurface, ShipSurface, type AdvancedWorkspaceName } from "@/src/studio/ControlPlaneSurfaces";
+import { OperatorMissionControl } from "@/src/studio/OperatorMissionControl";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig, SceneDefinition } from "@/src/types/experience";
 
@@ -102,6 +106,20 @@ export function ProductionStudioWorkbench() {
   }), [draft.assetManifest,draft.experience,draft.interactionGraph]);
   const selectionLabel = selectionContext.label;
   const guideBrief = useClientValue(() => readStored(STUDIO_GUIDE_BRIEF_KEY), "");
+  const mission = useMemo(() => {
+    if(guideBrief.trim().length<12) return null;
+    try {
+      return compileMission({
+        statement:guideBrief,
+        projectName:draft.project.name,
+        experience:draft.experience,
+        manifest:draft.assetManifest,
+      });
+    } catch {
+      return null;
+    }
+  }, [draft.assetManifest,draft.experience,draft.project.name,guideBrief]);
+  const missionPlan = useMemo(() => mission ? buildMissionPlan({mission,health:projectHealth}) : null, [mission,projectHealth]);
   const guideSeen = useClientValue(() => readStored("forge-studio-guided-first-run-v1"), "");
   const shippedProjectId = useStoredValue(STUDIO_GUIDE_SHIP_KEY);
   const workflow = useMemo(() => {
@@ -153,14 +171,19 @@ export function ProductionStudioWorkbench() {
     intent=capability.label,
     source:"semantic-action"|"command"|"next-action"|"system"="semantic-action",
     requestedArchetype:MotionArchetypeName=motionArchetypeForIntent(selectionContext,intent),
+    contextOverride:SelectionContext=selectionContext,
   ) => {
+    if(contextOverride.selectionKey!==selectionContext.selectionKey) {
+      setActiveScene(contextOverride.sceneIndex);
+      setSelection(contextOverride.selection);
+    }
     const id=`proposal-${Date.now()}`;
     const createdAt=new Date().toISOString();
     const dispatch=capability.dispatch;
 
     if(dispatch.type==="fast-action") {
       const prepared=prepareFastProposal({
-        id,createdAt,capability,context:selectionContext,experience:draft.experience,intent,baselineFingerprint:workingFingerprint,source,archetype:requestedArchetype,
+        id,createdAt,capability,context:contextOverride,experience:draft.experience,intent,baselineFingerprint:workingFingerprint,source,archetype:requestedArchetype,
       });
       setPreparedProposal(prepared.proposal);
       setCandidateExperience(prepared.candidateExperience);
@@ -171,7 +194,7 @@ export function ProductionStudioWorkbench() {
       return;
     }
 
-    const proposal=createProposalDraft({id,createdAt,capability,context:selectionContext,intent,baselineFingerprint:workingFingerprint,source});
+    const proposal=createProposalDraft({id,createdAt,capability,context:contextOverride,intent,baselineFingerprint:workingFingerprint,source});
     const routedProposal=dispatch.type==="loop" ? {...proposal,state:"verifying" as const} : proposal;
     setPreparedProposal(routedProposal);
     setCandidateExperience(null);
@@ -180,7 +203,7 @@ export function ProductionStudioWorkbench() {
     setPreviewMode("current");
 
     if(dispatch.type==="select") {
-      if(dispatch.target==="camera") setSelection({kind:"camera",index:sceneIndex});
+      if(dispatch.target==="camera") setSelection({kind:"camera",index:contextOverride.sceneIndex});
       setNotice(`${capability.label} selected.`);
       return;
     }
@@ -192,7 +215,7 @@ export function ProductionStudioWorkbench() {
     }
     if(dispatch.type==="route") {
       if(dispatch.href==="/studio/agent") {
-        const idea=[intent,`Selected target: ${selectionContext.selectionKey}.`,`Current scene: ${selectionContext.sceneLabel}.`].join(" ");
+        const idea=[intent,`Selected target: ${contextOverride.selectionKey}.`,`Current scene: ${contextOverride.sceneLabel}.`].join(" ");
         window.location.assign(`${dispatch.href}?idea=${encodeURIComponent(idea)}`);
       } else {
         window.location.assign(dispatch.href);
@@ -202,6 +225,47 @@ export function ProductionStudioWorkbench() {
     setRequestedLoop(dispatch.loop);
     setLoopOpen(true);
     setNotice(`${capability.label} prepared as a preview-required proposal.`);
+  };
+
+  const runMissionStep = (step:MissionPlanStep,mode:OperatorMode) => {
+    if(!mission) return;
+    const decision=decideAutopilot(step,mode);
+    if(decision.disposition==="blocked") {
+      setNotice(decision.reason);
+      return;
+    }
+    if(!step.capabilityId || !step.target) {
+      if(step.id==="signature-moment") {
+        setSurface("Review");
+        setNotice(`Signature moment review: ${mission.signatureMoment}`);
+        return;
+      }
+      if(step.id==="final-approval") {
+        setSurface("Ship");
+        setNotice("Final creative approval stays human. Review the protected release surface before publishing.");
+        return;
+      }
+      setNotice(decision.reason);
+      return;
+    }
+    const capability=capabilityById(step.capabilityId);
+    if(!capability) {
+      setNotice(`Mission capability ${step.capabilityId} is unavailable.`);
+      return;
+    }
+    const targetContext=resolveSelectionContext({
+      experience:draft.experience,
+      manifest:draft.assetManifest,
+      graph:draft.interactionGraph,
+      selection:step.target,
+      validationIssues:draft.validation,
+    });
+    if(!capability.selectionKinds.includes(targetContext.kind)) {
+      setNotice(`${capability.label} cannot target ${targetContext.kind} in the current plan.`);
+      return;
+    }
+    const intent=`${step.label}. Mission: ${mission.statement}`;
+    runCapability(capability,intent,"system",motionArchetypeForIntent(targetContext,intent),targetContext);
   };
 
   const acceptCandidate = () => {
@@ -530,7 +594,14 @@ export function ProductionStudioWorkbench() {
               <div className="production-stage-actions"><button type="button" onClick={() => setSelection({ kind: "camera", index: sceneIndex })}>Camera</button><button type="button" onClick={() => openAdvanced("Motion")}>Advanced</button></div>
             </div>
             {workflow.unconfigured && <section className="production-first-run" aria-labelledby="studio-first-run-title"><div><span>START HERE</span><h2 id="studio-first-run-title">What do you want to create?</h2><p>Start with the outcome. Forge will guide assets, scenes, motion, review and publishing without asking you to learn the machinery first.</p></div><div><button type="button" className="primary" onClick={() => setGuidedOpen(true)}>Start Guided Build</button><button type="button" onClick={() => importRef.current?.click()}>Import an existing project</button><button type="button" onClick={() => { setGuideDismissed(true); try { window.localStorage.setItem("forge-studio-guided-first-run-v1", "seen"); } catch { /* storage can be blocked */ } }}>Open Studio anyway</button></div></section>}
-            {!workflow.unconfigured && nextActions[0] && <section className="production-next-action" data-urgency={nextActions[0].urgency}>
+            {!workflow.unconfigured && mission && missionPlan && <OperatorMissionControl
+              mission={mission}
+              plan={missionPlan}
+              health={projectHealth}
+              onExecuteStep={runMissionStep}
+              onEditMission={()=>setGuidedOpen(true)}
+            />}
+            {!workflow.unconfigured && !mission && nextActions[0] && <section className="production-next-action" data-urgency={nextActions[0].urgency}>
               <div><span>NEXT BEST ACTION</span><strong>{nextActions[0].capability.label}</strong><p>{nextActions[0].reason}</p></div>
               <div><button type="button" className="primary" onClick={() => runCapability(nextActions[0].capability,nextActions[0].capability.label,"next-action")}>Do it</button><button type="button" onClick={() => setGuidedOpen(true)}>Guided path · {workflow.completed}/6</button></div>
             </section>}
