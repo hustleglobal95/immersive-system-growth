@@ -347,6 +347,11 @@ try {
           evidence.referencedAssetBytesAfter=Number.isInteger(candidateAssets.referencedBytes) ? candidateAssets.referencedBytes : null;
           if(assetRun.code!==0 || !candidateAssets.intelligence) {
             evidence.hardGateFailures=boundedFailures([...evidence.hardGateFailures,"Candidate asset verification failed."]);
+          } else if(definition.worker==="construction" && candidateAssets.intelligence.findings?.some((finding)=>finding.severity==="blocker")) {
+            evidence.hardGateFailures=boundedFailures([
+              ...evidence.hardGateFailures,
+              ...candidateAssets.intelligence.findings.filter((finding)=>finding.severity==="blocker").map((finding)=>"Asset blocker: "+finding.title+" — "+finding.detail),
+            ]);
           } else if(definition.worker==="asset-repair") {
             const healthGain=(evidence.assetScoreAfter ?? -Infinity)-(evidence.assetScoreBefore ?? -Infinity);
             const byteGain=(evidence.referencedAssetBytesBefore ?? 0)-(evidence.referencedAssetBytesAfter ?? 0);
