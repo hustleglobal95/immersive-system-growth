@@ -44,11 +44,24 @@ export function buildConstructionCandidate(input:{
     manifest:input.manifest,
     variation,
     preferredMedia:prompt.recommendedMedia,
+    creativeDNA:intelligence.creativeDNA,
+    artDirection:intelligence.artDirection,
+    disciplineDirections:intelligence.disciplineDirections,
+    mutations:intelligence.creativeMutations,
   });
   const hierarchyBlockers=intelligence.report.hierarchy.blockers ?? [];
+  const creativeBlockers=[
+    ...(!intelligence.visualLanguageDivergence.sufficient && ["signature","flagship"].includes(intelligence.report.brief.tier)
+      ? intelligence.visualLanguageDivergence.blockers
+      : []),
+    ...(intelligence.creativeMemory.verdict==="rewrite" && ["signature","flagship"].includes(intelligence.report.brief.tier)
+      ? ["Creative Memory requires a rewrite before construction because the selected direction repeats prior creative language."]
+      : []),
+  ];
   const blockers=[
     ...(intelligence.report.verdict==="REJECT" ? ["Director rejected every current territory for this brief."] : []),
     ...hierarchyBlockers,
+    ...creativeBlockers,
     ...(!plan.validation.valid ? plan.validation.errors : []),
     ...(plan.assetSummary.blockedScenes.length
       ? [`Asset-blocked construction scenes: ${plan.assetSummary.blockedScenes.join(", ")}.`]
@@ -85,7 +98,9 @@ export function buildConstructionCandidate(input:{
   const changed=JSON.stringify(candidate)!==JSON.stringify(experience);
   const signatureIndex=signatureSceneIndex(candidate.scenes.length,intelligence.report.treatment.emotionalArc);
   const summary=[
-    `Director territory ${director.territoryId}; construction mode ${director.constructionMode}; hierarchy ${director.hierarchyScore}/10.`,
+    `Director territory ${director.territoryId}; construction mode ${director.constructionMode}; hierarchy ${director.hierarchyScore}/10; creative ceiling ${intelligence.creativeCeiling.current}→${intelligence.creativeCeiling.projected}.`,
+    `Creative DNA: ${intelligence.creativeDNA.northStar}`,
+    `Visual language: ${intelligence.visualLanguages.find((item)=>item.territoryId===director.territoryId)?.modeLabel ?? "directed"}; minimum territory distance ${intelligence.visualLanguageDivergence.minimumDistance}%.`,
     `${buildable.length}/${plan.sceneMoves.length} planned scene moves were asset-ready and eligible for construction.`,
     input.strategy==="hierarchy-first"
       ? "Protected one signature peak and reduced decorative post pressure on lower-intensity chapters."
