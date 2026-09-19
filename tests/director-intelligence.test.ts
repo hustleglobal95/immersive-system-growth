@@ -13,6 +13,8 @@ import { synthesizePostmortem } from "../src/platform/director-intelligence/lear
 import { buildResearchBrief, auditResearchFindings } from "../src/platform/director-intelligence/research";
 import { resolveCreativeTaste } from "../src/platform/director-intelligence/creativeTaste";
 import { reviewCreativeMemory } from "../src/platform/director-intelligence/creativeMemory";
+import { createEmptyMemoryGraph, ingestCreativeIntelligenceMemory, ingestProjectMemory } from "../src/platform/director-intelligence/memory";
+import { deconstructReference } from "../src/platform/director-intelligence/precedents";
 
 const brief = {
   projectName: "Aurelia Tower",
@@ -106,6 +108,43 @@ test("Creative Memory flags repeated house-style signals without turning them in
   assert.ok(["watch","rewrite"].includes(review.verdict));
 });
 
+
+test("approved Creative Intelligence becomes reusable memory without storing unselected mutations",()=>{
+  const result=runDirectorIntelligence({brief});
+  const projectId="aurelia-tower";
+  let graph=ingestProjectMemory(createEmptyMemoryGraph(),projectId,brief,result.report.treatment);
+  const language=result.visualLanguages.find((item)=>item.territoryId===result.report.treatment.selectedTerritoryId)!;
+  graph=ingestCreativeIntelligenceMemory(graph,projectId,brief,{
+    dna:result.creativeDNA,
+    artDirection:result.artDirection,
+    visualLanguage:language,
+    disciplineDirections:result.disciplineDirections,
+  });
+  assert.ok(graph.nodes.some((node)=>node.type==="ArtDirection"));
+  assert.ok(graph.nodes.some((node)=>node.type==="VisualLanguage"));
+  assert.ok(graph.nodes.some((node)=>node.type==="LightingGrammar"));
+  assert.ok(graph.nodes.some((node)=>node.type==="MaterialGrammar"));
+  assert.ok(!graph.nodes.some((node)=>node.type==="CreativeMutation"));
+
+  graph=ingestCreativeIntelligenceMemory(graph,projectId,brief,{
+    dna:result.creativeDNA,
+    artDirection:result.artDirection,
+    visualLanguage:language,
+    disciplineDirections:result.disciplineDirections,
+    selectedMutation:result.creativeMutations[0],
+  });
+  assert.ok(graph.nodes.some((node)=>node.type==="CreativeMutation" && node.id.includes(result.creativeMutations[0].id)));
+});
+
+test("reference deconstruction transfers principles without inventing unseen disciplines",()=>{
+  const deconstruction=deconstructReference("Film study","Stable horizon and slow camera movement. Use a threshold transition into warmer light.");
+  assert.equal(deconstruction.version,2);
+  assert.match(deconstruction.lenses.camera,/Stable horizon|slow camera/i);
+  assert.match(deconstruction.lenses.transitions,/threshold/i);
+  assert.match(deconstruction.lenses.typography,/Not evidenced/);
+  assert.match(deconstruction.transferRule,/Never transfer the reference's exact composition/);
+  assert.ok(deconstruction.doNotCopy.includes("typeface"));
+});
 
 test("portfolio collision catches identical prior work", () => {
   const treatment = directProject(brief);
