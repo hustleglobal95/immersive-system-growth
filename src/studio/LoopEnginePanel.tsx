@@ -19,6 +19,7 @@ export function LoopEnginePanel({
   const [selectedId,setSelectedId]=useState(loopDefinitions[0]?.id ?? "visual-polish");
   const [vaultProject,setVaultProject]=useState<VaultSummary|null>(null);
   const [vaultConfigured,setVaultConfigured]=useState<boolean|null>(null);
+  const [criticConnected,setCriticConnected]=useState<boolean|null>(null);
   const [message,setMessage]=useState("");
   const dialogRef=useRef<HTMLElement>(null);
   const selected=useMemo(()=>loopDefinitions.find((item)=>item.id===selectedId) ?? loopDefinitions[0],[selectedId]);
@@ -31,20 +32,24 @@ export function LoopEnginePanel({
   },[onClose]);
   useEffect(()=>{
     let cancelled=false;
-    void fetch("/api/studio/vault/projects",{cache:"no-store"})
-      .then((response)=>response.json())
-      .then((data:{ ok?:boolean;configuration?:{ configured?:boolean };projects?:VaultSummary[] })=>{
-        if(cancelled) return;
-        setVaultConfigured(Boolean(data.configuration?.configured));
-        setVaultProject((data.projects ?? []).find((project)=>project.id===projectId) ?? null);
-      })
-      .catch(()=>{ if(!cancelled) setVaultConfigured(false); });
+    void Promise.all([
+      fetch("/api/studio/vault/projects",{cache:"no-store"}).then((response)=>response.json()),
+      fetch("/api/studio/loops/status",{cache:"no-store"}).then((response)=>response.json()),
+    ]).then(([vault,status]:[
+      { ok?:boolean;configuration?:{ configured?:boolean };projects?:VaultSummary[] },
+      { ok?:boolean;visualCriticConnected?:boolean }
+    ])=>{
+      if(cancelled) return;
+      setVaultConfigured(Boolean(vault.configuration?.configured));
+      setVaultProject((vault.projects ?? []).find((project)=>project.id===projectId) ?? null);
+      setCriticConnected(Boolean(status.visualCriticConnected));
+    }).catch(()=>{ if(!cancelled) { setVaultConfigured(false); setCriticConnected(false); } });
     return ()=>{ cancelled=true; };
   },[projectId]);
 
   if(!selected) return null;
   const command=`npm run loop:run -- --loop ${selected.id} --project ${projectId}`;
-  const ready=selected.executable && vaultConfigured===true && Boolean(vaultProject);
+  const ready=selected.executable && vaultConfigured===true && Boolean(vaultProject) && criticConnected===true;
 
   const copy=async()=>{
     try {
@@ -113,7 +118,7 @@ export function LoopEnginePanel({
           {selected.executable ? <section className="production-loop-run">
             <div>
               <span>PROJECT SOURCE</span>
-              <strong>{vaultProject ? `Vault checkpoint · ${vaultProject.versionCount} version${vaultProject.versionCount===1?"":"s"}` : vaultConfigured===false ? "Project Vault is not configured" : "Save this project to Vault first"}</strong>
+              <strong>{!criticConnected ? "Visual critic connection is required" : vaultProject ? `Vault checkpoint · ${vaultProject.versionCount} version${vaultProject.versionCount===1?"":"s"}` : vaultConfigured===false ? "Project Vault is not configured" : "Save this project to Vault first"}</strong>
               <p>The runner takes a durable Project Vault snapshot as the incumbent, writes all evidence under <code>test-results/forge-loops</code>, and returns a human-review artifact only if a candidate proves improvement.</p>
             </div>
             <div className="production-loop-command"><code>{command}</code><button type="button" disabled={!ready} onClick={()=>void copy()}>{ready ? "Copy run command" : "Save checkpoint first"}</button></div>
