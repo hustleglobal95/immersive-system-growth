@@ -1,8 +1,10 @@
+import { requireStudioRole, studioAccessErrorResponse } from "@/src/platform/studioAccess";
 import { isPublishSessionAuthorized } from "@/src/platform/studioPublishAuth";
 
 export const runtime = "nodejs";
 
 export async function GET(request: Request) {
+  try { await requireStudioRole(request, "reviewer"); } catch (error) { return studioAccessErrorResponse(error) ?? Response.json({ ok: false, error: "Publish status access failed" }, { status: 500 }); }
   const secret = process.env.FORGE_STUDIO_PUBLISH_SECRET ?? "";
   const response = Response.json({
     ok: true,
