@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { loopRunReportSchema } from "../src/platform/loops/loopSchema.ts";
-import { readVaultProject, saveVaultProject } from "../src/platform/studioVault.ts";
+import { appendVaultJournal, readVaultProject, saveVaultProject } from "../src/platform/studioVault.ts";
 
 const options=args(process.argv.slice(2));
 const reportFile=options.report ? path.resolve(String(options.report)) : "";
@@ -33,6 +33,7 @@ const result=await saveVaultProject({
   report.stopReason || "",
 ].filter(Boolean).join(" · "));
 
+await appendVaultJournal(report.projectId,{ id:slug(actorName),name:actorName,role:"loop-approver" },"loop-accept",`${report.definition.label} accepted · ${report.runId} · ${result.entry.versionId}`);
 console.log("Loop artifact promoted to Project Vault.");
 console.log("Project: "+result.summary.name);
 console.log("Version: "+result.entry.versionId);
