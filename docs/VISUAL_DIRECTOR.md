@@ -18,7 +18,7 @@ incumbent config
 
 ## Specialist critics
 
-The Visual Director review contract covers:
+The Visual Director review contract covers 17 dimensions:
 
 - composition
 - typography
@@ -26,6 +26,14 @@ The Visual Director review contract covers:
 - motion
 - continuity
 - brand specificity
+- art direction
+- color
+- lighting
+- material
+- image direction
+- sound intent
+- originality
+- craft
 - interaction
 - mobile equivalence
 - performance
@@ -75,6 +83,8 @@ It cannot change:
 - factual claims
 
 Unsupported or low-confidence findings remain unresolved rather than becoming arbitrary code edits.
+
+Creative Intelligence 2 deliberately keeps **originality, material and sound** findings diagnostic until a domain-specific repair exists. A generic camera, exposure or motion change is not allowed to masquerade as a real originality, material or sonic repair. Art-direction, color, lighting, image-direction and craft findings may use the existing bounded repair surface only when their concrete evidence maps safely to those registered commands.
 
 ## Isolated candidate rendering
 
