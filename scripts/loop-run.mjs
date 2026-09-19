@@ -77,6 +77,7 @@ try {
     const cycleRoot=path.join(workRoot,"cycle-"+String(cycleNumber).padStart(2,"0"));
     const incumbentRoot=path.join(cycleRoot,"incumbent");
     const incumbentMotionPath=path.join(cycleRoot,"incumbent-motion.json");
+    const incumbentPerformancePath=path.join(cycleRoot,"incumbent-performance.json");
     await fs.mkdir(cycleRoot,{recursive:true});
     const incumbentRaw=JSON.parse(await fs.readFile(currentIncumbentPath,"utf8"));
     const incumbentFingerprint=fingerprint(incumbentRaw);
@@ -97,6 +98,12 @@ try {
       "--import","tsx","scripts/autonomy-motion-review.mjs",
       "--url",baseURL,"--experience",currentIncumbentPath,"--variant","incumbent","--output",incumbentMotionPath,"--allow-failures",
     ]);
+    if(definition.verifiers.includes("performance")) {
+      await mustRun(process.execPath,[
+        "--import","tsx","scripts/autonomy-performance-profile.mjs",
+        "--url",baseURL,"--experience",currentIncumbentPath,"--variant","incumbent","--output",incumbentPerformancePath,
+      ]);
+    }
     const seenFingerprints=new Map();
     const priorRepairs=report.cycles.flatMap((item)=>item.candidates.flatMap((candidate)=>candidate.repairSummary ?? []));
     const unresolved=report.cycles.flatMap((item)=>item.candidates.flatMap((candidate)=>candidate.hardGateFailures)).slice(-12);
@@ -139,20 +146,28 @@ try {
           unresolved,
           priorRepairs,
         });
-        const director=await run(process.execPath,[
-          "--import","tsx","scripts/autonomy-visual-director.mjs",
-          "--report",path.join(incumbentRoot,"review-report.json"),
-          "--experience",currentIncumbentPath,
-          "--output",reviewRoot,
-          "--context",context,
-          "--allowed-commands",definition.allowedRepairCommands.join(","),
-        ]);
+        const worker=definition.worker==="performance-repair"
+          ? await run(process.execPath,[
+              "--import","tsx","scripts/autonomy-performance-repair.mjs",
+              "--experience",currentIncumbentPath,
+              "--profile",incumbentPerformancePath,
+              "--output",reviewRoot,
+              "--strategy",strategy.id,
+            ])
+          : await run(process.execPath,[
+              "--import","tsx","scripts/autonomy-visual-director.mjs",
+              "--report",path.join(incumbentRoot,"review-report.json"),
+              "--experience",currentIncumbentPath,
+              "--output",reviewRoot,
+              "--context",context,
+              "--allowed-commands",definition.allowedRepairCommands.join(","),
+            ]);
         const repairPlan=await readJson(path.join(reviewRoot,"repair-plan.json"),null);
         evidence.repairSignature=repairPlanSignature(repairPlan);
         evidence.repairSummary=Array.isArray(repairPlan?.summary) ? repairPlan.summary.slice(0,8).map((item)=>String(item).slice(0,400)) : [];
-        if(director.code!==0 || !(await exists(candidateExperiencePath))) {
+        if(worker.code!==0 || !(await exists(candidateExperiencePath))) {
           const repairResult=await readJson(path.join(reviewRoot,"repair-result.json"),{});
-          evidence.reason=boundedReason(repairResult.errors?.join("; ") || "Visual repair worker did not produce a safe candidate.");
+          evidence.reason=boundedReason(repairResult.errors?.join("; ") || definition.label+" repair worker did not produce a safe candidate.");
           evidence.hardGateFailures=boundedFailures([evidence.reason]);
           cycle.candidates.push(evidence);
           await writeReportWithCyclePreview(cycle);
@@ -208,6 +223,31 @@ try {
         const motionReport=await readJson(motionPath,{});
         const comparisonReport=await readJson(comparisonPath,{});
         evidence.functionalPassed=functionalReport.passed ?? functional.code===0;
+        if(definition.verifiers.includes("performance")) {
+          const perf=await run(process.execPath,[
+            "--import","tsx","scripts/autonomy-performance-profile.mjs",
+            "--url",baseURL,"--experience",currentCandidatePath,"--variant","candidate","--output",candidatePerformancePath,
+          ]);
+          const incumbentPerformance=await readJson(incumbentPerformancePath,{});
+          const candidatePerformance=await readJson(candidatePerformancePath,{});
+          if(perf.code!==0 || !candidatePerformance.summary) {
+            evidence.hardGateFailures=boundedFailures([...evidence.hardGateFailures,"Candidate performance profiling failed."]);
+          } else if(definition.worker==="performance-repair") {
+            const incumbentScore=Number(incumbentPerformance.summary?.score ?? 0);
+            const candidateScore=Number(candidatePerformance.summary?.score ?? 0);
+            const incumbentP95=Number(incumbentPerformance.summary?.worstRafP95 ?? Infinity);
+            const candidateP95=Number(candidatePerformance.summary?.worstRafP95 ?? Infinity);
+            if(!(candidateScore>=incumbentScore+1 || candidateP95<=incumbentP95-0.75)) {
+              evidence.hardGateFailures=boundedFailures([...evidence.hardGateFailures,
+                "Performance candidate did not establish a measurable renderer/frame-time improvement over the incumbent."
+              ]);
+            } else {
+              evidence.repairSummary=[...evidence.repairSummary,
+                `Performance score ${incumbentScore.toFixed(1)} -> ${candidateScore.toFixed(1)}; p95 ${incumbentP95.toFixed(1)}ms -> ${candidateP95.toFixed(1)}ms.`
+              ].slice(0,8);
+            }
+          }
+        }
         evidence.motionScore=typeof motionReport.qualityScore==="number" ? motionReport.qualityScore : null;
         evidence.hardGateFailures=boundedFailures([
           ...(functionalReport.hardGateFailures ?? []),
