@@ -1,9 +1,11 @@
+import { requireStudioRole, studioAccessErrorResponse } from "@/src/platform/studioAccess";
 import { publishStudioDraft } from "@/src/platform/studioPublish";
 import { isPublishRequestAuthorized } from "@/src/platform/studioPublishAuth";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+  try { await requireStudioRole(request, "developer"); } catch (error) { return studioAccessErrorResponse(error) ?? Response.json({ ok: false, error: "Publishing access failed" }, { status: 500 }); }
   if (process.env.FORGE_STUDIO_PUBLISH_ENABLED !== "true") return Response.json({ ok: false, error: "Studio publishing is disabled" }, { status: 404 });
   const size = Number(request.headers.get("content-length") ?? 0);
   if (!Number.isFinite(size) || size > 1_000_000) return Response.json({ ok: false, error: "Publish request is too large" }, { status: 413 });
