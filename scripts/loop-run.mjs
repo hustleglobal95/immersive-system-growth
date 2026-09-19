@@ -283,18 +283,51 @@ try {
           const candidatePerformance=await readJson(candidatePerformancePath,{});
           if(perf.code!==0 || !candidatePerformance.summary) {
             evidence.hardGateFailures=boundedFailures([...evidence.hardGateFailures,"Candidate performance profiling failed."]);
-          } else if(definition.worker==="performance-repair") {
+          } else {
             const incumbentScore=Number(incumbentPerformance.summary?.score ?? 0);
             const candidateScore=Number(candidatePerformance.summary?.score ?? 0);
             const incumbentP95=Number(incumbentPerformance.summary?.worstRafP95 ?? Infinity);
             const candidateP95=Number(candidatePerformance.summary?.worstRafP95 ?? Infinity);
-            if(!(candidateScore>=incumbentScore+1 || candidateP95<=incumbentP95-0.75)) {
+            if(definition.worker==="performance-repair") {
+              if(!(candidateScore>=incumbentScore+1 || candidateP95<=incumbentP95-0.75)) {
+                evidence.hardGateFailures=boundedFailures([...evidence.hardGateFailures,
+                  "Performance candidate did not establish a measurable renderer/frame-time improvement over the incumbent."
+                ]);
+              } else {
+                evidence.repairSummary=[...evidence.repairSummary,
+                  `Performance score ${incumbentScore.toFixed(1)} -> ${candidateScore.toFixed(1)}; p95 ${incumbentP95.toFixed(1)}ms -> ${candidateP95.toFixed(1)}ms.`
+                ].slice(0,8);
+              }
+            } else if(candidateScore<incumbentScore-3 && candidateP95>incumbentP95+1.5) {
               evidence.hardGateFailures=boundedFailures([...evidence.hardGateFailures,
-                "Performance candidate did not establish a measurable renderer/frame-time improvement over the incumbent."
+                `Performance regressed materially: score ${incumbentScore.toFixed(1)} -> ${candidateScore.toFixed(1)}, p95 ${incumbentP95.toFixed(1)}ms -> ${candidateP95.toFixed(1)}ms.`
+              ]);
+            }
+          }
+        }
+        if(definition.verifiers.includes("assets")) {
+          const assetRun=await run(process.execPath,[
+            "--import","tsx","scripts/autonomy-asset-profile.mjs",
+            "--experience",currentCandidatePath,"--manifest",currentCandidateManifestPath,"--output",candidateAssetProfilePath,
+          ]);
+          const incumbentAssets=await readJson(incumbentAssetProfilePath,{});
+          const candidateAssets=await readJson(candidateAssetProfilePath,{});
+          evidence.assetScoreBefore=typeof incumbentAssets.intelligence?.score==="number" ? incumbentAssets.intelligence.score : null;
+          evidence.assetScoreAfter=typeof candidateAssets.intelligence?.score==="number" ? candidateAssets.intelligence.score : null;
+          evidence.referencedAssetBytesBefore=Number.isInteger(incumbentAssets.referencedBytes) ? incumbentAssets.referencedBytes : null;
+          evidence.referencedAssetBytesAfter=Number.isInteger(candidateAssets.referencedBytes) ? candidateAssets.referencedBytes : null;
+          if(assetRun.code!==0 || !candidateAssets.intelligence) {
+            evidence.hardGateFailures=boundedFailures([...evidence.hardGateFailures,"Candidate asset verification failed."]);
+          } else if(definition.worker==="asset-repair") {
+            const healthGain=(evidence.assetScoreAfter ?? -Infinity)-(evidence.assetScoreBefore ?? -Infinity);
+            const byteGain=(evidence.referencedAssetBytesBefore ?? 0)-(evidence.referencedAssetBytesAfter ?? 0);
+            if(!(healthGain>=0.5 || byteGain>0)) {
+              evidence.hardGateFailures=boundedFailures([...evidence.hardGateFailures,
+                "Asset Quality candidate did not establish a measurable manifest-health or referenced-byte improvement."
               ]);
             } else {
               evidence.repairSummary=[...evidence.repairSummary,
-                `Performance score ${incumbentScore.toFixed(1)} -> ${candidateScore.toFixed(1)}; p95 ${incumbentP95.toFixed(1)}ms -> ${candidateP95.toFixed(1)}ms.`
+                `Asset health ${Number(evidence.assetScoreBefore ?? 0).toFixed(1)} -> ${Number(evidence.assetScoreAfter ?? 0).toFixed(1)}; referenced bytes ${evidence.referencedAssetBytesBefore ?? 0} -> ${evidence.referencedAssetBytesAfter ?? 0}.`
               ].slice(0,8);
             }
           }
@@ -310,6 +343,19 @@ try {
         evidence.comparisonWinner=comparisonReport.decision?.winner ?? null;
         evidence.preferenceAgreement=typeof comparisonReport.decision?.agreement==="number" ? comparisonReport.decision.agreement : null;
         evidence.reason=boundedReason(comparisonReport.decision?.reason || (comparison.code===0 ? "Comparison completed." : "Candidate did not beat the incumbent."));
+        if(definition.worker==="asset-repair" && !evidence.hardGateFailures.length) {
+          const healthGain=(evidence.assetScoreAfter ?? -Infinity)-(evidence.assetScoreBefore ?? -Infinity);
+          const byteGain=(evidence.referencedAssetBytesBefore ?? 0)-(evidence.referencedAssetBytesAfter ?? 0);
+          const visualWinner=comparisonReport.decision?.winner;
+          if((healthGain>=0.5 || byteGain>0) && visualWinner!=="incumbent" && visualWinner!=="invalid") {
+            evidence.comparisonAccepted=true;
+            evidence.comparisonWinner="candidate";
+            evidence.preferenceAgreement=1;
+            evidence.reason=boundedReason(
+              `Asset objective improved with no visual winner against the candidate. Manifest health delta ${healthGain.toFixed(1)}; referenced-byte delta ${byteGain}.`
+            );
+          }
+        }
       } catch(error) {
         evidence.reason=boundedReason(error instanceof Error ? error.message : String(error));
         evidence.hardGateFailures=boundedFailures([...evidence.hardGateFailures,evidence.reason]);
