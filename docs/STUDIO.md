@@ -61,3 +61,20 @@ Telemetry and workflow internals remain available under Advanced controls rather
 
 
 See [internal product operations](INTERNAL_PRODUCT.md) for Project Vault, Asset Vault, operator roles and production memory.
+
+
+## Operator Intelligence
+
+When the Guided Build brief contains a real project outcome, Build promotes **Mission Control** above the selection-level Next Best Action surface.
+
+Mission Control compiles that brief into a Mission Contract, generates a dependency-aware Plan Graph, ranks the next project-wide outcome and applies one of three operator modes:
+
+- **Guide** — recommend the highest-leverage operation;
+- **Copilot** — execute bounded reversible capabilities;
+- **Autopilot** — execute reversible work and prepare preview-required candidates, while stopping at taste and authority gates.
+
+Mission execution still routes through Selection Context, the Capability Registry, Proposal Contracts, Loop verification and Project Vault boundaries. It does not create a second mutation path.
+
+The permanent Studio model remains **Build / Review / Ship**. Mission Control lives inside Build and disappears back to the normal selection-level Next Best Action surface when no mission brief exists.
+
+See [Operator Intelligence](OPERATOR_INTELLIGENCE.md).
