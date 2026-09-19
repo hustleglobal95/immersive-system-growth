@@ -96,8 +96,6 @@ try {
       "--import","tsx","scripts/autonomy-motion-review.mjs",
       "--url",baseURL,"--experience",currentIncumbentPath,"--variant","incumbent","--output",incumbentMotionPath,"--allow-failures",
     ]);
-    const incumbentMotion=await readJson(incumbentMotionPath,{});
-
     const seenFingerprints=new Map();
     const priorRepairs=report.cycles.flatMap((item)=>item.candidates.flatMap((candidate)=>candidate.repairSignature ? [candidate.repairSignature] : []));
     const strategies=definition.strategies.slice(0,definition.budgets.maxCandidatesPerCycle);
