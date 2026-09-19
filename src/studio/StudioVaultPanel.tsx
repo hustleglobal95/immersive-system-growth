@@ -61,8 +61,16 @@ export function StudioVaultPanel({ draft, onClose }: { draft: Draft; onClose: ()
     }
   };
 
-  useEffect(() => { void refresh(); }, []);
-  useEffect(() => { if (selected) void refreshVersions(selectedId); }, [selectedId, selected?.versionCount]);
+  useEffect(() => {
+    let cancelled=false;
+    queueMicrotask(()=>{ if(!cancelled) void refresh(); });
+    return ()=>{ cancelled=true; };
+  }, []);
+  useEffect(() => {
+    let cancelled=false;
+    if(selected) queueMicrotask(()=>{ if(!cancelled) void refreshVersions(selectedId); });
+    return ()=>{ cancelled=true; };
+  }, [selectedId, selected?.versionCount]);
   useEffect(() => { dialogRef.current?.focus(); }, []);
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") onClose(); };
