@@ -50,6 +50,9 @@ export function buildConstructionCandidate(input:{
     ...(intelligence.report.verdict==="REJECT" ? ["Director rejected every current territory for this brief."] : []),
     ...hierarchyBlockers,
     ...(!plan.validation.valid ? plan.validation.errors : []),
+    ...(plan.assetSummary.blockedScenes.length
+      ? [`Asset-blocked construction scenes: ${plan.assetSummary.blockedScenes.join(", ")}.`]
+      : []),
   ];
 
   const director={
