@@ -36,3 +36,22 @@ Asset intake does not upload binary files. Copy approved optimized assets into t
 The Mask Lab can add `/textures/reference/reveal-field.svg` to a scene as a safe authoring fixture. This is an original bundled texture, not client artwork. See [mask reveals](MASK_REVEALS.md).
 
 See [motion sequencer](MOTION_SEQUENCER.md) for the track contract, supported targets and editor controls.
+
+
+## Studio interaction layers
+
+Studio now exposes one project through three levels of control rather than presenting every production subsystem at once:
+
+- **Guided Build** is the first-run and project-progress path: idea → assets → scenes → motion → review → publish. A fresh project opens the guide automatically and the shell always exposes the current next step.
+- **Studio cockpit** is the normal visual authoring surface for scenes, copy, camera choices, coordinated motion, assets and live preview.
+- **Advanced** contains the sequencer, interaction graph, model inspection, low-level asset tooling, performance telemetry and deployment configuration.
+
+Use **Command-K / Ctrl-K** (or `/` outside a text field) to open the Forge command palette. **Assist** in the Studio header contains Creative Agent, Director and Asset Creator; these are specialist tools inside the same workflow rather than floating entry points.
+
+### Guided Ship
+
+Ship opens in guided mode. It reports project validation, release destination, server publishing connection and whether the current browser is authorized to create review branches. Repository credentials remain server-side.
+
+`FORGE_STUDIO_PUBLISH_SECRET` is an owner credential. Advanced setup can exchange it once for an HTTP-only, SameSite=Strict browser session. Normal review publishing then uses that session and does not keep the secret in client state. The existing bearer-secret API authorization remains supported for automation and backward compatibility.
+
+Telemetry and workflow internals remain available under Advanced controls rather than blocking the normal authoring path.
