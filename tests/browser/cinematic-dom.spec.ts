@@ -29,7 +29,10 @@ test("DOM choreography reverses and reduced motion restores readable baseline", 
   await expect.poll(() => openingPanel.evaluate((element) => element.style.filter)).toBe("");
 
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await expect.poll(panelY).toBeGreaterThan(5);
+  // We are still parked in Scene 02 after the reverse-navigation assertion above.
+  // Re-enabling motion should therefore restore the active Scene 02 choreography;
+  // Scene 01 is intentionally inactive and its sequencer styles remain cleared.
+  await expect.poll(wordY).toBeGreaterThan(5);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await expect.poll(panelY).toBeLessThanOrEqual(13.3);
