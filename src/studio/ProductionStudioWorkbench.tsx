@@ -514,14 +514,15 @@ export function ProductionStudioWorkbench() {
       />}
       <header className="production-topbar">
         <div className="production-brand"><Link href="/forge">FORGE</Link><span>STUDIO</span></div>
-        <nav aria-label="Production workspaces">
-          {workspaces.map((item) => <button key={item} type="button" aria-current={workspace === item ? "page" : undefined} onClick={() => { setWorkspace(item); setAdvanced(item !== "Create"); }}>{item}</button>)}
+        <nav aria-label="Primary Studio surfaces">
+          {primarySurfaces.map((item) => <button key={item} type="button" aria-current={!advanced && surface === item ? "page" : undefined} onClick={() => { setSurface(item); setAdvanced(false); }}>{item}</button>)}
         </nav>
         <div className="production-top-actions">
-          <button id="studio-guided-build-button" type="button" className="production-guided-button" onClick={() => setGuidedOpen(true)}><span>Guided Build</span><strong>{workflow.completed}/6</strong></button><button type="button" className="production-vault-button" onClick={() => setVaultOpen(true)}>Vault</button><button type="button" className="production-loop-button" onClick={() => { setRequestedLoop(undefined); setLoopOpen(true); }}>Loops</button>
-          <span className="production-status" data-valid={projectHealth.status==="ready"} data-health={projectHealth.status}><i />{projectHealth.status==="ready" ? "Ready" : projectHealth.status==="blocked" ? `${projectHealth.issues.filter((issue)=>issue.severity==="blocker").length} blocker` : `${projectHealth.issues.filter((issue)=>issue.severity==="warning").length} issue`}</span>
+          <button id="studio-guided-build-button" type="button" className="production-guided-button" onClick={() => setGuidedOpen(true)}><span>Guided Build</span><strong>{workflow.completed}/6</strong></button>
+          <button type="button" className="production-status" data-valid={projectHealth.status==="ready"} data-health={projectHealth.status} onClick={() => { setSurface("Review"); setAdvanced(false); }}><i />{projectHealth.status==="ready" ? "Ready" : projectHealth.status==="blocked" ? `${projectHealth.issues.filter((issue)=>issue.severity==="blocker").length} blocker` : `${projectHealth.issues.filter((issue)=>issue.severity==="warning").length} issue`}</button>
           <details className="production-assist"><summary>Assist</summary><div><Link href="/studio/agent"><strong>Creative Agent</strong><span>Turn the idea into a production strategy.</span></Link><Link href="/director"><strong>Director</strong><span>Critique and strengthen the creative direction.</span></Link><Link href="/studio/assets/create"><strong>Asset Creator</strong><span>Create a missing image, video or 3D asset.</span></Link></div></details>
-          <details><summary>Project</summary><div><button type="button" onClick={() => setLoopOpen(true)}>Loop Engine</button><button type="button" onClick={() => setVaultOpen(true)}>Project Vault</button><button type="button" onClick={() => setNewProjectOpen(true)}>New project</button><button type="button" onClick={() => importRef.current?.click()}>Import</button><button type="button" onClick={draft.reset}>Reset local draft</button></div></details>
+          <details className="production-advanced-menu"><summary>Advanced</summary><div><button type="button" onClick={() => openAdvanced("Motion")}><strong>Sequencer</strong><span>Tracks, curves and camera timing.</span></button><button type="button" onClick={() => openAdvanced("Interact")}><strong>Interactions</strong><span>Triggers, state and behavior graph.</span></button><button type="button" onClick={() => openAdvanced("Assets")}><strong>Asset tools</strong><span>Manifest, bank and GLB inspection.</span></button><button type="button" onClick={() => openAdvanced("Telemetry")}><strong>Telemetry</strong><span>Real-device performance evidence.</span></button></div></details>
+          <details><summary>Project</summary><div><button type="button" onClick={() => { setRequestedLoop(undefined); setLoopOpen(true); }}>Improvement evidence</button><button type="button" onClick={() => setVaultOpen(true)}>Project Vault</button><button type="button" onClick={() => setNewProjectOpen(true)}>New project</button><button type="button" onClick={() => importRef.current?.click()}>Import</button><button type="button" onClick={draft.reset}>Reset local draft</button></div></details>
           <details><summary>Export</summary><div className="align-right"><button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Experience</button><button type="button" onClick={() => downloadJson("interaction-graph.json", draft.interactionGraph)}>Interactions</button><button type="button" onClick={() => downloadJson("studio-project.json", draft.project)}>Project</button><button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Assets</button></div></details><StudioIdentityBadge />
           <input ref={importRef} hidden type="file" accept="application/json,.json" onChange={(event) => void importExperience(event.target.files?.[0])} />
         </div>
@@ -530,7 +531,26 @@ export function ProductionStudioWorkbench() {
       {notice && <button type="button" className="production-notice" onClick={() => setNotice("")}>{notice}<span>×</span></button>}
 
       {advanced ? (
-        <AdvancedWorkspace workspace={workspace} draft={draft} activeScene={sceneIndex} setActiveScene={selectSceneInWorkspace} onClose={() => { setAdvanced(false); setWorkspace("Create"); }} />
+        <AdvancedWorkspace workspace={workspace} draft={draft} activeScene={sceneIndex} setActiveScene={selectSceneInWorkspace} onClose={() => setAdvanced(false)} />
+      ) : surface === "Review" ? (
+        <ReviewSurface
+          health={projectHealth}
+          nextActions={nextActions}
+          proposal={preparedProposal}
+          onRun={(capability)=>runCapability(capability,capability.label,"next-action")}
+          onBuildScene={(index)=>{ selectScene(index); setSurface("Build"); }}
+          onBuild={()=>setSurface("Build")}
+          onAssets={()=>openAdvanced("Assets")}
+          onTelemetry={()=>openAdvanced("Telemetry")}
+        />
+      ) : surface === "Ship" ? (
+        <ShipSurface
+          draft={draft}
+          health={projectHealth}
+          onReview={()=>setSurface("Review")}
+          onVault={()=>setVaultOpen(true)}
+          onTelemetry={()=>openAdvanced("Telemetry")}
+        />
       ) : (
         <div className="production-layout">
           <aside className="production-left">
@@ -548,7 +568,10 @@ export function ProductionStudioWorkbench() {
               <div className="production-stage-actions"><button type="button" onClick={() => setSelection({ kind: "camera", index: sceneIndex })}>Camera</button><button type="button" onClick={openAdvanced}>Advanced</button></div>
             </div>
             {workflow.unconfigured && <section className="production-first-run" aria-labelledby="studio-first-run-title"><div><span>START HERE</span><h2 id="studio-first-run-title">What do you want to create?</h2><p>Start with the outcome. Forge will guide assets, scenes, motion, review and publishing without asking you to learn the machinery first.</p></div><div><button type="button" className="primary" onClick={() => setGuidedOpen(true)}>Start Guided Build</button><button type="button" onClick={() => importRef.current?.click()}>Import an existing project</button><button type="button" onClick={() => { setGuideDismissed(true); try { window.localStorage.setItem("forge-studio-guided-first-run-v1", "seen"); } catch { /* storage can be blocked */ } }}>Open Studio anyway</button></div></section>}
-            {!workflow.unconfigured && <button type="button" className="production-guided-next" onClick={() => setGuidedOpen(true)}><span>NEXT · {workflow.completed}/6 COMPLETE</span><strong>{workflow.nextLabel}</strong><small>Continue →</small></button>}
+            {!workflow.unconfigured && nextActions[0] && <section className="production-next-action" data-urgency={nextActions[0].urgency}>
+              <div><span>NEXT BEST ACTION</span><strong>{nextActions[0].capability.label}</strong><p>{nextActions[0].reason}</p></div>
+              <div><button type="button" className="primary" onClick={() => runCapability(nextActions[0].capability,nextActions[0].capability.label,"next-action")}>Do it</button><button type="button" onClick={() => setGuidedOpen(true)}>Guided path · {workflow.completed}/6</button></div>
+            </section>}
             <div className="production-runtime">
               <StudioLivePreview experience={previewMode==="candidate" && candidateExperience ? candidateExperience : draft.experience} active={sceneIndex} setActive={selectScene} />
             </div>
@@ -559,6 +582,9 @@ export function ProductionStudioWorkbench() {
               onPreviewMode={setPreviewMode}
               onAccept={acceptCandidate}
               onReject={rejectCandidate}
+              onContinue={preparedProposal?.executionClass==="deep" && requestedLoop ? () => setLoopOpen(true) : undefined}
+              canRevert={Boolean(rollbackBundle && preparedProposal?.state==="accepted")}
+              onRevert={revertAcceptedProposal}
             />
             <form className="production-command" onSubmit={(event) => { event.preventDefault(); runCommand(); }}>
               <button type="button" className="production-command-shortcut" aria-label="Open command palette" onClick={() => setCommandPaletteOpen(true)}>⌘K</button><input aria-label="Forge command" value={command} onChange={(event) => setCommand(event.target.value)} placeholder="Tell Forge the outcome: ‘make this cinematic’, ‘fix mobile’, ‘make it inspectable’…" /><button type="submit">Direct</button>
