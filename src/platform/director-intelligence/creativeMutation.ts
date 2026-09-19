@@ -28,6 +28,7 @@ const catalog=[
 ] as const;
 
 export function generateCreativeMutations(brief:DirectorBrief,treatment:DirectorTreatment,dna:CreativeDNA,limit=6):CreativeMutation[] {
+  const brandTruth=brief.differentiators[0] || brief.brandTruth;
   return catalog.map((item)=>{
     const typeFit=(item.types as readonly string[]).includes(brief.projectType) ? 3 : 0;
     const antiFit=item.id==="anti-spectacle" && /generic|clich|luxury|spectacle/i.test(dna.antiPatterns.join(" ")) ? 2 : 0;
@@ -35,8 +36,8 @@ export function generateCreativeMutations(brief:DirectorBrief,treatment:Director
     const score=Math.min(10,Number((item.potential*0.62+typeFit+antiFit+signatureFit-item.risk*0.18).toFixed(1)));
     return {
       id:item.id,title:item.title,question:item.question,
-      hypothesis:`${item.question} Test it without weakening the locked truth: ${brief.differentiators[0] || brief.brandTruth}.`,
-      preserves:[dna.northStar,dna.memoryPromise,`Primary action: ${brief.primaryAction}`],
+      hypothesis:`${item.question} Test it without weakening the locked truth: ${brandTruth}.`,
+      preserves:[`Brand truth: ${brandTruth}`,dna.northStar,dna.memoryPromise,`Primary action: ${brief.primaryAction}`],
       changes:[...item.systems.map((system)=>`Re-author ${system} around this counterfactual.`),`Do not automatically preserve the current signature mechanism: ${dna.signatureMechanism}`],
       systems:[...item.systems],
       originalityPotential:item.potential,
