@@ -40,7 +40,7 @@ export interface ArtDirectionPlan {
 
 export function directArt(input:{brief:DirectorBrief;treatment:DirectorTreatment;dna:CreativeDNA}):ArtDirectionPlan {
   const {brief,treatment,dna}=input;
-  const sceneFrames=treatment.emotionalArc.map((beat,index)=>{
+  const sceneFrames=treatment.emotionalArc.map((beat)=>{
     const isPeak=beat.intensity>=9;
     const isProof=beat.proofLevel>=7;
     const quiet=beat.intensity<=4;
