@@ -6,12 +6,15 @@ import { createLoopRunReport } from "../src/platform/loops/loopEvidence";
 import { compactLoopContext, eligibleCandidate, evaluateLoopStop, learningCandidate, selectTournamentWinner } from "../src/platform/loops/loopRunner";
 import type { LoopCandidateEvidence, LoopRunReport } from "../src/platform/loops/loopSchema";
 import { analyzeAssetManifest } from "../src/platform/assetIntelligence";
+import { buildAssetQualityCandidate, profileAssetQuality } from "../src/platform/assetQuality";
+import rawExperience from "../config/experience.json";
+import rawManifest from "../config/asset-manifest.json";
 
 test("Loop Engine exposes only workers that have production-safe executors",()=>{
-  assert.deepEqual(executableLoopDefinitions().map((item)=>item.id),["visual-polish","mobile-translation","motion-polish","performance"]);
+  assert.deepEqual(executableLoopDefinitions().map((item)=>item.id),["visual-polish","mobile-translation","motion-polish","performance","asset-quality"]);
   assert.equal(loopDefinitions.length,6);
   assert.equal(loopDefinition("performance")?.executable,true);
-  assert.equal(loopDefinition("asset-quality")?.executable,false);
+  assert.equal(loopDefinition("asset-quality")?.executable,true);
   assert.equal(loopDefinition("construction")?.executable,false);
   for(const definition of loopDefinitions) {
     assert.equal(definition.acceptance.requireHardGates,true);
@@ -131,6 +134,31 @@ test("Asset Intelligence detects pressure, dominant files and duplicate binaries
   assert.equal(report.remoteAssets,0);
 });
 
+test("Asset Quality consolidates exact duplicate aliases without changing binary identity",()=>{
+  const candidate=buildAssetQualityCandidate(rawExperience,rawManifest,"canonical-reuse");
+  assert.equal(candidate.changed,true);
+  assert.ok(candidate.removedManifestPaths.length>=1);
+  assert.ok(candidate.profileAfter.intelligence.duplicateHashes.length<candidate.profileBefore.intelligence.duplicateHashes.length);
+  assert.ok(candidate.profileAfter.intelligence.score>candidate.profileBefore.intelligence.score);
+});
+
+test("Asset Quality prefers registered derivatives only when lineage and savings are explicit",()=>{
+  const manifest=structuredClone(rawManifest);
+  const source=manifest.textures.find((item)=>item.path==="/textures/reference/reveal-field.svg")!;
+  manifest.textures.push({
+    path:"/textures/reference/reveal-field.opt.webp",
+    bytes:Math.max(1,Math.floor(source.bytes*.5)),
+    sha256:"c".repeat(64),
+    derivative:{sourcePath:source.path,operation:"image-optimize",format:"webp",width:640,quality:72},
+  });
+  const profile=profileAssetQuality(rawExperience,manifest);
+  assert.ok(profile.derivativeOpportunities.some((item)=>item.sourcePath===source.path));
+  const candidate=buildAssetQualityCandidate(rawExperience,manifest,"registered-derivative");
+  assert.equal(candidate.changed,true);
+  assert.ok(candidate.replacements.some((item)=>item.to==="/textures/reference/reveal-field.opt.webp"));
+  assert.ok(candidate.profileAfter.referencedBytes<candidate.profileBefore.referencedBytes);
+});
+
 test("Performance Loop has distinct evidence-driven candidate strategies",()=>{
   const definition=loopDefinition("performance")!;
   assert.equal(definition.worker,"performance-repair");
@@ -143,6 +171,9 @@ test("Loop Engine scripts preserve human approval and legacy repair compatibilit
   const accept=fs.readFileSync("scripts/loop-accept.mjs","utf8");
   const legacy=fs.readFileSync("scripts/autonomy-repair-loop.mjs","utf8");
   assert.match(runner,/accepted-experience\.json/);
+  assert.match(runner,/accepted-asset-manifest\.json/);
+  assert.match(runner,/accepted-interaction-graph\.json/);
+  assert.match(runner,/autonomy-asset-repair\.mjs/);
   assert.match(runner,/current-incumbent\.json/);
   assert.match(runner,/Project Vault does not contain project/);
   assert.match(runner,/parseExperience/);
@@ -151,7 +182,9 @@ test("Loop Engine scripts preserve human approval and legacy repair compatibilit
   assert.match(accept,/Human approval is required/);
   assert.match(accept,/--approve/);
   assert.match(accept,/Project Vault changed after this loop began/);
-  assert.match(accept,/fingerprint does not match the run report/);
+  assert.match(accept,/bundle fingerprint does not match the run report/);
+  assert.match(accept,/assetManifest/);
+  assert.match(accept,/interactionGraph/);
   assert.match(legacy,/scripts\/loop-run\.mjs/);
 });
 
