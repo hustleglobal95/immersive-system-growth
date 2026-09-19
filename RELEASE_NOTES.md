@@ -1,5 +1,7 @@
 # Release Notes
 
+- Added the Forge internal-product layer: optional role-based private access, GitHub-backed Project Vault with durable snapshots/version restore/archive state, Project Vault production memory, permanent Meshy/Higgsfield Asset Vault promotion, Guided Ship durability blocking for temporary generated assets, and an environment-aware internal readiness audit.
+
 - Productized Forge Studio around a Guided → Studio → Advanced model: first-run Guided Build, persistent next-step progress, Guided Ship with owner-unlocked HTTP-only publishing sessions, Command-K/Ctrl-K and slash command palette, docked Assist specialists, meaningful timeline/render labels, media-backed scene thumbnails, and accessibility labels for icon-only cockpit controls.
 
 ## 6.0.0

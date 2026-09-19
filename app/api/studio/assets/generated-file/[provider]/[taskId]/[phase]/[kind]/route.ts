@@ -1,7 +1,9 @@
+import { requireStudioRole, studioAccessErrorResponse } from "@/src/platform/studioAccess";
 import { readAssetGenerationStatus, type AssetGenerationProvider } from "@/src/platform/assetGeneration";
 
-export async function GET(_request: Request, context: { params: Promise<{ provider: string; taskId: string; phase: string; kind: string }> }) {
+export async function GET(request: Request, context: { params: Promise<{ provider: string; taskId: string; phase: string; kind: string }> }) {
   try {
+    await requireStudioRole(request, "reviewer");
     const params = await context.params;
     const provider = params.provider as AssetGenerationProvider;
     const taskId = params.taskId;
@@ -37,6 +39,8 @@ export async function GET(_request: Request, context: { params: Promise<{ provid
       clearTimeout(timer);
     }
   } catch (error) {
+    const access = studioAccessErrorResponse(error);
+    if (access) return access;
     return Response.json({ ok: false, error: error instanceof Error ? error.message : "Generated asset download failed" }, { status: 400 });
   }
 }

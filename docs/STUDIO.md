@@ -18,7 +18,7 @@
 - Publish configures the release target and can send validated JSON to a server-only GitHub integration that opens a review pull request.
 - Telemetry configures consent, sampling and Do Not Track behavior and displays samples from the current device.
 
-Drafts are stored in the browser under `forge-studio-v2` for compatibility with earlier drafts. Export `experience.json`, `studio-project.json` and `asset-manifest.json` before moving work to another machine. Import validates before replacing the current experience draft.
+Drafts are stored in the browser under `forge-studio-v2` as the fast working copy. Project Vault can persist the complete validated Studio state on a dedicated GitHub branch, including named versions and restore points, so important projects do not depend on one browser. Export remains available for portable handoffs. Import validates before replacing the current experience draft.
 
 Asset intake does not upload binary files. Copy approved optimized assets into the staged public paths before publishing configuration. The PR publisher writes only validated JSON documents and always uses a new review branch. It does not merge or deploy.
 
@@ -55,3 +55,6 @@ Ship opens in guided mode. It reports project validation, release destination, s
 `FORGE_STUDIO_PUBLISH_SECRET` is an owner credential. Advanced setup can exchange it once for an HTTP-only, SameSite=Strict browser session. Normal review publishing then uses that session and does not keep the secret in client state. The existing bearer-secret API authorization remains supported for automation and backward compatibility.
 
 Telemetry and workflow internals remain available under Advanced controls rather than blocking the normal authoring path.
+
+
+See [internal product operations](INTERNAL_PRODUCT.md) for Project Vault, Asset Vault, operator roles and production memory.

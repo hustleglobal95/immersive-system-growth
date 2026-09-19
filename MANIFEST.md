@@ -41,6 +41,10 @@ Immersive Site Forge 6.0 is organized as a multi-project production platform rat
 ## Authoring and automation
 
 - browser-based Forge Studio at `/studio`
+- private internal access layer with role-bearing HTTP-only sessions
+- GitHub-backed Project Vault with atomic durable snapshots, restore points, archive state and project journal
+- permanent generated-asset promotion through a provider-neutral Asset Vault gateway
+- production memory journal for saves, restores, reviews, asset promotion and explicit lessons
 - live preview of the production R3F scene graph and media stack
 - visual camera, lighting, atmosphere, postprocessing and material direction
 - visual scene timeline and boundary editor

@@ -13,3 +13,10 @@ Required release evidence: full gates green, no unexpected browser errors, reada
 Mask changes additionally require exact hidden/visible endpoints, reverse sampling equality, DOM fallback inspection in WebKit and shader inspection on a WebGL-capable Chromium target. Automated pixel sampling is regression evidence, not final art-direction approval.
 
 Do not modify assertions merely to accept a broken outcome. If a test was based on an incorrect assumption, document that distinction and preserve the intended user-facing invariant.
+
+
+## Internal product readiness
+
+`npm run internal:readiness` checks whether the current deployment environment has the private-access, Project Vault, Asset Vault and review-publishing configuration expected for the internal Growth Terminal product. It is intentionally separate from `npm run check` because local source validation must not require production secrets.
+
+Use `npm run internal:readiness -- --strict` during deployment validation. A passing readiness audit still does not replace hosted CI execution, production object-storage verification or physical-device release evidence.

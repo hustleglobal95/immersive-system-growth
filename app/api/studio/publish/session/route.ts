@@ -1,8 +1,10 @@
+import { requireStudioRole, studioAccessErrorResponse } from "@/src/platform/studioAccess";
 import { clearPublishSessionCookie, publishSessionCookie, safeSecretEqual } from "@/src/platform/studioPublishAuth";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+  try { await requireStudioRole(request, "developer"); } catch (error) { return studioAccessErrorResponse(error) ?? Response.json({ ok: false, error: "Publish unlock access failed" }, { status: 500 }); }
   if (process.env.FORGE_STUDIO_PUBLISH_ENABLED !== "true") return Response.json({ ok: false, error: "Studio publishing is disabled" }, { status: 404 });
   const size = Number(request.headers.get("content-length") ?? 0);
   if (!Number.isFinite(size) || size > 4096) return Response.json({ ok: false, error: "Unlock request is too large" }, { status: 413 });
@@ -25,6 +27,7 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  try { await requireStudioRole(request, "reviewer"); } catch (error) { return studioAccessErrorResponse(error) ?? Response.json({ ok: false, error: "Publish sign-out access failed" }, { status: 500 }); }
   const origin = request.headers.get("origin");
   if (origin && origin !== new URL(request.url).origin) return Response.json({ ok: false, error: "Cross-origin publishing is blocked" }, { status: 403 });
   const secure = new URL(request.url).protocol === "https:";

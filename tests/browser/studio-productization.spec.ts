@@ -42,3 +42,14 @@ test("Ship is guided by default and owner credentials stay behind Advanced", asy
   await expect(page.getByLabel("Owner publish secret")).toHaveAttribute("type", "password");
   await expect(page.getByText("Actions / Deploy client experience / Run workflow")).toBeVisible();
 });
+
+
+test("Project Vault is reachable from Studio and degrades cleanly when durable storage is not configured", async ({ page }) => {
+  await page.goto("/studio");
+  await page.getByRole("button", { name: "Vault", exact: true }).click();
+  await expect(page.getByRole("dialog", { name: "Durable projects and restore points." })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Save to Project Vault" })).toBeVisible();
+  await expect(page.getByText(/Durable storage connected|Vault not configured/)).toBeVisible();
+  await page.getByRole("button", { name: "Close Project Vault" }).click();
+  await expect(page.getByRole("dialog", { name: "Durable projects and restore points." })).toHaveCount(0);
+});
