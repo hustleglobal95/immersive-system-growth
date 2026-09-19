@@ -11,7 +11,7 @@ test("design directions, catalog and inquiry are operable without cinematic mach
     await expect(page.locator(".ds-root")).toHaveAttribute("data-direction", id);
     await expect(page.getByRole("button", { name, exact: true })).toHaveAttribute("aria-pressed", "true");
     await page.evaluate(() => document.fonts.ready);
-    await page.screenshot({ path: info.outputPath(`${id}-desktop.png`), fullPage: true });
+    await page.screenshot({ path: info.outputPath(`${id}-desktop.png`), animations: "disabled" });
   }
   expect(new Set(fonts).size).toBe(3);
   expect(fonts.every(url => url.startsWith("http://127.0.0.1:3000/"))).toBe(true);
