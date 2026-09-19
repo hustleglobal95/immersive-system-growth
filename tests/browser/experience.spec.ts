@@ -26,9 +26,9 @@ test("production canvas stays persistent across scroll, reverse and quality cont
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/lab");
-  await expect(page.locator("canvas")).toHaveCount(1);
+  await expect(page.locator(".scene-canvas canvas")).toHaveCount(1);
   await expect(page.getByText("The 3D view is loading.", { exact: false })).toHaveCount(0);
-  const canvas = await page.locator("canvas").elementHandle();
+  const canvas = await page.locator(".scene-canvas canvas").elementHandle();
   const sceneNavigation = page.getByRole("navigation", { name: "Experience scenes" });
   for (const id of ["threshold", "material", "horizon", "approach"]) {
     const sceneLink = sceneNavigation.locator(`a[href="#${id}"]`);
@@ -77,7 +77,7 @@ test("missing GLB preserves semantic content and exposes retry", async ({ page }
   await expect(page.getByRole("button", { name: "Retry 3D" })).toBeVisible({timeout:20000});
   await page.getByRole("button", { name: "Retry 3D" }).click();
   await expect(page.getByRole("button", { name: "Retry 3D" })).toHaveCount(0);
-  await expect(page.locator("canvas")).toHaveCount(1);
+  await expect(page.locator(".scene-canvas canvas")).toHaveCount(1);
   await page.locator("#enquire").scrollIntoViewIfNeeded();
   await expect(page.getByRole("link", { name: "Enquire about a commission" })).toBeVisible();
 });
@@ -113,8 +113,8 @@ test("range keyboard does not invoke global scene shortcut", async ({ page }) =>
 test("context restoration does not remove the document", async ({ page, browserName }) => {
   test.skip(browserName !== "chromium", "WebGL loss extension is renderer-dependent");
   await page.goto("/");
-  await expect(page.locator("canvas")).toHaveCount(1);
-  const supported = await page.locator("canvas").evaluate((canvas) => {
+  await expect(page.locator(".scene-canvas canvas")).toHaveCount(1);
+  const supported = await page.locator(".scene-canvas canvas").evaluate((canvas) => {
     const gl = (canvas as HTMLCanvasElement).getContext("webgl2");
     const extension = gl?.getExtension("WEBGL_lose_context");
     if (!extension) return false;
