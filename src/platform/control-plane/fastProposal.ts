@@ -18,6 +18,7 @@ export function prepareFastProposal(input:{
   context:SelectionContext;
   experience:ExperienceConfig;
   intent:string;
+  baselineFingerprint?:string;
   source?:"semantic-action"|"command"|"next-action"|"system";
   archetype:MotionArchetypeName;
 }):PreparedFastProposal {
@@ -31,6 +32,7 @@ export function prepareFastProposal(input:{
     capability:input.capability,
     context:input.context,
     intent:input.intent,
+    baselineFingerprint:input.baselineFingerprint,
     source:input.source,
   });
 
