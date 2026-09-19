@@ -83,6 +83,7 @@ export function motionArchetypeForIntent(context:SelectionContext,input:string):
   if(has("architecture","architectural","building","tower","facade","structure","crane")) return "architectural-build";
   if(has("threshold","passage","portal","door","enter","arrival")) return "threshold-passage";
   if(has("parallax","depth","lateral","layered story","spatial story")) return "parallax-story";
+  if(has("editorial","typography","type reveal","editorial reveal")) return "editorial-reveal";
   if(has("product","hero","macro","inspect","mechanical","assemble","assembly","watch","vehicle") || context.state.hasProductRig) return "product-hero";
   return "editorial-reveal";
 }
