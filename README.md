@@ -21,7 +21,7 @@ For development use `npm run dev`. Dev/build prepares locally served Draco and B
 
 ## Forge Studio
 
-Open `/studio` to direct the production runtime without editing source code.
+Open `/studio` to direct the production runtime without editing source code. The default product surface is intentionally small: **Build / Review / Ship**. Forge resolves the current selection, ranks relevant capabilities, accepts outcome-level commands, prepares reversible proposals and uses Project Health as the release-readiness abstraction. Sequencer, Interactions, Asset tools and Telemetry remain available under **Advanced**.
 
 The Sequence workspace provides a dope sheet, loopable real-time playback, in/out ranges, rate and duration controls, track filtering, snapping, zoom, multi-key selection, timing reversal and distribution, copy/paste, undo/redo, reusable motion presets, desktop/mobile override tracks, cubic Bezier handles and Three.js transform gizmos for vector recording.
 
