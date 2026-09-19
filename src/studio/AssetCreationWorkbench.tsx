@@ -132,34 +132,58 @@ export function AssetCreationWorkbench() {
   }, [status?.status, ticket, type]);
 
   const install = async () => {
-    if (!generatedPath) return;
+    if (!generatedPath || !ticket) return;
     setBusy(true);
-    setMessage("Bringing the generated asset into the active Forge draft…");
+    setMessage("Promoting the generated asset into permanent Forge storage…");
     try {
-      const response = await fetch(generatedPath, { cache: "no-store" });
-      if (!response.ok) {
-        const data = await response.json().catch(() => null) as { error?: string } | null;
-        throw new Error(data?.error || "Generated asset could not be loaded into Forge.");
+      let assetPath = generatedPath;
+      let record: AssetManifestEntry | null = null;
+      let durable = false;
+
+      const promotion = await fetch("/api/studio/assets/vault/promote", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ provider: ticket.provider, taskId: ticket.taskId, phase: ticket.phase, kind: type, projectId: draft.project.id, name }),
+      });
+      const promotionData = await promotion.json().catch(() => null) as { ok?: boolean; error?: string; asset?: AssetManifestEntry } | null;
+      if (promotion.ok && promotionData?.ok && promotionData.asset) {
+        record = promotionData.asset;
+        assetPath = promotionData.asset.path;
+        durable = true;
+      } else if (promotion.status !== 503) {
+        throw new Error(promotionData?.error || "Generated asset could not be promoted to permanent storage.");
       }
-      const blob = await response.blob();
-      const sha256 = await hashBlob(blob);
-      const record: AssetManifestEntry = { path: generatedPath, bytes: blob.size, sha256 };
+
+      if (!record) {
+        setMessage("Asset Vault is not connected. Adding a temporary draft asset; Guided Ship will hold the project until it is made durable.");
+        const response = await fetch(generatedPath, { cache: "no-store" });
+        if (!response.ok) {
+          const data = await response.json().catch(() => null) as { error?: string } | null;
+          throw new Error(data?.error || "Generated asset could not be loaded into Forge.");
+        }
+        const blob = await response.blob();
+        const sha256 = await hashBlob(blob);
+        record = { path: generatedPath, bytes: blob.size, sha256 };
+      }
+
       const group = type === "model" ? "models" : type === "video" ? "video" : "textures";
-      draft.setAssetManifest((current) => ({ ...current, [group]: [...current[group].filter((item) => item.path !== generatedPath), record] }));
+      draft.setAssetManifest((current) => ({ ...current, [group]: [...current[group].filter((item) => item.path !== assetPath && item.path !== generatedPath), record!] }));
       if (type === "model") {
-        draft.setExperience((current) => parseExperience({ ...current, heroModel: generatedPath, heroVisible: true }));
+        draft.setExperience((current) => parseExperience({ ...current, heroModel: assetPath, heroVisible: true }));
       } else {
         draft.setExperience((current) => {
           const active = Math.min(sceneIndex, current.scenes.length - 1);
           const target = current.scenes[active];
           const media = type === "video"
-            ? { kind: "video" as const, src: generatedPath, poster: "/textures/reference/reveal-field.svg", alt: name, transition: "dissolve" as const, maskSoftness: 18, layers: [], position: [50, 50] as [number, number], mobilePosition: [50, 50] as [number, number], overlap: .25, direction: "up" as const, zoom: 1.05, textEnd: .28 }
-            : { kind: "image" as const, src: generatedPath, alt: name, transition: "dissolve" as const, maskSoftness: 18, layers: [], position: [50, 50] as [number, number], mobilePosition: [50, 50] as [number, number], overlap: .25, direction: "up" as const, zoom: 1.05, textEnd: .28 };
+            ? { kind: "video" as const, src: assetPath, poster: "/textures/reference/reveal-field.svg", alt: name, transition: "dissolve" as const, maskSoftness: 18, layers: [], position: [50, 50] as [number, number], mobilePosition: [50, 50] as [number, number], overlap: .25, direction: "up" as const, zoom: 1.05, textEnd: .28 }
+            : { kind: "image" as const, src: assetPath, alt: name, transition: "dissolve" as const, maskSoftness: 18, layers: [], position: [50, 50] as [number, number], mobilePosition: [50, 50] as [number, number], overlap: .25, direction: "up" as const, zoom: 1.05, textEnd: .28 };
           return parseExperience(replaceScene(current, active, { ...target, media }));
         });
       }
       setInstalled(true);
-      setMessage(`${name} is now registered in the draft${type === "model" ? " and assigned as the hero model" : ` and assigned to ${scene?.label ?? "the selected scene"}`}.`);
+      setMessage(durable
+        ? `${name} is permanent in Forge Asset Vault and assigned to ${type === "model" ? "the hero model" : scene?.label ?? "the selected scene"}.`
+        : `${name} is installed as a temporary draft asset. Connect Forge Asset Vault before shipping.`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Generated asset could not be installed.");
     } finally {
@@ -207,7 +231,7 @@ export function AssetCreationWorkbench() {
 
         {status?.previewUrl && <section className="asset-creator__result"><span>PREVIEW</span><img src={status.previewUrl} alt={`${name} generated preview`} /></section>}
         {status?.status === "succeeded" && <section className="asset-creator__ready">
-          <div><span>ASSET READY</span><h3>Put it into the project.</h3><p>Forge will register the generated file in the local draft manifest and assign it to the selected scene or hero model. Generated provider files should still be promoted to permanent project storage before final publishing.</p></div>
+          <div><span>ASSET READY</span><h3>Put it into the project.</h3><p>Forge will register the generated file in the local draft manifest and assign it to the selected scene or hero model. Forge automatically promotes generated files to permanent project storage when Asset Vault is connected. Draft-only provider bridges are blocked by Guided Ship.</p></div>
           <div><button type="button" className="asset-creator__generate" disabled={busy || installed} onClick={() => void install()}>{installed ? "Added to Forge" : "Use in current project"}</button><button type="button" onClick={() => { setTicket(null); setStatus(null); setInstalled(false); setMessage(""); refineStarted.current = false; }}>Generate another</button></div>
         </section>}
 
