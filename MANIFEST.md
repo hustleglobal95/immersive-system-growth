@@ -60,6 +60,7 @@ Immersive Site Forge 6.0 is organized as a multi-project production platform rat
 - six reusable industry templates plus scene and media-transition presets
 - bounded image and color transition-layer composition
 - browser asset intake with hashes, media metadata, GLB structure and budget checks
+- Asset Intelligence scoring for budget pressure, dominant assets, duplicate binaries and role-specific optimization actions
 - Guided Build workflow from idea → assets → scenes → motion → review → publish
 - direct Asset Creator handoffs for Meshy 3D and Higgsfield image/video generation with server-only provider credentials
 - deterministic AVIF/WebP texture optimization with manifest updates
@@ -87,6 +88,7 @@ Immersive Site Forge 6.0 is organized as a multi-project production platform rat
 - evidence-weighted, source-diverse precedent retrieval plus a reference corpus integrity audit
 - eight-layer hierarchy intelligence spanning strategy, narrative, section, information, visual, interaction, motion/spatial and semantic/accessibility priority
 - autonomy foundation with grounded short-prompt brief inference, decision-time construction guidance, five autonomy levels, deterministic render-review plans, functional verification contracts and forced-improvement candidate selection\n- Forge Loop Engine control plane with typed loop contracts, multi-candidate tournaments, bounded cycle/attempt/time budgets, saturation and oscillation stops, compact cycle context, evidence ledger, Project Vault memory and explicit human promotion
+- executable evidence-gated Performance Loop with representative desktop/mobile profiling, bounded DPR/pixel/preload repair candidates and incumbent/candidate re-measurement
 - 30-case one-line commercial prompt benchmark enforced by `npm run check`
 - Visual Director with specialist critic contracts, isolated incumbent/candidate preview rendering, bounded reversible presentation repair, reversed-order pairwise judging and forced-optimization acceptance
 - end-to-end local autonomy repair loop that writes accepted candidates as artifacts without overwriting checked-in production config
