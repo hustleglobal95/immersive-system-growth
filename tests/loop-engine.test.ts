@@ -15,6 +15,7 @@ test("Loop Engine exposes only workers that have production-safe executors",()=>
     assert.equal(definition.acceptance.requireHardGates,true);
     assert.equal(definition.acceptance.requireCandidateWin,true);
     assert.equal(definition.memory.forgeLearning,"manual-promotion");
+    assert.ok(definition.allowedRepairCommands.length>0);
     assert.ok(definition.humanGates.some((gate)=>/Never overwrite/i.test(gate)));
   }
 });
@@ -116,6 +117,8 @@ test("Loop Engine scripts preserve human approval and legacy repair compatibilit
   assert.doesNotMatch(runner,/writeFile\([^\n]*config\/experience\.json/);
   assert.match(accept,/Human approval is required/);
   assert.match(accept,/--approve/);
+  assert.match(accept,/Project Vault changed after this loop began/);
+  assert.match(accept,/fingerprint does not match the run report/);
   assert.match(legacy,/scripts\/loop-run\.mjs/);
 });
 
@@ -131,7 +134,7 @@ function baseReport(id:string):LoopRunReport {
 }
 function candidate(id:string,strategyId:string,patch:Partial<LoopCandidateEvidence>={}):LoopCandidateEvidence {
   return {
-    id,strategyId,functionalPassed:true,motionScore:90,hardGateFailures:[],
+    id,strategyId,repairSummary:[],functionalPassed:true,motionScore:90,hardGateFailures:[],
     comparisonAccepted:false,comparisonWinner:null,preferenceAgreement:null,reason:"",
     ...patch,
   };
