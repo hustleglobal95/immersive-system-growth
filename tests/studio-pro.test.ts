@@ -38,6 +38,15 @@ test("asset manifests reject traversal and accept the production manifest", () =
   const unsafe = structuredClone(rawManifest);
   unsafe.textures[0].path = "/textures/../secret.png";
   assert.equal(assetManifestSchema.safeParse(unsafe).success, false);
+  const unsafeLineage = structuredClone(rawManifest);
+  unsafeLineage.textures[0].derivative = {
+    sourcePath: "/textures/../master.png",
+    operation: "image-optimize",
+    format: "webp",
+    width: 640,
+    quality: 72,
+  };
+  assert.equal(assetManifestSchema.safeParse(unsafeLineage).success, false);
 });
 
 test("image optimizer preserves the source and records a verified output", async () => {
