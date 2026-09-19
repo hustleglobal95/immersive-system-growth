@@ -62,10 +62,17 @@ function score(capability:ResolvedCapability,context:SelectionContext):NextActio
     value+=10;reasons.push("camera direction should lead secondary motion");
   }
 
+  const resolvesDirectGap=
+    (context.kind==="scene" && context.state.motionTrackCount===0 && capability.id==="scene.compose-motion")
+    || (context.kind==="scene" && !context.state.hasMobileCamera && capability.id==="scene.fix-mobile")
+    || (context.kind==="node" && context.state.selectedNodeTrackCount===0 && capability.id==="node.build-reveal")
+    || (context.kind==="copy" && context.state.copyMotionTrackCount===0 && capability.id==="copy.reveal")
+    || (context.kind==="media" && context.state.mediaMotionTrackCount===0 && capability.id==="media.reveal");
+
   if(blocker) {
     if(capability.systems.includes("assets") && blocker.code==="asset-blocker") {
       value+=30;reasons.push("resolves a blocking asset issue");
-    } else if(capability.executionClass==="deep") {
+    } else if(capability.executionClass==="deep" && !resolvesDirectGap) {
       value-=18;reasons.push("project blocker should be resolved before broad optimization");
     }
   } else if(warning && capability.executionClass==="editor") {
