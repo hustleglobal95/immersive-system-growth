@@ -28,6 +28,9 @@ function score(capability:ResolvedCapability,context:SelectionContext):NextActio
   if(context.kind==="scene" && context.state.motionTrackCount>0 && capability.id==="scene.polish") {
     value+=16;reasons.push("scene is authored enough for evidence-gated polish");
   }
+  if(context.kind==="scene" && !context.state.hasMobileCamera && capability.id==="scene.fix-mobile") {
+    value+=38;reasons.push("scene has no authored mobile camera");
+  }
   if(context.kind==="scene" && context.state.interactionReferenceCount===0 && capability.id==="scene.add-behavior") {
     value+=10;reasons.push("scene has no related interaction behavior");
   }
