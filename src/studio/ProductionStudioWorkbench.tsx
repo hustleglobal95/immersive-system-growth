@@ -21,6 +21,7 @@ import { GlbInspectorPanel } from "@/src/studio/GlbInspectorPanel";
 import { PublishPanel, TelemetryPanel } from "@/src/studio/ProjectPanels";
 import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
 import { STUDIO_GUIDE_BRIEF_KEY, STUDIO_GUIDE_SHIP_KEY, StudioWorkflowGuide } from "@/src/studio/StudioWorkflowGuide";
+import { StudioVaultPanel } from "@/src/studio/StudioVaultPanel";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig, MotionTrack, SceneDefinition, Vec3 } from "@/src/types/experience";
 
@@ -57,6 +58,7 @@ export function ProductionStudioWorkbench() {
   const [guidedOpen, setGuidedOpen] = useState(false);
   const [guideDismissed, setGuideDismissed] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [vaultOpen, setVaultOpen] = useState(false);
   const importRef = useRef<HTMLInputElement>(null);
 
   const sceneIndex = Math.min(activeScene, draft.experience.scenes.length - 1);
@@ -307,7 +309,8 @@ export function ProductionStudioWorkbench() {
   const runCommandValue = (input: string) => {
     const value = input.trim().toLowerCase();
     if (!value) return;
-    if (value.includes("guided")) setGuidedOpen(true);
+    if (value.includes("vault") || value.includes("versions") || value.includes("history")) setVaultOpen(true);
+    else if (value.includes("guided")) setGuidedOpen(true);
     else if (value.includes("creative agent")) window.location.assign("/studio/agent");
     else if (value === "director" || value.includes("open director")) window.location.assign("/director");
     else if (value.includes("asset creator") || value.includes("create asset")) window.location.assign("/studio/assets/create");
@@ -353,10 +356,10 @@ export function ProductionStudioWorkbench() {
           {workspaces.map((item) => <button key={item} type="button" aria-current={workspace === item ? "page" : undefined} onClick={() => { setWorkspace(item); setAdvanced(item !== "Create"); }}>{item}</button>)}
         </nav>
         <div className="production-top-actions">
-          <button id="studio-guided-build-button" type="button" className="production-guided-button" onClick={() => setGuidedOpen(true)}><span>Guided Build</span><strong>{workflow.completed}/6</strong></button>
+          <button id="studio-guided-build-button" type="button" className="production-guided-button" onClick={() => setGuidedOpen(true)}><span>Guided Build</span><strong>{workflow.completed}/6</strong></button><button type="button" className="production-vault-button" onClick={() => setVaultOpen(true)}>Vault</button>
           <span className="production-status" data-valid={!draft.validation.length}><i />{draft.validation.length ? `${draft.validation.length} issue` : "Ready"}</span>
           <details className="production-assist"><summary>Assist</summary><div><Link href="/studio/agent"><strong>Creative Agent</strong><span>Turn the idea into a production strategy.</span></Link><Link href="/director"><strong>Director</strong><span>Critique and strengthen the creative direction.</span></Link><Link href="/studio/assets/create"><strong>Asset Creator</strong><span>Create a missing image, video or 3D asset.</span></Link></div></details>
-          <details><summary>Project</summary><div><button type="button" onClick={() => setNewProjectOpen(true)}>New project</button><button type="button" onClick={() => importRef.current?.click()}>Import</button><button type="button" onClick={draft.reset}>Reset draft</button></div></details>
+          <details><summary>Project</summary><div><button type="button" onClick={() => setVaultOpen(true)}>Project Vault</button><button type="button" onClick={() => setNewProjectOpen(true)}>New project</button><button type="button" onClick={() => importRef.current?.click()}>Import</button><button type="button" onClick={draft.reset}>Reset local draft</button></div></details>
           <details><summary>Export</summary><div className="align-right"><button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Experience</button><button type="button" onClick={() => downloadJson("interaction-graph.json", draft.interactionGraph)}>Interactions</button><button type="button" onClick={() => downloadJson("studio-project.json", draft.project)}>Project</button><button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Assets</button></div></details>
           <input ref={importRef} hidden type="file" accept="application/json,.json" onChange={(event) => void importExperience(event.target.files?.[0])} />
         </div>
@@ -419,6 +422,7 @@ export function ProductionStudioWorkbench() {
           </div>
         </section>
       </div>}
+      {vaultOpen && <StudioVaultPanel draft={draft} onClose={() => setVaultOpen(false)} />}
       {newProjectOpen && <NewProjectDialog name={newName} setName={setNewName} kind={newKind} setKind={setNewKind} onCreate={createProject} onClose={() => setNewProjectOpen(false)} />}
     </main>
   );
