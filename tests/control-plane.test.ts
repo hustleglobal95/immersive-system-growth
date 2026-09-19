@@ -189,6 +189,24 @@ test("Intent Compiler maps outcome language to valid capabilities without exposi
   assert.ok(compiled.confidence>0);
 });
 
+test("Creative-direction intent routes through the simple Control Plane surface",()=>{
+  const scene=resolveSelectionContext({experience,manifest,graph,selection:{kind:"scene",index:0}});
+  const sceneIntent=compileIntent(scene,"this feels generic, develop a more original visual language");
+  assert.equal(sceneIntent.status,"matched");
+  assert.equal(sceneIntent.capabilityId,"scene.art-direct");
+
+  const copy=resolveSelectionContext({experience,manifest,graph,selection:{kind:"copy",index:0}});
+  const copyIntent=compileIntent(copy,"make the typography more editorial");
+  assert.equal(copyIntent.status,"matched");
+  assert.equal(copyIntent.capabilityId,"copy.art-direct");
+
+  const environment=resolveSelectionContext({experience,manifest,graph,selection:{kind:"environment",index:0}});
+  const worldIntent=compileIntent(environment,"make this world more alien but not sci fi");
+  assert.equal(worldIntent.status,"matched");
+  assert.equal(worldIntent.capabilityId,"environment.art-direct");
+  assert.ok(capabilitiesForContext(environment).some((item)=>item.dispatch.type==="route" && item.dispatch.href==="/studio/agent"));
+});
+
 test("Motion intent resolves to a context-appropriate archetype",()=>{
   const scene=resolveSelectionContext({experience,manifest,graph,selection:{kind:"scene",index:0}});
   assert.equal(motionArchetypeForIntent(scene,"editorial reveal"),"editorial-reveal");
