@@ -10,6 +10,7 @@ import { parseExperience, sceneMediaSchema } from "../src/lib/configSchema";
 import { sampleExperience } from "../src/lib/sampleExperience";
 import { sampleTransitionLayer } from "../src/lib/transitionLayers";
 import { assetManifestSchema } from "../src/platform/assetManifestSchema";
+import type { AssetManifest } from "../src/types/assets";
 import { publishStudioDraft } from "../src/platform/studioPublish";
 // @ts-expect-error The optimizer is shared with the JavaScript CLI.
 import { optimizeTexture } from "../scripts/asset-optimize-lib.mjs";
@@ -38,7 +39,7 @@ test("asset manifests reject traversal and accept the production manifest", () =
   const unsafe = structuredClone(rawManifest);
   unsafe.textures[0].path = "/textures/../secret.png";
   assert.equal(assetManifestSchema.safeParse(unsafe).success, false);
-  const unsafeLineage = structuredClone(rawManifest);
+  const unsafeLineage: AssetManifest = structuredClone(rawManifest);
   unsafeLineage.textures[0].derivative = {
     sourcePath: "/textures/../master.png",
     operation: "image-optimize",
