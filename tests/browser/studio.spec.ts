@@ -29,13 +29,13 @@ test("Build prepares a reversible fast proposal before applying motion", async (
 
   const review=page.getByLabel("Forge proposal review");
   await expect(review).toBeVisible();
-  await expect(review.getByRole("button", { name: "Current" })).toBeVisible();
+  await expect(review.getByRole("button", { name: "Current", exact: true })).toBeVisible();
   await expect(review.getByRole("button", { name: "Candidate", exact: true })).toHaveAttribute("aria-pressed", "true");
-  await expect(review.getByRole("button", { name: "Accept candidate" })).toBeVisible();
+  await expect(review.getByRole("button", { name: "Accept candidate", exact: true })).toBeVisible();
 
-  await review.getByRole("button", { name: "Accept candidate" }).click();
-  await expect(review.getByRole("button", { name: "Revert accepted change" })).toBeVisible();
-  await review.getByRole("button", { name: "Revert accepted change" }).click();
+  await review.getByRole("button", { name: "Accept candidate", exact: true }).click();
+  await expect(review.getByRole("button", { name: "Revert accepted change", exact: true })).toBeVisible();
+  await review.getByRole("button", { name: "Revert accepted change", exact: true }).click();
   await expect(page.getByText(/reverted/i)).toBeVisible();
 });
 
