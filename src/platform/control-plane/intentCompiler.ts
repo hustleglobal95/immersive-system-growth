@@ -36,6 +36,13 @@ const semanticAliases:Record<string,string[]>={
   phone:["mobile"],
   simplify:["polish","hierarchy"],
   dramatic:["cinematic","camera"],
+  generic:["art","direction","original"],
+  original:["art","direction","visual","language"],
+  distinctive:["art","direction","visual","language"],
+  alien:["visual","language","art","direction"],
+  editorial:["typography","art","direction"],
+  warm:["lighting","color","art","direction"],
+  tactile:["material","image","art","direction"],
 };
 
 export function compileIntent(context:SelectionContext,input:string):CompiledIntent {
