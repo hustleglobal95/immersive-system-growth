@@ -9,6 +9,8 @@ const outputArg = process.argv[3] && !process.argv[3].startsWith("--") ? process
 const outputPath = outputArg || "director-intelligence-report.json";
 const portfolioPath = process.argv.find((arg) => arg.startsWith("--portfolio="))?.split("=")[1];
 const decisionsPath = process.argv.find((arg) => arg.startsWith("--decisions="))?.split("=")[1];
+const memoryPath = process.argv.find((arg) => arg.startsWith("--memory="))?.split("=")[1];
+const operatorId = process.argv.find((arg) => arg.startsWith("--operator="))?.split("=")[1];
 const raw = JSON.parse(await fs.readFile(inputPath, "utf8"));
 const brief = parseDirectorBrief(raw);
 
@@ -16,7 +18,12 @@ const externalPrecedents = await loadJsonDirectory("forge-intelligence/precedent
 const storedPortfolio = (await loadJsonDirectory("forge-intelligence/projects", ".fingerprint.json")).flatMap((value) => Array.isArray(value) ? value : [value]);
 const explicitPortfolio = portfolioPath ? JSON.parse(await fs.readFile(portfolioPath, "utf8")) : [];
 const portfolio = [...storedPortfolio, ...(Array.isArray(explicitPortfolio) ? explicitPortfolio : [explicitPortfolio])].filter((item) => item?.projectId);
-const taste = await readOptionalJson("forge-intelligence/taste/profile.json");
+const projectTasteId=slug(brief.projectName);
+const studioTaste = await readOptionalJson("forge-intelligence/taste/profile.json");
+const operatorTaste = operatorId ? await readOptionalJson(`forge-intelligence/taste/operators/${slug(operatorId)}.json`) : undefined;
+const projectTaste = await readOptionalJson(`forge-intelligence/taste/projects/${projectTasteId}.json`);
+const tasteLayers = studioTaste || operatorTaste || projectTaste ? { studio:studioTaste,operator:operatorTaste,project:projectTaste } : undefined;
+const memory = memoryPath ? await readOptionalJson(memoryPath) : undefined;
 const decisions = decisionsPath ? await readOptionalJson(decisionsPath) : undefined;
 
 const approvals = {
@@ -31,7 +38,8 @@ const result = runDirectorIntelligence({
   brief,
   precedents: [...seedPrecedents, ...externalPrecedents],
   portfolio,
-  ...(taste ? { taste } : {}),
+  ...(tasteLayers ? { tasteLayers } : {}),
+  ...(memory ? { memory } : {}),
   ...(decisions ? { decisions } : {}),
   approvals,
   finalCutRequested,
@@ -39,14 +47,16 @@ const result = runDirectorIntelligence({
 await fs.writeFile(outputPath, JSON.stringify(result, null, 2) + "\n");
 console.log(`Forge Director Intelligence: ${result.report.verdict}`);
 console.log(`Selected territory: ${result.report.treatment.selectedTerritoryId}`);
-console.log(`Creative ceiling: ${result.report.ceiling.current.toFixed(1)} -> ${result.report.ceiling.projected.toFixed(1)}`);
+console.log(`Creative ceiling: ${result.creativeCeiling.current.toFixed(1)} -> ${result.creativeCeiling.projected.toFixed(1)}`);
 console.log(`Stress resilience: ${result.report.stress.resilienceScore.toFixed(1)}/10`);
 console.log(`Creative blockers: ${result.report.blockers.length}`);
 console.log(`Pending human gates: ${result.humanGates.pending.length}`);
 console.log(`Production authorized: ${result.productionPlan.readiness.readyForProduction ? "yes" : "no"}`);
 console.log(`Stored portfolio fingerprints considered: ${portfolio.length}`);
 console.log(`External precedents loaded: ${externalPrecedents.length}`);
-console.log(`Taste confidence: ${taste ? Math.round((taste.confidence ?? 0) * 100) : 0}%`);
+console.log(`Taste model: ${result.tasteModel.contributions.map((item) => `${item.layer}:${Math.round(item.confidence*100)}%`).join(" · ") || "none"}`);
+console.log(`Visual-language minimum distance: ${result.visualLanguageDivergence.minimumDistance}% (required ${result.visualLanguageDivergence.threshold}%)`);
+console.log(`Creative-memory verdict: ${result.creativeMemory.verdict}`);
 console.log(`Wrote ${outputPath}`);
 
 async function readOptionalJson(filePath) {
@@ -64,4 +74,9 @@ async function loadJsonDirectory(directory, suffix = ".json") {
     if (error?.code === "ENOENT") return [];
     throw error;
   }
+}
+
+
+function slug(value) {
+  return String(value || "").toLowerCase().replace(/[^a-z0-9-]+/g,"-").replace(/^-+|-+$/g,"") || "project";
 }
