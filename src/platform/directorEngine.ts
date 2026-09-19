@@ -497,7 +497,12 @@ function createProductionPriorities(brief: DirectorBrief, territory: DirectorTer
     weak.length ? `Resolve ${weak.length} asset quality gap(s) before final scene polish.` : "Use existing strong assets selectively; do not add asset volume without narrative need.",
     `Optimize every supporting decision toward ${brief.objective}.`,
     "Run Director Critique after structure lock, first motion pass, mobile pass and final cut.",
-  ];
+  ].map((value)=>fitDirective(value));
+}
+
+function fitDirective(value:string,max=300) {
+  if(value.length<=max) return value;
+  return value.slice(0,max-1).trimEnd()+"…";
 }
 
 function signaturePrerequisites(brief: DirectorBrief, assets: DirectorTreatment["assets"]) {
