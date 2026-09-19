@@ -14,6 +14,7 @@ import { runDirectorIntelligence } from "@/src/platform/director-intelligence/or
 import { inferPromptIntelligence } from "@/src/platform/autonomy/promptIntelligence";
 import { applyCreativeExecutionPlan, planCreativeExecution } from "@/src/studio/creativeAgentPlan";
 import { useStudioDraft } from "@/src/studio/useStudioDraft";
+import { useCreativeIntelligenceContext } from "@/src/studio/useCreativeIntelligenceContext";
 import type { AgentSceneAssetItem } from "@/src/studio/creativeAgentAssets";
 import type { AssetManifest } from "@/src/types/assets";
 
@@ -52,7 +53,12 @@ export function CreativeAgentWorkbench() {
   }), [idea, draft.project.name, draft.experience.scenes.length, draft.assetManifest]);
 
   const brief = promptIntelligence.brief;
-  const intelligence = useMemo(() => runDirectorIntelligence({ brief }), [brief]);
+  const creativeContext=useCreativeIntelligenceContext(brief.projectName);
+  const intelligence = useMemo(() => runDirectorIntelligence({
+    brief,
+    ...(creativeContext.tasteLayers ? {tasteLayers:creativeContext.tasteLayers}:{}),
+    ...(creativeContext.memory?.nodes.length ? {memory:creativeContext.memory}:{}),
+  }), [brief,creativeContext.memory,creativeContext.tasteLayers]);
   const report = intelligence.report;
 
   const plan = useMemo(() => planCreativeExecution({
@@ -118,6 +124,7 @@ export function CreativeAgentWorkbench() {
     <section className="creative-agent__layout">
       <aside className="creative-agent__brief">
         <span className="creative-agent__eyebrow">EXECUTIVE CREATIVE DIRECTION</span>
+        <small className="creative-agent__memory-status">{creativeContext.loading ? "Loading studio creative memory…" : creativeContext.error ? "Studio memory unavailable · brief-only direction active" : `${creativeContext.counts?.priorProjects ?? 0} prior project${(creativeContext.counts?.priorProjects ?? 0)===1?"":"s"} · ${creativeContext.counts?.tasteLayers ?? 0} taste layer${(creativeContext.counts?.tasteLayers ?? 0)===1?"":"s"}`}</small>
         <h1>Describe the outcome. Director chooses the smartest production path.</h1>
         <p>Every scene must pass hierarchy review and carry an explicit asset strategy. Missing hero, video or 3D inputs can be sent directly to Forge Asset Creator instead of being treated as invisible production debt.</p>
 
