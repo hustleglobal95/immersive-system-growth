@@ -97,7 +97,9 @@
     "autonomy:functional-verify": "node --import tsx scripts/autonomy-functional-verify.mjs",
     "autonomy:motion-review": "node --import tsx scripts/autonomy-motion-review.mjs",
     "internal:user-hash": "node scripts/hash-internal-secret.mjs",
-    "internal:readiness": "node scripts/internal-readiness.mjs"
+    "internal:readiness": "node scripts/internal-readiness.mjs",
+    "loop:list": "node --import tsx scripts/loop-list.mjs",
+    "loop:run": "node --import tsx scripts/loop-run.mjs"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "5.3.0",
