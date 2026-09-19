@@ -30,6 +30,23 @@ async function prepare(page) {
   await page.waitForTimeout(4200);
 }
 
+async function captureScreenshot(page,path) {
+  let lastError;
+  for(let attempt=1;attempt<=2;attempt++) {
+    try {
+      await page.screenshot({ path, animations:"disabled", caret:"hide", timeout:10000 });
+      return;
+    } catch(error) {
+      lastError=error;
+      if(attempt===2) break;
+      console.warn(`Screenshot retry for ${path} after transient timeout.`);
+      await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      await page.waitForTimeout(300);
+    }
+  }
+  throw lastError;
+}
+
 async function captureSet(browser, label, viewport, shots) {
   const context = await browser.newContext({ viewport, deviceScaleFactor: 1 });
   const page = await context.newPage();
@@ -47,7 +64,7 @@ async function captureSet(browser, label, viewport, shots) {
     await seek(page, progress);
     const path = `${outputDir}/${name}.png`;
     try {
-      await page.screenshot({ path, animations: "disabled", timeout: 15000 });
+      await captureScreenshot(page,path);
       captures.push({ name, progress, path, status: "captured" });
       console.log(`CAPTURED ${label}/${name}`);
     } catch (error) {
