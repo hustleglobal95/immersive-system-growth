@@ -59,6 +59,8 @@ npm run loop:run -- --loop visual-polish --project my-project
 npm run loop:run -- --loop mobile-translation --project my-project
 npm run loop:run -- --loop motion-polish --project my-project
 npm run loop:run -- --loop performance --project my-project
+npm run loop:run -- --loop asset-quality --project my-project
+npm run loop:run -- --loop construction --project my-project
 ```
 
 Optional bounds can be tightened per run:
@@ -121,20 +123,26 @@ Profiles representative desktop/mobile states before proposing a change. The wor
 
 A performance candidate can advance only when it establishes a measurable relative improvement and still survives functional, mobile and visual comparison. Headless measurements are explicitly comparative evidence; physical-device release checks remain separate.
 
-## Contract-only loops
+### Asset Quality
 
-Asset Quality and Construction have complete loop contracts, budgets, verifier requirements, human gates and memory policy, but remain non-executable until their mutation workers meet the same evidence standard.
+Profiles the experience against its registered manifest, then runs only bounded asset changes Forge can prove are reversible:
 
-Forge does not expose a loop as executable until its repair worker can:
+- reuse an already-registered lower-byte derivative when explicit source lineage exists and savings are material;
+- consolidate exact SHA-256 duplicate aliases inside the same asset class;
+- preserve source masters and identity-critical content;
+- reject missing/unregistered local assets and material visual/performance regressions.
 
-1. operate on bounded production state;
-2. produce reversible changes;
-3. generate machine-readable evidence;
-4. pass relevant deterministic gates;
-5. compare against the incumbent;
-6. fail closed when evidence is missing.
+Asset Quality does not silently download, recompress or replace arbitrary remote client artwork. Image derivatives created by Forge record source path, operation, format, width and quality. Model/video optimization still requires an authored production toolchain.
 
-This prevents fake autonomy.
+### Construction
+
+Runs a grounded Director → construction-plan → candidate pipeline. Candidate strategies focus on hierarchy, camera structure and signature-budget concentration.
+
+Construction may coordinate motion, change camera interpolation semantics, and reduce decorative pressure in supporting chapters. It preserves client copy, semantic scene boundaries and authored camera/lens endpoints. It fails closed on unresolved scene-asset blockers.
+
+Construction uses the full verifier stack: schema, functional journey, assets, motion, mobile, performance, accessibility and visual comparison.
+
+All six Loop families are executable. Forge still exposes a worker only when it can operate on bounded production state, generate machine-readable evidence, compare against the incumbent and fail closed when evidence is missing.
 
 ## Candidate tournament
 
@@ -217,8 +225,14 @@ The run contains:
 ```text
 run-report.json
 current-incumbent.json
+current-incumbent-asset-manifest.json
+current-incumbent-interaction-graph.json
 current-candidate.json
-accepted-experience.json     # human-review artifact only when improvement was proved
+current-candidate-asset-manifest.json
+current-candidate-interaction-graph.json
+accepted-experience.json
+accepted-asset-manifest.json
+accepted-interaction-graph.json       # human-review bundle only when improvement was proved
 cycle-01/
   incumbent/
   incumbent-motion.json
@@ -239,7 +253,7 @@ It records:
 - source Project Vault version/file;
 - candidate attempts;
 - proven candidate improvements;
-- incumbent/candidate fingerprints;
+- incumbent/candidate full-state fingerprints across experience, asset manifest and interaction graph;
 - repair signatures;
 - hard-gate failures;
 - functional result;
@@ -266,8 +280,9 @@ Acceptance:
 - requires at least one proven improvement;
 - requires an explicit actor;
 - requires `--approve`;
-- writes a new validated Project Vault version;
-- preserves project, asset manifest and interaction graph;
+- verifies the accepted experience/manifest/interaction bundle against the tournament fingerprint;
+- writes a new validated Project Vault version atomically;
+- preserves the Studio project configuration while promoting the verified experience, asset manifest and interaction graph together;
 - records the acceptance in project history.
 
 Loop Engine never changes `config/experience.json` itself.
@@ -333,13 +348,23 @@ Performance adds:
 ```text
 autonomy-performance-profile
 autonomy-performance-repair
-autonomy-functional-verify
-autonomy-compare
 ```
 
-Renderer evidence includes frame interval percentiles, draw calls, primitive counts, program count, drawing-buffer pixels and pixel ratio. These remain bounded diagnostic signals rather than claimed GPU timings.
+Asset Quality adds:
 
-These remain specialized workers/verifiers.
+```text
+autonomy-asset-profile
+autonomy-asset-repair
+```
+
+Construction adds:
+
+```text
+autonomy-construction
+autonomy-accessibility-verify
+```
+
+All families then reuse functional, motion, performance, asset and pairwise visual verifiers as required by their contract. Renderer evidence includes frame interval percentiles, draw calls, primitive counts, program count, drawing-buffer pixels and pixel ratio. These remain bounded diagnostic signals rather than claimed GPU timings.
 
 Loop Engine owns:
 
