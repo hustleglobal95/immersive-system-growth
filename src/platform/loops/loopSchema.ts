@@ -20,7 +20,13 @@ export const loopAcceptanceSchema=z.object({
   maxMotionRegression:z.number().min(0).max(20),
 }).strict();
 
-export const loopRepairCommandSchema=z.enum(["scene.adjustPresentation","motion.applyArchetype","camera.applyChoreography"]);\n\nexport const loopStrategySchema=z.object({
+export const loopRepairCommandSchema=z.enum([
+  "scene.adjustPresentation",
+  "motion.applyArchetype",
+  "camera.applyChoreography",
+]);
+
+export const loopStrategySchema=z.object({
   id:z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   label:z.string().min(1).max(80),
   instruction:z.string().min(12).max(800),
@@ -36,6 +42,7 @@ export const loopDefinitionSchema=z.object({
   executable:z.boolean(),
   verifiers:z.array(loopVerifierSchema).min(1),
   strategies:z.array(loopStrategySchema).min(1).max(5),
+  allowedRepairCommands:z.array(loopRepairCommandSchema).min(1).max(3),
   budgets:loopBudgetSchema,
   acceptance:loopAcceptanceSchema,
   humanGates:z.array(z.string().min(4).max(240)).max(12),
@@ -51,6 +58,7 @@ export const loopCandidateEvidenceSchema=z.object({
   strategyId:z.string().min(1).max(80),
   fingerprint:z.string().min(1).max(128).optional(),
   repairSignature:z.string().min(1).max(128).optional(),
+  repairSummary:z.array(z.string().max(400)).max(8).default([]),
   candidatePath:z.string().max(1000).optional(),
   duplicateOf:z.string().max(120).optional(),
   functionalPassed:z.boolean().nullable().default(null),
