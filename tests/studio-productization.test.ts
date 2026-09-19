@@ -50,5 +50,5 @@ test("Studio routes selections through contextual direction instead of exposing 
 test("Studio asset intake surfaces Asset Intelligence guidance", () => {
   assert.match(assetManager, /analyzeAssetManifest/);
   assert.match(assetManager, /ASSET INTELLIGENCE/);
-  assert.match(assetManager, /production suitability/);
+  assert.match(assetManager, /manifest health/);
 });
