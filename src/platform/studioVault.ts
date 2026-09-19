@@ -34,6 +34,8 @@ const vaultJournalEventSchema = z.object({
 }).strict();
 const vaultJournalSchema = z.object({ version: z.literal(1), events: z.array(vaultJournalEventSchema).max(1000) }).strict();
 
+type VaultConfigurationEnvironment=Partial<Record<"FORGE_GITHUB_REPOSITORY"|"FORGE_GITHUB_TOKEN"|"FORGE_VAULT_BRANCH",string>>;
+
 export interface VaultActor { id: string; name: string; role: string; }
 export interface VaultDraftInput { experience: unknown; project: unknown; assetManifest: unknown; interactionGraph: unknown; }
 export type VaultProjectSummary = z.infer<typeof vaultSummarySchema>;
@@ -53,7 +55,7 @@ export interface VaultSnapshot {
   interactionGraph: ReturnType<typeof parseInteractionGraph>;
 }
 
-export function vaultConfiguration(environment: NodeJS.ProcessEnv = process.env) {
+export function vaultConfiguration(environment: VaultConfigurationEnvironment = process.env) {
   return {
     configured: Boolean(environment.FORGE_GITHUB_REPOSITORY && environment.FORGE_GITHUB_TOKEN),
     repositoryConfigured: Boolean(environment.FORGE_GITHUB_REPOSITORY),
