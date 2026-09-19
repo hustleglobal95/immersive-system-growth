@@ -52,7 +52,7 @@ test("design preview is readable without JavaScript", async ({ browser }) => {
   const page = await context.newPage();
   await page.goto("http://127.0.0.1:3000/design");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(page.locator(".ds-font-list li")).toHaveCount(36);
+  await expect(page.locator(".ds-font-list li")).toHaveCount(117);
   await expect(page.getByRole("button", { name: "Send inquiry" })).toBeDisabled();
   await context.close();
 });
