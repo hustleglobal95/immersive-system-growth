@@ -17,5 +17,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/studio/:path*", "/forge/:path*", "/director/:path*", "/structure/:path*", "/api/studio/:path*", "/api/forge/:path*"],
+  matcher: ["/studio/:path*", "/forge/:path*", "/director/:path*", "/structure/:path*", "/design/:path*", "/lab/:path*", "/api/studio/:path*", "/api/forge/:path*", "/api/asset-bank/:path*", "/api/integrations/:path*", "/api/type-vault/:path*"],
 };
