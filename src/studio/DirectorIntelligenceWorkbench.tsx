@@ -142,6 +142,6 @@ function MetricGrid({ items }: { items: Array<[string, number]> }) { return <div
 function List({ title, items }: { title: string; items: string[] }) { return <section className="director-critique-list"><h4>{title}</h4>{items.length ? items.map((item) => <p key={item}>{item}</p>) : <p>None.</p>}</section>; }
 
 
-function DNAGroup({title,values}:{title:string;values:Record<string,string>}) {
-  return <article><span>{title.toUpperCase()}</span>{Object.entries(values).map(([key,value])=><div key={key}><small>{key}</small><p>{value}</p></div>)}</article>;
+function DNAGroup({title,values}:{title:string;values:object}) {
+  return <article><span>{title.toUpperCase()}</span>{Object.entries(values).map(([key,value])=><div key={key}><small>{key}</small><p>{String(value)}</p></div>)}</article>;
 }
