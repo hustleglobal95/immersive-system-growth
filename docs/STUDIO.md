@@ -4,7 +4,7 @@
 
 ## Primary surfaces
 
-- **Build** is the default canvas-first authoring surface. Selection Context, Next Best Action, semantic command intent and proposal review keep subsystem choice out of the operator's path.
+- **Build** is the default canvas-first authoring surface. Selection Context, Next Best Action, semantic command intent and proposal review keep subsystem choice out of the operator's path. Scene, camera, rig node, copy, media, asset and environment selections each resolve their own relevant outcomes.
 - **Review** is the Project Health control room. Validation, asset pressure, motion coverage, mobile translation and interaction readiness are presented through one health model with direct repair routes.
 - **Ship** is the guided release surface. It honors Project Health, Project Vault/review controls, durable assets and protected publishing authority.
 
@@ -12,7 +12,7 @@
 
 Advanced preserves full expert depth without making it permanent navigation:
 
-- **Sequencer** — exact motion tracks, curves, recording and camera timing.
+- **Sequencer** — exact motion tracks, curves, recording, camera timing and low-level copy/media motion.
 - **Interactions** — deterministic trigger/state/action graph.
 - **Asset tools** — Asset Intelligence, bank, manifest and GLB inspection.
 - **Telemetry** — real-device performance evidence.
