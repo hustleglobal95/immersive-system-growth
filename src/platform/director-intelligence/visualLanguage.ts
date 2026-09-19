@@ -99,13 +99,17 @@ const modes=[
 ] as const;
 
 export function generateVisualLanguages(brief:DirectorBrief,treatment:DirectorTreatment):VisualLanguage[] {
-  const seed=hash(brief.projectName+"|"+brief.brandTruth+"|"+brief.projectType);
-  const used=new Set<number>();
-  return treatment.territories.map((territory,index)=>{
-    let modeIndex=(seed+index*3)%modes.length;
-    while(used.has(modeIndex)) modeIndex=(modeIndex+1)%modes.length;
-    used.add(modeIndex);
-    return languageFor(brief,territory,modes[modeIndex]);
+  const used=new Set<string>();
+  return treatment.territories.map((territory)=>{
+    const ranked=modes
+      .map((mode)=>({mode,score:modeScore(brief,territory,mode)}))
+      .sort((a,b)=>b.score-a.score || a.mode.id.localeCompare(b.mode.id));
+    const primary=ranked.find((item)=>!used.has(item.mode.id))?.mode ?? ranked[0].mode;
+    used.add(primary.id);
+    const accent=ranked.find((item)=>item.mode.id!==primary.id && !used.has(item.mode.id))?.mode
+      ?? ranked.find((item)=>item.mode.id!==primary.id)?.mode
+      ?? primary;
+    return languageFor(brief,territory,primary,accent);
   });
 }
 
@@ -119,22 +123,55 @@ export function evaluateVisualLanguageDivergence(brief:DirectorBrief,languages:V
   return {threshold,minimumDistance,averageDistance,sufficient:blockers.length===0,matrix,blockers};
 }
 
-function languageFor(brief:DirectorBrief,territory:DirectorTerritory,mode:typeof modes[number]):VisualLanguage {
+function languageFor(
+  brief:DirectorBrief,
+  territory:DirectorTerritory,
+  primary:typeof modes[number],
+  accent:typeof modes[number],
+):VisualLanguage {
   const truth=brief.differentiators[0] || brief.brandTruth;
+  const crossPollinate=accent.id!==primary.id;
   return {
     territoryId:territory.id,
     territoryName:territory.name,
-    modeId:mode.id,
-    modeLabel:mode.label,
-    premise:`${mode.label} turns “${territory.thesis}” into a visible system. The mode must remain subordinate to the client truth: ${truth}.`,
-    composition:[...mode.composition,`Use the territory premise as the hierarchy test: ${territory.visualPremise}`],
-    typography:[...mode.typography,`Typography must support the territory memory: ${territory.memory}`],
-    color:[...mode.color,`Color changes should reinforce “${territory.oneLine}”.`],
-    image:[...mode.image,`Image selection must prove: ${truth}.`],
-    material:[...mode.material],lighting:[...mode.lighting],motion:[...mode.motion],
-    interaction:[...mode.interaction,`Interaction should make “${territory.experientialPremise}” easier to feel, not merely more interactive.`],
-    sound:[...mode.sound],graphicDevices:[...mode.graphic],
+    modeId:crossPollinate ? `${primary.id}+${accent.id}` : primary.id,
+    modeLabel:crossPollinate ? `${primary.label} × ${accent.label}` : primary.label,
+    premise:`${primary.label} provides the dominant frame logic while ${accent.label} contributes selective contrast. Both must remain subordinate to the client truth: ${truth}. Territory thesis: ${territory.thesis}`,
+    composition:[...primary.composition,`Use the territory premise as the hierarchy test: ${territory.visualPremise}`],
+    typography:[...(hash(territory.id+"type")%2 ? primary.typography : accent.typography),`Typography must support the territory memory: ${territory.memory}`],
+    color:[...accent.color,`Color changes should reinforce “${territory.oneLine}”.`],
+    image:[...primary.image,`Image selection must prove: ${truth}.`],
+    material:[...primary.material,...accent.material.slice(0,1)],
+    lighting:[...accent.lighting],
+    motion:[...primary.motion],
+    interaction:[...primary.interaction,`Interaction should make “${territory.experientialPremise}” easier to feel, not merely more interactive.`],
+    sound:[...accent.sound],
+    graphicDevices:[...accent.graphic],
   };
+}
+
+const typeAffinity:Record<string,DirectorBrief["projectType"][]>={
+  "monumental-restraint":["property","product","automotive","brand"],
+  "tactile-editorial":["fashion","commerce","hospitality","portfolio"],
+  "optical-instrument":["product","automotive","brand","saas"],
+  "atmospheric-cinema":["property","hospitality","campaign","fashion"],
+  "graphic-system":["campaign","brand","portfolio","fashion"],
+  "organic-sensory":["hospitality","property","fashion","commerce"],
+  "kinetic-interface":["saas","brand","portfolio","commerce"],
+  "raw-contrast":["campaign","fashion","portfolio","automotive"],
+};
+
+function modeScore(brief:DirectorBrief,territory:DirectorTerritory,mode:typeof modes[number]) {
+  const territoryTerms=new Set(tokens([
+    territory.name,territory.thesis,territory.visualPremise,territory.experientialPremise,territory.memory,brief.brandTruth,...brief.differentiators,
+  ].join(" ")));
+  const modeTerms=new Set(tokens([
+    mode.label,...mode.composition,...mode.typography,...mode.color,...mode.image,...mode.material,...mode.lighting,...mode.motion,...mode.interaction,...mode.sound,...mode.graphic,
+  ].join(" ")));
+  let overlap=0;for(const term of territoryTerms) if(modeTerms.has(term)) overlap++;
+  const typeFit=typeAffinity[mode.id]?.includes(brief.projectType) ? 9 : 0;
+  const deterministic=(hash(brief.projectName+"|"+territory.id+"|"+mode.id)%17)/10;
+  return typeFit+overlap*1.7+deterministic;
 }
 
 function distance(a:VisualLanguage,b:VisualLanguage):VisualLanguageDistance {
