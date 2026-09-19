@@ -186,6 +186,7 @@ export function ProductionStudioWorkbench() {
     capability: ResolvedCapability,
     intent=capability.label,
     source:"semantic-action"|"command"|"next-action"|"system"="semantic-action",
+    requestedArchetype:MotionArchetypeName=archetype,
   ) => {
     const id=`proposal-${Date.now()}`;
     const createdAt=new Date().toISOString();
@@ -193,7 +194,7 @@ export function ProductionStudioWorkbench() {
 
     if(dispatch.type==="fast-action") {
       const prepared=prepareFastProposal({
-        id,createdAt,capability,context:selectionContext,experience:draft.experience,intent,source,archetype,
+        id,createdAt,capability,context:selectionContext,experience:draft.experience,intent,source,archetype:requestedArchetype,
       });
       setPreparedProposal(prepared.proposal);
       setCandidateExperience(prepared.candidateExperience);
@@ -393,6 +394,16 @@ export function ProductionStudioWorkbench() {
     }
   };
 
+  const runMotionPreset = (name:MotionArchetypeName,label:string) => {
+    const capability=selectionCapabilities.find((item)=>item.id==="scene.compose-motion");
+    if(!capability) {
+      setNotice("This selection does not support scene motion composition.");
+      return;
+    }
+    setArchetype(name);
+    runCapability(capability,label,"command",name);
+  };
+
   const runCommandValue = (input: string) => {
     const value = input.trim().toLowerCase();
     if (!value) return;
@@ -415,11 +426,11 @@ export function ProductionStudioWorkbench() {
       const capability=compiledCapability(selectionContext,compiled);
       if(capability) runCapability(capability,input,"command");
       else if(compiled.status==="ambiguous") setNotice(compiled.reason+" Choose a contextual action to disambiguate.");
-      else if (value === "architectural build") { setArchetype("architectural-build"); runCapability(selectionCapabilities.find((item)=>item.id==="scene.compose-motion") ?? selectionCapabilities[0],input,"command"); }
-      else if (value === "product hero") { setArchetype("product-hero"); runCapability(selectionCapabilities.find((item)=>item.id==="scene.compose-motion") ?? selectionCapabilities[0],input,"command"); }
-      else if (value === "parallax story") { setArchetype("parallax-story"); runCapability(selectionCapabilities.find((item)=>item.id==="scene.compose-motion") ?? selectionCapabilities[0],input,"command"); }
-      else if (value === "threshold passage") { setArchetype("threshold-passage"); runCapability(selectionCapabilities.find((item)=>item.id==="scene.compose-motion") ?? selectionCapabilities[0],input,"command"); }
-      else if (value === "editorial reveal") { setArchetype("editorial-reveal"); runCapability(selectionCapabilities.find((item)=>item.id==="scene.compose-motion") ?? selectionCapabilities[0],input,"command"); }
+      else if (value === "architectural build") runMotionPreset("architectural-build",input);
+      else if (value === "product hero") runMotionPreset("product-hero",input);
+      else if (value === "parallax story") runMotionPreset("parallax-story",input);
+      else if (value === "threshold passage") runMotionPreset("threshold-passage",input);
+      else if (value === "editorial reveal") runMotionPreset("editorial-reveal",input);
       else setNotice("Forge could not map that intent to a safe capability for the current selection.");
     }
     setCommand("");
