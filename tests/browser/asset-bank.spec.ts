@@ -61,6 +61,20 @@ test("kit replacement requires review, blocks incompatible interactions and supp
   await expect(page.getByText(/Applying this kit replaces/)).toBeVisible();
   await page.getByRole("button", { name: "Apply reviewed kit", exact: true }).click();
   await expect(page.getByText(/Existing interactions reference scenes or hotspots outside this kit/)).toBeVisible();
+
+  // Replacement remains blocked until the operator explicitly removes scene-bound interactions
+  // that would become invalid under the new kit. Simulate that reviewed graph edit in the stored draft.
+  await page.evaluate(() => {
+    const raw=localStorage.getItem("forge-studio-v2");
+    if(!raw) throw new Error("Forge Studio draft was not persisted.");
+    const draft=JSON.parse(raw);
+    draft.interactionGraph={...draft.interactionGraph,nodes:[],edges:[]};
+    localStorage.setItem("forge-studio-v2",JSON.stringify(draft));
+  });
+  await page.reload();
+  await page.locator("details.production-advanced-menu > summary").click();
+  await page.getByRole("button", { name: /Asset tools/ }).click();
+
   await page.getByRole("button", { name: "Review burger-showcase kit", exact: true }).click();
   await page.getByRole("button", { name: "Apply reviewed kit", exact: true }).click();
   await expect(page.getByText(/Reference kit applied/)).toBeVisible();
