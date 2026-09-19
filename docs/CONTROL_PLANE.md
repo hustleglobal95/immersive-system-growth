@@ -62,6 +62,8 @@ Supported selection kinds:
 scene
 camera
 node
+copy
+media
 asset
 environment
 ```
@@ -220,16 +222,20 @@ The Control Plane now implements the full product path:
 - the **Next Action Engine** ranks the highest-value unresolved action;
 - **Project Health** is the single readiness abstraction used by Review and enforced by Ship;
 - fast actions produce a reversible candidate before the working draft changes;
-- deep Loop-backed actions enter a verifying proposal state, run through the existing Loop Engine and can reload a verified winning bundle from local Loop evidence;
-- verified deep candidates return to the same **Current / Candidate** review surface as fast actions;
-- accepting a candidate changes only the working draft and can be reverted; Project Vault and release authority remain separate;
+- copy and scene media are first-class contextual targets, so typography and media direction do not require treating the whole scene as one undifferentiated object;
+- deep Loop-backed actions capture the exact working-state fingerprint, proposal ID, selected target and intent;
+- proposal-bound Loop execution is disabled unless the current working draft still matches the proposal and the current Project Vault checkpoint matches that same working state;
+- verified deep candidates return to the same **Current / Candidate** review surface as fast actions only when their proposal, selection and baseline provenance match;
+- accepting a candidate changes only the working draft. Full experience/asset/interaction bundles have atomic undo/redo; unrelated later manual edits invalidate that proposal rollback rather than risking destructive reversion. Project Vault and release authority remain separate;
 - Guided Ship refuses readiness when Project Health is not ready.
 
 ### Deep-candidate bridge
 
 `/api/studio/loops/results` is reviewer-protected and read-only. It scans local Forge Loop evidence, validates the run report, restricts artifact reads to `test-results/forge-loops`, validates the accepted experience/manifest/interaction bundle and returns only a verified winner for the requested project and Loop.
 
-This endpoint does not execute a Loop, accept a run into Project Vault or deploy anything. Its only purpose is to let Studio compare a proven local candidate against the working project before the human decides what to keep.
+This endpoint does not execute a Loop, accept a run into Project Vault or deploy anything. It requires the active proposal ID and only returns a winning report bound to that proposal. Studio separately verifies selection and baseline provenance before attaching the candidate.
+
+The Loop command carries `--proposal-id`, `--selection-key`, `--baseline-fingerprint` and the proposal intent. This prevents a winner from an older or differently targeted run from being presented as evidence for the current direction.
 
 ## PRO+ invariant
 
