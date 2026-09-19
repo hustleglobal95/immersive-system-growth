@@ -4,6 +4,7 @@ import { parseExperience } from "@/src/lib/configSchema";
 import { parseInteractionGraph } from "@/src/lib/interactionGraph";
 import { emptyInteractionGraph } from "@/src/platform/emptyInteractionGraph";
 import { parseStudioProject } from "@/src/platform/studioSchema";
+import { parseAssetManifest } from "@/src/platform/assetManifestSchema";
 
 /** A project Forge can open in Studio: the active configuration plus every client bundle. */
 export interface ForgeProjectSummary {
@@ -32,7 +33,16 @@ function projectFiles(): { slug: string; file: string; active: boolean; graph?: 
 function load(entry: ReturnType<typeof projectFiles>[number]) {
   const project = parseStudioProject(read(entry.file));
   const experience = parseExperience(read(project.experiencePath));
-  return { project, experience };
+  const manifestCandidates=[
+    path.posix.join(path.posix.dirname(project.experiencePath),"asset-manifest.json"),
+    path.posix.join(path.posix.dirname(entry.file),"asset-manifest.json"),
+    entry.active ? "config/asset-manifest.json" : "",
+  ].filter(Boolean);
+  const manifestPath=manifestCandidates.find((candidate)=>exists(candidate));
+  const assetManifest=manifestPath
+    ? parseAssetManifest(read(manifestPath))
+    : parseAssetManifest({models:[],textures:[],hdr:[],video:[],budgets:{modelMb:12,textureMb:5,hdrMb:12,videoMb:20,totalMb:45}});
+  return { project, experience, assetManifest };
 }
 
 export function listForgeProjects(): ForgeProjectSummary[] {
@@ -40,7 +50,7 @@ export function listForgeProjects(): ForgeProjectSummary[] {
   const projects: ForgeProjectSummary[] = [];
   for (const entry of projectFiles()) {
     try {
-      const { project, experience } = load(entry);
+      const { project, experience, assetManifest } = load(entry);
       if (seen.has(project.id)) continue;
       seen.add(project.id);
       projects.push({
@@ -67,5 +77,5 @@ export function loadForgeProject(slug: string) {
   if (entry.graph && exists(entry.graph)) {
     try { interactionGraph = parseInteractionGraph(read(entry.graph)); } catch { /* fall back to an empty graph */ }
   }
-  return { project, experience, interactionGraph };
+  return { project, experience, assetManifest, interactionGraph };
 }
