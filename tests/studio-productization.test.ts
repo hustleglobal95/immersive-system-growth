@@ -8,6 +8,7 @@ const guide = fs.readFileSync("src/studio/StudioWorkflowGuide.tsx", "utf8");
 const panels = fs.readFileSync("src/studio/ProjectPanels.tsx", "utf8");
 const agent = fs.readFileSync("src/studio/CreativeAgentWorkbench.tsx", "utf8");
 const assetCreator = fs.readFileSync("src/studio/AssetCreationWorkbench.tsx", "utf8");
+const assetManager = fs.readFileSync("src/studio/AssetManager.tsx", "utf8");
 
 test("Studio exposes one guided entry hierarchy instead of floating launchers", () => {
   assert.doesNotMatch(studioPage, /studio-intelligence-dock|StudioWorkflowDock/);
@@ -34,4 +35,20 @@ test("Guided Build finishes in Guided Ship instead of engineering controls", () 
 test("client-facing Studio family hides internal release labels", () => {
   assert.doesNotMatch(agent, /V5 · HIERARCHY \+ ASSET CREATION/);
   assert.doesNotMatch(assetCreator, />BETA</);
+});
+
+
+test("Studio routes selections through contextual direction instead of exposing raw machinery first", () => {
+  assert.match(studio, /ContextualDirection/);
+  assert.match(studio, /SCENE DIRECTION/);
+  assert.match(studio, /CAMERA DIRECTION/);
+  assert.match(studio, /OBJECT DIRECTION/);
+  assert.match(studio, /ASSET DIRECTION/);
+  assert.match(studio, /ENVIRONMENT DIRECTION/);
+});
+
+test("Studio asset intake surfaces Asset Intelligence guidance", () => {
+  assert.match(assetManager, /analyzeAssetManifest/);
+  assert.match(assetManager, /ASSET INTELLIGENCE/);
+  assert.match(assetManager, /production suitability/);
 });
