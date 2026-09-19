@@ -58,6 +58,7 @@ Run an executable loop from a durable Project Vault checkpoint:
 npm run loop:run -- --loop visual-polish --project my-project
 npm run loop:run -- --loop mobile-translation --project my-project
 npm run loop:run -- --loop motion-polish --project my-project
+npm run loop:run -- --loop performance --project my-project
 ```
 
 Optional bounds can be tightened per run:
@@ -114,9 +115,15 @@ Optimizes:
 
 Forward/reverse determinism and scene-boundary motion gates remain authoritative.
 
+### Performance
+
+Profiles representative desktop/mobile states before proposing a change. The worker currently produces bounded runtime-budget candidates around DPR, pixel ceilings and preload pressure, then profiles the candidate again.
+
+A performance candidate can advance only when it establishes a measurable relative improvement and still survives functional, mobile and visual comparison. Headless measurements are explicitly comparative evidence; physical-device release checks remain separate.
+
 ## Contract-only loops
 
-Performance, Asset Quality and Construction have complete loop contracts, budgets, verifier requirements, human gates and memory policy, but are deliberately marked non-executable.
+Asset Quality and Construction have complete loop contracts, budgets, verifier requirements, human gates and memory policy, but remain non-executable until their mutation workers meet the same evidence standard.
 
 Forge does not expose a loop as executable until its repair worker can:
 
@@ -311,7 +318,7 @@ The browser does not launch the long-running local loop. The runner needs a pers
 
 ## Worker architecture
 
-The current visual-family loop worker reuses:
+The visual-family loop worker reuses:
 
 ```text
 autonomy-candidate-capture
@@ -320,6 +327,17 @@ autonomy-functional-verify
 autonomy-motion-review
 autonomy-compare
 ```
+
+Performance adds:
+
+```text
+autonomy-performance-profile
+autonomy-performance-repair
+autonomy-functional-verify
+autonomy-compare
+```
+
+Renderer evidence includes frame interval percentiles, draw calls, primitive counts, program count, drawing-buffer pixels and pixel ratio. These remain bounded diagnostic signals rather than claimed GPU timings.
 
 These remain specialized workers/verifiers.
 
