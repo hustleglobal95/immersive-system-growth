@@ -5,11 +5,13 @@ import { executableLoopDefinitions, loopDefinition, loopDefinitions } from "../s
 import { createLoopRunReport } from "../src/platform/loops/loopEvidence";
 import { compactLoopContext, eligibleCandidate, evaluateLoopStop, learningCandidate, selectTournamentWinner } from "../src/platform/loops/loopRunner";
 import type { LoopCandidateEvidence, LoopRunReport } from "../src/platform/loops/loopSchema";
+import { analyzeAssetManifest } from "../src/platform/assetIntelligence";
 
 test("Loop Engine exposes only workers that have production-safe executors",()=>{
-  assert.deepEqual(executableLoopDefinitions().map((item)=>item.id),["visual-polish","mobile-translation","motion-polish"]);
+  assert.deepEqual(executableLoopDefinitions().map((item)=>item.id),["visual-polish","mobile-translation","motion-polish","performance"]);
   assert.equal(loopDefinitions.length,6);
-  assert.equal(loopDefinition("performance")?.executable,false);
+  assert.equal(loopDefinition("performance")?.executable,true);
+  assert.equal(loopDefinition("asset-quality")?.executable,false);
   assert.equal(loopDefinition("construction")?.executable,false);
   for(const definition of loopDefinitions) {
     assert.equal(definition.acceptance.requireHardGates,true);
@@ -107,6 +109,33 @@ test("loop learning remains project-scoped until separately promoted",()=>{
   const lesson=learningCandidate(report);
   assert.match(lesson,/Keep this project-scoped/i);
   assert.match(lesson,/multiple projects/i);
+});
+
+test("Asset Intelligence detects pressure, dominant files and duplicate binaries",()=>{
+  const shaA="a".repeat(64);
+  const shaB="b".repeat(64);
+  const report=analyzeAssetManifest({
+    models:[
+      {path:"/models/hero.glb",bytes:9*1024*1024,sha256:shaA},
+      {path:"/models/hero-copy.glb",bytes:9*1024*1024,sha256:shaA},
+    ],
+    textures:[{path:"/textures/hero.webp",bytes:4*1024*1024,sha256:shaB}],
+    hdr:[],
+    video:[],
+    budgets:{modelMb:12,textureMb:5,hdrMb:8,videoMb:20,totalMb:20},
+  });
+  assert.ok(report.score<100);
+  assert.equal(report.duplicateHashes.length,1);
+  assert.ok(report.oversized.some((item)=>item.kind==="models"));
+  assert.ok(report.findings.some((item)=>item.severity==="blocker" && /budget/i.test(item.title)));
+  assert.equal(report.remoteAssets,0);
+});
+
+test("Performance Loop has distinct evidence-driven candidate strategies",()=>{
+  const definition=loopDefinition("performance")!;
+  assert.equal(definition.worker,"performance-repair");
+  assert.deepEqual(definition.strategies.map((item)=>item.id),["pixel-pressure","balanced-budget"]);
+  assert.ok(definition.verifiers.includes("performance"));
 });
 
 test("Loop Engine scripts preserve human approval and legacy repair compatibility",()=>{
