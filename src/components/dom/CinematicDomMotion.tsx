@@ -108,6 +108,9 @@ export function CinematicDomMotion({ children, cues, experience }: { children: R
       element.querySelectorAll<HTMLElement>(".story-panel").forEach((panel) => {
         panel.style.maskImage = "";
         panel.style.webkitMaskImage = "";
+        panel.style.opacity = "";
+        panel.style.translate = "";
+        panel.style.filter = "";
       });
     };
   }, [cues, experience, reduced]);
