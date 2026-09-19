@@ -50,7 +50,7 @@ export function listForgeProjects(): ForgeProjectSummary[] {
   const projects: ForgeProjectSummary[] = [];
   for (const entry of projectFiles()) {
     try {
-      const { project, experience, assetManifest } = load(entry);
+      const { project, experience } = load(entry);
       if (seen.has(project.id)) continue;
       seen.add(project.id);
       projects.push({
@@ -72,7 +72,7 @@ export function listForgeProjects(): ForgeProjectSummary[] {
 export function loadForgeProject(slug: string) {
   const entry = projectFiles().find((item) => item.slug === slug);
   if (!entry) return null;
-  const { project, experience } = load(entry);
+  const { project, experience, assetManifest } = load(entry);
   let interactionGraph = emptyInteractionGraph(project.id);
   if (entry.graph && exists(entry.graph)) {
     try { interactionGraph = parseInteractionGraph(read(entry.graph)); } catch { /* fall back to an empty graph */ }
