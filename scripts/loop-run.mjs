@@ -315,7 +315,7 @@ async function recordVaultSummary() {
   if(!projectId) return;
   const snapshot=await readVaultProject(projectId);
   if(!snapshot) return;
-  const action=report.status==="escalated" ? "loop-escalate" : report.acceptedImprovements ? "loop-accept" : "loop-stop";
+  const action=report.status==="escalated" ? "loop-escalate" : report.acceptedImprovements ? "loop-candidate" : "loop-stop";
   const detail=[
     report.loopId,
     report.stopReason,
