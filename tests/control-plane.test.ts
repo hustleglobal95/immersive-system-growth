@@ -137,6 +137,44 @@ test("Studio consumes the Control Plane instead of hardcoding contextual capabil
 });
 
 
+test("Copy and Media are first-class contextual production targets",()=>{
+  const copy=resolveSelectionContext({experience,manifest,graph,selection:{kind:"copy",index:0}});
+  assert.equal(copy.kind,"copy");
+  assert.equal(copy.selectionKey,"copy:"+experience.scenes[0].id);
+  assert.ok(capabilitiesForContext(copy).some((item)=>item.id==="copy.reveal"));
+
+  const mediaIndex=experience.scenes.findIndex((scene)=>Boolean(scene.media));
+  assert.ok(mediaIndex>=0);
+  const media=resolveSelectionContext({experience,manifest,graph,selection:{kind:"media",index:mediaIndex}});
+  assert.equal(media.kind,"media");
+  assert.equal(media.selectionKey,"media:"+experience.scenes[mediaIndex].id);
+  assert.ok(capabilitiesForContext(media).some((item)=>item.id==="media.reveal"));
+});
+
+test("Focused copy and media actions prepare bounded candidates",()=>{
+  const copySource=parseExperience(rawExperience);
+  copySource.scenes[0].motionTracks=copySource.scenes[0].motionTracks.filter((track)=>!track.target.startsWith("copy."));
+  const copyContext=resolveSelectionContext({experience:copySource,manifest,graph,selection:{kind:"copy",index:0}});
+  const copyCapability=capabilitiesForContext(copyContext).find((item)=>item.id==="copy.reveal")!;
+  const copyPrepared=prepareFastProposal({
+    id:"proposal-copy-reveal",createdAt:"2026-09-19T14:00:00.000Z",capability:copyCapability,
+    context:copyContext,experience:copySource,intent:"reveal the typography",archetype:"editorial-reveal",
+  });
+  assert.ok(copyPrepared.candidateExperience.scenes[0].motionTracks.some((track)=>track.target.startsWith("copy.")));
+
+  const mediaIndex=experience.scenes.findIndex((scene)=>Boolean(scene.media));
+  assert.ok(mediaIndex>=0);
+  const mediaSource=parseExperience(rawExperience);
+  mediaSource.scenes[mediaIndex].motionTracks=mediaSource.scenes[mediaIndex].motionTracks.filter((track)=>!track.target.startsWith("media."));
+  const mediaContext=resolveSelectionContext({experience:mediaSource,manifest,graph,selection:{kind:"media",index:mediaIndex}});
+  const mediaCapability=capabilitiesForContext(mediaContext).find((item)=>item.id==="media.reveal")!;
+  const mediaPrepared=prepareFastProposal({
+    id:"proposal-media-reveal",createdAt:"2026-09-19T14:00:00.000Z",capability:mediaCapability,
+    context:mediaContext,experience:mediaSource,intent:"reveal this media",archetype:"editorial-reveal",
+  });
+  assert.ok(mediaPrepared.candidateExperience.scenes[mediaIndex].motionTracks.some((track)=>track.target==="media.reveal"));
+});
+
 test("Intent Compiler maps outcome language to valid capabilities without exposing subsystems",()=>{
   const node=resolveSelectionContext({
     experience,
@@ -166,6 +204,15 @@ test("Next Action prioritizes unfinished production work",()=>{
   const next=recommendNextActions(context,1)[0];
   assert.equal(next?.capability.id,"scene.compose-motion");
   assert.equal(next?.urgency,"now");
+});
+
+test("Missing mobile translation is surfaced as an urgent capability",()=>{
+  const source=parseExperience(rawExperience);
+  delete source.scenes[0].mobileCamera;
+  const context=resolveSelectionContext({experience:source,manifest,graph,selection:{kind:"scene",index:0}});
+  const action=recommendNextActions(context,6).find((item)=>item.capability.id==="scene.fix-mobile");
+  assert.ok(action);
+  assert.equal(action?.urgency,"now");
 });
 
 test("Project Health is the single production-readiness abstraction",()=>{
