@@ -13,6 +13,7 @@ export const forgeProposalSchema=z.object({
   state:z.enum(["draft","ready","verifying","accepted","rejected","failed"]),
   capabilityId:z.string().regex(/^[a-z0-9]+(?:[.-][a-z0-9]+)*$/),
   selectionKey:z.string().min(1).max(320),
+  baselineFingerprint:z.string().min(16).max(128).optional(),
   intent:z.object({
     source:z.enum(["semantic-action","command","next-action","system"]),
     raw:z.string().min(1).max(1200),
@@ -62,6 +63,7 @@ export function createProposalDraft(input:{
   capability:ResolvedCapability;
   context:SelectionContext;
   intent:string;
+  baselineFingerprint?:string;
   source?:"semantic-action"|"command"|"next-action"|"system";
 }):ForgeProposal {
   const scope=mutationScope(input.capability,input.context);
@@ -73,6 +75,7 @@ export function createProposalDraft(input:{
     state:"draft",
     capabilityId:input.capability.id,
     selectionKey:input.context.selectionKey,
+    baselineFingerprint:input.baselineFingerprint,
     intent:{
       source:input.source ?? "semantic-action",
       raw:input.intent,
