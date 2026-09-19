@@ -578,7 +578,16 @@ export function ProductionStudioWorkbench() {
 
 function Navigator({ mode, experience, manifest, activeScene, selection, onSelect, onScene }: { mode: LeftMode; experience: ExperienceConfig; manifest: AssetManifest; activeScene: number; selection: Selection; onSelect: (value: Selection) => void; onScene: (index: number) => void }) {
   if (mode === "Scenes") return <div className="production-tree">{experience.scenes.map((scene, index) => <button type="button" key={scene.id} className={activeScene === index ? "active" : ""} onClick={() => onScene(index)}><span>◫</span><strong>{scene.label}</strong><small>Timeline {Math.round((scene.range[1] - scene.range[0]) * 100)}%</small></button>)}</div>;
-  if (mode === "Structure") return <div className="production-tree"><button type="button" className={selection.kind === "camera" ? "active" : ""} onClick={() => onSelect({ kind: "camera", index: activeScene })}><span>⌁</span><strong>Camera</strong><small>shot</small></button><button type="button" className={selection.kind === "environment" ? "active" : ""} onClick={() => onSelect({ kind: "environment", index: activeScene })}><span>◉</span><strong>Environment</strong><small>world</small></button>{(experience.productRig?.nodes ?? []).map((node) => <button type="button" key={node} className={selection.kind === "node" && selection.name === node ? "active" : ""} onClick={() => onSelect({ kind: "node", index: activeScene, name: node })}><span>◇</span><strong>{node}</strong><small>rig</small></button>)}</div>;
+  if (mode === "Structure") {
+    const scene=experience.scenes[activeScene];
+    return <div className="production-tree">
+      <button type="button" className={selection.kind === "camera" ? "active" : ""} onClick={() => onSelect({ kind: "camera", index: activeScene })}><span>⌁</span><strong>Camera</strong><small>shot</small></button>
+      <button type="button" className={selection.kind === "copy" ? "active" : ""} onClick={() => onSelect({ kind: "copy", index: activeScene })}><span>T</span><strong>Copy</strong><small>typography</small></button>
+      {scene.media && <button type="button" className={selection.kind === "media" ? "active" : ""} onClick={() => onSelect({ kind: "media", index: activeScene })}><span>▣</span><strong>Media</strong><small>{scene.media.kind}</small></button>}
+      <button type="button" className={selection.kind === "environment" ? "active" : ""} onClick={() => onSelect({ kind: "environment", index: activeScene })}><span>◉</span><strong>Environment</strong><small>world</small></button>
+      {(experience.productRig?.nodes ?? []).map((node) => <button type="button" key={node} className={selection.kind === "node" && selection.name === node ? "active" : ""} onClick={() => onSelect({ kind: "node", index: activeScene, name: node })}><span>◇</span><strong>{node}</strong><small>rig</small></button>)}
+    </div>;
+  }
   const assets = [...manifest.models.map((entry) => ({ ...entry, kind: "model" })), ...manifest.textures.map((entry) => ({ ...entry, kind: "texture" })), ...manifest.hdr.map((entry) => ({ ...entry, kind: "hdr" })), ...manifest.video.map((entry) => ({ ...entry, kind: "video" }))];
   return <div className="production-tree">{assets.length ? assets.map((asset, index) => <button type="button" key={`${asset.kind}-${asset.path}`} className={selection.kind === "asset" && selection.index === index ? "active" : ""} onClick={() => onSelect({ kind: "asset", index, sceneIndex: activeScene })}><span>▧</span><strong>{asset.path.split("/").pop()}</strong><small>{asset.kind}</small></button>) : <p className="production-empty">No banked assets yet. Import assets to begin.</p>}</div>;
 }
@@ -592,9 +601,11 @@ function ContextualDirection({ context, capabilities, proposal, nextActions, onC
 }) {
   const directionLabel=context.kind==="camera" ? "CAMERA DIRECTION"
     : context.kind==="node" ? "OBJECT DIRECTION"
-      : context.kind==="asset" ? "ASSET DIRECTION"
-        : context.kind==="environment" ? "ENVIRONMENT DIRECTION"
-          : "SCENE DIRECTION";
+      : context.kind==="copy" ? "COPY DIRECTION"
+        : context.kind==="media" ? "MEDIA DIRECTION"
+          : context.kind==="asset" ? "ASSET DIRECTION"
+            : context.kind==="environment" ? "ENVIRONMENT DIRECTION"
+              : "SCENE DIRECTION";
   const highestIssue=context.issues.find((issue)=>issue.severity==="blocker")
     ?? context.issues.find((issue)=>issue.severity==="warning")
     ?? context.issues[0];
@@ -660,6 +671,25 @@ function RefinePanel({ context, experience, setExperience, openAdvanced }: {
       <div className="production-readout"><span>Pressure</span><strong>{context.state.postPressure}</strong></div>
     </Section>
     <Section title="Fine tune"><p className="production-muted">Exact lighting/post timing remains available without cluttering Build.</p><button type="button" onClick={()=>openAdvanced("Motion")}>Open Sequencer</button></Section>
+  </div>;
+
+  if(context.kind==="copy") return <div className="production-inspector">
+    <Section title="Copy">
+      <label>Eyebrow<input value={scene.copy.eyebrow} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,copy:{...current.copy,eyebrow:event.target.value}}))} /></label>
+      <label>Headline<textarea rows={3} value={scene.copy.headline} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,copy:{...current.copy,headline:event.target.value}}))} /></label>
+      <label>Body<textarea rows={4} value={scene.copy.body} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,copy:{...current.copy,body:event.target.value}}))} /></label>
+    </Section>
+    <Section title="Fine tune"><p className="production-muted">Typography motion stays outcome-driven here; exact opacity, blur and vertical tracks live in the Sequencer.</p><button type="button" onClick={()=>openAdvanced("Motion")}>Open Sequencer</button></Section>
+  </div>;
+
+  if(context.kind==="media") return <div className="production-inspector">
+    <Section title="Media state">
+      <div className="production-readout"><span>Kind</span><strong>{scene.media?.kind ?? "None"}</strong></div>
+      <div className="production-readout"><span>Transition</span><strong>{scene.media?.transition ?? "None"}</strong></div>
+      <div className="production-readout"><span>Position</span><strong>{scene.media ? `${scene.media.position[0]} / ${scene.media.position[1]}` : "—"}</strong></div>
+      <div className="production-readout"><span>Mobile position</span><strong>{scene.media ? `${scene.media.mobilePosition[0]} / ${scene.media.mobilePosition[1]}` : "—"}</strong></div>
+    </Section>
+    <Section title="Fine tune"><button type="button" onClick={()=>openAdvanced("Motion")}>Media timing</button><button type="button" onClick={()=>openAdvanced("Assets")}>Source asset</button></Section>
   </div>;
 
   if(context.kind==="asset") {
