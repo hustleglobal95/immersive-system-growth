@@ -1,5 +1,6 @@
 import { capabilitiesForContext, type ResolvedCapability } from "@/src/platform/control-plane/capabilityRegistry";
 import type { SelectionContext } from "@/src/platform/control-plane/selectionContext";
+import type { MotionArchetypeName } from "@/src/platform/motionArchetypes";
 
 export interface IntentCandidate {
   capabilityId:string;
@@ -73,6 +74,17 @@ export function compileIntent(context:SelectionContext,input:string):CompiledInt
       ? `Two capabilities are similarly plausible: ${top.label} and ${second?.label ?? "another action"}.`
       : `${top.label} is the strongest registered capability for this selection and intent.`,
   };
+}
+
+export function motionArchetypeForIntent(context:SelectionContext,input:string):MotionArchetypeName {
+  const value=normalize(input+" "+context.sceneLabel+" "+context.scene.camera.path);
+  const has=(...terms:string[])=>terms.some((term)=>value.includes(term));
+
+  if(has("architecture","architectural","building","tower","facade","structure","crane")) return "architectural-build";
+  if(has("threshold","passage","portal","door","enter","arrival")) return "threshold-passage";
+  if(has("parallax","depth","lateral","layered story","spatial story")) return "parallax-story";
+  if(has("product","hero","macro","inspect","mechanical","assemble","assembly","watch","vehicle") || context.state.hasProductRig) return "product-hero";
+  return "editorial-reveal";
 }
 
 export function compiledCapability(context:SelectionContext,compiled:CompiledIntent) {
