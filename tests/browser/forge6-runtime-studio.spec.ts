@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("Studio authors lifecycle triggers and complete runtime command actions", async ({ page }) => {
   await page.goto("/studio");
-  await page.getByText("Advanced", { exact: true }).click();
+  await page.getByRole("button", { name: "Advanced", exact: true }).click();
   await page.getByRole("button", { name: /Interactions/ }).click();
   await expect(page.getByRole("heading", { name: "Interaction graph", level: 2 })).toBeVisible();
 
