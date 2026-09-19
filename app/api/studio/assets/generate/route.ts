@@ -1,6 +1,8 @@
+import { requireStudioRole, studioAccessErrorResponse } from "@/src/platform/studioAccess";
 import { assetGenerationRequestSchema, readAssetGenerationStatus, submitAssetGeneration, type AssetGenerationProvider } from "@/src/platform/assetGeneration";
 
 export async function POST(request: Request) {
+  try { await requireStudioRole(request, "designer"); } catch (error) { return studioAccessErrorResponse(error) ?? Response.json({ ok: false, error: "Asset generation access failed" }, { status: 500 }); }
   const size = Number(request.headers.get("content-length") ?? 0);
   if (size > 32_000) return Response.json({ ok: false, error: "Request is too large" }, { status: 413 });
   try {
@@ -14,6 +16,7 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
+    await requireStudioRole(request, "reviewer");
     const url = new URL(request.url);
     const provider = url.searchParams.get("provider") as AssetGenerationProvider | null;
     const taskId = url.searchParams.get("taskId") ?? "";
