@@ -51,28 +51,32 @@ export function CreativeAgentWorkbench() {
     manifest: draft.assetManifest,
   }), [idea, draft.project.name, draft.experience.scenes.length, draft.assetManifest]);
 
+  const brief = promptIntelligence.brief;
+  const intelligence = useMemo(() => runDirectorIntelligence({ brief }), [brief]);
+  const report = intelligence.report;
+
   const plan = useMemo(() => planCreativeExecution({
     idea,
     experience: draft.experience,
     manifest: draft.assetManifest,
     variation,
     preferredMedia: promptIntelligence.recommendedMedia,
-  }), [idea, draft.experience, draft.assetManifest, variation, promptIntelligence.recommendedMedia]);
+    creativeDNA:intelligence.creativeDNA,
+    artDirection:intelligence.artDirection,
+    disciplineDirections:intelligence.disciplineDirections,
+    mutations:intelligence.creativeMutations,
+  }), [idea, draft.experience, draft.assetManifest, variation, promptIntelligence.recommendedMedia, intelligence]);
 
   // Re-select every scene the plan touches whenever the plan itself changes. Adjusting during
   // render keeps the checkbox list in step with the plan it belongs to instead of showing the
   // previous plan's selection for a frame.
   const [selectedScenes, setSelectedScenes] = useState<number[]>(() => plan.sceneMoves.map((move) => move.sceneIndex));
-  const planKey = `${plan.title}:${plan.sceneMoves.length}`;
+  const planKey = `${plan.title}:${plan.sceneMoves.length}:${intelligence.creativeDNA.territoryId}`;
   const [selectionKey, setSelectionKey] = useState(planKey);
   if (selectionKey !== planKey) {
     setSelectionKey(planKey);
     setSelectedScenes(plan.sceneMoves.map((move) => move.sceneIndex));
   }
-
-  const brief = promptIntelligence.brief;
-  const intelligence = useMemo(() => runDirectorIntelligence({ brief }), [brief]);
-  const report = intelligence.report;
   const hierarchyBlocked = report.hierarchy.blockers.length > 0;
   const selectedTerritory = report.treatment.territories.find((item) => item.id === report.treatment.selectedTerritoryId);
   const selectedBlocked = plan.sceneMoves.filter((move) => selectedScenes.includes(move.sceneIndex) && !move.assetPlan.canBuildNow).length;
@@ -150,6 +154,27 @@ export function CreativeAgentWorkbench() {
           <h2>{plan.title}</h2>
           <p>{plan.thesis}</p>
         </article>
+
+        <section className="creative-agent__creative-dna">
+          <header><div><span>CREATIVE DNA</span><h3>One visual world, not a collection of effects.</h3></div><strong>{intelligence.creativeCeiling.current} → {intelligence.creativeCeiling.projected}</strong></header>
+          <div className="creative-agent__creative-dna-grid">
+            <article><span>NORTH STAR</span><strong>{intelligence.creativeDNA.northStar}</strong><p>{intelligence.creativeDNA.contradiction}</p></article>
+            <article><span>ART DIRECTOR</span><strong>{intelligence.artDirection.visualRule}</strong><p>{intelligence.artDirection.hierarchyRule}</p></article>
+            <article><span>VISUAL LANGUAGE</span><strong>{intelligence.visualLanguages.find((item)=>item.territoryId===report.treatment.selectedTerritoryId)?.modeLabel}</strong><p>{intelligence.visualLanguages.find((item)=>item.territoryId===report.treatment.selectedTerritoryId)?.premise}</p></article>
+            <article><span>CREATIVE DISTANCE</span><strong>{intelligence.visualLanguageDivergence.minimumDistance}% minimum</strong><p>{intelligence.visualLanguageDivergence.sufficient ? "Territories are materially separated." : intelligence.visualLanguageDivergence.blockers[0]}</p></article>
+          </div>
+          <div className="creative-agent__discipline-strip">
+            <span>TYPE · {intelligence.disciplineDirections.typography.premise}</span>
+            <span>LIGHT · {intelligence.disciplineDirections.lighting.premise}</span>
+            <span>MATERIAL · {intelligence.disciplineDirections.material.premise}</span>
+            <span>IMAGE · {intelligence.disciplineDirections.image.premise}</span>
+          </div>
+        </section>
+
+        <section className="creative-agent__mutations">
+          <header><span>CREATIVE MUTATION</span><h3>Challenge the first strong idea before production.</h3></header>
+          <div>{intelligence.creativeMutations.slice(0,4).map((mutation)=><article key={mutation.id}><span>{mutation.score}/10 · RISK {mutation.productionRisk}</span><strong>{mutation.title}</strong><p>{mutation.question}</p><small>{mutation.systems.join(" · ")}</small></article>)}</div>
+        </section>
 
         <section className="creative-agent__decision">
           <div>
