@@ -10,6 +10,7 @@ import { appendVaultJournal, readVaultProject } from "../src/platform/studioVaul
 import { parseExperience } from "../src/lib/configSchema.ts";
 import { parseAssetManifest } from "../src/platform/assetManifestSchema.ts";
 import { parseInteractionGraph } from "../src/lib/interactionGraph.ts";
+import { projectStateFingerprint } from "../src/platform/control-plane/projectState.ts";
 
 const options=args(process.argv.slice(2));
 const loopId=String(options.loop || "visual-polish");
@@ -77,11 +78,18 @@ await fs.writeFile(currentIncumbentManifestPath,JSON.stringify(source.assetManif
 await fs.writeFile(currentCandidateManifestPath,JSON.stringify(source.assetManifest,null,2)+"\n");
 await fs.writeFile(currentIncumbentGraphPath,JSON.stringify(source.interactionGraph,null,2)+"\n");
 await fs.writeFile(currentCandidateGraphPath,JSON.stringify(source.interactionGraph,null,2)+"\n");
-const baselineFingerprint=fingerprint({
+const sourceState={
   experience:source.experience,
   assetManifest:source.assetManifest,
   interactionGraph:source.interactionGraph,
-});
+};
+if(controlPlane) {
+  const actualControlPlaneBaseline=projectStateFingerprint(sourceState);
+  if(actualControlPlaneBaseline!==controlPlane.baselineFingerprint) {
+    fail("Control Plane proposal baseline does not match the current Loop source. Save the intended working state to Vault and prepare the proposal again.");
+  }
+}
+const baselineFingerprint=fingerprint(sourceState);
 let report=createLoopRunReport({
   runId:"loop-"+stamp+"-"+loopId,
   definition,
