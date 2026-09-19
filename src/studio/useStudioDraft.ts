@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type 
 import { parseExperience } from "@/src/lib/configSchema";
 import { parseInteractionGraph, type InteractionGraph } from "@/src/lib/interactionGraph";
 import { parseStudioProject, type StudioProject } from "@/src/platform/studioSchema";
+import { parseAssetManifest } from "@/src/platform/assetManifestSchema";
 import type { ExperienceConfig } from "@/src/types/experience";
 import type { AssetManifest } from "@/src/types/assets";
 
@@ -120,6 +121,22 @@ export function useStudioDraft(
     return issues;
   }, [experience, interactionGraph, project]);
 
+  const loadDraft = useCallback((input: StoredDraft) => {
+    const nextExperience = parseExperience(input.experience);
+    const nextProject = parseStudioProject(input.project);
+    const nextManifest = parseAssetManifest(input.assetManifest);
+    const nextInteractionGraph = parseInteractionGraph(input.interactionGraph);
+    experienceRef.current = nextExperience;
+    setExperienceState(nextExperience);
+    setProject(nextProject);
+    setAssetManifest(nextManifest);
+    setInteractionGraph(nextInteractionGraph);
+    undoStack.current = [];
+    redoStack.current = [];
+    groupBase.current = null;
+    setHistory({ undo: 0, redo: 0 });
+  }, []);
+
   const reset = useCallback(() => {
     experienceRef.current = initialExperience;
     setExperienceState(initialExperience);
@@ -150,6 +167,7 @@ export function useStudioDraft(
     setInteractionGraph,
     validation,
     hydrated,
+    loadDraft,
     reset,
   };
 }
