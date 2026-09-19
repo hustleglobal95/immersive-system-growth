@@ -6,7 +6,8 @@ export const runtime = "nodejs";
 export async function GET(request: Request) {
   try {
     await requireStudioRole(request, "reviewer");
-    return Response.json({ ok: true, configuration: vaultConfiguration(), projects: await listVaultProjects() });
+    const configuration = vaultConfiguration();
+    return Response.json({ ok: true, configuration, projects: configuration.configured ? await listVaultProjects() : [] });
   } catch (error) {
     const access = studioAccessErrorResponse(error);
     if (access) return access;
@@ -17,6 +18,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const identity = await requireStudioRole(request, "designer");
+    if (!vaultConfiguration().configured) return Response.json({ ok: false, error: "Forge Project Vault is not configured", configuration: vaultConfiguration() }, { status: 503 });
     const size = Number(request.headers.get("content-length") ?? 0);
     if (!Number.isFinite(size) || size > 5_000_000) return Response.json({ ok: false, error: "Vault snapshot request is too large" }, { status: 413 });
     const body = await request.json() as { label?: unknown; note?: unknown; draft?: unknown };
