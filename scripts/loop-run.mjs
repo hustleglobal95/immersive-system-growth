@@ -144,11 +144,14 @@ try {
       const candidateRoot=path.join(cycleRoot,candidateId);
       const reviewRoot=path.join(candidateRoot,"repair");
       const candidateExperiencePath=path.join(reviewRoot,"candidate-experience.json");
+      const candidateAssetManifestOutputPath=path.join(reviewRoot,"candidate-asset-manifest.json");
+      const candidateInteractionGraphOutputPath=path.join(reviewRoot,"candidate-interaction-graph.json");
       const candidateCaptureRoot=path.join(candidateRoot,"capture");
       const functionalPath=path.join(candidateRoot,"functional.json");
       const motionPath=path.join(candidateRoot,"motion.json");
       const comparisonPath=path.join(candidateRoot,"comparison.json");
       const candidatePerformancePath=path.join(candidateRoot,"performance.json");
+      const candidateAssetProfilePath=path.join(candidateRoot,"assets.json");
       report.candidateAttempts++;
       const evidence={
         id:candidateId,
@@ -180,14 +183,22 @@ try {
               "--output",reviewRoot,
               "--strategy",strategy.id,
             ])
-          : await run(process.execPath,[
-              "--import","tsx","scripts/autonomy-visual-director.mjs",
-              "--report",path.join(incumbentRoot,"review-report.json"),
-              "--experience",currentIncumbentPath,
-              "--output",reviewRoot,
-              "--context",context,
-              "--allowed-commands",definition.allowedRepairCommands.join(","),
-            ]);
+          : definition.worker==="asset-repair"
+            ? await run(process.execPath,[
+                "--import","tsx","scripts/autonomy-asset-repair.mjs",
+                "--experience",currentIncumbentPath,
+                "--manifest",currentIncumbentManifestPath,
+                "--output",reviewRoot,
+                "--strategy",strategy.id,
+              ])
+            : await run(process.execPath,[
+                "--import","tsx","scripts/autonomy-visual-director.mjs",
+                "--report",path.join(incumbentRoot,"review-report.json"),
+                "--experience",currentIncumbentPath,
+                "--output",reviewRoot,
+                "--context",context,
+                "--allowed-commands",definition.allowedRepairCommands.join(","),
+              ]);
         const repairPlan=await readJson(path.join(reviewRoot,"repair-plan.json"),null);
         evidence.repairSignature=repairPlanSignature(repairPlan);
         evidence.repairSummary=Array.isArray(repairPlan?.summary) ? repairPlan.summary.slice(0,8).map((item)=>String(item).slice(0,400)) : [];
