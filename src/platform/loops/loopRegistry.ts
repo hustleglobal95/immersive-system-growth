@@ -95,13 +95,14 @@ const definitions:LoopDefinition[]=[
     description:"Inspect production assets, regenerate or repair bounded deficiencies, and preserve project identity and licensing constraints.",
     objective:"Raise asset suitability for the authored camera/material role without silently replacing client-approved identity-critical content.",
     worker:"asset-repair",
-    executable:false,
+    executable:true,
     verifiers:["schema","assets","performance","visual"],
     allowedRepairCommands:["scene.adjustPresentation"],
     strategies:[
-      { id:"production-suitability",label:"Production suitability",instruction:"Prioritize geometry, topology, materials, texture resolution, rig semantics and camera suitability before aesthetic variation." },
+      { id:"registered-derivative",label:"Registered derivative",instruction:"Prefer an already-registered lower-byte derivative only when lineage is explicit, the source remains available for rollback and measured savings are material." },
+      { id:"canonical-reuse",label:"Canonical reuse",instruction:"Consolidate exact SHA-256 duplicate asset identities and remove redundant manifest aliases without changing the underlying binary or project meaning." },
     ],
-    budgets:{ maxCycles:3,maxCandidatesPerCycle:3,maxCandidateAttempts:9,maxWallTimeMs:1_800_000,noProgressLimit:1 },
+    budgets:{ maxCycles:3,maxCandidatesPerCycle:2,maxCandidateAttempts:6,maxWallTimeMs:1_200_000,noProgressLimit:1 },
   },
   {
     ...common,
