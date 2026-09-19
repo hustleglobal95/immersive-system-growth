@@ -7,11 +7,14 @@ type Draft = ReturnType<typeof useStudioDraft>;
 type VaultSummary = { id: string; name: string; status: "active" | "archived"; updatedAt: string; updatedBy: string; sceneCount: number; versionCount: number };
 type VaultVersion = { versionId: string; label: string; note: string; savedAt: string; savedBy: string };
 type VaultSnapshot = { experience: unknown; project: unknown; assetManifest: unknown; interactionGraph: unknown; versionId: string; label: string; savedAt: string; savedBy: string };
+type VaultEvent = { id: string; at: string; actor: string; role: string; action: string; detail: string };
 
 export function StudioVaultPanel({ draft, onClose }: { draft: Draft; onClose: () => void }) {
   const [projects, setProjects] = useState<VaultSummary[]>([]);
   const [selectedId, setSelectedId] = useState(draft.project.id);
   const [versions, setVersions] = useState<VaultVersion[]>([]);
+  const [events, setEvents] = useState<VaultEvent[]>([]);
+  const [lesson, setLesson] = useState("");
   const [configured, setConfigured] = useState<boolean | null>(null);
   const [label, setLabel] = useState("Production checkpoint");
   const [note, setNote] = useState("");
@@ -35,14 +38,20 @@ export function StudioVaultPanel({ draft, onClose }: { draft: Draft; onClose: ()
   };
 
   const refreshVersions = async (projectId: string) => {
-    if (!projects.some((project) => project.id === projectId)) return setVersions([]);
+    if (!projects.some((project) => project.id === projectId)) { setVersions([]); setEvents([]); return; }
     try {
-      const response = await fetch(`/api/studio/vault/projects/${encodeURIComponent(projectId)}/versions`, { cache: "no-store" });
-      const data = await response.json() as { ok?: boolean; error?: string; versions?: VaultVersion[] };
-      if (!response.ok || !data.ok) throw new Error(data.error ?? "Could not read versions");
-      setVersions(data.versions ?? []);
+      const [versionsResponse, journalResponse] = await Promise.all([
+        fetch(`/api/studio/vault/projects/${encodeURIComponent(projectId)}/versions`, { cache: "no-store" }),
+        fetch(`/api/studio/vault/projects/${encodeURIComponent(projectId)}/journal`, { cache: "no-store" }),
+      ]);
+      const versionsData = await versionsResponse.json() as { ok?: boolean; error?: string; versions?: VaultVersion[] };
+      const journalData = await journalResponse.json() as { ok?: boolean; error?: string; events?: VaultEvent[] };
+      if (!versionsResponse.ok || !versionsData.ok) throw new Error(versionsData.error ?? "Could not read versions");
+      if (!journalResponse.ok || !journalData.ok) throw new Error(journalData.error ?? "Could not read project activity");
+      setVersions(versionsData.versions ?? []);
+      setEvents(journalData.events ?? []);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Could not read versions");
+      setMessage(error instanceof Error ? error.message : "Could not read project history");
     }
   };
 
@@ -100,6 +109,21 @@ export function StudioVaultPanel({ draft, onClose }: { draft: Draft; onClose: ()
     } finally { setBusy(false); }
   };
 
+  const recordLesson = async () => {
+    if (!selected || !lesson.trim()) return;
+    setBusy(true); setMessage("Recording production lesson…");
+    try {
+      const response = await fetch(`/api/studio/vault/projects/${encodeURIComponent(selected.id)}/journal`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "lesson", detail: lesson.trim() }) });
+      const data = await response.json() as { ok?: boolean; error?: string };
+      if (!response.ok || !data.ok) throw new Error(data.error ?? "Could not record lesson");
+      setLesson("");
+      setMessage("Production lesson recorded in the project journal.");
+      await refreshVersions(selected.id);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not record lesson");
+    } finally { setBusy(false); }
+  };
+
   const archive = async (archived: boolean) => {
     if (!selected) return;
     setBusy(true);
@@ -135,10 +159,17 @@ export function StudioVaultPanel({ draft, onClose }: { draft: Draft; onClose: ()
             <button type="button" className="primary" disabled={busy || configured === false || !label.trim()} onClick={() => void save()}>{busy ? "Working…" : "Save to Project Vault"}</button>
           </section>
 
-          {selected && <section className="production-vault-history">
-            <div className="production-vault-section-head"><div><span>VERSION HISTORY</span><strong>{selected.name}</strong></div><div><button type="button" disabled={busy} onClick={() => void load(selected.id)}>Open current</button><button type="button" disabled={busy} onClick={() => void archive(selected.status !== "archived")}>{selected.status === "archived" ? "Unarchive" : "Archive"}</button></div></div>
-            {versions.length ? versions.map((version) => <article key={version.versionId}><div><strong>{version.label}</strong><span>{new Date(version.savedAt).toLocaleString()} · {version.savedBy}</span>{version.note && <p>{version.note}</p>}</div><button type="button" disabled={busy} onClick={() => void restore(version)}>Restore</button></article>) : <p className="production-empty">No durable versions yet.</p>}
-          </section>}
+          {selected && <>
+            <section className="production-vault-history">
+              <div className="production-vault-section-head"><div><span>VERSION HISTORY</span><strong>{selected.name}</strong></div><div><button type="button" disabled={busy} onClick={() => void load(selected.id)}>Open current</button><button type="button" disabled={busy} onClick={() => void archive(selected.status !== "archived")}>{selected.status === "archived" ? "Unarchive" : "Archive"}</button></div></div>
+              {versions.length ? versions.map((version) => <article key={version.versionId}><div><strong>{version.label}</strong><span>{new Date(version.savedAt).toLocaleString()} · {version.savedBy}</span>{version.note && <p>{version.note}</p>}</div><button type="button" disabled={busy} onClick={() => void restore(version)}>Restore</button></article>) : <p className="production-empty">No durable versions yet.</p>}
+            </section>
+            <section className="production-vault-learning">
+              <div className="production-vault-section-head"><div><span>PRODUCTION MEMORY</span><strong>What should Forge remember?</strong></div></div>
+              <div className="production-vault-lesson"><input value={lesson} maxLength={1000} onChange={(event) => setLesson(event.target.value)} placeholder="Example: On mobile, the slower camera orbit preserved the luxury feel better than cutting the shot." /><button type="button" disabled={busy || !lesson.trim()} onClick={() => void recordLesson()}>Record lesson</button></div>
+              <div className="production-vault-events">{events.slice(0, 12).map((event) => <article key={event.id} data-action={event.action}><div><strong>{event.action.replace("-", " ")}</strong><span>{new Date(event.at).toLocaleString()} · {event.actor} · {event.role}</span></div><p>{event.detail}</p></article>)}</div>
+            </section>
+          </>}
           {message && <p className="production-vault-message" role="status">{message}</p>}
         </main>
       </div>
