@@ -82,7 +82,7 @@ export function estimateCreativeCeilingV2(input:{
     action:actions[item.dimension],
   }));
   const projected=clamp(current+highestLeverage.slice(0,3).reduce((sum,item)=>sum+item.gain,0)*.62);
-  const confidence=Number(Math.max(.48,Math.min(.94,.58+brief.differentiators.length*.04+brief.existingAssets.length*.012+(divergence.sufficient?.08:0))).toFixed(2));
+  const confidence=Number(Math.max(.48,Math.min(.94,.58+brief.differentiators.length*.04+brief.existingAssets.length*.012+(divergence.sufficient ? 0.08 : 0))).toFixed(2));
   return {current,projected,dimensions,bottlenecks,highestLeverage,confidence};
 }
 
