@@ -1,4 +1,4 @@
-import { clearStudioSessionCookie, createStudioSessionToken, parseStudioUsers, studioAccessEnabled, studioIdentityFromRequest, studioSessionCookie, verifyStudioUserSecret } from "@/src/platform/studioAccess";
+import { clearStudioSessionCookie, createStudioSessionToken, parseStudioUsers, studioAccessEnabled, studioAccessErrorResponse, studioIdentityFromRequest, studioSessionCookie, verifyStudioUserSecret } from "@/src/platform/studioAccess";
 
 export const runtime = "nodejs";
 
@@ -26,6 +26,8 @@ export async function POST(request: Request) {
     response.headers.set("cache-control", "no-store");
     return response;
   } catch (error) {
+    const access = studioAccessErrorResponse(error);
+    if (access) return access;
     return Response.json({ ok: false, error: error instanceof Error ? error.message : "Sign-in failed" }, { status: 400 });
   }
 }
