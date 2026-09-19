@@ -198,7 +198,16 @@ try {
                 "--output",reviewRoot,
                 "--strategy",strategy.id,
               ])
-            : await run(process.execPath,[
+            : definition.worker==="construction"
+              ? await run(process.execPath,[
+                  "--import","tsx","scripts/autonomy-construction.mjs",
+                  "--experience",currentIncumbentPath,
+                  "--manifest",currentIncumbentManifestPath,
+                  "--output",reviewRoot,
+                  "--strategy",strategy.id,
+                  "--context",context,
+                ])
+              : await run(process.execPath,[
                 "--import","tsx","scripts/autonomy-visual-director.mjs",
                 "--report",path.join(incumbentRoot,"review-report.json"),
                 "--experience",currentIncumbentPath,
