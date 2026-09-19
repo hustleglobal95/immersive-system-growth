@@ -49,7 +49,8 @@ export function LoopEnginePanel({
 
   if(!selected) return null;
   const command=`npm run loop:run -- --loop ${selected.id} --project ${projectId}`;
-  const ready=selected.executable && vaultConfigured===true && Boolean(vaultProject) && criticConnected===true;
+  const ready=selected.executable && vaultConfigured===true && vaultProject?.status==="active" && criticConnected===true;
+  const runLabel=criticConnected===false ? "Connect visual critic" : vaultProject?.status==="archived" ? "Unarchive project first" : !vaultProject ? "Save checkpoint first" : ready ? "Copy run command" : "Checking readiness…";
 
   const copy=async()=>{
     try {
@@ -118,10 +119,10 @@ export function LoopEnginePanel({
           {selected.executable ? <section className="production-loop-run">
             <div>
               <span>PROJECT SOURCE</span>
-              <strong>{!criticConnected ? "Visual critic connection is required" : vaultProject ? `Vault checkpoint · ${vaultProject.versionCount} version${vaultProject.versionCount===1?"":"s"}` : vaultConfigured===false ? "Project Vault is not configured" : "Save this project to Vault first"}</strong>
+              <strong>{criticConnected===false ? "Visual critic connection is required" : vaultProject?.status==="archived" ? "Project is archived in Vault" : vaultProject ? `Vault checkpoint · ${vaultProject.versionCount} version${vaultProject.versionCount===1?"":"s"}` : vaultConfigured===false ? "Project Vault is not configured" : "Save this project to Vault first"}</strong>
               <p>The runner takes a durable Project Vault snapshot as the incumbent, writes all evidence under <code>test-results/forge-loops</code>, and returns a human-review artifact only if a candidate proves improvement.</p>
             </div>
-            <div className="production-loop-command"><code>{command}</code><button type="button" disabled={!ready} onClick={()=>void copy()}>{ready ? "Copy run command" : "Save checkpoint first"}</button></div>
+            <div className="production-loop-command"><code>{command}</code><button type="button" disabled={!ready} onClick={()=>void copy()}>{runLabel}</button></div>
             {!vaultProject && <button type="button" className="production-loop-vault" onClick={onOpenVault}>Open Project Vault</button>}
           </section> : <section className="production-loop-planned"><strong>Repair worker intentionally not enabled yet.</strong><p>The loop contract, budgets, memory, stop policy and verification requirements are defined. Forge will not expose this loop as executable until its repair worker can produce bounded changes and pass the same evidence gates.</p></section>}
 
