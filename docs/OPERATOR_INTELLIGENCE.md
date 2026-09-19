@@ -93,3 +93,10 @@ Mission Control belongs on **Build** and routes through the existing Control Pla
 ## Product invariant
 
 A new Forge capability is not successful because another control exists. It is successful when Mission Control can use it without increasing the operator's decision burden.
+
+
+## Human gate completion
+
+Taste and authority gates are explicit Mission state, not advisory text. Mission Control persists approved gate IDs per Mission in browser storage and recalculates the Plan Graph immediately. Dependent automated work remains blocked until the required human decision is approved.
+
+This prevents Autopilot from skipping creative-world, signature-moment or final-approval boundaries and prevents Forge from repeatedly asking for a decision that the operator has already approved.
