@@ -69,7 +69,7 @@ const definitions:LoopDefinition[]=[
     worker:"performance-repair",
     executable:false,
     verifiers:["schema","functional","performance","mobile","visual"],
-    strategies:[{ id:"lowest-risk",label:"Lowest-risk optimization",instruction:"Optimize the dominant measured bottleneck first and preserve visual equivalence. Do not guess at performance work without measurement." }],
+    allowedRepairCommands:["scene.adjustPresentation"],\n    strategies:[{ id:"lowest-risk",label:"Lowest-risk optimization",instruction:"Optimize the dominant measured bottleneck first and preserve visual equivalence. Do not guess at performance work without measurement." }],
     budgets:{ maxCycles:4,maxCandidatesPerCycle:2,maxCandidateAttempts:8,maxWallTimeMs:1_200_000,noProgressLimit:2 },
   },
   {
@@ -81,7 +81,7 @@ const definitions:LoopDefinition[]=[
     worker:"asset-repair",
     executable:false,
     verifiers:["schema","assets","performance","visual"],
-    strategies:[{ id:"production-suitability",label:"Production suitability",instruction:"Prioritize geometry, topology, materials, texture resolution, rig semantics and camera suitability before aesthetic variation." }],
+    allowedRepairCommands:["scene.adjustPresentation"],\n    strategies:[{ id:"production-suitability",label:"Production suitability",instruction:"Prioritize geometry, topology, materials, texture resolution, rig semantics and camera suitability before aesthetic variation." }],
     budgets:{ maxCycles:3,maxCandidatesPerCycle:3,maxCandidateAttempts:9,maxWallTimeMs:1_800_000,noProgressLimit:1 },
   },
   {
@@ -93,7 +93,7 @@ const definitions:LoopDefinition[]=[
     worker:"construction",
     executable:false,
     verifiers:["schema","functional","assets","motion","mobile","performance","accessibility","visual"],
-    strategies:[{ id:"full-system",label:"Full-system construction",instruction:"Resolve hierarchy and asset blockers before polish. Build the smallest coherent system that satisfies the creative thesis and production contract." }],
+    allowedRepairCommands:["scene.adjustPresentation","motion.applyArchetype","camera.applyChoreography"],\n    strategies:[{ id:"full-system",label:"Full-system construction",instruction:"Resolve hierarchy and asset blockers before polish. Build the smallest coherent system that satisfies the creative thesis and production contract." }],
     budgets:{ maxCycles:5,maxCandidatesPerCycle:3,maxCandidateAttempts:15,maxWallTimeMs:3_600_000,noProgressLimit:2 },
   },
 ].map((definition)=>loopDefinitionSchema.parse(definition));
