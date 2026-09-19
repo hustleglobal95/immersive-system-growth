@@ -65,6 +65,7 @@ export async function GET(request:Request) {
           sourceVersionId:report.sourceVersionId,
           proposalId:report.controlPlane.proposalId,
           selectionKey:report.controlPlane.selectionKey,
+          baselineFingerprint:report.controlPlane.baselineFingerprint,
           fingerprint:report.currentFingerprint,
           repairSummary:evidence?.repairSummary ?? [],
           preferenceAgreement:evidence?.preferenceAgreement ?? null,
