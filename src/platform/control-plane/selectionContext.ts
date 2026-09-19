@@ -70,8 +70,9 @@ export function resolveSelectionContext(input:{
   const manifestHealth=analyzeAssetManifest(input.manifest);
   const assets=flattenAssets(input.manifest);
   const selectedAsset=input.selection.kind==="asset" ? assets[input.selection.index] : undefined;
-  const selectedNodeTrackCount=input.selection.kind==="node"
-    ? scene.motionTracks.filter((track)=>track.target.startsWith(`rig:${input.selection.name}:`)).length
+  const selectedNodeName=input.selection.kind==="node" ? input.selection.name : null;
+  const selectedNodeTrackCount=selectedNodeName
+    ? scene.motionTracks.filter((track)=>track.target.startsWith(`rig:${selectedNodeName}:`)).length
     : 0;
   const interactionReferenceCount=countInteractionReferences(input.graph,input.selection,scene);
   const issues:SelectionIssue[]=[];
