@@ -97,7 +97,8 @@ try {
       "--url",baseURL,"--experience",currentIncumbentPath,"--variant","incumbent","--output",incumbentMotionPath,"--allow-failures",
     ]);
     const seenFingerprints=new Map();
-    const priorRepairs=report.cycles.flatMap((item)=>item.candidates.flatMap((candidate)=>candidate.repairSignature ? [candidate.repairSignature] : []));
+    const priorRepairs=report.cycles.flatMap((item)=>item.candidates.flatMap((candidate)=>candidate.repairSummary ?? []));
+    const unresolved=report.cycles.flatMap((item)=>item.candidates.flatMap((candidate)=>candidate.hardGateFailures)).slice(-12);
     const strategies=definition.strategies.slice(0,definition.budgets.maxCandidatesPerCycle);
 
     for(let index=0;index<strategies.length;index++) {
@@ -134,6 +135,7 @@ try {
           cycle:cycleNumber,
           strategyId:strategy.id,
           projectContext:String(options.context || source.context || ""),
+          unresolved,
           priorRepairs,
         });
         const director=await run(process.execPath,[
@@ -142,14 +144,17 @@ try {
           "--experience",currentIncumbentPath,
           "--output",reviewRoot,
           "--context",context,
+          "--allowed-commands",definition.allowedRepairCommands.join(","),
         ]);
         const repairPlan=await readJson(path.join(reviewRoot,"repair-plan.json"),null);
         evidence.repairSignature=repairPlanSignature(repairPlan);
+        evidence.repairSummary=Array.isArray(repairPlan?.summary) ? repairPlan.summary.slice(0,8).map(String) : [];
         if(director.code!==0 || !(await exists(candidateExperiencePath))) {
           const repairResult=await readJson(path.join(reviewRoot,"repair-result.json"),{});
           evidence.reason=String(repairResult.errors?.join("; ") || "Visual repair worker did not produce a safe candidate.");
           evidence.hardGateFailures=[evidence.reason];
           cycle.candidates.push(evidence);
+          await writeReportWithCyclePreview(cycle);
           continue;
         }
 
@@ -192,6 +197,7 @@ try {
           "--functional",functionalPath,
           "--incumbent-motion",incumbentMotionPath,
           "--candidate-motion",motionPath,
+          "--max-motion-regression",String(definition.acceptance.maxMotionRegression),
           "--context",context,
         ]);
 
