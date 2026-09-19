@@ -13,7 +13,7 @@ goal
 → deterministic verification
 → pairwise comparison
 → candidate tournament
-→ accept / hold / stop / escalate
+→ candidate / hold / stop / escalate
 → project memory
 → optional human promotion
 ```
@@ -187,7 +187,7 @@ A loop can define a maximum reported cost. The guard activates only when a worke
 
 ### Oscillation
 
-An accepted state fingerprint repeats an earlier accepted state.
+A promoted incumbent fingerprint repeats an earlier promoted incumbent state.
 
 Forge escalates instead of bouncing between preferences.
 
@@ -211,7 +211,7 @@ The run contains:
 run-report.json
 current-incumbent.json
 current-candidate.json
-accepted-experience.json     # only when improvement was proved
+accepted-experience.json     # human-review artifact only when improvement was proved
 cycle-01/
   incumbent/
   incumbent-motion.json
@@ -231,7 +231,7 @@ It records:
 - definition and objective;
 - source Project Vault version/file;
 - candidate attempts;
-- accepted improvements;
+- proven candidate improvements;
 - incumbent/candidate fingerprints;
 - repair signatures;
 - hard-gate failures;
@@ -278,7 +278,7 @@ It exists to prevent repeated repairs, detect saturation/oscillation, and explai
 Project Vault journal records:
 
 - loop start;
-- loop accepted improvement;
+- loop candidate prepared for review;
 - loop saturation/stop;
 - loop escalation;
 - explicit human acceptance.
