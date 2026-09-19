@@ -199,7 +199,7 @@ Add those only if Forge itself becomes a commercial product. Until then, optimiz
 
 ## Loop Engine
 
-Forge Loop Engine uses durable Project Vault checkpoints as incumbents for evidence-driven improvement. Visual Polish, Mobile Translation and Motion Polish are executable; Performance, Asset Quality and Construction remain typed contracts until their repair workers satisfy the same safety/evidence standard.
+Forge Loop Engine uses durable Project Vault checkpoints as incumbents for evidence-driven improvement. Visual Polish, Mobile Translation, Motion Polish and Performance are executable. Performance uses comparative renderer/frame evidence and bounded runtime-budget repair. Asset Quality and Construction remain typed contracts until their mutation workers satisfy the same safety/evidence standard.
 
 Loop runs never overwrite an authoritative project. Winning artifacts require explicit human promotion with `npm run loop:accept -- --report <run-report.json> --actor "<name>" --approve`.
 
