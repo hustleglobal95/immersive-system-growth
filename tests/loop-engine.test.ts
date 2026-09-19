@@ -7,15 +7,17 @@ import { compactLoopContext, eligibleCandidate, evaluateLoopStop, learningCandid
 import type { LoopCandidateEvidence, LoopRunReport } from "../src/platform/loops/loopSchema";
 import { analyzeAssetManifest } from "../src/platform/assetIntelligence";
 import { buildAssetQualityCandidate, profileAssetQuality } from "../src/platform/assetQuality";
+import { buildConstructionCandidate } from "../src/platform/constructionWorker";
+import { parseExperience } from "../src/lib/configSchema";
 import rawExperience from "../config/experience.json";
 import rawManifest from "../config/asset-manifest.json";
 
 test("Loop Engine exposes only workers that have production-safe executors",()=>{
-  assert.deepEqual(executableLoopDefinitions().map((item)=>item.id),["visual-polish","mobile-translation","motion-polish","performance","asset-quality"]);
+  assert.deepEqual(executableLoopDefinitions().map((item)=>item.id),["visual-polish","mobile-translation","motion-polish","performance","asset-quality","construction"]);
   assert.equal(loopDefinitions.length,6);
   assert.equal(loopDefinition("performance")?.executable,true);
   assert.equal(loopDefinition("asset-quality")?.executable,true);
-  assert.equal(loopDefinition("construction")?.executable,false);
+  assert.equal(loopDefinition("construction")?.executable,true);
   for(const definition of loopDefinitions) {
     assert.equal(definition.acceptance.requireHardGates,true);
     assert.equal(definition.acceptance.requireCandidateWin,true);
@@ -151,12 +153,46 @@ test("Asset Quality prefers registered derivatives only when lineage and savings
     sha256:"c".repeat(64),
     derivative:{sourcePath:source.path,operation:"image-optimize",format:"webp",width:640,quality:72},
   });
-  const profile=profileAssetQuality(rawExperience,manifest);
+  const experience=structuredClone(rawExperience);
+  experience.scenes[0].media={
+    kind:"image",src:source.path,alt:"Reference reveal",transition:"dissolve",maskSoftness:18,layers:[],
+    position:[50,50],mobilePosition:[50,50],overlap:.25,direction:"up",zoom:1.05,textEnd:.28,
+  };
+  const profile=profileAssetQuality(experience,manifest);
   assert.ok(profile.derivativeOpportunities.some((item)=>item.sourcePath===source.path));
-  const candidate=buildAssetQualityCandidate(rawExperience,manifest,"registered-derivative");
+  const candidate=buildAssetQualityCandidate(experience,manifest,"registered-derivative");
   assert.equal(candidate.changed,true);
   assert.ok(candidate.replacements.some((item)=>item.to==="/textures/reference/reveal-field.opt.webp"));
   assert.ok(candidate.profileAfter.referencedBytes<candidate.profileBefore.referencedBytes);
+});
+
+test("Construction worker preserves client copy and camera endpoints while rebuilding orchestration",()=>{
+  const source=parseExperience(rawExperience);
+  const candidate=buildConstructionCandidate({
+    experience:source,
+    manifest:rawManifest,
+    context:"Casa Lumen is a premium coastal property experience. Use the existing pavilion model and registered imagery. Preserve all client copy and factual claims. Make the journey cinematic, restrained, spatial and mobile-safe.",
+    strategy:"camera-structure",
+  });
+  assert.equal(candidate.blockers.length,0);
+  assert.equal(candidate.changed,true);
+  candidate.experience.scenes.forEach((scene,index)=>{
+    assert.deepEqual(scene.copy,source.scenes[index].copy);
+    assert.deepEqual(scene.camera.from,source.scenes[index].camera.from);
+    assert.deepEqual(scene.camera.to,source.scenes[index].camera.to);
+    if(scene.mobileCamera && source.scenes[index].mobileCamera) {
+      assert.deepEqual(scene.mobileCamera.from,source.scenes[index].mobileCamera!.from);
+      assert.deepEqual(scene.mobileCamera.to,source.scenes[index].mobileCamera!.to);
+    }
+  });
+});
+
+test("Construction Loop requires the complete verification stack",()=>{
+  const definition=loopDefinition("construction")!;
+  for(const verifier of ["schema","functional","assets","motion","mobile","performance","accessibility","visual"] as const) {
+    assert.ok(definition.verifiers.includes(verifier));
+  }
+  assert.deepEqual(definition.strategies.map((item)=>item.id),["hierarchy-first","camera-structure","signature-budget"]);
 });
 
 test("Performance Loop has distinct evidence-driven candidate strategies",()=>{
@@ -174,6 +210,8 @@ test("Loop Engine scripts preserve human approval and legacy repair compatibilit
   assert.match(runner,/accepted-asset-manifest\.json/);
   assert.match(runner,/accepted-interaction-graph\.json/);
   assert.match(runner,/autonomy-asset-repair\.mjs/);
+  assert.match(runner,/autonomy-construction\.mjs/);
+  assert.match(runner,/autonomy-accessibility-verify\.mjs/);
   assert.match(runner,/current-incumbent\.json/);
   assert.match(runner,/Project Vault does not contain project/);
   assert.match(runner,/parseExperience/);
