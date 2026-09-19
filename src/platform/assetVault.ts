@@ -23,6 +23,8 @@ export async function promoteGeneratedAsset(input: PromoteGeneratedAssetInput, e
   validateInput(input);
   const configuration = assetVaultConfiguration(environment);
   if (!configuration.configured) throw new AssetVaultNotConfiguredError();
+  const endpointBase = requireHttpsBase(environment.FORGE_ASSET_VAULT_ENDPOINT!, "FORGE_ASSET_VAULT_ENDPOINT");
+  const publicBase = requireHttpsBase(environment.FORGE_ASSET_VAULT_PUBLIC_BASE_URL!, "FORGE_ASSET_VAULT_PUBLIC_BASE_URL");
 
   const status = await readAssetGenerationStatus(input.provider, input.taskId, input.phase, environment);
   if (status.status !== "succeeded") throw new Error("Generated asset is not ready for promotion");
@@ -45,7 +47,7 @@ export async function promoteGeneratedAsset(input: PromoteGeneratedAssetInput, e
     const extension = extensionFor(input.kind, sourceUrl.pathname);
     const baseName = cleanName(input.name).replace(/\.[A-Za-z0-9]+$/, "") || "asset";
     const key = [input.projectId, sha256.slice(0, 2), `${sha256}-${baseName}.${extension}`].map(encodeURIComponent).join("/");
-    const endpoint = new URL(ensureSlash(environment.FORGE_ASSET_VAULT_ENDPOINT!) + key);
+    const endpoint = new URL(key, endpointBase);
     const upload = await fetch(endpoint, {
       method: "PUT",
       headers: {
@@ -57,9 +59,10 @@ export async function promoteGeneratedAsset(input: PromoteGeneratedAssetInput, e
       },
       body: bytes,
       cache: "no-store",
+      redirect: "error",
     });
     if (!upload.ok) throw new Error(`Asset Vault upload failed (${upload.status}): ${(await upload.text()).slice(0, 220)}`);
-    const path = new URL(key, ensureSlash(environment.FORGE_ASSET_VAULT_PUBLIC_BASE_URL!)).toString();
+    const path = new URL(key, publicBase).toString();
     return { path, bytes: bytes.byteLength, sha256, key, sourceProvider: input.provider };
   } finally {
     clearTimeout(timer);
@@ -100,4 +103,8 @@ function extensionFor(kind: ForgeAssetType, pathname: string) {
 }
 function contentTypeFor(kind: ForgeAssetType) { return kind === "model" ? "model/gltf-binary" : kind === "video" ? "video/mp4" : "image/webp"; }
 function cleanName(value: string) { return value.toLowerCase().trim().replace(/[^a-z0-9._-]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 100); }
-function ensureSlash(value: string) { return value.endsWith("/") ? value : value + "/"; }
+function requireHttpsBase(value: string, name: string) {
+  const url = new URL(value.endsWith("/") ? value : value + "/");
+  if (url.protocol !== "https:" || url.username || url.password) throw new Error(`${name} must be a credential-free HTTPS URL`);
+  return url;
+}
