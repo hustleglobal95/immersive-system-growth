@@ -17,8 +17,8 @@ export interface CreativeMemoryReview {
 }
 
 const creativeTypes=new Set<MemoryNode["type"]>([
-  "Concept","Territory","CreativePrinciple","FormDecision","SignatureMoment","CameraGrammar",
-  "MotionGrammar","TypographyGrammar","InteractionGrammar","StructurePattern","FailurePattern","Lesson",
+  "Concept","Territory","CreativePrinciple","FormDecision","ArtDirection","VisualLanguage","CreativeMutation","SignatureMoment","CameraGrammar",
+  "MotionGrammar","TypographyGrammar","ColorGrammar","LightingGrammar","MaterialGrammar","ImageGrammar","SoundGrammar","InteractionGrammar","StructurePattern","FailurePattern","Lesson",
 ]);
 
 export function reviewCreativeMemory(dna:CreativeDNA,memory?:CreativeMemoryGraph):CreativeMemoryReview {
