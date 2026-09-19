@@ -158,6 +158,7 @@ try {
       const comparisonPath=path.join(candidateRoot,"comparison.json");
       const candidatePerformancePath=path.join(candidateRoot,"performance.json");
       const candidateAssetProfilePath=path.join(candidateRoot,"assets.json");
+      const candidateAccessibilityPath=path.join(candidateRoot,"accessibility.json");
       report.candidateAttempts++;
       const evidence={
         id:candidateId,
@@ -309,6 +310,19 @@ try {
                 `Performance regressed materially: score ${incumbentScore.toFixed(1)} -> ${candidateScore.toFixed(1)}, p95 ${incumbentP95.toFixed(1)}ms -> ${candidateP95.toFixed(1)}ms.`
               ]);
             }
+          }
+        }
+        if(definition.verifiers.includes("accessibility")) {
+          const accessibility=await run(process.execPath,[
+            "--import","tsx","scripts/autonomy-accessibility-verify.mjs",
+            "--url",baseURL,"--experience",currentCandidatePath,"--variant","candidate","--output",candidateAccessibilityPath,
+          ]);
+          const accessibilityReport=await readJson(candidateAccessibilityPath,{});
+          if(accessibility.code!==0 || accessibilityReport.passed!==true) {
+            evidence.hardGateFailures=boundedFailures([
+              ...evidence.hardGateFailures,
+              ...(accessibilityReport.hardGateFailures ?? ["Candidate accessibility verification failed."]),
+            ]);
           }
         }
         if(definition.verifiers.includes("assets")) {
