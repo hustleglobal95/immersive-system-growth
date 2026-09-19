@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 
 // Nothing to subscribe to: these are facts that are fixed for the life of the document
 // (the URL a workspace was opened with, a value already sitting in local storage). This is
@@ -32,4 +32,35 @@ export function readStored(key: string) {
   } catch {
     return "";
   }
+}
+
+
+const STORAGE_CHANGE_EVENT = "forge:storage-change";
+
+export function writeStored(key: string, value: string) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(key, value);
+    window.dispatchEvent(new CustomEvent(STORAGE_CHANGE_EVENT, { detail: { key } }));
+  } catch {
+    // Keep the caller usable when site storage is unavailable.
+  }
+}
+
+export function useStoredValue(key: string, serverValue = "") {
+  const subscribe = useCallback((listener: () => void) => {
+    const onStorage = (event: StorageEvent) => { if (event.key === key) listener(); };
+    const onLocal = (event: Event) => {
+      const changed = (event as CustomEvent<{ key?: string }>).detail?.key;
+      if (changed === key) listener();
+    };
+    window.addEventListener("storage", onStorage);
+    window.addEventListener(STORAGE_CHANGE_EVENT, onLocal);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener(STORAGE_CHANGE_EVENT, onLocal);
+    };
+  }, [key]);
+  const read = useCallback(() => readStored(key), [key]);
+  return useSyncExternalStore(subscribe, read, () => serverValue);
 }
