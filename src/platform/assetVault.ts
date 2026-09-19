@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { readAssetGenerationStatus, type AssetGenerationProvider, type ForgeAssetType } from "@/src/platform/assetGeneration";
 
-type AssetVaultConfigurationEnvironment=Partial<Record<"FORGE_ASSET_VAULT_ENDPOINT"|"FORGE_ASSET_VAULT_PUBLIC_BASE_URL"|"FORGE_ASSET_VAULT_TOKEN",string>>;
+type AssetVaultConfigurationEnvironment={ [key:string]:string|undefined };
 
 export interface PromoteGeneratedAssetInput {
   provider: AssetGenerationProvider;
