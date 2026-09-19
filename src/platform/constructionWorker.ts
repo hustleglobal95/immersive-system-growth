@@ -1,7 +1,7 @@
 import { parseExperience } from "@/src/lib/configSchema";
 import { inferPromptIntelligence } from "@/src/platform/autonomy/promptIntelligence";
 import { runDirectorIntelligence } from "@/src/platform/director-intelligence/orchestrator";
-import { applyCreativeExecutionPlan, planCreativeExecution, type CreativeExecutionPlan } from "@/src/studio/creativeAgentPlan";
+import { applyCreativeExecutionPlan, planCreativeExecution, type CreativeExecutionPlan } from "@/src/platform/creative-agent/executionPlan";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig, SceneDefinition } from "@/src/types/experience";
 
