@@ -63,7 +63,7 @@ export function ingestCreativeIntelligenceMemory(
   },
 ):CreativeMemoryGraph {
   let nodes=[...graph.nodes];
-  let edges=[...graph.edges];
+  const edges=[...graph.edges];
   const put=(value:MemoryNode)=>{
     const index=nodes.findIndex((item)=>item.id===value.id);
     if(index>=0) nodes=[...nodes.slice(0,index),value,...nodes.slice(index+1)];
