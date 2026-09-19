@@ -83,5 +83,5 @@ export function learningCandidate(report:LoopRunReport) {
   if(!report.acceptedImprovements) return "No generalized lesson proposed. The run did not prove an improvement.";
   const winners=report.cycles.flatMap((cycle)=>cycle.candidates.filter((candidate)=>candidate.id===cycle.acceptedCandidateId));
   const strategies=[...new Set(winners.map((winner)=>winner.strategyId))];
-  return `Loop evidence suggests ${strategies.join(", ") || "the accepted repair strategy"} improved ${report.loopId} for this project. Keep this project-scoped until the same lesson is independently supported by multiple projects.`;
+  return `Loop evidence suggests ${strategies.join(", ") || "the winning repair strategy"} improved ${report.loopId} for this project. Keep this project-scoped until the same lesson is independently supported by multiple projects.`;
 }
