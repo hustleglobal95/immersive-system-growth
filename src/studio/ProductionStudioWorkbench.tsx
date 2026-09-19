@@ -190,7 +190,12 @@ export function ProductionStudioWorkbench() {
       return;
     }
     if(dispatch.type==="route") {
-      window.location.assign(dispatch.href);
+      if(dispatch.href==="/studio/agent") {
+        const idea=[intent,`Selected target: ${selectionContext.selectionKey}.`,`Current scene: ${selectionContext.sceneLabel}.`].join(" ");
+        window.location.assign(`${dispatch.href}?idea=${encodeURIComponent(idea)}`);
+      } else {
+        window.location.assign(dispatch.href);
+      }
       return;
     }
     setRequestedLoop(dispatch.loop);
