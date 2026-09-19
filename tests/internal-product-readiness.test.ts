@@ -56,3 +56,18 @@ test("internal product surfaces are wired into Studio and shipping blocks tempor
   assert.match(proxy, /api\/forge/);
   assert.match(proxy, /FORGE_INTERNAL_ACCESS_ENABLED/);
 });
+
+
+test("internal product release boundaries preserve automation and gate human actions by role", () => {
+  const publishRoute = fs.readFileSync("app/api/studio/publish/route.ts", "utf8");
+  const generationRoute = fs.readFileSync("app/api/studio/assets/generate/route.ts", "utf8");
+  const publishStatus = fs.readFileSync("app/api/studio/publish/status/route.ts", "utf8");
+  const vault = fs.readFileSync("src/platform/studioVault.ts", "utf8");
+  const proxy = fs.readFileSync("proxy.ts", "utf8");
+  assert.match(publishRoute, /legacyAutomation/);
+  assert.match(publishRoute, /requireStudioRole\(request, "developer"\)/);
+  assert.match(generationRoute, /requireStudioRole\(request, "designer"\)/);
+  assert.match(publishStatus, /canPublish: hasStudioRole\(identity, "developer"\)/);
+  assert.match(vault, /900 KB durable snapshot limit/);
+  assert.match(proxy, /export const config/);
+});
