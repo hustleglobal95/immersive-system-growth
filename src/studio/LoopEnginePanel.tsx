@@ -10,13 +10,16 @@ export function LoopEnginePanel({
   projectName,
   onClose,
   onOpenVault,
+  initialLoopId,
 }:{
   projectId:string;
   projectName:string;
   onClose:()=>void;
   onOpenVault:()=>void;
+  initialLoopId?:string;
 }) {
-  const [selectedId,setSelectedId]=useState(loopDefinitions[0]?.id ?? "visual-polish");
+  const initialId=loopDefinitions.find((item)=>item.id===initialLoopId)?.id ?? loopDefinitions[0]?.id ?? "visual-polish";
+  const [selectedId,setSelectedId]=useState(initialId);
   const [vaultProject,setVaultProject]=useState<VaultSummary|null>(null);
   const [vaultConfigured,setVaultConfigured]=useState<boolean|null>(null);
   const [criticConnected,setCriticConnected]=useState<boolean|null>(null);
@@ -25,6 +28,10 @@ export function LoopEnginePanel({
   const selected=useMemo(()=>loopDefinitions.find((item)=>item.id===selectedId) ?? loopDefinitions[0],[selectedId]);
 
   useEffect(()=>{ dialogRef.current?.focus(); },[]);
+  useEffect(()=>{
+    const next=loopDefinitions.find((item)=>item.id===initialLoopId)?.id;
+    if(next) setSelectedId(next);
+  },[initialLoopId]);
   useEffect(()=>{
     const onKey=(event:KeyboardEvent)=>{ if(event.key==="Escape") onClose(); };
     window.addEventListener("keydown",onKey);
