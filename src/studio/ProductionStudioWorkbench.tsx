@@ -438,16 +438,16 @@ export function ProductionStudioWorkbench() {
     else if (value.includes("new scene") || value.includes("add scene")) addScene();
     else if (value.includes("duplicate")) duplicateScene();
     else if (value.includes("clear motion") || value.includes("reset motion")) { openAdvanced("Motion"); setNotice("Destructive motion clearing stays in Advanced so Build never bypasses proposal safety."); }
+    else if (value === "architectural build") runMotionPreset("architectural-build",input);
+    else if (value === "product hero") runMotionPreset("product-hero",input);
+    else if (value === "parallax story") runMotionPreset("parallax-story",input);
+    else if (value === "threshold passage") runMotionPreset("threshold-passage",input);
+    else if (value === "editorial reveal") runMotionPreset("editorial-reveal",input);
     else {
       const compiled=compileIntent(selectionContext,input);
       const capability=compiledCapability(selectionContext,compiled);
       if(capability) runCapability(capability,input,"command");
       else if(compiled.status==="ambiguous") setNotice(compiled.reason+" Choose a contextual action to disambiguate.");
-      else if (value === "architectural build") runMotionPreset("architectural-build",input);
-      else if (value === "product hero") runMotionPreset("product-hero",input);
-      else if (value === "parallax story") runMotionPreset("parallax-story",input);
-      else if (value === "threshold passage") runMotionPreset("threshold-passage",input);
-      else if (value === "editorial reveal") runMotionPreset("editorial-reveal",input);
       else setNotice("Forge could not map that intent to a safe capability for the current selection.");
     }
     setCommand("");
