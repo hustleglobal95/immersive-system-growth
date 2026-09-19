@@ -111,6 +111,35 @@ test("multiple Visual Director findings clamp combined repair deltas to command 
   assert.equal(applied.ok,true,applied.errors.join("; "));
 });
 
+test("originality material and sound findings are never disguised as generic visual repairs",()=>{
+  const reviewPlan=buildRenderReviewPlan(initial,2);
+  const capture=reviewPlan.captures[0];
+  const findings=[
+    {
+      critic:"originality" as const,captureId:capture.id,severity:"blocker" as const,
+      finding:"The signature device repeats a familiar house effect.",
+      evidence:["The camera and reveal mechanism are interchangeable with prior work."],
+      affectedSystems:["camera","motion"],repair:"Rethink the creative mechanism before polishing.",confidence:.95,
+    },
+    {
+      critic:"material" as const,captureId:capture.id,severity:"major" as const,
+      finding:"The hero surface reads like generic chrome rather than the intended material.",
+      evidence:["Highlight response does not match the supplied material reference."],
+      affectedSystems:["material","lighting"],repair:"Return to material direction and source reference before changing presentation.",confidence:.9,
+    },
+    {
+      critic:"sound" as const,captureId:capture.id,severity:"major" as const,
+      finding:"The intended sonic role is undefined for this transition.",
+      evidence:["Project context requests a sound-led threshold but no authored sound state exists."],
+      affectedSystems:["sound","motion"],repair:"Author the sound system rather than using motion as a substitute.",confidence:.9,
+    },
+  ];
+  const plan=planVisualRepairs({findings,reviewPlan,experience:initial});
+  assert.equal(plan.commands.length,0);
+  assert.equal(plan.unresolved.length,3);
+  assert.ok(plan.blockers.some((item)=>/house effect/i.test(item)));
+});
+
 test("unmapped visual blockers prevent autonomous candidate generation",()=>{
   const reviewPlan=buildRenderReviewPlan(initial,3);
   const capture=reviewPlan.captures[0];
