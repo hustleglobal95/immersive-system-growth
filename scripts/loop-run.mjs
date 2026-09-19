@@ -7,6 +7,7 @@ import { loopDefinitionSchema, loopRunReportSchema } from "../src/platform/loops
 import { compactLoopContext, evaluateLoopStop, learningCandidate, selectTournamentWinner } from "../src/platform/loops/loopRunner.ts";
 import { createLoopRunReport, repairPlanSignature } from "../src/platform/loops/loopEvidence.ts";
 import { appendVaultJournal, readVaultProject } from "../src/platform/studioVault.ts";
+import { parseExperience } from "../src/lib/configSchema.ts";
 
 const options=args(process.argv.slice(2));
 const loopId=String(options.loop || "visual-polish");
@@ -148,17 +149,17 @@ try {
         ]);
         const repairPlan=await readJson(path.join(reviewRoot,"repair-plan.json"),null);
         evidence.repairSignature=repairPlanSignature(repairPlan);
-        evidence.repairSummary=Array.isArray(repairPlan?.summary) ? repairPlan.summary.slice(0,8).map(String) : [];
+        evidence.repairSummary=Array.isArray(repairPlan?.summary) ? repairPlan.summary.slice(0,8).map((item)=>String(item).slice(0,400)) : [];
         if(director.code!==0 || !(await exists(candidateExperiencePath))) {
           const repairResult=await readJson(path.join(reviewRoot,"repair-result.json"),{});
-          evidence.reason=String(repairResult.errors?.join("; ") || "Visual repair worker did not produce a safe candidate.");
-          evidence.hardGateFailures=[evidence.reason];
+          evidence.reason=boundedReason(repairResult.errors?.join("; ") || "Visual repair worker did not produce a safe candidate.");
+          evidence.hardGateFailures=boundedFailures([evidence.reason]);
           cycle.candidates.push(evidence);
           await writeReportWithCyclePreview(cycle);
           continue;
         }
 
-        const candidateRaw=JSON.parse(await fs.readFile(candidateExperiencePath,"utf8"));
+        const candidateRaw=parseExperience(JSON.parse(await fs.readFile(candidateExperiencePath,"utf8")));
         const candidateFingerprint=fingerprint(candidateRaw);
         evidence.fingerprint=candidateFingerprint;
         evidence.candidatePath=candidateExperiencePath;
@@ -208,7 +209,7 @@ try {
         const comparisonReport=await readJson(comparisonPath,{});
         evidence.functionalPassed=functionalReport.passed ?? functional.code===0;
         evidence.motionScore=typeof motionReport.qualityScore==="number" ? motionReport.qualityScore : null;
-        evidence.hardGateFailures=unique([
+        evidence.hardGateFailures=boundedFailures([
           ...(functionalReport.hardGateFailures ?? []),
           ...(motionReport.hardGateFailures ?? []),
           ...(comparisonReport.candidateHardGateFailures ?? []),
@@ -216,10 +217,10 @@ try {
         evidence.comparisonAccepted=Boolean(comparisonReport.decision?.accepted);
         evidence.comparisonWinner=comparisonReport.decision?.winner ?? null;
         evidence.preferenceAgreement=typeof comparisonReport.decision?.agreement==="number" ? comparisonReport.decision.agreement : null;
-        evidence.reason=String(comparisonReport.decision?.reason || (comparison.code===0 ? "Comparison completed." : "Candidate did not beat the incumbent."));
+        evidence.reason=boundedReason(comparisonReport.decision?.reason || (comparison.code===0 ? "Comparison completed." : "Candidate did not beat the incumbent."));
       } catch(error) {
-        evidence.reason=error instanceof Error ? error.message : String(error);
-        evidence.hardGateFailures=unique([...evidence.hardGateFailures,evidence.reason]);
+        evidence.reason=boundedReason(error instanceof Error ? error.message : String(error));
+        evidence.hardGateFailures=boundedFailures([...evidence.hardGateFailures,evidence.reason]);
       }
       cycle.candidates.push(evidence);
       await writeReportWithCyclePreview(cycle);
@@ -308,7 +309,7 @@ async function resolveSource({ projectId,experiencePath,workRoot }) {
     };
   }
   const file=path.resolve(experiencePath || "config/experience.json");
-  const experience=JSON.parse(await fs.readFile(file,"utf8"));
+  const experience=parseExperience(JSON.parse(await fs.readFile(file,"utf8")));
   return { experience,label:file,context:(experience.meta?.name || "Forge experience")+". "+(experience.meta?.description || "") };
 }
 async function recordVaultStart() {
@@ -365,6 +366,8 @@ async function readJson(file,fallback) {
 async function exists(file) { try { await fs.access(file); return true; } catch { return false; } }
 function fingerprint(value) { return createHash("sha256").update(JSON.stringify(value)).digest("hex"); }
 function unique(values) { return [...new Set(values.filter(Boolean).map(String))]; }
+function boundedFailures(values) { return unique(values).map((value)=>value.slice(0,600)).slice(0,100); }
+function boundedReason(value,max=2000) { return String(value || "").slice(0,max); }
 function positiveInt(value,fallback,min,max) {
   const parsed=Number(value ?? fallback);
   return Number.isInteger(parsed) ? Math.max(min,Math.min(max,parsed)) : fallback;
