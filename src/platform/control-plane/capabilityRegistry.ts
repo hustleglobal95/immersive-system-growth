@@ -16,7 +16,7 @@ export type CapabilityVerifier="schema"|"functional"|"visual"|"motion"|"mobile"|
 
 export type CapabilityDispatch =
   | { type:"select"; target:"camera" }
-  | { type:"fast-action"; action:"compose-motion"|"build-node" }
+  | { type:"fast-action"; action:"compose-motion"|"build-node"|"copy-reveal"|"media-reveal" }
   | { type:"workspace"; workspace:"Motion"|"Interact"|"Assets"|"Telemetry" }
   | { type:"route"; href:"/director"|"/studio/assets/create" }
   | { type:"loop"; loop:"visual-polish"|"mobile-translation"|"motion-polish"|"performance"|"asset-quality"|"construction" };
@@ -102,6 +102,49 @@ const registry:ForgeCapability[]=[
     id:"node.inspect-model",label:"Inspect model",description:"Open model and asset diagnostics for the selected rig source.",
     selectionKinds:["node"],intents:["inspect model","asset","geometry"],executionClass:"editor",riskClass:"instant-reversible",
     systems:["assets"],verifiers:["assets"],dispatch:{type:"workspace",workspace:"Assets"},priority:64,advancedSurface:"Asset workspace",
+  },
+  {
+    id:"copy.reveal",label:"Reveal typography",description:"Prepare a bounded copy reveal without changing the words or scene structure.",
+    selectionKinds:["copy"],intents:["reveal","animate text","text reveal","typography","headline"],executionClass:"fast",riskClass:"instant-reversible",
+    systems:["motion","sequencer"],verifiers:["schema","motion"],dispatch:{type:"fast-action",action:"copy-reveal"},priority:100,
+  },
+  {
+    id:"copy.polish",label:"Strengthen hierarchy",description:"Compare a bounded visual-polish candidate focused on copy hierarchy and composition.",
+    selectionKinds:["copy"],intents:["hierarchy","readability","premium","polish","stronger type"],executionClass:"deep",riskClass:"preview-required",
+    systems:["director","loops"],verifiers:["schema","functional","motion","mobile","visual"],dispatch:{type:"loop",loop:"visual-polish"},priority:80,
+  },
+  {
+    id:"copy.fine-tune",label:"Fine tune typography motion",description:"Open exact copy timing, opacity, blur and vertical motion tracks.",
+    selectionKinds:["copy"],intents:["fine tune","timing","opacity","blur","keyframes"],executionClass:"editor",riskClass:"instant-reversible",
+    systems:["motion","sequencer"],verifiers:["schema"],dispatch:{type:"workspace",workspace:"Motion"},priority:68,advancedSurface:"Sequencer",
+  },
+  {
+    id:"media.reveal",label:"Direct media reveal",description:"Prepare a deterministic media reveal using the scene's existing media source.",
+    selectionKinds:["media"],intents:["reveal","transition","show media","image reveal","video reveal"],executionClass:"fast",riskClass:"instant-reversible",
+    systems:["motion","sequencer"],verifiers:["schema","motion"],dispatch:{type:"fast-action",action:"media-reveal"},priority:100,
+    eligible:(context)=>Boolean(context.state.mediaKind),
+  },
+  {
+    id:"media.polish",label:"Polish media composition",description:"Compare a bounded visual-polish candidate for crop, hierarchy and media-to-copy composition.",
+    selectionKinds:["media"],intents:["polish","crop","composition","premium","grade"],executionClass:"deep",riskClass:"preview-required",
+    systems:["director","loops"],verifiers:["schema","functional","motion","mobile","visual"],dispatch:{type:"loop",loop:"visual-polish"},priority:82,
+    eligible:(context)=>Boolean(context.state.mediaKind),
+  },
+  {
+    id:"media.fine-tune",label:"Fine tune media timing",description:"Open exact reveal, opacity and transition timing controls.",
+    selectionKinds:["media"],intents:["fine tune","timing","transition","scrub"],executionClass:"editor",riskClass:"instant-reversible",
+    systems:["motion","sequencer"],verifiers:["schema"],dispatch:{type:"workspace",workspace:"Motion"},priority:72,advancedSurface:"Sequencer",
+  },
+  {
+    id:"media.asset-tools",label:"Inspect source asset",description:"Open source, manifest, optimization and provenance diagnostics for this scene media.",
+    selectionKinds:["media"],intents:["asset","source","optimize media","inspect file"],executionClass:"editor",riskClass:"instant-reversible",
+    systems:["assets"],verifiers:["assets"],dispatch:{type:"workspace",workspace:"Assets"},priority:64,advancedSurface:"Asset tools",
+  },
+  {
+    id:"media.optimize-video",label:"Optimize video runtime",description:"Measure runtime pressure and compare a bounded performance candidate for video-heavy presentation.",
+    selectionKinds:["media"],intents:["performance","video performance","faster","optimize"],executionClass:"deep",riskClass:"preview-required",
+    systems:["loops","assets"],verifiers:["schema","functional","performance","mobile","visual"],dispatch:{type:"loop",loop:"performance"},priority:70,
+    eligible:(context)=>context.state.mediaKind==="video",
   },
   {
     id:"asset.inspect-optimize",label:"Inspect + optimize",description:"Open Asset Intelligence and source diagnostics for this production asset.",
