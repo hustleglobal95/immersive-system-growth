@@ -17,6 +17,12 @@ interface StoredDraft {
   interactionGraph?: unknown;
 }
 
+export interface StudioProjectBundle {
+  experience: ExperienceConfig;
+  assetManifest: AssetManifest;
+  interactionGraph: InteractionGraph;
+}
+
 export function useStudioDraft(
   initialExperience: ExperienceConfig,
   initialProject: StudioProject,
@@ -32,6 +38,9 @@ export function useStudioDraft(
   const [project, setProject] = useState(initialProject);
   const [assetManifest, setAssetManifest] = useState(initialAssetManifest);
   const [interactionGraph, setInteractionGraph] = useState(initialInteractionGraph);
+  const bundleUndoStack = useRef<StudioProjectBundle[]>([]);
+  const bundleRedoStack = useRef<StudioProjectBundle[]>([]);
+  const [bundleHistory, setBundleHistory] = useState({ undo: 0, redo: 0 });
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -110,6 +119,52 @@ export function useStudioDraft(
     setHistory({ undo: undoStack.current.length, redo: redoStack.current.length });
   }, []);
 
+  const applyProjectBundle = useCallback((input: StudioProjectBundle) => {
+    const nextExperience=parseExperience(input.experience);
+    const nextManifest=parseAssetManifest(input.assetManifest);
+    const nextGraph=parseInteractionGraph(input.interactionGraph);
+    bundleUndoStack.current=[
+      ...bundleUndoStack.current.slice(-19),
+      {experience:experienceRef.current,assetManifest,interactionGraph},
+    ];
+    bundleRedoStack.current=[];
+    experienceRef.current=nextExperience;
+    setExperienceState(nextExperience);
+    setAssetManifest(nextManifest);
+    setInteractionGraph(nextGraph);
+    setBundleHistory({undo:bundleUndoStack.current.length,redo:0});
+  },[assetManifest,interactionGraph]);
+
+  const undoProjectBundle = useCallback(() => {
+    const prior=bundleUndoStack.current.pop();
+    if(!prior) return false;
+    bundleRedoStack.current=[
+      ...bundleRedoStack.current.slice(-19),
+      {experience:experienceRef.current,assetManifest,interactionGraph},
+    ];
+    experienceRef.current=prior.experience;
+    setExperienceState(prior.experience);
+    setAssetManifest(prior.assetManifest);
+    setInteractionGraph(prior.interactionGraph);
+    setBundleHistory({undo:bundleUndoStack.current.length,redo:bundleRedoStack.current.length});
+    return true;
+  },[assetManifest,interactionGraph]);
+
+  const redoProjectBundle = useCallback(() => {
+    const next=bundleRedoStack.current.pop();
+    if(!next) return false;
+    bundleUndoStack.current=[
+      ...bundleUndoStack.current.slice(-19),
+      {experience:experienceRef.current,assetManifest,interactionGraph},
+    ];
+    experienceRef.current=next.experience;
+    setExperienceState(next.experience);
+    setAssetManifest(next.assetManifest);
+    setInteractionGraph(next.interactionGraph);
+    setBundleHistory({undo:bundleUndoStack.current.length,redo:bundleRedoStack.current.length});
+    return true;
+  },[assetManifest,interactionGraph]);
+
   const validation = useMemo(() => {
     const issues: string[] = [];
     const experienceIssue = parseSafe(() => parseExperience(experience));
@@ -134,6 +189,9 @@ export function useStudioDraft(
     undoStack.current = [];
     redoStack.current = [];
     groupBase.current = null;
+    bundleUndoStack.current = [];
+    bundleRedoStack.current = [];
+    setBundleHistory({ undo: 0, redo: 0 });
     setHistory({ undo: 0, redo: 0 });
   }, []);
 
@@ -146,6 +204,9 @@ export function useStudioDraft(
     undoStack.current = [];
     redoStack.current = [];
     groupBase.current = null;
+    bundleUndoStack.current = [];
+    bundleRedoStack.current = [];
+    setBundleHistory({ undo: 0, redo: 0 });
     setHistory({ undo: 0, redo: 0 });
     localStorage.removeItem(STORAGE_KEY);
   }, [initialAssetManifest, initialExperience, initialInteractionGraph, initialProject]);
@@ -165,6 +226,11 @@ export function useStudioDraft(
     setAssetManifest,
     interactionGraph,
     setInteractionGraph,
+    applyProjectBundle,
+    undoProjectBundle,
+    redoProjectBundle,
+    canUndoProjectBundle: bundleHistory.undo > 0,
+    canRedoProjectBundle: bundleHistory.redo > 0,
     validation,
     hydrated,
     loadDraft,
