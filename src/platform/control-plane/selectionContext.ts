@@ -162,7 +162,7 @@ function selectionSummary(
   if(selection.kind==="node") return nodeTracks ? `${nodeTracks} authored track${nodeTracks===1?"":"s"}` : "No authored behavior yet";
   if(selection.kind==="asset") return asset ? `${asset.kind} · ${Math.round(manifestHealth)}/100 manifest health` : "Asset unavailable";
   if(selection.kind==="environment") return scene.post.bloom>0.35 ? "Elevated effect pressure" : "Controlled atmosphere";
-  const medium=scene.media?.kind ?? (scene.hero.model ? "3D" : "DOM");
+  const medium=scene.media?.kind ?? "3D";
   return scene.motionTracks.length
     ? `${scene.motionTracks.length} motion track${scene.motionTracks.length===1?"":"s"} · ${medium} scene`
     : "Direction before detail";
