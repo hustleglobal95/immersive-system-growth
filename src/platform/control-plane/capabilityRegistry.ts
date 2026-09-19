@@ -37,9 +37,9 @@ export interface ForgeCapability {
   eligible?:(context:SelectionContext)=>boolean;
 }
 
-export interface ResolvedCapability extends ForgeCapability {
+export type ResolvedCapability=Omit<ForgeCapability,"eligible"> & {
   eligible:true;
-}
+};
 
 const registry:ForgeCapability[]=[
   {
