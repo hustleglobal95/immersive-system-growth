@@ -37,6 +37,18 @@ function score(capability:ResolvedCapability,context:SelectionContext):NextActio
   if(context.kind==="node" && context.state.selectedNodeTrackCount===0 && capability.id==="node.build-reveal") {
     value+=40;reasons.push("selected rig node has no authored behavior");
   }
+  if(context.kind==="copy" && context.state.copyMotionTrackCount===0 && capability.id==="copy.reveal") {
+    value+=38;reasons.push("copy has no authored reveal motion");
+  }
+  if(context.kind==="copy" && context.state.copyMotionTrackCount>0 && capability.id==="copy.polish") {
+    value+=16;reasons.push("copy motion exists and hierarchy can be evaluated");
+  }
+  if(context.kind==="media" && context.state.mediaMotionTrackCount===0 && capability.id==="media.reveal") {
+    value+=38;reasons.push("media has no authored reveal motion");
+  }
+  if(context.kind==="media" && context.state.mediaMotionTrackCount>0 && capability.id==="media.polish") {
+    value+=16;reasons.push("media motion exists and composition can be evaluated");
+  }
   if(context.kind==="asset" && context.state.manifestHealth<75 && capability.id==="asset.improve") {
     value+=45;reasons.push("manifest health needs attention");
   }
