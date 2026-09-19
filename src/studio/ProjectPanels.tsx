@@ -120,7 +120,10 @@ export function PublishPanel({ project, setProject, experience, assetManifest, v
   const backendReady = Boolean(capability?.enabled && capability.repositoryConfigured && capability.githubTokenConfigured && capability.secretConfigured);
   const destinationReady = Boolean(project.deployment.projectName.trim() && project.deployment.productionBranch.trim());
   const sessionReady = Boolean(capability?.sessionAuthorized);
-  const ready = backendReady && destinationReady && sessionReady && validationCount === 0;
+  const manifestAssets = [...assetManifest.models, ...assetManifest.textures, ...assetManifest.hdr, ...assetManifest.video];
+  const temporaryAssets = manifestAssets.filter((asset) => asset.path.startsWith("/api/studio/assets/generated-file/")).length;
+  const assetsDurable = temporaryAssets === 0;
+  const ready = backendReady && destinationReady && sessionReady && assetsDurable && validationCount === 0;
 
   const publish = async () => {
     setPublishing(true); setResult({ message: "Creating a protected review branch…" });
@@ -129,6 +132,7 @@ export function PublishPanel({ project, setProject, experience, assetManifest, v
       const body = await response.json() as { ok?: boolean; error?: string; url?: string; number?: number };
       if (!response.ok || !body.ok) throw new Error(body.error ?? "Publishing failed");
       writeStored(STUDIO_GUIDE_SHIP_KEY, project.id);
+      void fetch(`/api/studio/vault/projects/${encodeURIComponent(project.id)}/journal`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "publish", detail: `Review #${body.number} created: ${title}` }) }).catch(() => {});
       setResult({ message: `Review #${body.number} created successfully.`, url: body.url });
     } catch (error) {
       setResult({ message: error instanceof Error ? error.message : "Publishing failed" });
@@ -159,7 +163,7 @@ export function PublishPanel({ project, setProject, experience, assetManifest, v
           <div role="listitem" data-ready={validationCount === 0}><span>{validationCount === 0 ? "✓" : "!"}</span><strong>Project validation</strong><small>{validationCount === 0 ? "No configuration issues" : `${validationCount} issue${validationCount === 1 ? "" : "s"} need attention`}</small></div>
           <div role="listitem" data-ready={destinationReady}><span>{destinationReady ? "✓" : "!"}</span><strong>Release destination</strong><small>{destinationReady ? `${project.deployment.provider} · ${project.deployment.projectName}` : "Choose a project and production branch in Advanced setup"}</small></div>
           <div role="listitem" data-ready={backendReady}><span>{backendReady ? "✓" : "!"}</span><strong>Workspace connection</strong><small>{backendReady ? "Server-side GitHub publishing is connected" : "A workspace owner must connect server publishing once"}</small></div>
-          <div role="listitem" data-ready={sessionReady}><span>{sessionReady ? "✓" : "!"}</span><strong>This browser</strong><small>{sessionReady ? "Authorized to create review branches" : backendReady ? "Ask the workspace owner to unlock publishing below" : "Available after workspace publishing is connected"}</small></div>
+          <div role="listitem" data-ready={assetsDurable}><span>{assetsDurable ? "✓" : "!"}</span><strong>Asset durability</strong><small>{assetsDurable ? "No temporary generated assets" : `${temporaryAssets} generated asset${temporaryAssets === 1 ? "" : "s"} still use the draft bridge`}</small></div><div role="listitem" data-ready={sessionReady}><span>{sessionReady ? "✓" : "!"}</span><strong>This browser</strong><small>{sessionReady ? "Authorized to create review branches" : backendReady ? "Ask the workspace owner to unlock publishing below" : "Available after workspace publishing is connected"}</small></div>
         </div>
       </section>
 
@@ -168,7 +172,7 @@ export function PublishPanel({ project, setProject, experience, assetManifest, v
         <label>Review title<input value={title} maxLength={100} onChange={(event) => setTitle(event.target.value)} /></label>
         <label>What changed<textarea rows={3} value={summary} maxLength={600} onChange={(event) => setSummary(event.target.value)} /></label>
         <button type="button" className="studio-primary studio-publish-action" disabled={!ready || publishing} onClick={() => void publish()}>{publishing ? "Creating review…" : "Create review"}</button>
-        {!ready && <p className="studio-muted">{!backendReady ? "Publishing is not connected for this Forge workspace yet." : !sessionReady ? "This browser needs a one-time owner unlock before it can publish." : !destinationReady ? "Complete the destination in Advanced setup." : "Resolve the project issues above before publishing."}</p>}
+        {!ready && <p className="studio-muted">{!backendReady ? "Publishing is not connected for this Forge workspace yet." : !sessionReady ? "This browser needs a one-time owner unlock before it can publish." : !destinationReady ? "Complete the destination in Advanced setup." : !assetsDurable ? "Promote temporary generated assets into permanent storage before shipping." : "Resolve the project issues above before publishing."}</p>}
         {result && <div className="studio-message" role="status">{result.url ? <><strong>Done — the review is ready.</strong><span> {result.message}</span><a href={result.url} target="_blank" rel="noreferrer">Open review</a></> : result.message}</div>}
       </section>
 
