@@ -92,3 +92,25 @@ test("Advanced Telemetry remains available without permanent navigation", async 
   await expect(page.getByRole("heading", { name: "Telemetry policy" })).toBeVisible();
   await expect(page.getByLabel("Sample rate")).toBeVisible();
 });
+
+
+test("Mission Control promotes project-wide outcomes without adding navigation", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem("forge-studio-guide-brief-v1", "Create a flagship mechanical watch launch that feels precise, warm, engineered and unforgettable.");
+    window.localStorage.setItem("forge-studio-guided-first-run-v1", "seen");
+  });
+  await page.goto("/studio");
+
+  await expect(page.getByText("FORGE / MISSION CONTROL")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Guide", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Copilot", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("button", { name: "Autopilot", exact: true })).toBeVisible();
+  await expect(page.getByText(/NEXT OUTCOME/)).toBeVisible();
+  await expect(page.getByText("SIGNATURE MOMENT")).toBeVisible();
+
+  await page.getByRole("button", { name: "Autopilot", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Autopilot", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("button", { name: "Build", exact: true })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("button", { name: "Review", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Ship", exact: true })).toBeVisible();
+});
