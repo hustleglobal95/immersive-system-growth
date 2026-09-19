@@ -80,6 +80,7 @@ export function ProductionStudioWorkbench() {
   const [candidateAssetManifest, setCandidateAssetManifest] = useState<AssetManifest | null>(null);
   const [candidateInteractionGraph, setCandidateInteractionGraph] = useState<typeof initialGraph | null>(null);
   const [previewMode, setPreviewMode] = useState<"current"|"candidate">("current");
+  const [missionDecisionIds,setMissionDecisionIds] = useState<string[]>([]);
   const importRef = useRef<HTMLInputElement>(null);
 
   const sceneIndex = Math.min(activeScene, draft.experience.scenes.length - 1);
@@ -119,7 +120,29 @@ export function ProductionStudioWorkbench() {
       return null;
     }
   }, [draft.assetManifest,draft.experience,draft.project.name,guideBrief]);
-  const missionPlan = useMemo(() => mission ? buildMissionPlan({mission,health:projectHealth}) : null, [mission,projectHealth]);
+  useEffect(() => {
+    if(!mission) {
+      setMissionDecisionIds([]);
+      return;
+    }
+    try {
+      const stored=window.localStorage.getItem(`forge-mission-decisions-${mission.id}`);
+      const parsed=stored ? JSON.parse(stored) : [];
+      setMissionDecisionIds(Array.isArray(parsed) ? parsed.filter((item):item is string=>typeof item==="string") : []);
+    } catch {
+      setMissionDecisionIds([]);
+    }
+  }, [mission?.id]);
+  const missionPlan = useMemo(() => mission ? buildMissionPlan({mission,health:projectHealth,completedDecisionIds:missionDecisionIds}) : null, [mission,missionDecisionIds,projectHealth]);
+  const approveMissionDecision = (id:string) => {
+    if(!mission) return;
+    setMissionDecisionIds((current)=>{
+      const next=current.includes(id) ? current : [...current,id];
+      try { window.localStorage.setItem(`forge-mission-decisions-${mission.id}`,JSON.stringify(next)); } catch { /* persistence can be blocked */ }
+      return next;
+    });
+    setNotice("Mission decision approved. Forge recalculated the dependent production plan.");
+  };
   const guideSeen = useClientValue(() => readStored("forge-studio-guided-first-run-v1"), "");
   const shippedProjectId = useStoredValue(STUDIO_GUIDE_SHIP_KEY);
   const workflow = useMemo(() => {
@@ -595,6 +618,7 @@ export function ProductionStudioWorkbench() {
               plan={missionPlan}
               health={projectHealth}
               onExecuteStep={runMissionStep}
+              onApproveDecision={approveMissionDecision}
               onEditMission={()=>setGuidedOpen(true)}
             />}
             {!workflow.unconfigured && !mission && nextActions[0] && <section className="production-next-action" data-urgency={nextActions[0].urgency}>
