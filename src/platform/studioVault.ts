@@ -71,7 +71,7 @@ export async function listVaultProjects(environment: NodeJS.ProcessEnv = process
 export async function readVaultProject(projectId: string, environment: NodeJS.ProcessEnv = process.env): Promise<VaultSnapshot | null> {
   assertProjectId(projectId);
   const github = vaultGithub(environment);
-  const value = await github.readJson(`.forge/vault/projects/${projectId}/current.json`, null);
+  const value = await github.readJson<unknown | null>(`.forge/vault/projects/${projectId}/current.json`, null);
   return value ? parseSnapshot(value) : null;
 }
 
@@ -85,7 +85,7 @@ export async function listVaultVersions(projectId: string, environment: NodeJS.P
 export async function readVaultVersion(projectId: string, versionId: string, environment: NodeJS.ProcessEnv = process.env): Promise<VaultSnapshot | null> {
   assertProjectId(projectId); assertVersionId(versionId);
   const github = vaultGithub(environment);
-  const value = await github.readJson(`.forge/vault/projects/${projectId}/versions/${versionId}.json`, null);
+  const value = await github.readJson<unknown | null>(`.forge/vault/projects/${projectId}/versions/${versionId}.json`, null);
   return value ? parseSnapshot(value) : null;
 }
 
@@ -258,7 +258,7 @@ function vaultGithub(environment: NodeJS.ProcessEnv) {
       const entries = [];
       for (const [filePath, value] of Object.entries(files)) {
         const content = JSON.stringify(value, null, 2) + "\n";
-        if (Buffer.byteLength(content) > 4_000_000) throw new Error(`Forge Vault file is too large: ${filePath}`);
+        if (Buffer.byteLength(content) > 900_000) throw new Error(`Forge Vault file exceeds the 900 KB durable snapshot limit: ${filePath}`);
         const blob = await request<{ sha: string }>("/git/blobs", { method: "POST", body: JSON.stringify({ content: Buffer.from(content).toString("base64"), encoding: "base64" }) });
         if (!blob) throw new Error("Forge Vault could not create a Git blob");
         entries.push({ path: filePath, mode: "100644", type: "blob", sha: blob.sha });
