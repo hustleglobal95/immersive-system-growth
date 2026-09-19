@@ -25,7 +25,7 @@ import { STUDIO_GUIDE_BRIEF_KEY, STUDIO_GUIDE_SHIP_KEY, StudioWorkflowGuide } fr
 import { StudioVaultPanel } from "@/src/studio/StudioVaultPanel";
 import { StudioIdentityBadge } from "@/src/studio/StudioIdentityBadge";
 import { LoopEnginePanel } from "@/src/studio/LoopEnginePanel";
-import { capabilitiesForContext, capabilityById, type ResolvedCapability } from "@/src/platform/control-plane/capabilityRegistry";
+import { capabilitiesForContext, type ResolvedCapability } from "@/src/platform/control-plane/capabilityRegistry";
 import { createProposalDraft, type ForgeProposal } from "@/src/platform/control-plane/proposal";
 import { resolveSelectionContext, type ForgeSelection, type SelectionContext } from "@/src/platform/control-plane/selectionContext";
 import { compileIntent, compiledCapability, motionArchetypeForIntent } from "@/src/platform/control-plane/intentCompiler";
@@ -248,11 +248,6 @@ export function ProductionStudioWorkbench() {
       setNotice(decision.reason);
       return;
     }
-    const capability=capabilityById(step.capabilityId);
-    if(!capability) {
-      setNotice(`Mission capability ${step.capabilityId} is unavailable.`);
-      return;
-    }
     const targetContext=resolveSelectionContext({
       experience:draft.experience,
       manifest:draft.assetManifest,
@@ -260,8 +255,9 @@ export function ProductionStudioWorkbench() {
       selection:step.target,
       validationIssues:draft.validation,
     });
-    if(!capability.selectionKinds.includes(targetContext.kind)) {
-      setNotice(`${capability.label} cannot target ${targetContext.kind} in the current plan.`);
+    const capability=capabilitiesForContext(targetContext).find((item)=>item.id===step.capabilityId);
+    if(!capability) {
+      setNotice(`Mission capability ${step.capabilityId} is unavailable or ineligible for ${targetContext.kind}.`);
       return;
     }
     const intent=`${step.label}. Mission: ${mission.statement}`;
