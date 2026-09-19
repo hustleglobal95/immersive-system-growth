@@ -10,6 +10,7 @@ import { parseExperience, sceneMediaSchema } from "../src/lib/configSchema";
 import { sampleExperience } from "../src/lib/sampleExperience";
 import { sampleTransitionLayer } from "../src/lib/transitionLayers";
 import { assetManifestSchema } from "../src/platform/assetManifestSchema";
+import type { AssetManifest } from "../src/types/assets";
 import { publishStudioDraft } from "../src/platform/studioPublish";
 // @ts-expect-error The optimizer is shared with the JavaScript CLI.
 import { optimizeTexture } from "../scripts/asset-optimize-lib.mjs";
@@ -38,6 +39,15 @@ test("asset manifests reject traversal and accept the production manifest", () =
   const unsafe = structuredClone(rawManifest);
   unsafe.textures[0].path = "/textures/../secret.png";
   assert.equal(assetManifestSchema.safeParse(unsafe).success, false);
+  const unsafeLineage: AssetManifest = structuredClone(rawManifest);
+  unsafeLineage.textures[0].derivative = {
+    sourcePath: "/textures/../master.png",
+    operation: "image-optimize",
+    format: "webp",
+    width: 640,
+    quality: 72,
+  };
+  assert.equal(assetManifestSchema.safeParse(unsafeLineage).success, false);
 });
 
 test("image optimizer preserves the source and records a verified output", async () => {
@@ -54,7 +64,18 @@ test("image optimizer preserves the source and records a verified output", async
     assert.equal(result.width, 640);
     assert.match(result.sha256, /^[a-f0-9]{64}$/);
     const manifest = JSON.parse(fs.readFileSync(path.join(root, "config/asset-manifest.json"), "utf8"));
-    assert.deepEqual(manifest.textures[0], { path: result.path, bytes: result.bytes, sha256: result.sha256 });
+    assert.deepEqual(manifest.textures[0], {
+      path: result.path,
+      bytes: result.bytes,
+      sha256: result.sha256,
+      derivative: {
+        sourcePath: "/textures/source.svg",
+        operation: "image-optimize",
+        format: "webp",
+        width: 640,
+        quality: 70,
+      },
+    });
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }

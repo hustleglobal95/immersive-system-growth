@@ -44,6 +44,7 @@ Studio now exposes one project through three levels of control rather than prese
 
 - **Guided Build** is the first-run and project-progress path: idea → assets → scenes → motion → review → publish. A fresh project opens the guide automatically and the shell always exposes the current next step.
 - **Studio cockpit** is the normal visual authoring surface for scenes, copy, camera choices, coordinated motion, assets and live preview.
+  The cockpit is selection-aware: selecting a scene, camera, rig node, environment or asset exposes a contextual direction card with the highest-value next actions and routes into the existing specialist workspace rather than duplicating its controls.
 - **Advanced** contains the sequencer, interaction graph, model inspection, low-level asset tooling, performance telemetry and deployment configuration.
 
 Use **Command-K / Ctrl-K** (or `/` outside a text field) to open the Forge command palette. **Assist** in the Studio header contains Creative Agent, Director and Asset Creator; these are specialist tools inside the same workflow rather than floating entry points.

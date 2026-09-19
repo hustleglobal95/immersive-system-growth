@@ -5,12 +5,20 @@ import { executableLoopDefinitions, loopDefinition, loopDefinitions } from "../s
 import { createLoopRunReport } from "../src/platform/loops/loopEvidence";
 import { compactLoopContext, eligibleCandidate, evaluateLoopStop, learningCandidate, selectTournamentWinner } from "../src/platform/loops/loopRunner";
 import type { LoopCandidateEvidence, LoopRunReport } from "../src/platform/loops/loopSchema";
+import { analyzeAssetManifest } from "../src/platform/assetIntelligence";
+import { buildAssetQualityCandidate, profileAssetQuality } from "../src/platform/assetQuality";
+import { buildConstructionCandidate } from "../src/platform/constructionWorker";
+import { parseExperience } from "../src/lib/configSchema";
+import rawExperience from "../config/experience.json";
+import rawManifest from "../config/asset-manifest.json";
+import type { AssetManifest } from "../src/types/assets";
 
 test("Loop Engine exposes only workers that have production-safe executors",()=>{
-  assert.deepEqual(executableLoopDefinitions().map((item)=>item.id),["visual-polish","mobile-translation","motion-polish"]);
+  assert.deepEqual(executableLoopDefinitions().map((item)=>item.id),["visual-polish","mobile-translation","motion-polish","performance","asset-quality","construction"]);
   assert.equal(loopDefinitions.length,6);
-  assert.equal(loopDefinition("performance")?.executable,false);
-  assert.equal(loopDefinition("construction")?.executable,false);
+  assert.equal(loopDefinition("performance")?.executable,true);
+  assert.equal(loopDefinition("asset-quality")?.executable,true);
+  assert.equal(loopDefinition("construction")?.executable,true);
   for(const definition of loopDefinitions) {
     assert.equal(definition.acceptance.requireHardGates,true);
     assert.equal(definition.acceptance.requireCandidateWin,true);
@@ -109,11 +117,115 @@ test("loop learning remains project-scoped until separately promoted",()=>{
   assert.match(lesson,/multiple projects/i);
 });
 
+test("Asset Intelligence detects pressure, dominant files and duplicate binaries",()=>{
+  const shaA="a".repeat(64);
+  const shaB="b".repeat(64);
+  const report=analyzeAssetManifest({
+    models:[
+      {path:"/models/hero.glb",bytes:9*1024*1024,sha256:shaA},
+      {path:"/models/hero-copy.glb",bytes:9*1024*1024,sha256:shaA},
+    ],
+    textures:[{path:"/textures/hero.webp",bytes:4*1024*1024,sha256:shaB}],
+    hdr:[],
+    video:[],
+    budgets:{modelMb:12,textureMb:5,hdrMb:8,videoMb:20,totalMb:20},
+  });
+  assert.ok(report.score<100);
+  assert.equal(report.duplicateHashes.length,1);
+  assert.ok(report.oversized.some((item)=>item.kind==="models"));
+  assert.ok(report.findings.some((item)=>item.severity==="blocker" && /budget/i.test(item.title)));
+  assert.equal(report.remoteAssets,0);
+});
+
+test("Asset Quality consolidates exact duplicate aliases without changing binary identity",()=>{
+  const candidate=buildAssetQualityCandidate(rawExperience,rawManifest,"canonical-reuse");
+  assert.equal(candidate.changed,true);
+  assert.ok(candidate.removedManifestPaths.length>=1);
+  assert.ok(candidate.profileAfter.intelligence.duplicateHashes.length<candidate.profileBefore.intelligence.duplicateHashes.length);
+  assert.ok(candidate.profileAfter.intelligence.score>candidate.profileBefore.intelligence.score);
+});
+
+test("Asset Quality never consolidates matching hashes across asset classes",()=>{
+  const manifest:AssetManifest={
+    models:[{path:"/models/shared.glb",bytes:1024,sha256:"d".repeat(64)}],
+    textures:[{path:"/textures/shared.webp",bytes:1024,sha256:"d".repeat(64)}],
+    hdr:[],
+    video:[],
+    budgets:{modelMb:10,textureMb:10,hdrMb:10,videoMb:10,totalMb:40},
+  };
+  const candidate=buildAssetQualityCandidate(parseExperience(rawExperience),manifest,"canonical-reuse");
+  assert.equal(candidate.changed,false);
+  assert.equal(candidate.removedManifestPaths.length,0);
+});
+
+test("Asset Quality prefers registered derivatives only when lineage and savings are explicit",()=>{
+  const manifest:AssetManifest=structuredClone(rawManifest);
+  const source=manifest.textures.find((item)=>item.path==="/textures/reference/reveal-field.svg")!;
+  manifest.textures.push({
+    path:"/textures/reference/reveal-field.opt.webp",
+    bytes:Math.max(1,Math.floor(source.bytes*.5)),
+    sha256:"c".repeat(64),
+    derivative:{sourcePath:source.path,operation:"image-optimize",format:"webp",width:640,quality:72},
+  });
+  const experience=parseExperience(rawExperience);
+  experience.scenes[0].media={
+    kind:"image",src:source.path,alt:"Reference reveal",transition:"dissolve",maskSoftness:18,layers:[],
+    position:[50,50],mobilePosition:[50,50],overlap:.25,direction:"up",zoom:1.05,textEnd:.28,
+  };
+  const profile=profileAssetQuality(experience,manifest);
+  assert.ok(profile.derivativeOpportunities.some((item)=>item.sourcePath===source.path));
+  const candidate=buildAssetQualityCandidate(experience,manifest,"registered-derivative");
+  assert.equal(candidate.changed,true);
+  assert.ok(candidate.replacements.some((item)=>item.to==="/textures/reference/reveal-field.opt.webp"));
+  assert.ok(candidate.profileAfter.referencedBytes<candidate.profileBefore.referencedBytes);
+});
+
+test("Construction worker preserves client copy and camera endpoints while rebuilding orchestration",()=>{
+  const source=parseExperience(rawExperience);
+  const candidate=buildConstructionCandidate({
+    experience:source,
+    manifest:rawManifest,
+    context:"Casa Lumen is a premium coastal property experience. Use the existing pavilion model and registered imagery. Preserve all client copy and factual claims. Make the journey cinematic, restrained, spatial and mobile-safe.",
+    strategy:"camera-structure",
+  });
+  assert.equal(candidate.blockers.length,0);
+  assert.equal(candidate.changed,true);
+  candidate.experience.scenes.forEach((scene,index)=>{
+    assert.deepEqual(scene.copy,source.scenes[index].copy);
+    assert.deepEqual(scene.camera.from,source.scenes[index].camera.from);
+    assert.deepEqual(scene.camera.to,source.scenes[index].camera.to);
+    if(scene.mobileCamera && source.scenes[index].mobileCamera) {
+      assert.deepEqual(scene.mobileCamera.from,source.scenes[index].mobileCamera!.from);
+      assert.deepEqual(scene.mobileCamera.to,source.scenes[index].mobileCamera!.to);
+    }
+  });
+});
+
+test("Construction Loop requires the complete verification stack",()=>{
+  const definition=loopDefinition("construction")!;
+  for(const verifier of ["schema","functional","assets","motion","mobile","performance","accessibility","visual"] as const) {
+    assert.ok(definition.verifiers.includes(verifier));
+  }
+  assert.deepEqual(definition.strategies.map((item)=>item.id),["hierarchy-first","camera-structure","signature-budget"]);
+});
+
+test("Performance Loop has distinct evidence-driven candidate strategies",()=>{
+  const definition=loopDefinition("performance")!;
+  assert.equal(definition.worker,"performance-repair");
+  assert.deepEqual(definition.strategies.map((item)=>item.id),["pixel-pressure","balanced-budget"]);
+  assert.ok(definition.verifiers.includes("performance"));
+});
+
 test("Loop Engine scripts preserve human approval and legacy repair compatibility",()=>{
   const runner=fs.readFileSync("scripts/loop-run.mjs","utf8");
   const accept=fs.readFileSync("scripts/loop-accept.mjs","utf8");
   const legacy=fs.readFileSync("scripts/autonomy-repair-loop.mjs","utf8");
   assert.match(runner,/accepted-experience\.json/);
+  assert.match(runner,/accepted-asset-manifest\.json/);
+  assert.match(runner,/accepted-interaction-graph\.json/);
+  assert.match(runner,/autonomy-asset-repair\.mjs/);
+  assert.match(runner,/autonomy-construction\.mjs/);
+  assert.match(runner,/autonomy-accessibility-verify\.mjs/);
   assert.match(runner,/current-incumbent\.json/);
   assert.match(runner,/Project Vault does not contain project/);
   assert.match(runner,/parseExperience/);
@@ -122,7 +234,9 @@ test("Loop Engine scripts preserve human approval and legacy repair compatibilit
   assert.match(accept,/Human approval is required/);
   assert.match(accept,/--approve/);
   assert.match(accept,/Project Vault changed after this loop began/);
-  assert.match(accept,/fingerprint does not match the run report/);
+  assert.match(accept,/bundle fingerprint does not match the run report/);
+  assert.match(accept,/assetManifest/);
+  assert.match(accept,/interactionGraph/);
   assert.match(legacy,/scripts\/loop-run\.mjs/);
 });
 

@@ -24,6 +24,7 @@ import { STUDIO_GUIDE_BRIEF_KEY, STUDIO_GUIDE_SHIP_KEY, StudioWorkflowGuide } fr
 import { StudioVaultPanel } from "@/src/studio/StudioVaultPanel";
 import { StudioIdentityBadge } from "@/src/studio/StudioIdentityBadge";
 import { LoopEnginePanel } from "@/src/studio/LoopEnginePanel";
+import { analyzeAssetManifest } from "@/src/platform/assetIntelligence";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig, MotionTrack, SceneDefinition, Vec3 } from "@/src/types/experience";
 
@@ -68,6 +69,7 @@ export function ProductionStudioWorkbench() {
   const scene = draft.experience.scenes[sceneIndex];
   const rigNodes = draft.experience.productRig?.nodes ?? [];
   const selectionLabel = useMemo(() => labelForSelection(selection, draft.experience), [selection, draft.experience]);
+  const assetIntelligence = useMemo(() => analyzeAssetManifest(draft.assetManifest), [draft.assetManifest]);
   const guideBrief = useClientValue(() => readStored(STUDIO_GUIDE_BRIEF_KEY), "");
   const guideSeen = useClientValue(() => readStored("forge-studio-guided-first-run-v1"), "");
   const shippedProjectId = useStoredValue(STUDIO_GUIDE_SHIP_KEY);
@@ -401,6 +403,18 @@ export function ProductionStudioWorkbench() {
 
           <aside className="production-right">
             <div className="production-panel-title"><div><span>INSPECTOR</span><strong>{selectionLabel}</strong></div><button type="button" aria-label="Open advanced inspector" onClick={openAdvanced}>•••</button></div>
+            <ContextualDirection
+              selection={selection}
+              experience={draft.experience}
+              manifest={draft.assetManifest}
+              assetScore={assetIntelligence.score}
+              sceneIndex={sceneIndex}
+              onSelect={setSelection}
+              onApplyMotion={() => applyArchetype()}
+              onBuildNode={buildSelectedNode}
+              onWorkspace={(next) => { setWorkspace(next); setAdvanced(true); }}
+              onLoops={() => setLoopOpen(true)}
+            />
             <Inspector selection={selection} experience={draft.experience} setExperience={draft.setExperience} sceneIndex={sceneIndex} archetype={archetype} setArchetype={setArchetype} applyArchetype={applyArchetype} buildSelectedNode={buildSelectedNode} resetSceneMotion={resetSceneMotion} openAdvanced={openAdvanced} setWorkspace={setWorkspace} />
           </aside>
 
@@ -438,6 +452,63 @@ function Navigator({ mode, experience, manifest, activeScene, selection, onSelec
   if (mode === "Structure") return <div className="production-tree"><button type="button" className={selection.kind === "camera" ? "active" : ""} onClick={() => onSelect({ kind: "camera", index: activeScene })}><span>⌁</span><strong>Camera</strong><small>shot</small></button><button type="button" className={selection.kind === "environment" ? "active" : ""} onClick={() => onSelect({ kind: "environment", index: activeScene })}><span>◉</span><strong>Environment</strong><small>world</small></button>{(experience.productRig?.nodes ?? []).map((node) => <button type="button" key={node} className={selection.kind === "node" && selection.name === node ? "active" : ""} onClick={() => onSelect({ kind: "node", index: activeScene, name: node })}><span>◇</span><strong>{node}</strong><small>rig</small></button>)}</div>;
   const assets = [...manifest.models.map((entry) => ({ ...entry, kind: "model" })), ...manifest.textures.map((entry) => ({ ...entry, kind: "texture" })), ...manifest.hdr.map((entry) => ({ ...entry, kind: "hdr" })), ...manifest.video.map((entry) => ({ ...entry, kind: "video" }))];
   return <div className="production-tree">{assets.length ? assets.map((asset, index) => <button type="button" key={`${asset.kind}-${asset.path}`} className={selection.kind === "asset" && selection.index === index ? "active" : ""} onClick={() => onSelect({ kind: "asset", index })}><span>▧</span><strong>{asset.path.split("/").pop()}</strong><small>{asset.kind}</small></button>) : <p className="production-empty">No banked assets yet. Import assets to begin.</p>}</div>;
+}
+
+function ContextualDirection({ selection, experience, manifest, assetScore, sceneIndex, onSelect, onApplyMotion, onBuildNode, onWorkspace, onLoops }: {
+  selection: Selection;
+  experience: ExperienceConfig;
+  manifest: AssetManifest;
+  assetScore: number;
+  sceneIndex: number;
+  onSelect: (value: Selection) => void;
+  onApplyMotion: () => void;
+  onBuildNode: (node: string) => void;
+  onWorkspace: (value: Workspace) => void;
+  onLoops: () => void;
+}) {
+  const scene=experience.scenes[sceneIndex];
+  const motionCount=scene.motionTracks.length;
+  const mediaKind=scene.media?.kind;
+  const assetCount=manifest.models.length+manifest.textures.length+manifest.hdr.length+manifest.video.length;
+
+  if(selection.kind==="camera") return <section className="production-context" data-kind="camera">
+    <span>CAMERA DIRECTION</span><strong>{scene.camera.path} shot · {scene.camera.from.fov}° → {scene.camera.to.fov}°</strong>
+    <p>Shape framing first, then coordinate object and typography motion around the shot instead of animating them independently.</p>
+    <div><button type="button" className="primary" onClick={onApplyMotion}>Coordinate motion</button><button type="button" onClick={() => onWorkspace("Motion")}>Fine tune shot</button><Link href="/director">Ask Director</Link></div>
+  </section>;
+
+  if(selection.kind==="node") {
+    const tracks=scene.motionTracks.filter((track)=>track.target.startsWith(`rig:${selection.name}:`)).length;
+    return <section className="production-context" data-kind="node">
+      <span>OBJECT DIRECTION</span><strong>{tracks ? `${tracks} authored track${tracks===1?"":"s"}` : "No authored behavior yet"}</strong>
+      <p>{tracks ? "Refine this node only if the change strengthens the scene beat; keep the rest pose authoritative." : "Give this part one reversible entrance/reveal before adding secondary movement."}</p>
+      <div><button type="button" className="primary" onClick={() => onBuildNode(selection.name)}>Build + reveal</button><button type="button" onClick={() => onWorkspace("Motion")}>Open tracks</button><button type="button" onClick={() => onWorkspace("Assets")}>Inspect model</button></div>
+    </section>;
+  }
+
+  if(selection.kind==="asset") return <section className="production-context" data-kind="asset">
+    <span>ASSET DIRECTION</span><strong>{Math.round(assetScore)}/100 manifest health</strong>
+    <p>{assetScore<75 ? "Asset pressure needs attention before more visual complexity is added." : "The manifest is inside its current budget envelope; verify the selected asset against its actual camera role."}</p>
+    <div><button type="button" className="primary" onClick={() => onWorkspace("Assets")}>Inspect + optimize</button><Link href="/studio/assets/create">Create variant</Link><button type="button" onClick={onLoops}>Run improvement loop</button></div>
+  </section>;
+
+  if(selection.kind==="environment") return <section className="production-context" data-kind="environment">
+    <span>ENVIRONMENT DIRECTION</span><strong>{scene.post.bloom>0.35 ? "High effect pressure" : "Controlled atmosphere"}</strong>
+    <p>Lighting, exposure and post should support the subject hierarchy. Treat bloom and atmosphere as scene structure, not decoration.</p>
+    <div><button type="button" className="primary" onClick={() => onWorkspace("Motion")}>Sequence atmosphere</button><button type="button" onClick={onLoops}>Performance / polish loops</button></div>
+  </section>;
+
+  return <section className="production-context" data-kind="scene">
+    <span>SCENE DIRECTION</span>
+    <strong>{motionCount ? `${motionCount} motion track${motionCount===1?"":"s"} · ${mediaKind ?? "3D"} scene` : "Direction before detail"}</strong>
+    <p>{motionCount ? "The scene has authored motion. Refine the camera, focal hierarchy or interaction only where the current beat needs more intent." : "This scene is structurally valid but still static. Establish one coordinated motion idea before adding micro-effects."}</p>
+    <div>
+      <button type="button" className="primary" onClick={() => onSelect({kind:"camera",index:sceneIndex})}>Direct camera</button>
+      <button type="button" onClick={onApplyMotion}>{motionCount ? "Re-compose motion" : "Compose motion"}</button>
+      <button type="button" onClick={() => onWorkspace("Interact")}>Add behavior</button>
+    </div>
+    <small>{assetCount ? `${assetCount} registered asset${assetCount===1?"":"s"} · manifest health ${Math.round(assetScore)}/100` : "No assets registered yet"}</small>
+  </section>;
 }
 
 function Inspector({ selection, experience, setExperience, sceneIndex, archetype, setArchetype, applyArchetype, buildSelectedNode, resetSceneMotion, openAdvanced, setWorkspace }: { selection: Selection; experience: ExperienceConfig; setExperience: ReturnType<typeof useStudioDraft>["setExperience"]; sceneIndex: number; archetype: MotionArchetypeName; setArchetype: (value: MotionArchetypeName) => void; applyArchetype: (value?: MotionArchetypeName) => void; buildSelectedNode: (node: string) => void; resetSceneMotion: () => void; openAdvanced: () => void; setWorkspace: (value: Workspace) => void }) {

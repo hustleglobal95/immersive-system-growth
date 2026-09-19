@@ -1,4 +1,8 @@
-# Release Notes\n\n- Added Forge Loop Engine: typed closed-loop contracts, executable Visual/Mobile/Motion improvement loops, multi-candidate tournaments, bounded budgets, saturation/oscillation/repeated-repair stops, evidence ledgers, Project Vault loop memory, Studio control surface, legacy repair-loop compatibility and explicit human Vault promotion.
+# Release Notes\n\n- Upgraded Forge Loop Engine so all six loop families are executable: added Asset Quality with derivative lineage and safe duplicate/derivative repair, Construction with grounded Director planning and the full verifier stack, explicit accessibility verification, and atomic experience/asset-manifest/interaction-graph candidate bundles for human Vault promotion.
+- Added selection-aware Studio direction plus Asset Intelligence manifest health, derivative coverage/savings, duplicate-binary detection and production-specific optimization guidance.
+- Added evidence-gated Performance Loop profiling and bounded DPR/pixel/preload repair with incumbent/candidate renderer re-measurement.
+
+- Added Forge Loop Engine: typed closed-loop contracts, executable Visual/Mobile/Motion improvement loops, multi-candidate tournaments, bounded budgets, saturation/oscillation/repeated-repair stops, evidence ledgers, Project Vault loop memory, Studio control surface, legacy repair-loop compatibility and explicit human Vault promotion.
 
 - Added the Forge internal-product layer: optional role-based private access, GitHub-backed Project Vault with durable snapshots/version restore/archive state, Project Vault production memory, permanent Meshy/Higgsfield Asset Vault promotion, Guided Ship durability blocking for temporary generated assets, and an environment-aware internal readiness audit.
 

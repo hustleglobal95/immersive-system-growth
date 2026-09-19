@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, type Dispatch, type DragEvent, type SetStateAction } from "react";
+import { useEffect, useMemo, useRef, useState, type Dispatch, type DragEvent, type SetStateAction } from "react";
 import { inspectGlb, type GlbInspection } from "@/src/platform/glbInspector";
 import { replaceScene } from "@/src/platform/studioPresets";
+import { analyzeAssetManifest } from "@/src/platform/assetIntelligence";
 import type { AssetManifest, AssetManifestEntry } from "@/src/types/assets";
 import type { ExperienceConfig } from "@/src/types/experience";
 
@@ -24,6 +25,7 @@ export function AssetManager({ setExperience, assetManifest, setAssetManifest, a
   const previewUrls = useRef<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const intelligence = useMemo(() => analyzeAssetManifest(assetManifest), [assetManifest]);
   useEffect(() => {
     const urls = previewUrls.current;
     return () => urls.forEach((url) => URL.revokeObjectURL(url));
@@ -75,6 +77,22 @@ export function AssetManager({ setExperience, assetManifest, setAssetManifest, a
       </label>
       {message && <p className="studio-message" role="status">{message}</p>}
       <dl className="studio-stats"><div><dt>Model budget</dt><dd>{assetManifest.budgets.modelMb} MB</dd></div><div><dt>Texture budget</dt><dd>{assetManifest.budgets.textureMb} MB</dd></div><div><dt>Video budget</dt><dd>{assetManifest.budgets.videoMb} MB</dd></div><div><dt>Total budget</dt><dd>{assetManifest.budgets.totalMb} MB</dd></div></dl>
+      <div className="asset-intelligence" data-score={Math.round(intelligence.score)}>
+        <div className="studio-card__head"><div><span>ASSET INTELLIGENCE</span><h3>{Math.round(intelligence.score)}/100 manifest health</h3></div><output>{Math.round(intelligence.utilization * 100)}% total budget</output></div>
+        <dl className="studio-stats">
+          <div><dt>Traceable derivatives</dt><dd>{intelligence.derivativeCount}</dd></div>
+          <div><dt>Recorded savings</dt><dd>{formatBytes(intelligence.derivativeSavingsBytes)}</dd></div>
+          <div><dt>Duplicate binaries</dt><dd>{intelligence.duplicateHashes.length}</dd></div>
+          <div><dt>Remote assets</dt><dd>{intelligence.remoteAssets}</dd></div>
+        </dl>
+        {intelligence.findings.length ? <div className="asset-intelligence__findings">
+          {intelligence.findings.slice(0, 5).map((finding) => <article key={finding.id} data-severity={finding.severity}>
+            <strong>{finding.title}</strong>
+            <small>{finding.detail}</small>
+            <p>{finding.recommendedAction}</p>
+          </article>)}
+        </div> : <p className="studio-muted">No manifest pressure or duplicate binary findings. Continue with camera-role and real-device verification.</p>}
+      </div>
     </section>
     <section className="studio-card asset-intake-list">
       <div className="studio-card__head"><div><span>STAGING QUEUE</span><h2>Production records</h2></div><output>{assetManifest.models.length + assetManifest.textures.length + assetManifest.video.length} registered</output></div>

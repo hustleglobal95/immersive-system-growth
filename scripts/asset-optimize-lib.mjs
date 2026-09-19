@@ -39,7 +39,19 @@ export async function optimizeTexture({
     fs.renameSync(temporary, output);
     const sha256 = crypto.createHash("sha256").update(fs.readFileSync(output)).digest("hex");
     const publicPath = `/${path.relative(path.join(repositoryRoot, "public"), output).split(path.sep).join("/")}`;
-    const record = { path: publicPath, bytes, sha256 };
+    const sourcePublicPath = `/${path.relative(path.join(repositoryRoot, "public"), source).split(path.sep).join("/")}`;
+    const record = {
+      path: publicPath,
+      bytes,
+      sha256,
+      derivative: {
+        sourcePath: sourcePublicPath,
+        operation: "image-optimize",
+        format,
+        width: metadata.width,
+        quality,
+      },
+    };
     if (updateManifest) {
       manifest.textures = [...manifest.textures.filter((item) => item.path !== publicPath), record];
       writeJsonAtomic(manifestPath, manifest);
