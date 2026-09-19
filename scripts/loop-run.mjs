@@ -205,7 +205,11 @@ try {
                   "--manifest",currentIncumbentManifestPath,
                   "--output",reviewRoot,
                   "--strategy",strategy.id,
-                  "--context",context,
+                  "--context",[
+                    String(options.context || source.context || ""),
+                    "Construction objective: "+definition.objective,
+                    "Candidate direction: "+strategy.instruction,
+                  ].filter(Boolean).join("\n"),
                 ])
               : await run(process.execPath,[
                 "--import","tsx","scripts/autonomy-visual-director.mjs",
