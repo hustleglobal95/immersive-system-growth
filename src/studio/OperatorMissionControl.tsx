@@ -13,12 +13,14 @@ export function OperatorMissionControl({
   plan,
   health,
   onExecuteStep,
+  onApproveDecision,
   onEditMission,
 }:{
   mission:MissionContract;
   plan:MissionPlanGraph;
   health:ProjectHealthReport;
   onExecuteStep:(step:MissionPlanStep,mode:OperatorMode)=>void;
+  onApproveDecision:(id:string)=>void;
   onEditMission:()=>void;
 }) {
   const [mode,setMode]=useState<OperatorMode>("copilot");
@@ -63,12 +65,15 @@ export function OperatorMissionControl({
         <p>{primary?.reason ?? "Resolve blocked dependencies or move to final review."}</p>
         {disposition && <small>{disposition.reason}</small>}
       </div>
-      <button
-        type="button"
-        className="primary"
-        disabled={!executable}
-        onClick={()=>primary && onExecuteStep(primary.step,mode)}
-      >{primary ? actionLabel(disposition?.disposition) : "Mission clear"}</button>
+      <div className="operator-mission__primary-actions">
+        <button
+          type="button"
+          className="primary"
+          disabled={!executable}
+          onClick={()=>primary && onExecuteStep(primary.step,mode)}
+        >{primary ? actionLabel(disposition?.disposition) : "Mission clear"}</button>
+        {primary?.step.autonomy==="human" && <button type="button" onClick={()=>onApproveDecision(primary.step.id)}>Approve decision</button>}
+      </div>
     </div>
 
     <div className="operator-mission__footer">
