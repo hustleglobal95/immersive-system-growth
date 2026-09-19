@@ -123,6 +123,7 @@ try {
       const functionalPath=path.join(candidateRoot,"functional.json");
       const motionPath=path.join(candidateRoot,"motion.json");
       const comparisonPath=path.join(candidateRoot,"comparison.json");
+      const candidatePerformancePath=path.join(candidateRoot,"performance.json");
       report.candidateAttempts++;
       const evidence={
         id:candidateId,
@@ -250,6 +251,7 @@ try {
         }
         evidence.motionScore=typeof motionReport.qualityScore==="number" ? motionReport.qualityScore : null;
         evidence.hardGateFailures=boundedFailures([
+          ...evidence.hardGateFailures,
           ...(functionalReport.hardGateFailures ?? []),
           ...(motionReport.hardGateFailures ?? []),
           ...(comparisonReport.candidateHardGateFailures ?? []),
