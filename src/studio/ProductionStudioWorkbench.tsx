@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { readStored, useClientValue } from "@/src/lib/useClientValue";
+import { readStored, useClientValue, useStoredValue } from "@/src/lib/useClientValue";
 import rawExperience from "@/config/experience.json";
 import rawProject from "@/config/studio-project.json";
 import rawAssetManifest from "@/config/asset-manifest.json";
@@ -20,7 +20,7 @@ import { AssetBankPanel } from "@/src/studio/AssetBankPanel";
 import { GlbInspectorPanel } from "@/src/studio/GlbInspectorPanel";
 import { PublishPanel, TelemetryPanel } from "@/src/studio/ProjectPanels";
 import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
-import { STUDIO_GUIDE_BRIEF_KEY, StudioWorkflowGuide } from "@/src/studio/StudioWorkflowGuide";
+import { STUDIO_GUIDE_BRIEF_KEY, STUDIO_GUIDE_SHIP_KEY, StudioWorkflowGuide } from "@/src/studio/StudioWorkflowGuide";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig, MotionTrack, SceneDefinition, Vec3 } from "@/src/types/experience";
 
@@ -65,6 +65,7 @@ export function ProductionStudioWorkbench() {
   const selectionLabel = useMemo(() => labelForSelection(selection, draft.experience), [selection, draft.experience]);
   const guideBrief = useClientValue(() => readStored(STUDIO_GUIDE_BRIEF_KEY), "");
   const guideSeen = useClientValue(() => readStored("forge-studio-guided-first-run-v1"), "");
+  const shippedProjectId = useStoredValue(STUDIO_GUIDE_SHIP_KEY);
   const workflow = useMemo(() => {
     const assetCount = draft.assetManifest.models.length + draft.assetManifest.textures.length + draft.assetManifest.hdr.length + draft.assetManifest.video.length;
     const motionCount = draft.experience.scenes.reduce((total, item) => total + item.motionTracks.length, 0);
@@ -73,11 +74,12 @@ export function ProductionStudioWorkbench() {
     const assetsDone = assetCount > 0;
     const motionDone = motionCount > 0;
     const reviewDone = draft.validation.length === 0 && ideaDone && customStructure && motionDone;
-    const completed = [ideaDone, assetsDone, customStructure, motionDone, reviewDone].filter(Boolean).length;
-    const nextLabel = !ideaDone ? "Describe the experience" : !assetsDone ? "Create or import the hero assets" : !customStructure ? "Shape the scene journey" : !motionDone ? "Direct the movement" : !reviewDone ? "Resolve review issues" : "Review and publish";
+    const shipDone = shippedProjectId === draft.project.id;
+    const completed = [ideaDone, assetsDone, customStructure, motionDone, reviewDone, shipDone].filter(Boolean).length;
+    const nextLabel = !ideaDone ? "Describe the experience" : !assetsDone ? "Create or import the hero assets" : !customStructure ? "Shape the scene journey" : !motionDone ? "Direct the movement" : !reviewDone ? "Resolve review issues" : !shipDone ? "Review and publish" : "Project shipped";
     const unconfigured = draft.experience.scenes.length === 1 && assetCount === 0 && motionCount === 0 && !draft.experience.heroModel && !draft.experience.scenes[0]?.media;
     return { completed, nextLabel, unconfigured };
-  }, [draft.assetManifest, draft.experience, draft.validation.length, guideBrief]);
+  }, [draft.assetManifest, draft.experience, draft.project.id, draft.validation.length, guideBrief, shippedProjectId]);
   const guideVisible = guidedOpen || (!guideDismissed && draft.hydrated && !guideSeen && workflow.unconfigured);
   const closeGuide = () => {
     setGuidedOpen(false);
