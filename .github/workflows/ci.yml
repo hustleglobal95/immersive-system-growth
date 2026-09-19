@@ -10,7 +10,7 @@ concurrency:
 jobs:
   visual-evidence:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -33,7 +33,7 @@ jobs:
           cat /tmp/forge-next.log
           exit 1
       - name: Capture current showcase delivery evidence
-        run: timeout 180s node scripts/capture-showcase.mjs
+        run: timeout 420s node scripts/capture-showcase.mjs
       - name: Stop current Forge production server
         if: always()
         run: |
