@@ -34,7 +34,9 @@ export interface MissionPlanGraph {
 export function buildMissionPlan(input:{
   mission:MissionContract;
   health:ProjectHealthReport;
+  completedDecisionIds?:string[];
 }):MissionPlanGraph {
+  const completedDecisions=new Set(input.completedDecisionIds ?? []);
   const steps:MissionPlanStep[]=[];
   const push=(step:MissionPlanStep)=>{steps.push(step);};
 
@@ -156,6 +158,7 @@ export function buildMissionPlan(input:{
 
   const byId=new Map(steps.map((step)=>[step.id,step]));
   const healthComplete=(step:MissionPlanStep)=>{
+    if(completedDecisions.has(step.id)) return true;
     if(step.id.startsWith("motion-")) {
       const sceneIndex=Number(step.id.slice("motion-".length));
       return !input.health.issues.some((issue)=>issue.domain==="motion" && issue.sceneIndex===sceneIndex);
@@ -180,7 +183,7 @@ export function buildMissionPlan(input:{
     }
     const dependenciesComplete=step.dependencies.every((id)=>{
       const dependency=byId.get(id);
-      return dependency?.status==="complete" || (dependency?.autonomy==="human" && dependency.status==="ready");
+      return dependency?.status==="complete";
     });
     step.status=dependenciesComplete ? "ready" : "blocked";
   }
