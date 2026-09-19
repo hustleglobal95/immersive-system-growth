@@ -1,5 +1,6 @@
 import { parseExperience } from "@/src/lib/configSchema";
 import { createMotionArchetype, type MotionArchetypeName } from "@/src/platform/motionArchetypes";
+import { createMotionPreset, type MotionPresetName } from "@/src/platform/motionPresets";
 import { createProposalDraft, type ForgeProposal } from "@/src/platform/control-plane/proposal";
 import type { ResolvedCapability } from "@/src/platform/control-plane/capabilityRegistry";
 import type { SelectionContext } from "@/src/platform/control-plane/selectionContext";
@@ -33,9 +34,14 @@ export function prepareFastProposal(input:{
     source:input.source,
   });
 
-  const result=input.capability.dispatch.action==="compose-motion"
+  const action=input.capability.dispatch.action;
+  const result=action==="compose-motion"
     ? composeMotion(input.experience,input.context.sceneIndex,input.archetype)
-    : buildNodeReveal(input.experience,input.context);
+    : action==="build-node"
+      ? buildNodeReveal(input.experience,input.context)
+      : action==="copy-reveal"
+        ? focusedPreset(input.experience,input.context,"copy-rise","copy")
+        : focusedPreset(input.experience,input.context,"media-reveal","media");
 
   const proposal:ForgeProposal={
     ...base,
@@ -74,6 +80,43 @@ function composeMotion(experience:ExperienceConfig,sceneIndex:number,archetype:M
       summary:`Compose ${archetype.replaceAll("-"," ")} while preserving ${authored.length} explicitly authored track${authored.length===1?"":"s"}.`,
     }],
     explanation:`Forge prepared coordinated ${archetype.replaceAll("-"," ")} motion for ${scene.label} without touching explicitly authored target/viewport pairs.`,
+  };
+}
+
+function focusedPreset(
+  experience:ExperienceConfig,
+  context:SelectionContext,
+  preset:MotionPresetName,
+  targetKind:"copy"|"media",
+) {
+  if(targetKind==="copy" && context.selection.kind!=="copy") throw new Error("Copy reveal requires a copy selection.");
+  if(targetKind==="media" && context.selection.kind!=="media") throw new Error("Media reveal requires a media selection.");
+  const sceneIndex=context.sceneIndex;
+  const scene=experience.scenes[sceneIndex];
+  if(targetKind==="media" && !scene.media) throw new Error("The selected scene has no media to reveal.");
+
+  const created=createMotionPreset(preset,experience,sceneIndex)
+    .map((track)=>namespaceTrack(track,`studio-auto-${preset}`));
+  const targetKeys=new Set(created.map((track)=>`${track.viewport}:${track.target}`));
+  const previous=scene.motionTracks.filter((track)=>targetKeys.has(`${track.viewport}:${track.target}`));
+  const nextTracks=[
+    ...scene.motionTracks.filter((track)=>!targetKeys.has(`${track.viewport}:${track.target}`)),
+    ...created,
+  ];
+  const candidate=parseExperience({
+    ...structuredClone(experience),
+    scenes:experience.scenes.map((item,index)=>index===sceneIndex ? {...item,motionTracks:nextTracks} : item),
+  });
+  const label=targetKind==="copy" ? "typography reveal" : "media reveal";
+  return {
+    experience:candidate,
+    changes:[{
+      path:`scenes[${sceneIndex}].motionTracks[${targetKind}]`,
+      before:`${previous.length} targeted tracks`,
+      after:`${created.length} directed tracks`,
+      summary:`Prepare one reversible ${label} while leaving unrelated scene motion untouched.`,
+    }],
+    explanation:`Forge prepared a focused ${label} for ${scene.label}; source content and unrelated motion remain unchanged.`,
   };
 }
 
