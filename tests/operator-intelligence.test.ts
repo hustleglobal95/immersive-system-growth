@@ -18,7 +18,7 @@ const manifest=parseAssetManifest(rawManifest);
 const graph=parseInteractionGraph(rawGraph);
 
 function fixture() {
-  const source=structuredClone(rawExperience);
+  const source=structuredClone(rawExperience) as unknown as { scenes:Array<Record<string,unknown>> };
   source.scenes[0].motionTracks=[];
   delete source.scenes[0].mobileCamera;
   return parseExperience(source);
