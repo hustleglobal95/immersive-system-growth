@@ -99,9 +99,9 @@ test("browser creative workflows load protected institutional memory and layered
   const agent=fs.readFileSync("src/studio/CreativeAgentWorkbench.tsx","utf8");
   const director=fs.readFileSync("src/studio/DirectorIntelligenceWorkbench.tsx","utf8");
   assert.match(route,/requireStudioRole\(request,"reviewer"\)/);
-  assert.match(route,/taste\/operators/);
-  assert.match(route,/taste\/projects/);
-  assert.match(route,/memory\.json/);
+  assert.match(route,/readOperatorTaste\(identity\.id\)/);
+  assert.match(route,/readProjectTaste\(projectId\)/);
+  assert.match(route,/readMemoryDirectory\(projectId\)/);
   assert.match(route,/node\.projectId!==currentProjectId/);
   assert.match(hook,/creative-intelligence\/context/);
   assert.match(agent,/useCreativeIntelligenceContext/);
