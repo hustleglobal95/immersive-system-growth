@@ -166,12 +166,14 @@ try {
           evidence.duplicateOf="incumbent";
           evidence.reason="Candidate fingerprint is identical to the incumbent.";
           cycle.candidates.push(evidence);
+          await writeReportWithCyclePreview(cycle);
           continue;
         }
         if(seenFingerprints.has(candidateFingerprint)) {
           evidence.duplicateOf=seenFingerprints.get(candidateFingerprint);
           evidence.reason="Candidate duplicates another strategy in this cycle.";
           cycle.candidates.push(evidence);
+          await writeReportWithCyclePreview(cycle);
           continue;
         }
         seenFingerprints.set(candidateFingerprint,candidateId);
