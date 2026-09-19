@@ -131,6 +131,37 @@ test("unmapped visual blockers prevent autonomous candidate generation",()=>{
   assert.match(applied.errors[0],/Unresolved visual blocker/);
 });
 
+test("Visual Director accepts Art Director and craft discipline findings",()=>{
+  const parsed=parseVisualDirectorResponse({
+    findings:[
+      {
+        critic:"art-direction",
+        captureId:"wrong",
+        severity:"major",
+        finding:"The typography and lighting feel like separate visual worlds.",
+        evidence:["Type behaves editorially while the light treats the object like a technical demo."],
+        affectedSystems:["typography","lighting","composition"],
+        repair:"Choose one visual north star and make typography/light share the same hierarchy.",
+        confidence:.9,
+      },
+      {
+        critic:"craft",
+        captureId:"wrong",
+        severity:"minor",
+        finding:"A media crop tangency makes the frame feel unfinished.",
+        evidence:["The subject edge nearly touches the viewport at the focal transition."],
+        affectedSystems:["media crop"],
+        repair:"Move the crop enough to create either clear overlap or clear separation.",
+        confidence:.84,
+      },
+    ],
+  },"desktop-hero-mid");
+  assert.equal(parsed.findings.length,2);
+  assert.equal(parsed.findings[0].critic,"art-direction");
+  assert.equal(parsed.findings[1].critic,"craft");
+  assert.ok(parsed.findings.every((finding)=>finding.captureId==="desktop-hero-mid"));
+});
+
 test("Visual Director response is capture-scoped and schema constrained",()=>{
   const parsed=parseVisualDirectorResponse({
     findings:[{
