@@ -20,14 +20,23 @@ if(!snapshot) fail("Project Vault no longer contains "+report.projectId+".");
 if(report.sourceVersionId && snapshot.versionId!==report.sourceVersionId) fail("Project Vault changed after this loop began. Current "+snapshot.versionId+" != loop baseline "+report.sourceVersionId+". Re-run the loop or reconcile explicitly.");
 const acceptedRaw=await fs.readFile(path.resolve(report.acceptedExperiencePath),"utf8");
 const experience=JSON.parse(acceptedRaw);
-const acceptedFingerprint=createHash("sha256").update(JSON.stringify(experience)).digest("hex");
-if(acceptedFingerprint!==report.currentFingerprint) fail("Accepted loop artifact fingerprint does not match the run report. Evidence or artifact changed after evaluation.");
+const assetManifest=report.acceptedAssetManifestPath
+  ? JSON.parse(await fs.readFile(path.resolve(report.acceptedAssetManifestPath),"utf8"))
+  : snapshot.assetManifest;
+const interactionGraph=report.acceptedInteractionGraphPath
+  ? JSON.parse(await fs.readFile(path.resolve(report.acceptedInteractionGraphPath),"utf8"))
+  : snapshot.interactionGraph;
+const stateFingerprint=createHash("sha256").update(JSON.stringify({experience,assetManifest,interactionGraph})).digest("hex");
+const legacyExperienceFingerprint=createHash("sha256").update(JSON.stringify(experience)).digest("hex");
+if(stateFingerprint!==report.currentFingerprint && legacyExperienceFingerprint!==report.currentFingerprint) {
+  fail("Accepted loop artifact bundle fingerprint does not match the run report. Evidence or artifact changed after evaluation.");
+}
 
 const result=await saveVaultProject({
   experience,
   project:snapshot.project,
-  assetManifest:snapshot.assetManifest,
-  interactionGraph:snapshot.interactionGraph,
+  assetManifest,
+  interactionGraph,
 },{
   id:slug(actorName),
   name:actorName,
