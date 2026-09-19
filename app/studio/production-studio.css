@@ -31,6 +31,18 @@
 @media(max-width:1100px){.production-layout{grid-template-columns:190px minmax(480px,1fr) 250px}.production-topbar{grid-template-columns:auto 1fr auto}.production-status{display:none}}
 @media(max-width:860px){.production-layout{height:auto;display:block;overflow:visible}.production-left,.production-right{max-height:360px;border:0;border-bottom:1px solid var(--ps-line)}.production-stage{min-height:660px}.production-bottom{position:relative}.production-topbar{grid-template-columns:1fr auto;height:auto;min-height:58px;padding-block:8px}.production-topbar nav{grid-row:2;grid-column:1/-1;margin-top:7px;overflow:auto}.production-topbar nav button{min-width:64px}.production-runtime .studio-preview__viewport{min-height:430px}}
 
+@media(max-width:600px){
+  .production-topbar{grid-template-columns:minmax(0,1fr);padding:8px 10px;overflow:hidden}
+  .production-brand{min-width:0}
+  .production-top-actions{grid-column:1;justify-self:stretch;min-width:0;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;padding-bottom:2px}
+  .production-top-actions::-webkit-scrollbar{display:none}
+  .production-top-actions>*{flex:0 0 auto}
+  .production-topbar nav{grid-row:3;grid-column:1;min-width:0;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}
+  .production-topbar nav::-webkit-scrollbar{display:none}
+  .production-advanced{min-width:0;padding:12px}
+  .production-advanced-stack{min-width:0}
+}
+
 /* Cockpit preview fits its panel height so the transport (Play / scrubber) is never clipped on shorter windows. */
 @media(min-width:861px){
 .production-runtime>.studio-preview{display:flex;flex-direction:column}
