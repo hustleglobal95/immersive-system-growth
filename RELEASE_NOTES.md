@@ -1,4 +1,10 @@
-# Release Notes\n\n- Completed the Forge PRO+ simplification program: Build / Review / Ship are now the only permanent Studio destinations; Sequencer, Interactions, Asset tools and Telemetry live under Advanced.
+# Release Notes\n\n- Added Forge Creative Intelligence 2.0: project-specific Creative DNA, deterministic Art Director, three divergent visual-language worlds, ten-dimension territory-distance gates, Creative Mutation, eight specialist creative directors and a 13-dimension Creative Ceiling V2.
+- Upgraded reference reasoning to multi-discipline principle deconstruction with explicit anti-copy rules and unknown-as-unknown handling.
+- Expanded Visual Director review from 9 to 17 disciplines with art direction, color, lighting, material, image direction, sound intent, originality and craft; originality/material/sound remain diagnostic until Forge has truthful domain-specific repair.
+- Added layered studio/operator/project taste persistence and richer approved Creative Memory for Art Direction, Visual Language and discipline grammars with automatic cross-project anti-repeat review.
+- Integrated Creative Intelligence 2 into Creative Agent, autonomous Construction and the PRO+ Control Plane, preserving the original operator intent and selected target during creative handoff.
+
+- Completed the Forge PRO+ simplification program: Build / Review / Ship are now the only permanent Studio destinations; Sequencer, Interactions, Asset tools and Telemetry live under Advanced.
 - Added shared Selection Context, a self-validating Capability Registry, Intent Compiler, Next Action Engine, Project Health, typed Proposal Contract and Control Plane audit enforced by `npm run check`.
 - Added reversible fast candidates plus a reviewer-protected Loop-result bridge so verified deep winners return to the same Current / Candidate review surface without bypassing Project Vault or release authority.
 - Made Project Health the single readiness abstraction used by Review and enforced by Guided Ship.
