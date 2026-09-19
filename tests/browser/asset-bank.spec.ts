@@ -68,7 +68,17 @@ test("kit replacement requires review, blocks incompatible interactions and supp
     const raw=localStorage.getItem("forge-studio-v2");
     if(!raw) throw new Error("Forge Studio draft was not persisted.");
     const draft=JSON.parse(raw);
-    draft.interactionGraph={...draft.interactionGraph,nodes:[],edges:[]};
+    draft.interactionGraph={
+      ...draft.interactionGraph,
+      nodes:[{
+        id:"kit-neutral-state",
+        kind:"state",
+        label:"Kit replacement neutral state",
+        position:{x:40,y:40},
+        state:draft.interactionGraph.initialState,
+      }],
+      edges:[],
+    };
     localStorage.setItem("forge-studio-v2",JSON.stringify(draft));
   });
   await page.reload();
