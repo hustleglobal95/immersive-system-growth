@@ -41,6 +41,8 @@ Immersive Site Forge 6.0 is organized as a multi-project production platform rat
 ## Authoring and automation
 
 - browser-based Forge Studio at `/studio`
+- PRO+ Control Plane foundation with typed Selection Context, self-validating Capability Registry and non-mutating Proposal Contract
+- registry-driven contextual actions that route semantic operator intent into existing camera, motion, interaction, asset, Director and Loop systems without duplicating those engines
 - private internal access layer with role-bearing HTTP-only sessions
 - GitHub-backed Project Vault with atomic durable snapshots, restore points, archive state and project journal
 - permanent generated-asset promotion through a provider-neutral Asset Vault gateway
