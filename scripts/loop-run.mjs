@@ -50,6 +50,7 @@ let report=createLoopRunReport({
   baselineFingerprint,
 });
 await writeReport();
+await recordVaultStart().catch((error)=>console.warn("Vault loop start journal skipped: "+(error instanceof Error ? error.message : String(error))));
 
 const server=spawn(process.platform==="win32" ? "npm.cmd" : "npm",["run","dev","--","--hostname","127.0.0.1","--port",String(port)],{
   stdio:["ignore","pipe","pipe"],
@@ -301,6 +302,12 @@ async function resolveSource({ projectId,experiencePath,workRoot }) {
   const file=path.resolve(experiencePath || "config/experience.json");
   const experience=JSON.parse(await fs.readFile(file,"utf8"));
   return { experience,label:file,context:(experience.meta?.name || "Forge experience")+". "+(experience.meta?.description || "") };
+}
+async function recordVaultStart() {
+  if(!projectId) return;
+  const snapshot=await readVaultProject(projectId);
+  if(!snapshot) return;
+  await appendVaultJournal(projectId,{ id:"forge-loop",name:"Forge Loop Engine",role:"automation" },"loop-run",definition.label+" started · run "+report.runId);
 }
 async function recordVaultSummary() {
   if(!projectId) return;
