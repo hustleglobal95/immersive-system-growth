@@ -165,8 +165,8 @@ Loop Engine adds bounded cycles, candidate tournaments, compact fresh context, n
 
 ## Next implementation stages
 
-1. Multi-candidate asset generation/selection worker with credit budgets and durable derivative lineage.
-2. Construction worker spanning grounded brief → structure → build → verified candidate.
-3. Pairwise studio-taste learning and judge calibration.
-4. Production-trace clustering and failure-pattern mining.
-5. Real-device motion/performance calibration beyond comparative headless renderer metrics.
+1. Expand Asset Quality beyond safe registered derivatives into provider-aware image/model/video derivative generation with explicit credit budgets, provenance and DCC/toolchain verification.
+2. Expand Construction from bounded Forge-native orchestration into richer structure generation, interaction-graph construction and asset-creation handoffs while preserving the current full verifier stack.
+3. Add pairwise studio-taste learning and judge calibration.
+4. Add production-trace clustering and failure-pattern mining.
+5. Calibrate motion/performance thresholds on physical devices beyond comparative headless renderer metrics.
