@@ -93,3 +93,19 @@
 @media(max-width:860px){.production-loop-layout{grid-template-columns:1fr}.production-loop-layout>aside{max-height:180px;border-right:0;border-bottom:1px solid #282c2e}.production-loop-grid{grid-template-columns:1fr}.production-loop-command{grid-template-columns:1fr}}
 
 .production-loop-subkicker{display:block;margin-top:12px!important;color:#777c7f!important;font-size:7px!important;letter-spacing:.14em!important;font-weight:900!important}
+
+
+/* Contextual direction keeps the cockpit simple while routing existing Forge machinery. */
+.production-context{margin:10px 10px 2px;padding:11px;border:1px solid #ffffff12;border-radius:9px;background:linear-gradient(145deg,#141719,#0d0f10);display:grid;gap:7px}
+.production-context>span{font-size:7px;letter-spacing:.16em;color:#f58760;font-weight:800}
+.production-context>strong{font-size:11px;line-height:1.35;color:#f3f3f0}
+.production-context>p{margin:0;color:#858a8d;font-size:8px;line-height:1.55}
+.production-context>small{padding-top:4px;border-top:1px solid #ffffff0b;color:#686d70;font-size:7px}
+.production-context>div{display:flex;flex-wrap:wrap;gap:5px}
+.production-context button,.production-context a{min-height:27px;padding:6px 8px;border:1px solid #ffffff14;border-radius:6px;background:#171a1c;color:#c9cccd;font:inherit;font-size:7px;text-decoration:none;cursor:pointer}
+.production-context button:hover,.production-context a:hover{border-color:#ffffff26;color:#fff}
+.production-context button.primary{border-color:#f4774d55;background:#f4774d18;color:#ffd4c6}
+.production-context[data-kind="asset"]>span{color:#93c5fd}
+.production-context[data-kind="camera"]>span{color:#f5b86b}
+.production-context[data-kind="node"]>span{color:#b7a6ff}
+.production-context[data-kind="environment"]>span{color:#7fd7b1}
