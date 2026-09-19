@@ -18,6 +18,8 @@ const studio=fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx","utf8");
 const publish=fs.readFileSync("src/studio/ProjectPanels.tsx","utf8");
 const deepRoute=fs.readFileSync("app/api/studio/loops/results/route.ts","utf8");
 const draft=fs.readFileSync("src/studio/useStudioDraft.ts","utf8");
+const loopPanel=fs.readFileSync("src/studio/LoopEnginePanel.tsx","utf8");
+const loopRunner=fs.readFileSync("scripts/loop-run.mjs","utf8");
 
 if(!studio.includes('const primarySurfaces = ["Build", "Review", "Ship"] as const')) {
   issues.push({capabilityId:"studio",message:"Primary Studio navigation must remain Build / Review / Ship."});
@@ -39,6 +41,12 @@ if(!deepRoute.includes('requireStudioRole(request,"reviewer")') || !deepRoute.in
 }
 for(const required of ["applyProjectBundle","undoProjectBundle","redoProjectBundle"]) {
   if(!draft.includes(required)) issues.push({capabilityId:"history",message:"Working-draft proposal history is missing "+required+"."});
+}
+for(const required of ["proposal-id","selection-key","baseline-fingerprint"]) {
+  if(!loopRunner.includes(required)) issues.push({capabilityId:"deep-candidate",message:"Loop runner is missing Control Plane provenance field "+required+"."});
+}
+for(const required of ["proposalBaselineMatches","vaultMatchesWorking","projectStateFingerprint"]) {
+  if(!loopPanel.includes(required)) issues.push({capabilityId:"deep-candidate",message:"Studio deep-run source parity is missing "+required+"."});
 }
 
 if(issues.length) {
