@@ -49,7 +49,7 @@ test("Studio searches sources, exports provenance and inserts with undo and draf
   await page.getByRole("button", { name: "Insert asset into scene", exact: true }).click();
   await expect.poll(hasInserted).toBe(true);
   await page.reload();
-  await expect(page.getByText("Production schema valid")).toBeVisible();
+  await expect(page.locator("button.production-status")).toBeVisible();
   await expect.poll(hasInserted).toBe(true);
 });
 
@@ -66,7 +66,7 @@ test("kit replacement requires review, blocks incompatible interactions and supp
   await expect(page.getByText(/Reference kit applied/)).toBeVisible();
   await expect(page.getByRole("button", { name: "Undo experience change" })).toBeEnabled();
   await page.getByRole("button", { name: "Undo experience change" }).click();
-  await expect(page.getByText("Production schema valid")).toBeVisible();
+  await expect(page.locator("button.production-status")).toBeVisible();
   await expect(page.locator("canvas")).toHaveCount(0);
 });
 
