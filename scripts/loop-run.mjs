@@ -212,9 +212,21 @@ try {
         }
 
         const candidateRaw=parseExperience(JSON.parse(await fs.readFile(candidateExperiencePath,"utf8")));
-        const candidateFingerprint=fingerprint(candidateRaw);
+        const candidateManifest=(await exists(candidateAssetManifestOutputPath))
+          ? parseAssetManifest(JSON.parse(await fs.readFile(candidateAssetManifestOutputPath,"utf8")))
+          : incumbentManifest;
+        const candidateGraph=(await exists(candidateInteractionGraphOutputPath))
+          ? parseInteractionGraph(JSON.parse(await fs.readFile(candidateInteractionGraphOutputPath,"utf8")))
+          : incumbentGraph;
+        const candidateFingerprint=fingerprint({
+          experience:candidateRaw,
+          assetManifest:candidateManifest,
+          interactionGraph:candidateGraph,
+        });
         evidence.fingerprint=candidateFingerprint;
         evidence.candidatePath=candidateExperiencePath;
+        if(await exists(candidateAssetManifestOutputPath)) evidence.candidateAssetManifestPath=candidateAssetManifestOutputPath;
+        if(await exists(candidateInteractionGraphOutputPath)) evidence.candidateInteractionGraphPath=candidateInteractionGraphOutputPath;
         if(candidateFingerprint===incumbentFingerprint) {
           evidence.duplicateOf="incumbent";
           evidence.reason="Candidate fingerprint is identical to the incumbent.";
@@ -231,6 +243,8 @@ try {
         }
         seenFingerprints.set(candidateFingerprint,candidateId);
         await fs.copyFile(candidateExperiencePath,currentCandidatePath);
+        await fs.writeFile(currentCandidateManifestPath,JSON.stringify(candidateManifest,null,2)+"\n");
+        await fs.writeFile(currentCandidateGraphPath,JSON.stringify(candidateGraph,null,2)+"\n");
 
         await mustRun(process.execPath,[
           "--import","tsx","scripts/autonomy-candidate-capture.mjs",
