@@ -64,8 +64,8 @@ export function StudioVaultPanel({ draft, onClose }: { draft: Draft; onClose: ()
 
   useEffect(() => { void refresh(); }, []);
   useEffect(() => { void refreshVersions(selectedId); }, [selectedId, projects.length]);
+  useEffect(() => { dialogRef.current?.focus(); }, []);
   useEffect(() => {
-    dialogRef.current?.focus();
     const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") onClose(); };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
