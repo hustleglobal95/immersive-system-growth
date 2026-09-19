@@ -14,7 +14,7 @@ export interface DisciplineDirection {
 export type DisciplineDirections=Record<CreativeDiscipline,DisciplineDirection>;
 
 export function directDisciplines(input:{brief:DirectorBrief;treatment:DirectorTreatment;dna:CreativeDNA;art:ArtDirectionPlan}):DisciplineDirections {
-  const {brief,treatment,dna}=input;
+  const {treatment,dna}=input;
   return {
     typography:{
       id:"typography",premise:dna.typography.personality,
