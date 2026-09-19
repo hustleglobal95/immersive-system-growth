@@ -78,7 +78,7 @@ export function AssetManager({ setExperience, assetManifest, setAssetManifest, a
       {message && <p className="studio-message" role="status">{message}</p>}
       <dl className="studio-stats"><div><dt>Model budget</dt><dd>{assetManifest.budgets.modelMb} MB</dd></div><div><dt>Texture budget</dt><dd>{assetManifest.budgets.textureMb} MB</dd></div><div><dt>Video budget</dt><dd>{assetManifest.budgets.videoMb} MB</dd></div><div><dt>Total budget</dt><dd>{assetManifest.budgets.totalMb} MB</dd></div></dl>
       <div className="asset-intelligence" data-score={Math.round(intelligence.score)}>
-        <div className="studio-card__head"><div><span>ASSET INTELLIGENCE</span><h3>{Math.round(intelligence.score)}/100 production suitability</h3></div><output>{Math.round(intelligence.utilization * 100)}% total budget</output></div>
+        <div className="studio-card__head"><div><span>ASSET INTELLIGENCE</span><h3>{Math.round(intelligence.score)}/100 manifest health</h3></div><output>{Math.round(intelligence.utilization * 100)}% total budget</output></div>
         {intelligence.findings.length ? <div className="asset-intelligence__findings">
           {intelligence.findings.slice(0, 5).map((finding) => <article key={finding.id} data-severity={finding.severity}>
             <strong>{finding.title}</strong>
