@@ -1,5 +1,6 @@
 import type { DirectorBrief, DirectorTreatment, DirectorTerritory } from "@/src/platform/directorSchema";
 import type { RetrievedPrecedent } from "@/src/platform/director-intelligence/types";
+import type { VisualLanguage } from "@/src/platform/director-intelligence/visualLanguage";
 
 export interface CreativeDNA {
   version:1;
@@ -105,11 +106,13 @@ export function buildCreativeDNA(input:{
   treatment:DirectorTreatment;
   precedents?:RetrievedPrecedent[];
   territoryId?:string;
+  visualLanguage?:VisualLanguage;
 }):CreativeDNA {
   const territory=territoryFor(input.treatment,input.territoryId);
   const profile=typeCharacter[input.brief.projectType];
   const grammar=input.treatment.grammar;
   const art=input.treatment.artBible;
+  const language=input.visualLanguage;
   const truth=input.brief.differentiators[0] || input.brief.brandTruth;
   const tension=input.brief.constraints[0] || "category familiarity";
   const crossDomain=(input.precedents ?? []).filter((item)=>!item.precedent.industries.includes(input.brief.projectType)).slice(0,3);
@@ -123,7 +126,7 @@ export function buildCreativeDNA(input:{
     memoryPromise:territory.memory,
     signatureMechanism:territory.signatureMoment,
     composition:{
-      dominance:first(grammar.composition,profile.composition),
+      dominance:first(language?.composition ?? grammar.composition,profile.composition),
       negativeSpace:art.whitespace || "Protect intentional negative space around the dominant subject.",
       density:densityRule(input.treatment),
       scaleContrast:`Use decisive scale contrast around the ${input.treatment.signatureMoment.name}; supporting sections should be visibly quieter.`,
@@ -132,58 +135,58 @@ export function buildCreativeDNA(input:{
       rhythm:`Alternate visual compression and release across ${input.treatment.emotionalArc.map((beat)=>beat.label).join(" → ")}.`,
     },
     typography:{
-      personality:art.typographyCharacter || profile.type,
+      personality:first(language?.typography ?? [],art.typographyCharacter || profile.type),
       scaleContrast:"Use a large display-to-body jump; avoid a ladder of nearly equal text sizes.",
       alignment:input.brief.projectType==="property" || input.brief.projectType==="saas" ? "Use disciplined shared edges; break them only for a protected creative reason." : "Let alignment follow the dominant image/subject plane rather than centering by default.",
       measure:"Keep reading copy deliberately short; display lines should feel authored rather than browser-wrapped.",
-      hierarchy:first(grammar.typography,profile.type),
+      hierarchy:first(language?.typography ?? grammar.typography,profile.type),
       motionRelationship:"Typography should move on a different time constant or axis from the dominant visual system so both do not demand attention at once.",
     },
     color:{
-      dominant:colorRule(grammar.color,0,"Choose one dominant environmental color family tied to the brand/world, not a generic premium default."),
-      supporting:colorRule(grammar.color,1,"Use supporting colors to separate information and depth without creating a second identity."),
-      accent:colorRule(grammar.color,2,"Reserve the accent for functional emphasis or the signature mechanism, not continuous decoration."),
+      dominant:colorRule(language?.color ?? grammar.color,0,"Choose one dominant environmental color family tied to the brand/world, not a generic premium default."),
+      supporting:colorRule(language?.color ?? grammar.color,1,"Use supporting colors to separate information and depth without creating a second identity."),
+      accent:colorRule(language?.color ?? grammar.color,2,"Reserve the accent for functional emphasis or the signature mechanism, not continuous decoration."),
       temperature:temperatureRule(art.paletteLogic,input.brief.projectType),
       contrastBehavior:"Use contrast changes to announce narrative state changes; avoid keeping every section at the same luminance intensity.",
       progression:`Let color progress with the emotional arc rather than repainting every scene independently. ${art.paletteLogic}`,
     },
     image:{
-      lens:first(grammar.imagery,profile.image),
+      lens:first(language?.image ?? grammar.imagery,profile.image),
       crop:"Author recurring crop behavior—macro, whole, portrait, horizon or silhouette—rather than letting every asset choose its own framing.",
       subjectDistance:imageDistanceRule(input.brief.projectType),
-      texture:profile.material,
+      texture:first(language?.material ?? [],profile.material),
       humanPresence:humanRule(input.brief.projectType),
-      grading:art.photographyCharacter || profile.image,
+      grading:first(language?.image ?? [],art.photographyCharacter || profile.image),
       motionCharacter:"If video is used, camera movement and editorial cutting should obey the same rhythm as the interactive camera grammar.",
     },
     threeD:{
       geometryCharacter:`Use geometry only where it strengthens ${territory.thesis}; avoid adding 3D simply to signal technical sophistication.`,
-      materialFamily:art.materialLogic || profile.material,
-      surfaceResponse:first(grammar.materials,profile.material),
+      materialFamily:first(language?.material ?? [],art.materialLogic || profile.material),
+      surfaceResponse:first(language?.material ?? grammar.materials,profile.material),
       cameraRelationship:first(grammar.camera,"Treat 3D as photographed subject matter with deliberate lens and framing."),
       realismRule:"Realism is required where material, scale or product/architecture proof matters; stylization is allowed only when it strengthens the territory thesis.",
     },
     motion:{
       energy:energyRule(input.treatment),
-      inertia:first(grammar.motion,"Use physically coherent acceleration and settling rather than generic easing spectacle."),
+      inertia:first(language?.motion ?? grammar.motion,"Use physically coherent acceleration and settling rather than generic easing spectacle."),
       acceleration:"Acceleration should communicate mass and medium: mechanical objects settle differently from typography, atmosphere and camera.",
       stillness:"Protect stillness before and after the strongest beat. A premium experience cannot be at peak motion continuously.",
       signatureBehavior:`The most distinctive motion behavior belongs to ${input.treatment.signatureMoment.name}; do not repeat it casually elsewhere.`,
     },
     lighting:{
-      direction:first(grammar.lighting,profile.light),
+      direction:first(language?.lighting ?? grammar.lighting,profile.light),
       hardness:hardnessRule(input.brief.projectType),
       temperature:temperatureRule(art.paletteLogic,input.brief.projectType),
       contrast:"Use lighting contrast to focus the hierarchy and reveal material; do not compensate for weak composition with glow.",
       progression:`Lighting should progress with the story and climax at ${input.treatment.signatureMoment.name}, then resolve rather than staying maximally dramatic.`,
     },
     interaction:{
-      model:first(grammar.interaction,"One obvious interaction model should support the narrative."),
+      model:first(language?.interaction ?? grammar.interaction,"One obvious interaction model should support the narrative."),
       feedback:"Feedback should confirm agency immediately while secondary motion remains subordinate.",
       restraint:"Do not stack hover, drag, tilt, magnetic and cursor effects on the same subject. One interaction should own each moment.",
     },
     sound:{
-      texture:first(grammar.sound,profile.sound),
+      texture:first(language?.sound ?? grammar.sound,profile.sound),
       dynamics:"Use dynamic contrast and protected silence. Constant sound removes the ability to create emphasis.",
       spatiality:"Spatial sound is justified only when location, object relationship or environment meaningfully benefits from it.",
       silence:"Silence is an authored state and should frame important reveals, reading moments and conversion.",
@@ -195,7 +198,10 @@ export function buildCreativeDNA(input:{
       neverLose:`The mobile experience must still communicate: ${territory.memory}.`,
     },
     antiPatterns:[...input.treatment.noGoRules,...input.treatment.signatureMoment.protectFrom].filter(unique).slice(0,20),
-    precedentTransfers:crossDomain.map((item)=>`${item.precedent.title}: ${item.precedent.transferableLessons[0] ?? item.precedent.strongestDecision}`),
+    precedentTransfers:[
+      ...(language ? [`Visual language: ${language.modeLabel} — ${language.premise}`] : []),
+      ...crossDomain.map((item)=>`${item.precedent.title}: ${item.precedent.transferableLessons[0] ?? item.precedent.strongestDecision}`),
+    ],
   };
 }
 
