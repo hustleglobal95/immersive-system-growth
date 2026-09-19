@@ -157,10 +157,17 @@ An optional server-only motion-sequence critic can be configured with `FORGE_MOT
 
 The full `autonomy:repair-loop` now requires candidate functional verification and motion review before pairwise visual acceptance.
 
+## Loop Engine
+
+Multi-candidate repair search and tournament selection now live in the shared [Loop Engine](LOOP_ENGINE.md). The former one-shot `autonomy:repair-loop` command is a compatibility wrapper over the new control plane.
+
+Loop Engine adds bounded cycles, candidate tournaments, compact fresh context, no-progress stopping, oscillation/repeated-repair escalation, durable evidence, Project Vault history and explicit human acceptance.
+
 ## Next implementation stages
 
-1. Multi-candidate repair search and tournament selection.
-2. Multi-candidate asset generation and selection.
-3. Pairwise studio-taste learning and judge calibration.
-4. Production-trace clustering and failure-pattern mining.
-5. Real-device motion/performance calibration beyond headless browser metrics.
+1. Production-safe performance repair worker under the Loop Engine contract.
+2. Multi-candidate asset generation/selection worker with credit budgets.
+3. Construction worker spanning grounded brief → structure → build → verified candidate.
+4. Pairwise studio-taste learning and judge calibration.
+5. Production-trace clustering and failure-pattern mining.
+6. Real-device motion/performance calibration beyond headless browser metrics.
