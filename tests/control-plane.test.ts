@@ -128,11 +128,12 @@ test("Proposal Contract never grants authoritative mutation to a preview-only pr
 
 test("Studio consumes the Control Plane instead of hardcoding contextual capability branches",()=>{
   const studio=fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx","utf8");
+  const surfaces=fs.readFileSync("src/studio/ControlPlaneSurfaces.tsx","utf8");
   const loops=fs.readFileSync("src/studio/LoopEnginePanel.tsx","utf8");
   assert.match(studio,/resolveSelectionContext/);
   assert.match(studio,/capabilitiesForContext/);
   assert.match(studio,/createProposalDraft/);
-  assert.match(studio,/data-capability=/);
+  assert.match(surfaces,/data-capability=/);
   assert.doesNotMatch(studio,/if\(selection\.kind==="camera"\) return <section className="production-context"/);
   assert.match(loops,/initialLoopId/);
 });
@@ -238,7 +239,9 @@ test("Project Health is the single production-readiness abstraction",()=>{
   const source=parseExperience(rawExperience);
   source.scenes[0].motionTracks=[];
   delete source.scenes[0].mobileCamera;
-  const health=evaluateProjectHealth({experience:source,manifest,graph,validationIssues:[]});
+  const healthyManifest=structuredClone(manifest);
+  healthyManifest.budgets={modelMb:500,textureMb:500,hdrMb:500,videoMb:500,totalMb:2000};
+  const health=evaluateProjectHealth({experience:source,manifest:healthyManifest,graph,validationIssues:[]});
   assert.equal(health.status,"attention");
   assert.ok(health.issues.some((issue)=>issue.domain==="motion"));
   assert.ok(health.issues.some((issue)=>issue.domain==="mobile"));
