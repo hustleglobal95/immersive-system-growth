@@ -39,10 +39,11 @@ export function profileAssetQuality(experienceInput:unknown,manifestInput:unknow
   const experience=parseExperience(experienceInput);
   const manifest=parseAssetManifest(manifestInput);
   const all=entries(manifest);
-  const registered=new Map(all.map(({entry})=>[entry.path,entry]));
+  const registered=new Map(all.map((row)=>[row.entry.path,row]));
   const strings=collectStrings(experience);
   const referencedPaths=[...new Set(strings.filter((value)=>registered.has(value)))].sort();
-  const referencedEntries=referencedPaths.map((assetPath)=>registered.get(assetPath)!).filter(Boolean);
+  const referencedRows=referencedPaths.map((assetPath)=>registered.get(assetPath)!).filter(Boolean);
+  const referencedEntries=referencedRows.map((row)=>row.entry);
   const referencedBytes=referencedEntries.reduce((total,entry)=>total+entry.bytes,0);
   const unregisteredLocalPaths=[...new Set(strings.filter((value)=>/^\/(?:models|textures|hdr|video)\//.test(value) && !registered.has(value)))].sort();
 
@@ -52,11 +53,12 @@ export function profileAssetQuality(experienceInput:unknown,manifestInput:unknow
     .filter(([,paths])=>paths.length>1)
     .map(([sha256,paths])=>({sha256,paths}));
 
-  const derivativeOpportunities=all.flatMap(({entry})=>{
+  const derivativeOpportunities=all.flatMap(({kind,entry})=>{
     const derivative=entry.derivative;
     if(!derivative || !referencedPaths.includes(derivative.sourcePath)) return [];
-    const source=registered.get(derivative.sourcePath);
-    if(!source || entry.bytes>=source.bytes) return [];
+    const sourceRow=registered.get(derivative.sourcePath);
+    if(!sourceRow || sourceRow.kind!==kind || entry.bytes>=sourceRow.entry.bytes) return [];
+    const source=sourceRow.entry;
     const savingsBytes=source.bytes-entry.bytes;
     return [{
       sourcePath:source.path,
@@ -132,7 +134,7 @@ export function buildAssetQualityCandidate(
     const afterReplacement=profileAssetQuality(candidateExperience,candidateManifest);
     const used=new Set(afterReplacement.referencedPaths);
     candidateManifest=mapManifest(candidateManifest,(kind,items)=>items.filter((entry)=>{
-      const group=groups.find((item)=>item.sha256===entry.sha256);
+      const group=groups.find((item)=>item.kind===kind && item.sha256===entry.sha256);
       if(!group || group.entries.length<2) return true;
       const canonical=[...group.entries].sort((a,b)=>{
         const ar=used.has(a.path)?0:1;
@@ -175,9 +177,16 @@ export function buildAssetQualityCandidate(
 }
 
 function duplicateGroups(manifest:AssetManifest) {
-  const grouped=new Map<string,AssetManifestEntry[]>();
-  for(const {entry} of entries(manifest)) grouped.set(entry.sha256,[...(grouped.get(entry.sha256) ?? []),entry]);
-  return [...grouped.entries()].filter(([,items])=>items.length>1).map(([sha256,items])=>({sha256,entries:items}));
+  const grouped=new Map<string,{kind:AssetKind;entries:AssetManifestEntry[]}>();
+  for(const {kind,entry} of entries(manifest)) {
+    const key=kind+":"+entry.sha256;
+    const current=grouped.get(key) ?? {kind,entries:[]};
+    current.entries.push(entry);
+    grouped.set(key,current);
+  }
+  return [...grouped.entries()]
+    .filter(([,value])=>value.entries.length>1)
+    .map(([key,value])=>({kind:value.kind,sha256:key.slice(value.kind.length+1),entries:value.entries}));
 }
 
 function entries(manifest:AssetManifest):Array<{kind:AssetKind;entry:AssetManifestEntry}> {
