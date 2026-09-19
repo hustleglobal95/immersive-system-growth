@@ -17,8 +17,9 @@ export async function GET(request:Request) {
     const url=new URL(request.url);
     const projectId=url.searchParams.get("project") ?? "";
     const loopId=url.searchParams.get("loop") ?? "";
-    if(!slug.test(projectId) || !slug.test(loopId)) {
-      return Response.json({ok:false,error:"Valid project and loop IDs are required."},{status:400});
+    const proposalId=url.searchParams.get("proposal") ?? "";
+    if(!slug.test(projectId) || !slug.test(loopId) || !slug.test(proposalId)) {
+      return Response.json({ok:false,error:"Valid project, loop and proposal IDs are required."},{status:400});
     }
 
     const root=path.resolve(process.cwd(),"test-results","forge-loops");
@@ -34,6 +35,7 @@ export async function GET(request:Request) {
       if(!parsed.success) continue;
       const report=parsed.data;
       if(report.projectId!==projectId || report.loopId!==loopId) continue;
+      if(report.controlPlane?.proposalId!==proposalId) continue;
       if(!["completed","stopped"].includes(report.status) || report.acceptedImprovements<1) continue;
       if(!report.acceptedExperiencePath || !report.acceptedAssetManifestPath || !report.acceptedInteractionGraphPath) continue;
 
@@ -61,6 +63,8 @@ export async function GET(request:Request) {
           loopId:report.loopId,
           projectId,
           sourceVersionId:report.sourceVersionId,
+          proposalId:report.controlPlane.proposalId,
+          selectionKey:report.controlPlane.selectionKey,
           fingerprint:report.currentFingerprint,
           repairSummary:evidence?.repairSummary ?? [],
           preferenceAgreement:evidence?.preferenceAgreement ?? null,
