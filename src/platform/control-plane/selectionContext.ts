@@ -7,6 +7,8 @@ export type ForgeSelection =
   | { kind:"scene"; index:number }
   | { kind:"camera"; index:number }
   | { kind:"node"; index:number; name:string }
+  | { kind:"copy"; index:number }
+  | { kind:"media"; index:number }
   | { kind:"asset"; index:number; sceneIndex:number }
   | { kind:"environment"; index:number };
 
@@ -94,6 +96,9 @@ export function resolveSelectionContext(input:{
   if(input.selection.kind==="asset" && !selectedAsset) {
     issues.push({code:"missing-asset",severity:"blocker",message:"The selected asset is no longer present in the manifest."});
   }
+  if(input.selection.kind==="media" && !scene.media) {
+    issues.push({code:"missing-media",severity:"blocker",message:"This scene no longer has a media layer to direct."});
+  }
   if(input.selection.kind==="scene" && scene.motionTracks.length===0) {
     issues.push({code:"static-scene",severity:"info",message:"This scene has no authored motion yet."});
   }
@@ -147,6 +152,8 @@ function selectionLabel(selection:ForgeSelection,scene:SceneDefinition,asset?:Se
   if(selection.kind==="camera") return scene.label+" / Camera";
   if(selection.kind==="environment") return scene.label+" / Environment";
   if(selection.kind==="node") return selection.name;
+  if(selection.kind==="copy") return scene.label+" / Copy";
+  if(selection.kind==="media") return scene.label+" / Media";
   if(selection.kind==="asset") return asset?.entry.path.split("/").pop() ?? "Missing asset";
   return scene.label;
 }
@@ -160,6 +167,8 @@ function selectionSummary(
 ) {
   if(selection.kind==="camera") return `${scene.camera.path} shot · ${scene.camera.from.fov}° → ${scene.camera.to.fov}°`;
   if(selection.kind==="node") return nodeTracks ? `${nodeTracks} authored track${nodeTracks===1?"":"s"}` : "No authored behavior yet";
+  if(selection.kind==="copy") return `${scene.copy.align} aligned · ${scene.copy.headline.length} character headline`;
+  if(selection.kind==="media") return scene.media ? `${scene.media.kind} · ${scene.media.transition} transition` : "No media assigned";
   if(selection.kind==="asset") return asset ? `${asset.kind} · ${Math.round(manifestHealth)}/100 manifest health` : "Asset unavailable";
   if(selection.kind==="environment") return scene.post.bloom>0.35 ? "Elevated effect pressure" : "Controlled atmosphere";
   const medium=scene.media?.kind ?? "3D";
@@ -173,6 +182,8 @@ function selectionKey(selection:ForgeSelection,scene:SceneDefinition,asset?:Sele
   if(selection.kind==="camera") return "camera:"+scene.id;
   if(selection.kind==="environment") return "environment:"+scene.id;
   if(selection.kind==="node") return `rig:${selection.name}@${scene.id}`;
+  if(selection.kind==="copy") return "copy:"+scene.id;
+  if(selection.kind==="media") return "media:"+scene.id;
   return asset ? `asset:${asset.group}:${asset.entry.path}` : `asset:missing:${selection.index}`;
 }
 
@@ -195,6 +206,7 @@ function interactionReferencesSelection(node:InteractionNode,selection:ForgeSele
   }
   if(selection.kind==="node") return JSON.stringify(node).includes(`rig:${selection.name}`);
   if(selection.kind==="camera") return node.kind==="action" && node.action.type==="camera";
+  if(selection.kind==="copy" || selection.kind==="media") return JSON.stringify(node).includes(scene.id);
   if(selection.kind==="environment") {
     return node.kind==="action" && ["shader","quality","motion"].includes(node.action.type);
   }
