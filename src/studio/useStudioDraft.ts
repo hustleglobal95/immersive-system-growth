@@ -95,21 +95,13 @@ export function useStudioDraft(
   }, [clearProjectBundleHistory]);
 
   const setAssetManifest = useCallback<Dispatch<SetStateAction<AssetManifest>>>((update) => {
-    setAssetManifestState((current)=>{
-      const next=typeof update==="function" ? update(current) : update;
-      if(next===current) return current;
-      clearProjectBundleHistory();
-      return next;
-    });
+    clearProjectBundleHistory();
+    setAssetManifestState(update);
   },[clearProjectBundleHistory]);
 
   const setInteractionGraph = useCallback<Dispatch<SetStateAction<InteractionGraph>>>((update) => {
-    setInteractionGraphState((current)=>{
-      const next=typeof update==="function" ? update(current) : update;
-      if(next===current) return current;
-      clearProjectBundleHistory();
-      return next;
-    });
+    clearProjectBundleHistory();
+    setInteractionGraphState(update);
   },[clearProjectBundleHistory]);
 
   const beginExperienceGroup = useCallback(() => {
