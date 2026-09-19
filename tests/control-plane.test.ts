@@ -15,6 +15,7 @@ import { recommendNextActions } from "../src/platform/control-plane/nextAction";
 import { evaluateProjectHealth } from "../src/platform/control-plane/projectHealth";
 import { prepareFastProposal } from "../src/platform/control-plane/fastProposal";
 import { attachVerifiedLoopCandidate } from "../src/platform/control-plane/deepCandidate";
+import { projectStateFingerprint } from "../src/platform/control-plane/projectState";
 
 const experience=parseExperience(rawExperience);
 const manifest=parseAssetManifest(rawManifest);
@@ -251,12 +252,14 @@ test("Verified Loop candidates attach only to matching deep proposals",()=>{
   const context=resolveSelectionContext({experience,manifest,graph,selection:{kind:"scene",index:0}});
   const capability=capabilitiesForContext(context).find((item)=>item.id==="scene.polish");
   if(!capability) return;
+  const baselineFingerprint=projectStateFingerprint({experience,assetManifest:manifest,interactionGraph:graph});
   const proposal=createProposalDraft({
     id:"proposal-loop-polish",
     createdAt:"2026-09-19T14:00:00.000Z",
     capability,
     context,
     intent:"polish this scene",
+    baselineFingerprint,
   });
   const attached=attachVerifiedLoopCandidate(proposal,{
     runId:"loop-test-visual-polish",
@@ -264,6 +267,7 @@ test("Verified Loop candidates attach only to matching deep proposals",()=>{
     projectId:"test-project",
     proposalId:proposal.id,
     selectionKey:proposal.selectionKey,
+    baselineFingerprint,
     fingerprint:"a".repeat(64),
     repairSummary:["Improved hierarchy without a hard-gate regression."],
     preferenceAgreement:.9,
@@ -280,6 +284,7 @@ test("Verified Loop candidates attach only to matching deep proposals",()=>{
     projectId:"test-project",
     proposalId:proposal.id,
     selectionKey:proposal.selectionKey,
+    baselineFingerprint,
     fingerprint:"b".repeat(64),
     repairSummary:[],
     preferenceAgreement:.9,
@@ -287,6 +292,15 @@ test("Verified Loop candidates attach only to matching deep proposals",()=>{
     assetManifest:manifest,
     interactionGraph:graph,
   }));
+});
+
+test("Project-state fingerprint is deterministic and changes with project state",()=>{
+  const first=projectStateFingerprint({experience,assetManifest:manifest,interactionGraph:graph});
+  const second=projectStateFingerprint({experience:structuredClone(experience),assetManifest:structuredClone(manifest),interactionGraph:structuredClone(graph)});
+  assert.equal(first,second);
+  const changed=parseExperience(rawExperience);
+  changed.scenes[0].copy={...changed.scenes[0].copy,headline:changed.scenes[0].copy.headline+"!"};
+  assert.notEqual(projectStateFingerprint({experience:changed,assetManifest:manifest,interactionGraph:graph}),first);
 });
 
 test("Studio exposes Build Review Ship and keeps specialist tools under Advanced",()=>{
