@@ -41,6 +41,12 @@ Immersive Site Forge 6.0 is organized as a multi-project production platform rat
 ## Authoring and automation
 
 - browser-based Forge Studio at `/studio`
+- PRO+ Control Plane with seven first-class selection kinds (scene, camera, rig node, copy, media, asset, environment), self-validating Capability Registry, Intent Compiler, Next Action Engine, Project Health and non-mutating Proposal Contract
+- Build / Review / Ship primary Studio surfaces with Sequencer, Interactions, Asset tools and Telemetry moved under Advanced
+- registry-driven contextual actions that route semantic operator intent into existing camera, motion, interaction, asset, Director and Loop systems without duplicating those engines
+- unified Current / Candidate review for reversible fast proposals and proposal-bound verified Loop project-state bundles, with exact working/Vault baseline parity and atomic local bundle undo/redo
+- reviewer-protected local Loop-result bridge that validates winning evidence before Studio can preview a deep candidate
+- Project Health release gating shared by Review and Guided Ship
 - private internal access layer with role-bearing HTTP-only sessions
 - GitHub-backed Project Vault with atomic durable snapshots, restore points, archive state and project journal
 - permanent generated-asset promotion through a provider-neutral Asset Vault gateway

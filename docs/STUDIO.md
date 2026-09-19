@@ -1,22 +1,23 @@
 # Forge Studio
 
-`/studio` is the production control surface. Its Preview workspace mounts the real production scene graph on demand; other workspaces remain renderer-free. One draft drives every workspace and passes through the same schemas used by runtime, CLI and CI.
+`/studio` is the production control surface. One validated draft drives the live production preview, Review, Ship and every Advanced specialist tool.
 
-## Workspaces
+## Primary surfaces
 
-- Project edits identity, theme and runtime readiness.
-- Templates applies one of six complete industry starting systems while preserving the project/deployment document.
-- Preview scrubs or plays the production R3F scene, DOM media, masks and transition layers at desktop, tablet and mobile aspect ratios.
-- Director edits eleven camera paths, mobile framing, light colors/intensity, atmosphere, exposure, postprocessing and opt-in hero PBR overrides.
-- Timeline displays proportional scene ranges, moves shared boundaries, edits semantic copy and applies camera/object or media presets.
-- Sequence edits typed scene-local keyframes on a zoomable dope sheet, records vector values through viewport transform gizmos, edits cubic curves and authors responsive overrides.
-- Masks authors eight deterministic image/video reveals, compares CSS and shader output and persists bounded parameters in the experience schema.
-- Layers composes up to six bounded image/color overlays per media scene with blend, opacity, timing and motion controls.
-- Assets inspects local GLB, image and video files, calculates SHA-256, reports metadata/budgets and creates manifest records without uploading the binary.
-- Model inspects local GLB 2.0 files, reports hierarchy and geometry complexity, scores suggested semantic mappings, provides optimization guidance and creates baseline deterministic tracks for selected named mesh nodes.
-- Integrations configures static data, HTTPS JSON feeds and Shopify Storefront data through explicit mappings.
-- Publish configures the release target and can send validated JSON to a server-only GitHub integration that opens a review pull request.
-- Telemetry configures consent, sampling and Do Not Track behavior and displays samples from the current device.
+- **Build** is the default canvas-first authoring surface. Selection Context, Next Best Action, semantic command intent and proposal review keep subsystem choice out of the operator's path. Scene, camera, rig node, copy, media, asset and environment selections each resolve their own relevant outcomes.
+- **Review** is the Project Health control room. Validation, asset pressure, motion coverage, mobile translation and interaction readiness are presented through one health model with direct repair routes.
+- **Ship** is the guided release surface. It honors Project Health, Project Vault/review controls, durable assets and protected publishing authority.
+
+## Advanced
+
+Advanced preserves full expert depth without making it permanent navigation:
+
+- **Sequencer** — exact motion tracks, curves, recording, camera timing and low-level copy/media motion.
+- **Interactions** — deterministic trigger/state/action graph.
+- **Asset tools** — Asset Intelligence, bank, manifest and GLB inspection.
+- **Telemetry** — real-device performance evidence.
+
+Director, Creative Agent, Asset Creator, Project Vault and the Loop Engine remain available as specialist systems, but ordinary production does not require learning their internal names before taking action.
 
 Drafts are stored in the browser under `forge-studio-v2` as the fast working copy. Project Vault can persist the complete validated Studio state on a dedicated GitHub branch, including named versions and restore points, so important projects do not depend on one browser. Export remains available for portable handoffs. Import validates before replacing the current experience draft.
 
@@ -40,11 +41,12 @@ See [motion sequencer](MOTION_SEQUENCER.md) for the track contract, supported ta
 
 ## Studio interaction layers
 
-Studio now exposes one project through three levels of control rather than presenting every production subsystem at once:
+Studio exposes one project through a PRO+ control hierarchy rather than presenting every production subsystem at once:
 
 - **Guided Build** is the first-run and project-progress path: idea → assets → scenes → motion → review → publish. A fresh project opens the guide automatically and the shell always exposes the current next step.
-- **Studio cockpit** is the normal visual authoring surface for scenes, copy, camera choices, coordinated motion, assets and live preview.
-  The cockpit is selection-aware: selecting a scene, camera, rig node, environment or asset exposes a contextual direction card with the highest-value next actions and routes into the existing specialist workspace rather than duplicating its controls.
+- **Build** is the normal visual authoring surface for scenes, copy, camera choices, coordinated motion, assets and live preview.
+  The cockpit is selection-aware: selecting a scene, camera, rig node, environment or asset resolves one typed Selection Context. The PRO+ Control Plane then asks the Capability Registry which operator intents are valid for that context. The contextual direction card renders those registered capabilities instead of owning a separate hardcoded action tree.
+  Selecting a capability creates a typed Proposal Contract before Forge routes into Motion, Interaction, Assets, Director or a Loop. Deep actions are marked preview-required; instant actions must remain reversible. See [PRO+ Control Plane](CONTROL_PLANE.md).
 - **Advanced** contains the sequencer, interaction graph, model inspection, low-level asset tooling, performance telemetry and deployment configuration.
 
 Use **Command-K / Ctrl-K** (or `/` outside a text field) to open the Forge command palette. **Assist** in the Studio header contains Creative Agent, Director and Asset Creator; these are specialist tools inside the same workflow rather than floating entry points.

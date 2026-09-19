@@ -2,6 +2,20 @@
 
 ## Studio control plane
 
+The simplification architecture above Studio is documented in [PRO+ Control Plane](CONTROL_PLANE.md).
+
+The default authoring surface now follows a typed orchestration chain:
+
+```text
+selection
+→ Selection Context
+→ Capability Registry
+→ Proposal Contract
+→ existing Forge system
+```
+
+Selection Context owns selection-derived production facts. The Capability Registry owns which outcomes are valid for that context, their risk class, systems and verifiers. Proposal Contract owns the bounded intent/scope/verification envelope. None of those layers owns rendering, timeline sampling, graph causality, asset mutation or release authority; they route into the systems that already own those concerns.
+
 `/studio` is the browser control plane for the runtime. It edits a versioned project document, experience, interaction graph and asset manifest, keeps drafts in local storage, validates imports and review publishing, and does not receive repository credentials. Timeline, interaction, direction, transition, GLB-mapping, integration, deployment and telemetry panels all operate on the same validated configuration so generated client projects can be reviewed before activation.
 
 Client projects live under `clients/<slug>/` and contain runtime configuration plus Studio metadata. The project scripts create, validate and activate those folders deterministically. Activation keeps a timestamped backup before replacing the active configuration. GitHub Actions performs the same validation and build before any Vercel deployment.

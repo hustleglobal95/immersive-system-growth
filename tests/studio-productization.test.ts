@@ -52,3 +52,26 @@ test("Studio asset intake surfaces Asset Intelligence guidance", () => {
   assert.match(assetManager, /ASSET INTELLIGENCE/);
   assert.match(assetManager, /manifest health/);
 });
+
+
+test("Studio primary navigation is Build Review Ship with expert systems under Advanced", () => {
+  assert.match(studio, /primarySurfaces = \["Build", "Review", "Ship"\]/);
+  assert.match(studio, /production-advanced-menu/);
+  assert.match(studio, />Sequencer</);
+  assert.match(studio, />Interactions</);
+  assert.match(studio, />Asset tools</);
+  assert.match(studio, />Telemetry</);
+});
+
+test("Project Health owns release readiness in Guided Ship", () => {
+  assert.match(studio, /ReviewSurface/);
+  assert.match(studio, /ShipSurface/);
+  assert.match(panels, /healthReady/);
+  assert.match(panels, /Project Health/);
+});
+
+test("Next Best Action is promoted above subsystem navigation", () => {
+  assert.match(studio, /NEXT BEST ACTION/);
+  assert.match(studio, /recommendNextActions/);
+  assert.match(studio, /compileIntent/);
+});

@@ -10,6 +10,7 @@ import { appendVaultJournal, readVaultProject } from "../src/platform/studioVaul
 import { parseExperience } from "../src/lib/configSchema.ts";
 import { parseAssetManifest } from "../src/platform/assetManifestSchema.ts";
 import { parseInteractionGraph } from "../src/lib/interactionGraph.ts";
+import { projectStateFingerprint } from "../src/platform/control-plane/projectState.ts";
 
 const options=args(process.argv.slice(2));
 const loopId=String(options.loop || "visual-polish");
@@ -43,6 +44,23 @@ const acceptedPath=path.join(workRoot,"accepted-experience.json");
 const acceptedManifestPath=path.join(workRoot,"accepted-asset-manifest.json");
 const acceptedGraphPath=path.join(workRoot,"accepted-interaction-graph.json");
 const projectId=options.project ? String(options.project) : undefined;
+const proposalId=options["proposal-id"] ? String(options["proposal-id"]) : undefined;
+const selectionKey=options["selection-key"] ? String(options["selection-key"]) : undefined;
+const proposalBaseline=options["baseline-fingerprint"] ? String(options["baseline-fingerprint"]) : undefined;
+const controlPlane=proposalId ? {
+  proposalId,
+  selectionKey:String(selectionKey || ""),
+  baselineFingerprint:String(proposalBaseline || ""),
+  intent:String(options.context || ""),
+} : undefined;
+if(controlPlane && (
+  !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(controlPlane.proposalId)
+  || !controlPlane.selectionKey
+  || !/^[a-f0-9]{16,128}$/.test(controlPlane.baselineFingerprint)
+  || !controlPlane.intent
+)) {
+  fail("Control Plane Loop runs require valid --proposal-id, --selection-key, --baseline-fingerprint and --context values.");
+}
 
 if(!process.env.FORGE_VISUAL_CRITIC_URL) fail("FORGE_VISUAL_CRITIC_URL is required. Loop Engine fails closed without pairwise visual evidence.");
 
@@ -60,16 +78,24 @@ await fs.writeFile(currentIncumbentManifestPath,JSON.stringify(source.assetManif
 await fs.writeFile(currentCandidateManifestPath,JSON.stringify(source.assetManifest,null,2)+"\n");
 await fs.writeFile(currentIncumbentGraphPath,JSON.stringify(source.interactionGraph,null,2)+"\n");
 await fs.writeFile(currentCandidateGraphPath,JSON.stringify(source.interactionGraph,null,2)+"\n");
-const baselineFingerprint=fingerprint({
+const sourceState={
   experience:source.experience,
   assetManifest:source.assetManifest,
   interactionGraph:source.interactionGraph,
-});
+};
+if(controlPlane) {
+  const actualControlPlaneBaseline=projectStateFingerprint(sourceState);
+  if(actualControlPlaneBaseline!==controlPlane.baselineFingerprint) {
+    fail("Control Plane proposal baseline does not match the current Loop source. Save the intended working state to Vault and prepare the proposal again.");
+  }
+}
+const baselineFingerprint=fingerprint(sourceState);
 let report=createLoopRunReport({
   runId:"loop-"+stamp+"-"+loopId,
   definition,
   projectId,
   sourceVersionId:source.versionId,
+  controlPlane,
   source:source.label,
   baselineFingerprint,
 });

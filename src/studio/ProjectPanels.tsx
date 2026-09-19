@@ -101,7 +101,7 @@ export function IntegrationsPanel({ project, setProject }: Pick<StudioPanelProps
   );
 }
 
-export function PublishPanel({ project, setProject, experience, assetManifest, validationCount = 0 }: Pick<StudioPanelProps, "project" | "setProject" | "experience" | "assetManifest"> & { validationCount?: number }) {
+export function PublishPanel({ project, setProject, experience, assetManifest, validationCount = 0, healthReady = true, healthSummary = "" }: Pick<StudioPanelProps, "project" | "setProject" | "experience" | "assetManifest"> & { validationCount?: number; healthReady?: boolean; healthSummary?: string }) {
   const [title, setTitle] = useState(`Update ${project.name} experience`);
   const [summary, setSummary] = useState("Studio-authored camera, material, transition and content improvements ready for review.");
   const [result, setResult] = useState<{ message: string; url?: string } | null>(null);
@@ -124,7 +124,7 @@ export function PublishPanel({ project, setProject, experience, assetManifest, v
   const manifestAssets = [...assetManifest.models, ...assetManifest.textures, ...assetManifest.hdr, ...assetManifest.video];
   const temporaryAssets = manifestAssets.filter((asset) => asset.path.startsWith("/api/studio/assets/generated-file/")).length;
   const assetsDurable = temporaryAssets === 0;
-  const ready = canPublish && backendReady && destinationReady && sessionReady && assetsDurable && validationCount === 0;
+  const ready = canPublish && backendReady && destinationReady && sessionReady && assetsDurable && validationCount === 0 && healthReady;
 
   const publish = async () => {
     setPublishing(true); setResult({ message: "Creating a protected review branch…" });
@@ -162,6 +162,7 @@ export function PublishPanel({ project, setProject, experience, assetManifest, v
         <p className="studio-muted">Forge keeps repository credentials, workflow details and deployment internals out of the normal authoring path. Create a review when the project is valid and this browser has been authorized by the workspace owner.</p>
         <div className="studio-publish-readiness" role="list" aria-label="Publish readiness">
           <div role="listitem" data-ready={validationCount === 0}><span>{validationCount === 0 ? "✓" : "!"}</span><strong>Project validation</strong><small>{validationCount === 0 ? "No configuration issues" : `${validationCount} issue${validationCount === 1 ? "" : "s"} need attention`}</small></div>
+          <div role="listitem" data-ready={healthReady}><span>{healthReady ? "✓" : "!"}</span><strong>Project Health</strong><small>{healthReady ? "Forge production health is ready" : healthSummary || "Review production issues before shipping"}</small></div>
           <div role="listitem" data-ready={destinationReady}><span>{destinationReady ? "✓" : "!"}</span><strong>Release destination</strong><small>{destinationReady ? `${project.deployment.provider} · ${project.deployment.projectName}` : "Choose a project and production branch in Advanced setup"}</small></div>
           <div role="listitem" data-ready={backendReady}><span>{backendReady ? "✓" : "!"}</span><strong>Workspace connection</strong><small>{backendReady ? "Server-side GitHub publishing is connected" : "A workspace owner must connect server publishing once"}</small></div>
           <div role="listitem" data-ready={assetsDurable}><span>{assetsDurable ? "✓" : "!"}</span><strong>Asset durability</strong><small>{assetsDurable ? "No temporary generated assets" : `${temporaryAssets} generated asset${temporaryAssets === 1 ? "" : "s"} still use the draft bridge`}</small></div><div role="listitem" data-ready={canPublish}><span>{canPublish ? "✓" : "!"}</span><strong>Release authority</strong><small>{canPublish ? `${capability?.role ?? "developer"} can create review branches` : `${capability?.role ?? "reviewer"} can review but a developer or owner must publish`}</small></div><div role="listitem" data-ready={sessionReady}><span>{sessionReady ? "✓" : "!"}</span><strong>This browser</strong><small>{sessionReady ? "Authorized to create review branches" : backendReady && canPublish ? "Unlock publishing below" : canPublish ? "Available after workspace publishing is connected" : "Release handoff required"}</small></div>
@@ -173,7 +174,7 @@ export function PublishPanel({ project, setProject, experience, assetManifest, v
         <label>Review title<input value={title} maxLength={100} onChange={(event) => setTitle(event.target.value)} /></label>
         <label>What changed<textarea rows={3} value={summary} maxLength={600} onChange={(event) => setSummary(event.target.value)} /></label>
         <button type="button" className="studio-primary studio-publish-action" disabled={!ready || publishing} onClick={() => void publish()}>{publishing ? "Creating review…" : "Create review"}</button>
-        {!ready && <p className="studio-muted">{!canPublish ? "This role can review the project, but a developer or owner must create the release review." : !backendReady ? "Publishing is not connected for this Forge workspace yet." : !sessionReady ? "This browser needs a one-time owner unlock before it can publish." : !destinationReady ? "Complete the destination in Advanced setup." : !assetsDurable ? "Promote temporary generated assets into permanent storage before shipping." : "Resolve the project issues above before publishing."}</p>}
+        {!ready && <p className="studio-muted">{!healthReady ? healthSummary || "Project Health must be ready before shipping." : !canPublish ? "This role can review the project, but a developer or owner must create the release review." : !backendReady ? "Publishing is not connected for this Forge workspace yet." : !sessionReady ? "This browser needs a one-time owner unlock before it can publish." : !destinationReady ? "Complete the destination in Advanced setup." : !assetsDurable ? "Promote temporary generated assets into permanent storage before shipping." : "Resolve the project issues above before publishing."}</p>}
         {result && <div className="studio-message" role="status">{result.url ? <><strong>Done — the review is ready.</strong><span> {result.message}</span><a href={result.url} target="_blank" rel="noreferrer">Open review</a></> : result.message}</div>}
       </section>
 

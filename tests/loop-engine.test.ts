@@ -216,6 +216,27 @@ test("Performance Loop has distinct evidence-driven candidate strategies",()=>{
   assert.ok(definition.verifiers.includes("performance"));
 });
 
+test("Loop evidence can bind an executable run to one Control Plane proposal",()=>{
+  const definition=loopDefinition("visual-polish")!;
+  const report=createLoopRunReport({
+    runId:"proposal-bound-run",
+    definition,
+    projectId:"test-project",
+    source:"test",
+    baselineFingerprint:"a".repeat(64),
+    startedAt:"2026-09-19T14:00:00.000Z",
+    controlPlane:{
+      proposalId:"proposal-123",
+      selectionKey:"copy:opening",
+      baselineFingerprint:"b".repeat(16),
+      intent:"Strengthen the opening typography hierarchy.",
+    },
+  });
+  assert.equal(report.controlPlane?.proposalId,"proposal-123");
+  assert.equal(report.controlPlane?.selectionKey,"copy:opening");
+  assert.equal(report.controlPlane?.baselineFingerprint,"b".repeat(16));
+});
+
 test("Loop Engine scripts preserve human approval and legacy repair compatibility",()=>{
   const runner=fs.readFileSync("scripts/loop-run.mjs","utf8");
   const accept=fs.readFileSync("scripts/loop-accept.mjs","utf8");
@@ -228,6 +249,9 @@ test("Loop Engine scripts preserve human approval and legacy repair compatibilit
   assert.match(runner,/autonomy-accessibility-verify\.mjs/);
   assert.match(runner,/current-incumbent\.json/);
   assert.match(runner,/Project Vault does not contain project/);
+  assert.match(runner,/proposal-id/);
+  assert.match(runner,/selection-key/);
+  assert.match(runner,/baseline-fingerprint/);
   assert.match(runner,/parseExperience/);
   assert.match(runner,/boundedFailures/);
   assert.doesNotMatch(runner,/writeFile\([^\n]*config\/experience\.json/);

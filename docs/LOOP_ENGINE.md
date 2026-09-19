@@ -315,9 +315,9 @@ A project lesson may be promoted into Forge-wide knowledge only after separate e
 
 ## Studio
 
-Studio exposes **Loops** beside Guided Build and Vault.
+Loop Engine is no longer permanent top-level Studio navigation. Ordinary operators reach it through outcome-level Control Plane capabilities such as **Polish**, **Fix mobile**, **Optimize runtime**, **Improve asset** or **Rebuild**, or through **Improvement evidence** in the command palette.
 
-The panel shows:
+The panel remains an expert evidence surface and shows:
 
 - executable vs contract-only status;
 - objective;
@@ -330,6 +330,10 @@ The panel shows:
 - exact command for the current project.
 
 The browser does not launch the long-running local loop. The runner needs a persistent local process, Playwright, the candidate-aware preview runtime and server-only critic credentials. Studio therefore prepares and explains the operation while the repo runner owns execution.
+
+For a Control Plane proposal, Studio first verifies that the proposal still matches the current working draft and that the current Project Vault checkpoint represents the same incumbent. The copied command carries `--proposal-id`, `--selection-key`, `--baseline-fingerprint` and the proposal intent. The run report persists that provenance.
+
+After execution, Studio will only load a winning bundle into Current / Candidate when the run matches the active proposal, selected target and working-state baseline. Loading the candidate is read-only; explicit Loop acceptance remains the path to a durable Project Vault version.
 
 ## Worker architecture
 

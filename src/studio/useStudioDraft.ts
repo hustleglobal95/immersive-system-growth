@@ -17,6 +17,12 @@ interface StoredDraft {
   interactionGraph?: unknown;
 }
 
+export interface StudioProjectBundle {
+  experience: ExperienceConfig;
+  assetManifest: AssetManifest;
+  interactionGraph: InteractionGraph;
+}
+
 export function useStudioDraft(
   initialExperience: ExperienceConfig,
   initialProject: StudioProject,
@@ -30,8 +36,11 @@ export function useStudioDraft(
   const groupBase = useRef<ExperienceConfig | null>(null);
   const [history, setHistory] = useState({ undo: 0, redo: 0 });
   const [project, setProject] = useState(initialProject);
-  const [assetManifest, setAssetManifest] = useState(initialAssetManifest);
-  const [interactionGraph, setInteractionGraph] = useState(initialInteractionGraph);
+  const [assetManifest, setAssetManifestState] = useState(initialAssetManifest);
+  const [interactionGraph, setInteractionGraphState] = useState(initialInteractionGraph);
+  const bundleUndoStack = useRef<StudioProjectBundle[]>([]);
+  const bundleRedoStack = useRef<StudioProjectBundle[]>([]);
+  const [bundleHistory, setBundleHistory] = useState({ undo: 0, redo: 0 });
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -49,8 +58,8 @@ export function useStudioDraft(
           experienceRef.current = nextExperience;
           setExperienceState(nextExperience);
           setProject(nextProject);
-          setAssetManifest(nextManifest);
-          setInteractionGraph(nextInteractionGraph);
+          setAssetManifestState(nextManifest);
+          setInteractionGraphState(nextInteractionGraph);
         });
       }
     } catch {
@@ -65,10 +74,17 @@ export function useStudioDraft(
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ experience, project, assetManifest, interactionGraph }));
   }, [assetManifest, experience, hydrated, interactionGraph, project]);
 
+  const clearProjectBundleHistory = useCallback(() => {
+    bundleUndoStack.current=[];
+    bundleRedoStack.current=[];
+    setBundleHistory({undo:0,redo:0});
+  },[]);
+
   const setExperience = useCallback<Dispatch<SetStateAction<ExperienceConfig>>>((update) => {
     const current = experienceRef.current;
     const next = typeof update === "function" ? update(current) : update;
     if (next === current) return;
+    clearProjectBundleHistory();
     if (!groupBase.current) {
       undoStack.current = [...undoStack.current.slice(-79), current];
       redoStack.current = [];
@@ -76,7 +92,17 @@ export function useStudioDraft(
     experienceRef.current = next;
     setExperienceState(next);
     setHistory({ undo: undoStack.current.length, redo: 0 });
-  }, []);
+  }, [clearProjectBundleHistory]);
+
+  const setAssetManifest = useCallback<Dispatch<SetStateAction<AssetManifest>>>((update) => {
+    clearProjectBundleHistory();
+    setAssetManifestState(update);
+  },[clearProjectBundleHistory]);
+
+  const setInteractionGraph = useCallback<Dispatch<SetStateAction<InteractionGraph>>>((update) => {
+    clearProjectBundleHistory();
+    setInteractionGraphState(update);
+  },[clearProjectBundleHistory]);
 
   const beginExperienceGroup = useCallback(() => {
     groupBase.current ??= experienceRef.current;
@@ -110,6 +136,64 @@ export function useStudioDraft(
     setHistory({ undo: undoStack.current.length, redo: redoStack.current.length });
   }, []);
 
+  const applyProjectBundle = useCallback((input: StudioProjectBundle) => {
+    const nextExperience=parseExperience(input.experience);
+    const nextManifest=parseAssetManifest(input.assetManifest);
+    const nextGraph=parseInteractionGraph(input.interactionGraph);
+    bundleUndoStack.current=[
+      ...bundleUndoStack.current.slice(-19),
+      {experience:experienceRef.current,assetManifest,interactionGraph},
+    ];
+    bundleRedoStack.current=[];
+    experienceRef.current=nextExperience;
+    setExperienceState(nextExperience);
+    setAssetManifestState(nextManifest);
+    setInteractionGraphState(nextGraph);
+    undoStack.current=[];
+    redoStack.current=[];
+    groupBase.current=null;
+    setHistory({undo:0,redo:0});
+    setBundleHistory({undo:bundleUndoStack.current.length,redo:0});
+  },[assetManifest,interactionGraph]);
+
+  const undoProjectBundle = useCallback(() => {
+    const prior=bundleUndoStack.current.pop();
+    if(!prior) return false;
+    bundleRedoStack.current=[
+      ...bundleRedoStack.current.slice(-19),
+      {experience:experienceRef.current,assetManifest,interactionGraph},
+    ];
+    experienceRef.current=prior.experience;
+    setExperienceState(prior.experience);
+    setAssetManifestState(prior.assetManifest);
+    setInteractionGraphState(prior.interactionGraph);
+    undoStack.current=[];
+    redoStack.current=[];
+    groupBase.current=null;
+    setHistory({undo:0,redo:0});
+    setBundleHistory({undo:bundleUndoStack.current.length,redo:bundleRedoStack.current.length});
+    return true;
+  },[assetManifest,interactionGraph]);
+
+  const redoProjectBundle = useCallback(() => {
+    const next=bundleRedoStack.current.pop();
+    if(!next) return false;
+    bundleUndoStack.current=[
+      ...bundleUndoStack.current.slice(-19),
+      {experience:experienceRef.current,assetManifest,interactionGraph},
+    ];
+    experienceRef.current=next.experience;
+    setExperienceState(next.experience);
+    setAssetManifestState(next.assetManifest);
+    setInteractionGraphState(next.interactionGraph);
+    undoStack.current=[];
+    redoStack.current=[];
+    groupBase.current=null;
+    setHistory({undo:0,redo:0});
+    setBundleHistory({undo:bundleUndoStack.current.length,redo:bundleRedoStack.current.length});
+    return true;
+  },[assetManifest,interactionGraph]);
+
   const validation = useMemo(() => {
     const issues: string[] = [];
     const experienceIssue = parseSafe(() => parseExperience(experience));
@@ -129,11 +213,14 @@ export function useStudioDraft(
     experienceRef.current = nextExperience;
     setExperienceState(nextExperience);
     setProject(nextProject);
-    setAssetManifest(nextManifest);
-    setInteractionGraph(nextInteractionGraph);
+    setAssetManifestState(nextManifest);
+    setInteractionGraphState(nextInteractionGraph);
     undoStack.current = [];
     redoStack.current = [];
     groupBase.current = null;
+    bundleUndoStack.current = [];
+    bundleRedoStack.current = [];
+    setBundleHistory({ undo: 0, redo: 0 });
     setHistory({ undo: 0, redo: 0 });
   }, []);
 
@@ -141,11 +228,14 @@ export function useStudioDraft(
     experienceRef.current = initialExperience;
     setExperienceState(initialExperience);
     setProject(initialProject);
-    setAssetManifest(initialAssetManifest);
-    setInteractionGraph(initialInteractionGraph);
+    setAssetManifestState(initialAssetManifest);
+    setInteractionGraphState(initialInteractionGraph);
     undoStack.current = [];
     redoStack.current = [];
     groupBase.current = null;
+    bundleUndoStack.current = [];
+    bundleRedoStack.current = [];
+    setBundleHistory({ undo: 0, redo: 0 });
     setHistory({ undo: 0, redo: 0 });
     localStorage.removeItem(STORAGE_KEY);
   }, [initialAssetManifest, initialExperience, initialInteractionGraph, initialProject]);
@@ -165,6 +255,11 @@ export function useStudioDraft(
     setAssetManifest,
     interactionGraph,
     setInteractionGraph,
+    applyProjectBundle,
+    undoProjectBundle,
+    redoProjectBundle,
+    canUndoProjectBundle: bundleHistory.undo > 0,
+    canRedoProjectBundle: bundleHistory.redo > 0,
     validation,
     hydrated,
     loadDraft,
