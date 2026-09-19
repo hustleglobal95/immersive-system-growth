@@ -407,11 +407,6 @@ export function ProductionStudioWorkbench() {
     else if (value === "assets" || value.includes("asset workspace")) { setWorkspace("Assets"); setAdvanced(true); }
     else if (value === "motion" || value.includes("motion workspace")) { setWorkspace("Motion"); setAdvanced(true); }
     else if (value === "create" || value.includes("create workspace")) { setWorkspace("Create"); setAdvanced(false); }
-    else if (value.includes("architect") || value.includes("build")) { setArchetype("architectural-build"); applyArchetype("architectural-build"); }
-    else if (value.includes("product") || value.includes("macro")) { setArchetype("product-hero"); applyArchetype("product-hero"); }
-    else if (value.includes("parallax")) { setArchetype("parallax-story"); applyArchetype("parallax-story"); }
-    else if (value.includes("threshold") || value.includes("enter")) { setArchetype("threshold-passage"); applyArchetype("threshold-passage"); }
-    else if (value.includes("editorial") || value.includes("reveal")) { setArchetype("editorial-reveal"); applyArchetype("editorial-reveal"); }
     else if (value.includes("new scene") || value.includes("add scene")) addScene();
     else if (value.includes("duplicate")) duplicateScene();
     else if (value.includes("clear motion") || value.includes("reset motion")) resetSceneMotion();
@@ -420,6 +415,11 @@ export function ProductionStudioWorkbench() {
       const capability=compiledCapability(selectionContext,compiled);
       if(capability) runCapability(capability,input,"command");
       else if(compiled.status==="ambiguous") setNotice(compiled.reason+" Choose a contextual action to disambiguate.");
+      else if (value === "architectural build") { setArchetype("architectural-build"); runCapability(selectionCapabilities.find((item)=>item.id==="scene.compose-motion") ?? selectionCapabilities[0],input,"command"); }
+      else if (value === "product hero") { setArchetype("product-hero"); runCapability(selectionCapabilities.find((item)=>item.id==="scene.compose-motion") ?? selectionCapabilities[0],input,"command"); }
+      else if (value === "parallax story") { setArchetype("parallax-story"); runCapability(selectionCapabilities.find((item)=>item.id==="scene.compose-motion") ?? selectionCapabilities[0],input,"command"); }
+      else if (value === "threshold passage") { setArchetype("threshold-passage"); runCapability(selectionCapabilities.find((item)=>item.id==="scene.compose-motion") ?? selectionCapabilities[0],input,"command"); }
+      else if (value === "editorial reveal") { setArchetype("editorial-reveal"); runCapability(selectionCapabilities.find((item)=>item.id==="scene.compose-motion") ?? selectionCapabilities[0],input,"command"); }
       else setNotice("Forge could not map that intent to a safe capability for the current selection.");
     }
     setCommand("");
