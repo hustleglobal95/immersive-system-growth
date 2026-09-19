@@ -11,6 +11,7 @@ import { buildConstructionCandidate } from "../src/platform/constructionWorker";
 import { parseExperience } from "../src/lib/configSchema";
 import rawExperience from "../config/experience.json";
 import rawManifest from "../config/asset-manifest.json";
+import type { AssetManifest } from "../src/types/assets";
 
 test("Loop Engine exposes only workers that have production-safe executors",()=>{
   assert.deepEqual(executableLoopDefinitions().map((item)=>item.id),["visual-polish","mobile-translation","motion-polish","performance","asset-quality","construction"]);
@@ -145,7 +146,7 @@ test("Asset Quality consolidates exact duplicate aliases without changing binary
 });
 
 test("Asset Quality prefers registered derivatives only when lineage and savings are explicit",()=>{
-  const manifest=structuredClone(rawManifest);
+  const manifest:AssetManifest=structuredClone(rawManifest);
   const source=manifest.textures.find((item)=>item.path==="/textures/reference/reveal-field.svg")!;
   manifest.textures.push({
     path:"/textures/reference/reveal-field.opt.webp",
@@ -153,7 +154,7 @@ test("Asset Quality prefers registered derivatives only when lineage and savings
     sha256:"c".repeat(64),
     derivative:{sourcePath:source.path,operation:"image-optimize",format:"webp",width:640,quality:72},
   });
-  const experience=structuredClone(rawExperience);
+  const experience=parseExperience(rawExperience);
   experience.scenes[0].media={
     kind:"image",src:source.path,alt:"Reference reveal",transition:"dissolve",maskSoftness:18,layers:[],
     position:[50,50],mobilePosition:[50,50],overlap:.25,direction:"up",zoom:1.05,textEnd:.28,
