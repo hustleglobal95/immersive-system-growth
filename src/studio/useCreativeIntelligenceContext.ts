@@ -23,7 +23,7 @@ export function useCreativeIntelligenceContext(projectName:string) {
       queueMicrotask(()=>{ if(!cancelled) setData({}); });
       return ()=>{cancelled=true;};
     }
-    setLoading(true);
+    queueMicrotask(()=>{ if(!cancelled) setLoading(true); });
     void fetch(`/api/studio/creative-intelligence/context?project=${encodeURIComponent(key)}`,{cache:"no-store"})
       .then(async(response)=>{
         const body=await response.json() as CreativeIntelligenceContextResponse;
