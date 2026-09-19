@@ -35,13 +35,16 @@ export async function GET(request:Request) {
       if(!parsed.success) continue;
       const report=parsed.data;
       if(report.projectId!==projectId || report.loopId!==loopId) continue;
-      if(report.controlPlane?.proposalId!==proposalId) continue;
+      const controlPlane=report.controlPlane;
+      if(!controlPlane || controlPlane.proposalId!==proposalId) continue;
       if(!["completed","stopped"].includes(report.status) || report.acceptedImprovements<1) continue;
       if(!report.acceptedExperiencePath || !report.acceptedAssetManifestPath || !report.acceptedInteractionGraphPath) continue;
 
-      const experiencePath=safeArtifactPath(root,report.acceptedExperiencePath);
-      const manifestPath=safeArtifactPath(root,report.acceptedAssetManifestPath);
-      const graphPath=safeArtifactPath(root,report.acceptedInteractionGraphPath);
+      const [experiencePath,manifestPath,graphPath]=await Promise.all([
+        safeArtifactPath(root,report.acceptedExperiencePath),
+        safeArtifactPath(root,report.acceptedAssetManifestPath),
+        safeArtifactPath(root,report.acceptedInteractionGraphPath),
+      ]);
       if(!experiencePath || !manifestPath || !graphPath) continue;
 
       const [experienceRaw,manifestRaw,graphRaw]=await Promise.all([
@@ -63,9 +66,9 @@ export async function GET(request:Request) {
           loopId:report.loopId,
           projectId,
           sourceVersionId:report.sourceVersionId,
-          proposalId:report.controlPlane.proposalId,
-          selectionKey:report.controlPlane.selectionKey,
-          baselineFingerprint:report.controlPlane.baselineFingerprint,
+          proposalId:controlPlane.proposalId,
+          selectionKey:controlPlane.selectionKey,
+          baselineFingerprint:controlPlane.baselineFingerprint,
           fingerprint:report.currentFingerprint,
           repairSummary:evidence?.repairSummary ?? [],
           preferenceAgreement:evidence?.preferenceAgreement ?? null,
@@ -88,8 +91,12 @@ export async function GET(request:Request) {
   }
 }
 
-function safeArtifactPath(root:string,value:string) {
-  const resolved=path.resolve(value);
-  const prefix=root.endsWith(path.sep) ? root : root+path.sep;
-  return resolved.startsWith(prefix) ? resolved : null;
+async function safeArtifactPath(root:string,value:string) {
+  const [realRoot,realTarget]=await Promise.all([
+    fs.realpath(root).catch(()=>null),
+    fs.realpath(path.resolve(value)).catch(()=>null),
+  ]);
+  if(!realRoot || !realTarget) return null;
+  const prefix=realRoot.endsWith(path.sep) ? realRoot : realRoot+path.sep;
+  return realTarget.startsWith(prefix) ? realTarget : null;
 }
