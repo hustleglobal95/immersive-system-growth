@@ -73,7 +73,6 @@ export function ProductionStudioWorkbench() {
   const [candidateExperience, setCandidateExperience] = useState<ExperienceConfig | null>(null);
   const [candidateAssetManifest, setCandidateAssetManifest] = useState<AssetManifest | null>(null);
   const [candidateInteractionGraph, setCandidateInteractionGraph] = useState<typeof initialGraph | null>(null);
-  const [rollbackBundle, setRollbackBundle] = useState<{experience:ExperienceConfig;assetManifest:AssetManifest;interactionGraph:typeof initialGraph}|null>(null);
   const [previewMode, setPreviewMode] = useState<"current"|"candidate">("current");
   const importRef = useRef<HTMLInputElement>(null);
 
@@ -206,7 +205,6 @@ export function ProductionStudioWorkbench() {
       setCandidateExperience(prepared.candidateExperience);
       setCandidateAssetManifest(null);
       setCandidateInteractionGraph(null);
-      setRollbackBundle(null);
       setPreviewMode("candidate");
       setNotice(`${capability.label} prepared. Compare Current vs Candidate before accepting.`);
       return;
@@ -218,7 +216,6 @@ export function ProductionStudioWorkbench() {
     setCandidateExperience(null);
     setCandidateAssetManifest(null);
     setCandidateInteractionGraph(null);
-    setRollbackBundle(null);
     setPreviewMode("current");
 
     if(dispatch.type==="select") {
@@ -243,20 +240,17 @@ export function ProductionStudioWorkbench() {
 
   const acceptCandidate = () => {
     if(!candidateExperience || !preparedProposal) return;
-    setRollbackBundle({
-      experience:draft.experience,
-      assetManifest:draft.assetManifest,
-      interactionGraph:draft.interactionGraph,
+    draft.applyProjectBundle({
+      experience:candidateExperience,
+      assetManifest:candidateAssetManifest ?? draft.assetManifest,
+      interactionGraph:candidateInteractionGraph ?? draft.interactionGraph,
     });
-    draft.setExperience(candidateExperience);
-    if(candidateAssetManifest) draft.setAssetManifest(candidateAssetManifest);
-    if(candidateInteractionGraph) draft.setInteractionGraph(candidateInteractionGraph);
     setPreparedProposal({...preparedProposal,state:"accepted"});
     setCandidateExperience(null);
     setCandidateAssetManifest(null);
     setCandidateInteractionGraph(null);
     setPreviewMode("current");
-    setNotice(`${preparedProposal.intent.raw} accepted into the working draft. Vault/production state is unchanged.`);
+    setNotice(`${preparedProposal.intent.raw} accepted into the working draft. The full project bundle remains atomically reversible; Vault/production state is unchanged.`);
   };
 
   const rejectCandidate = () => {
@@ -265,19 +259,14 @@ export function ProductionStudioWorkbench() {
     setCandidateExperience(null);
     setCandidateAssetManifest(null);
     setCandidateInteractionGraph(null);
-    setRollbackBundle(null);
     setPreviewMode("current");
     if(label) setNotice(`${label} rejected. Working project unchanged.`);
   };
 
   const revertAcceptedProposal = () => {
-    if(!rollbackBundle || !preparedProposal) return;
-    draft.setExperience(rollbackBundle.experience);
-    draft.setAssetManifest(rollbackBundle.assetManifest);
-    draft.setInteractionGraph(rollbackBundle.interactionGraph);
-    setRollbackBundle(null);
+    if(!preparedProposal || !draft.undoProjectBundle()) return;
     setPreparedProposal({...preparedProposal,state:"rejected"});
-    setNotice(`${preparedProposal.intent.raw} reverted. The prior working project state was restored.`);
+    setNotice(`${preparedProposal.intent.raw} reverted atomically. Experience, assets and interactions returned to the prior working state.`);
   };
 
   const loadVerifiedLoopCandidate = (candidate:VerifiedLoopCandidate) => {
@@ -522,7 +511,7 @@ export function ProductionStudioWorkbench() {
           <button type="button" className="production-status" data-valid={projectHealth.status==="ready"} data-health={projectHealth.status} onClick={() => { setSurface("Review"); setAdvanced(false); }}><i />{projectHealth.status==="ready" ? "Ready" : projectHealth.status==="blocked" ? `${projectHealth.issues.filter((issue)=>issue.severity==="blocker").length} blocker` : `${projectHealth.issues.filter((issue)=>issue.severity==="warning").length} issue`}</button>
           <details className="production-assist"><summary>Assist</summary><div><Link href="/studio/agent"><strong>Creative Agent</strong><span>Turn the idea into a production strategy.</span></Link><Link href="/director"><strong>Director</strong><span>Critique and strengthen the creative direction.</span></Link><Link href="/studio/assets/create"><strong>Asset Creator</strong><span>Create a missing image, video or 3D asset.</span></Link></div></details>
           <details className="production-advanced-menu"><summary>Advanced</summary><div><button type="button" onClick={() => openAdvanced("Motion")}><strong>Sequencer</strong><span>Tracks, curves and camera timing.</span></button><button type="button" onClick={() => openAdvanced("Interact")}><strong>Interactions</strong><span>Triggers, state and behavior graph.</span></button><button type="button" onClick={() => openAdvanced("Assets")}><strong>Asset tools</strong><span>Manifest, bank and GLB inspection.</span></button><button type="button" onClick={() => openAdvanced("Telemetry")}><strong>Telemetry</strong><span>Real-device performance evidence.</span></button></div></details>
-          <details><summary>Project</summary><div><button type="button" onClick={() => { setRequestedLoop(undefined); setLoopOpen(true); }}>Improvement evidence</button><button type="button" onClick={() => setVaultOpen(true)}>Project Vault</button><button type="button" onClick={() => setNewProjectOpen(true)}>New project</button><button type="button" onClick={() => importRef.current?.click()}>Import</button><button type="button" onClick={draft.reset}>Reset local draft</button></div></details>
+          <details><summary>Project</summary><div><button type="button" onClick={() => { setRequestedLoop(undefined); setLoopOpen(true); }}>Improvement evidence</button><button type="button" onClick={() => setVaultOpen(true)}>Project Vault</button><button type="button" disabled={!draft.canUndoProjectBundle} onClick={() => { if(draft.undoProjectBundle()) { setPreparedProposal(null); setNotice("Last accepted proposal reverted atomically."); } }}>Undo accepted proposal</button><button type="button" disabled={!draft.canRedoProjectBundle} onClick={() => { if(draft.redoProjectBundle()) { setPreparedProposal(null); setNotice("Last reverted proposal restored atomically."); } }}>Redo accepted proposal</button><button type="button" onClick={() => setNewProjectOpen(true)}>New project</button><button type="button" onClick={() => importRef.current?.click()}>Import</button><button type="button" onClick={draft.reset}>Reset local draft</button></div></details>
           <details><summary>Export</summary><div className="align-right"><button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Experience</button><button type="button" onClick={() => downloadJson("interaction-graph.json", draft.interactionGraph)}>Interactions</button><button type="button" onClick={() => downloadJson("studio-project.json", draft.project)}>Project</button><button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Assets</button></div></details><StudioIdentityBadge />
           <input ref={importRef} hidden type="file" accept="application/json,.json" onChange={(event) => void importExperience(event.target.files?.[0])} />
         </div>
@@ -583,7 +572,7 @@ export function ProductionStudioWorkbench() {
               onAccept={acceptCandidate}
               onReject={rejectCandidate}
               onContinue={preparedProposal?.executionClass==="deep" && requestedLoop ? () => setLoopOpen(true) : undefined}
-              canRevert={Boolean(rollbackBundle && preparedProposal?.state==="accepted")}
+              canRevert={Boolean(draft.canUndoProjectBundle && preparedProposal?.state==="accepted")}
               onRevert={revertAcceptedProposal}
             />
             <form className="production-command" onSubmit={(event) => { event.preventDefault(); runCommand(); }}>
