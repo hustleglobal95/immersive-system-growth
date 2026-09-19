@@ -1,4 +1,11 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
+
+async function emulateHumanBrowser(page: Page) {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "webdriver", { configurable: true, get: () => false });
+  });
+}
+
 const sizes = [
   [1920, 1080],
   [2560, 1440],
@@ -23,6 +30,7 @@ test("semantic story and final CTA survive without JavaScript", async ({ browser
 });
 
 test("production canvas stays persistent across scroll, reverse and quality controls", async ({ page }) => {
+  await emulateHumanBrowser(page);
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/lab");
@@ -60,6 +68,7 @@ test("reduced motion, final conversion and no horizontal overflow across viewpor
 });
 
 test("missing GLB preserves semantic content and exposes retry", async ({ page }) => {
+  await emulateHumanBrowser(page);
   await page.addInitScript(() => {
     document.addEventListener("click", (event) => {
       if ((event.target as HTMLElement)?.closest("button")?.textContent === "Retry 3D") {
@@ -83,6 +92,7 @@ test("missing GLB preserves semantic content and exposes retry", async ({ page }
 });
 
 test("WebGL failure leaves Casa Lumen content and details usable", async ({ page }) => {
+  await emulateHumanBrowser(page);
   await page.addInitScript(() => {
     const original = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.getContext = function (
@@ -112,6 +122,7 @@ test("range keyboard does not invoke global scene shortcut", async ({ page }) =>
 
 test("context restoration does not remove the document", async ({ page, browserName }) => {
   test.skip(browserName !== "chromium", "WebGL loss extension is renderer-dependent");
+  await emulateHumanBrowser(page);
   await page.goto("/");
   await expect(page.locator(".scene-canvas canvas")).toHaveCount(1);
   const supported = await page.locator(".scene-canvas canvas").evaluate((canvas) => {
