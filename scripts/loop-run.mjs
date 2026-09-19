@@ -94,9 +94,12 @@ try {
     const incumbentRoot=path.join(cycleRoot,"incumbent");
     const incumbentMotionPath=path.join(cycleRoot,"incumbent-motion.json");
     const incumbentPerformancePath=path.join(cycleRoot,"incumbent-performance.json");
+    const incumbentAssetProfilePath=path.join(cycleRoot,"incumbent-assets.json");
     await fs.mkdir(cycleRoot,{recursive:true});
-    const incumbentRaw=JSON.parse(await fs.readFile(currentIncumbentPath,"utf8"));
-    const incumbentFingerprint=fingerprint(incumbentRaw);
+    const incumbentRaw=parseExperience(JSON.parse(await fs.readFile(currentIncumbentPath,"utf8")));
+    const incumbentManifest=parseAssetManifest(JSON.parse(await fs.readFile(currentIncumbentManifestPath,"utf8")));
+    const incumbentGraph=parseInteractionGraph(JSON.parse(await fs.readFile(currentIncumbentGraphPath,"utf8")));
+    const incumbentFingerprint=fingerprint({experience:incumbentRaw,assetManifest:incumbentManifest,interactionGraph:incumbentGraph});
     const cycle={
       cycle:cycleNumber,
       startedAt:new Date().toISOString(),
@@ -118,6 +121,12 @@ try {
       await mustRun(process.execPath,[
         "--import","tsx","scripts/autonomy-performance-profile.mjs",
         "--url",baseURL,"--experience",currentIncumbentPath,"--variant","incumbent","--output",incumbentPerformancePath,
+      ]);
+    }
+    if(definition.verifiers.includes("assets")) {
+      await mustRun(process.execPath,[
+        "--import","tsx","scripts/autonomy-asset-profile.mjs",
+        "--experience",currentIncumbentPath,"--manifest",currentIncumbentManifestPath,"--output",incumbentAssetProfilePath,
       ]);
     }
     const seenFingerprints=new Map();
