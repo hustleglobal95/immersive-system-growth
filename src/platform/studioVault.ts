@@ -29,7 +29,7 @@ const vaultJournalEventSchema = z.object({
   at: z.iso.datetime(),
   actor: z.string().min(1).max(100),
   role: z.string().min(1).max(40),
-  action: z.enum(["save", "restore", "archive", "unarchive", "publish", "asset-promote", "lesson", "loop-run", "loop-accept", "loop-stop", "loop-escalate"]),
+  action: z.enum(["save", "restore", "archive", "unarchive", "publish", "asset-promote", "lesson", "loop-run", "loop-candidate", "loop-accept", "loop-stop", "loop-escalate"]),
   detail: z.string().max(1000),
 }).strict();
 const vaultJournalSchema = z.object({ version: z.literal(1), events: z.array(vaultJournalEventSchema).max(1000) }).strict();
