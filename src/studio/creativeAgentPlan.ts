@@ -10,7 +10,7 @@ import {
   type AgentSceneAssetPlan,
 } from "@/src/studio/creativeAgentAssets";
 import type { AssetManifest } from "@/src/types/assets";
-import type { ExperienceConfig } from "@/src/types/experience";
+import type { CameraPathPreset, ExperienceConfig, SceneDefinition } from "@/src/types/experience";
 import type { CreativeDNA } from "@/src/platform/director-intelligence/creativeDNA";
 import type { ArtDirectionPlan } from "@/src/platform/director-intelligence/artDirector";
 import type { DisciplineDirections } from "@/src/platform/director-intelligence/disciplineDirectors";
@@ -18,6 +18,15 @@ import type { CreativeMutation } from "@/src/platform/director-intelligence/crea
 
 export type CreativeMedium = AgentExecutionMedium;
 
+export interface CreativeSceneDirection {
+  cameraPath:CameraPathPreset;
+  mobileCameraPath:CameraPathPreset;
+  exposureDelta:number;
+  keyMultiplier:number;
+  rimMultiplier:number;
+  bloomCap:number;
+  vignetteCap:number;
+}
 export interface CreativeSceneMove {
   sceneIndex: number;
   label: string;
@@ -26,6 +35,7 @@ export interface CreativeSceneMove {
   cameraStrategy: string;
   purpose: string;
   signatureRole: "primary" | "secondary" | "none";
+  compiledDirection:CreativeSceneDirection;
   assetPlan: AgentSceneAssetPlan;
 }
 
@@ -87,12 +97,14 @@ export function planCreativeExecution(input: {
   });
   const sceneMoves: CreativeSceneMove[] = baseMoves.map((move, index) => {
     const frame=input.artDirection?.sceneFrames[Math.min(input.artDirection.sceneFrames.length-1,Math.round((index/Math.max(1,baseMoves.length-1))*Math.max(0,input.artDirection.sceneFrames.length-1)))];
-    const cameraRule=input.disciplineDirections?.camera.rules[index % Math.max(1,input.disciplineDirections.camera.rules.length)];
+    const cameraRules=input.disciplineDirections?.camera.rules ?? [];
+    const cameraRule=cameraRules.length ? cameraRules[index % cameraRules.length] : undefined;
     return {
       ...move,
       cameraStrategy:cameraRule ? `${move.cameraStrategy} Creative Director: ${cameraRule}` : move.cameraStrategy,
       purpose:frame ? `${move.purpose} Art direction: ${frame.dominant} ${frame.motionBehavior}` : move.purpose,
       signatureRole: move.role === "reveal" || move.role === "threshold" ? "primary" : index === 0 ? "secondary" : "none",
+      compiledDirection:compileSceneDirection(move.archetype,frame?.intensity ?? 5),
       assetPlan: assetPlans[index],
     };
   });
@@ -165,24 +177,73 @@ export function applyCreativeExecutionPlan(
 ): ExperienceConfig {
   if (!plan.validation.valid) throw new Error(`Creative Agent plan is invalid: ${plan.validation.errors.join(" ")}`);
   const allowed = selectedSceneIndexes ? new Set(selectedSceneIndexes) : null;
-  const scenes = experience.scenes.map((scene, sceneIndex) => {
-    const move = plan.sceneMoves.find((item) => item.sceneIndex === sceneIndex);
-    if (!move || (allowed && !allowed.has(sceneIndex))) return scene;
-    const generated = createMotionArchetype(move.archetype, experience, sceneIndex).map((track) => ({
+
+  // First compile the bounded Art Director presentation state. Camera endpoints, copy, colors,
+  // material values and asset identity are deliberately preserved.
+  const directedScenes=experience.scenes.map((scene,sceneIndex)=>{
+    const move=plan.sceneMoves.find((item)=>item.sceneIndex===sceneIndex);
+    if(!move || (allowed && !allowed.has(sceneIndex))) return scene;
+    return applySceneDirection(scene,move.compiledDirection);
+  });
+  const directed=parseExperience({...experience,scenes:directedScenes});
+
+  // Then generate coordinated motion against the directed baseline so exposure/light settles
+  // return to the state the Art Director actually selected.
+  const scenes=directed.scenes.map((scene,sceneIndex)=>{
+    const move=plan.sceneMoves.find((item)=>item.sceneIndex===sceneIndex);
+    if(!move || (allowed && !allowed.has(sceneIndex))) return scene;
+    const generated=createMotionArchetype(move.archetype,directed,sceneIndex).map((track)=>({
       ...track,
-      id: `agent-v3-${sceneIndex}-${track.id}`,
-      label: `Agent · ${track.label}`,
+      id:`agent-v4-${sceneIndex}-${track.id}`,
+      label:`Agent · ${track.label}`,
     }));
-    const authored = scene.motionTracks.filter((track) => !track.id.startsWith("agent-") && !track.id.startsWith("agent-v2-") && !track.id.startsWith("agent-v3-"));
-    // Authored tracks win: skip generated tracks that would animate the same target on the same viewport.
-    const occupied = new Set(authored.map((track) => `${track.viewport}:${track.target}`));
+    const authored=scene.motionTracks.filter((track)=>!/^agent(?:-v\d+)?-/.test(track.id));
+    // Human-authored tracks always win over generated direction for the same target/viewport.
+    const occupied=new Set(authored.map((track)=>`${track.viewport}:${track.target}`));
     return {
       ...scene,
-      motionTracks: [...authored, ...generated.filter((track) => !occupied.has(`${track.viewport}:${track.target}`))],
+      motionTracks:[...authored,...generated.filter((track)=>!occupied.has(`${track.viewport}:${track.target}`))],
     };
   });
-  return parseExperience({ ...experience, scenes });
+  return parseExperience({...directed,scenes});
 }
+
+function compileSceneDirection(archetype:MotionArchetypeName,intensity:number):CreativeSceneDirection {
+  const cameraPath:Record<MotionArchetypeName,CameraPathPreset>={
+    "editorial-reveal":"dolly",
+    "parallax-story":"arc",
+    "threshold-passage":"threshold",
+    "architectural-build":"crane",
+    "product-hero":"macro",
+  };
+  const path=cameraPath[archetype];
+  const quiet=intensity<=4;
+  const peak=intensity>=9;
+  return {
+    cameraPath:path,
+    mobileCameraPath:path==="macro" || path==="arc" ? "dolly" : path,
+    exposureDelta:peak ? .04 : quiet ? -.05 : 0,
+    keyMultiplier:peak ? 1.08 : quiet ? .92 : 1,
+    rimMultiplier:peak ? 1.1 : quiet ? .86 : .96,
+    bloomCap:peak ? .32 : quiet ? .18 : .26,
+    vignetteCap:peak ? .38 : quiet ? .22 : .3,
+  };
+}
+
+function applySceneDirection(scene:SceneDefinition,direction:CreativeSceneDirection):SceneDefinition {
+  const next=structuredClone(scene);
+  if(!next.camera.waypoints?.length && !next.camera.targetWaypoints?.length) next.camera.path=direction.cameraPath;
+  if(next.mobileCamera && !next.mobileCamera.waypoints?.length && !next.mobileCamera.targetWaypoints?.length) next.mobileCamera.path=direction.mobileCameraPath;
+  next.world.exposure=clamp(next.world.exposure+direction.exposureDelta,.25,3);
+  next.world.key=clamp(next.world.key*direction.keyMultiplier,0,50);
+  next.world.rim=clamp(next.world.rim*direction.rimMultiplier,0,50);
+  // Creative Agent may reduce generic post pressure but never increases bloom/vignette to fake art direction.
+  next.post.bloom=Math.min(next.post.bloom,direction.bloomCap);
+  next.post.vignette=Math.min(next.post.vignette,direction.vignetteCap);
+  return next;
+}
+
+function clamp(value:number,min:number,max:number) { return Math.max(min,Math.min(max,value)); }
 
 function chooseMedium(input: { lower: string; modelCount: number; imageCount: number; videoCount: number; hasRig: boolean; variation: number; preferredMedia?: CreativeMedium[] }): CreativeMedium {
   const { lower, modelCount, imageCount, hasRig, variation } = input;
