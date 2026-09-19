@@ -7,8 +7,8 @@ const checks = [
   check("Internal access implementation", 14, () => files("src/platform/studioAccess.ts", "proxy.ts", "app/studio/login/page.tsx")),
   check("Project Vault environment", 12, () => env("FORGE_GITHUB_REPOSITORY", "FORGE_GITHUB_TOKEN")),
   check("Asset Vault environment", 12, () => env("FORGE_ASSET_VAULT_ENDPOINT", "FORGE_ASSET_VAULT_PUBLIC_BASE_URL", "FORGE_ASSET_VAULT_TOKEN")),
-  check("Internal access environment", 8, () => process.env.FORGE_INTERNAL_ACCESS_ENABLED !== "true" || env("FORGE_INTERNAL_SESSION_SECRET", "FORGE_INTERNAL_USERS_JSON")),
-  check("Review publishing environment", 5, () => process.env.FORGE_STUDIO_PUBLISH_ENABLED !== "true" || env("FORGE_STUDIO_PUBLISH_SECRET", "FORGE_GITHUB_REPOSITORY", "FORGE_GITHUB_TOKEN")),
+  check("Internal access environment", 8, () => process.env.FORGE_INTERNAL_ACCESS_ENABLED === "true" && env("FORGE_INTERNAL_SESSION_SECRET", "FORGE_INTERNAL_USERS_JSON")),
+  check("Review publishing environment", 5, () => process.env.FORGE_STUDIO_PUBLISH_ENABLED === "true" && env("FORGE_STUDIO_PUBLISH_SECRET", "FORGE_GITHUB_REPOSITORY", "FORGE_GITHUB_TOKEN")),
   check("Validation contract", 3, () => files("docs/VALIDATION.md", "tests/studio-productization.test.ts")),
 ];
 
