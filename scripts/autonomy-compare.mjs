@@ -71,6 +71,7 @@ const gateReport=evaluateCandidateGates({
   candidateMotionHardGateFailures:candidateMotion?.hardGateFailures ?? [],
   incumbentMotionScore:incumbentMotion?.qualityScore ?? null,
   candidateMotionScore:candidateMotion?.qualityScore ?? null,
+  maxMotionRegression:options["max-motion-regression"]!==undefined ? Number(options["max-motion-regression"]) : undefined,
 });
 const candidateHardGateFailures=gateReport.failures;
 const motionRegression=gateReport.motionRegression;

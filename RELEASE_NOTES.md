@@ -1,4 +1,4 @@
-# Release Notes
+# Release Notes\n\n- Added Forge Loop Engine: typed closed-loop contracts, executable Visual/Mobile/Motion improvement loops, multi-candidate tournaments, bounded budgets, saturation/oscillation/repeated-repair stops, evidence ledgers, Project Vault loop memory, Studio control surface, legacy repair-loop compatibility and explicit human Vault promotion.
 
 - Added the Forge internal-product layer: optional role-based private access, GitHub-backed Project Vault with durable snapshots/version restore/archive state, Project Vault production memory, permanent Meshy/Higgsfield Asset Vault promotion, Guided Ship durability blocking for temporary generated assets, and an environment-aware internal readiness audit.
 

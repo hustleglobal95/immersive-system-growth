@@ -195,3 +195,12 @@ Forge is internal. It does not need:
 - tenant-level pricing controls
 
 Add those only if Forge itself becomes a commercial product. Until then, optimize for Growth Terminal production speed, quality, learning and reliability.
+
+
+## Loop Engine
+
+Forge Loop Engine uses durable Project Vault checkpoints as incumbents for evidence-driven improvement. Visual Polish, Mobile Translation and Motion Polish are executable; Performance, Asset Quality and Construction remain typed contracts until their repair workers satisfy the same safety/evidence standard.
+
+Loop runs never overwrite an authoritative project. Winning artifacts require explicit human promotion with `npm run loop:accept -- --report <run-report.json> --actor "<name>" --approve`.
+
+See [Loop Engine](LOOP_ENGINE.md) for budgets, stop policies, evidence layout, candidate tournaments and memory promotion.

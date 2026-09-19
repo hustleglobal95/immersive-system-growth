@@ -53,3 +53,19 @@ test("Project Vault is reachable from Studio and degrades cleanly when durable s
   await page.getByRole("button", { name: "Close Project Vault" }).click();
   await expect(page.getByRole("dialog", { name: "Durable projects and restore points." })).toHaveCount(0);
 });
+
+
+test("Loop Engine exposes executable and contract-only loops without mutating the project", async ({ page }) => {
+  await page.goto("/studio");
+  await page.getByRole("button", { name: "Loops", exact: true }).click();
+  const dialog=page.getByRole("dialog", { name: "Closed-loop improvement with proof." });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole("heading", { name: "Visual Polish" })).toBeVisible();
+  await expect(dialog.getByText("CANDIDATE TOURNAMENT")).toBeVisible();
+  await expect(dialog.getByText(/Production is never overwritten by the loop/)).toBeVisible();
+  await dialog.getByRole("button", { name: "Performance" }).click();
+  await expect(dialog.getByText("CONTROL CONTRACT")).toBeVisible();
+  await expect(dialog.getByText(/Repair worker intentionally not enabled yet/)).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toHaveCount(0);
+});

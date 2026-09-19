@@ -86,7 +86,7 @@ Immersive Site Forge 6.0 is organized as a multi-project production platform rat
 - reference-deconstruction workflow that maps immersive precedents onto existing Forge systems before new dependencies
 - evidence-weighted, source-diverse precedent retrieval plus a reference corpus integrity audit
 - eight-layer hierarchy intelligence spanning strategy, narrative, section, information, visual, interaction, motion/spatial and semantic/accessibility priority
-- autonomy foundation with grounded short-prompt brief inference, decision-time construction guidance, five autonomy levels, deterministic render-review plans, functional verification contracts and forced-improvement candidate selection
+- autonomy foundation with grounded short-prompt brief inference, decision-time construction guidance, five autonomy levels, deterministic render-review plans, functional verification contracts and forced-improvement candidate selection\n- Forge Loop Engine control plane with typed loop contracts, multi-candidate tournaments, bounded cycle/attempt/time budgets, saturation and oscillation stops, compact cycle context, evidence ledger, Project Vault memory and explicit human promotion
 - 30-case one-line commercial prompt benchmark enforced by `npm run check`
 - Visual Director with specialist critic contracts, isolated incumbent/candidate preview rendering, bounded reversible presentation repair, reversed-order pairwise judging and forced-optimization acceptance
 - end-to-end local autonomy repair loop that writes accepted candidates as artifacts without overwriting checked-in production config
