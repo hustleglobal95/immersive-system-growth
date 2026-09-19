@@ -11,7 +11,7 @@ import { parseExperience } from "@/src/lib/configSchema";
 import { parseInteractionGraph } from "@/src/lib/interactionGraph";
 import { parseStudioProject } from "@/src/platform/studioSchema";
 import { emptyInteractionGraph } from "@/src/platform/emptyInteractionGraph";
-import { createMotionArchetype, motionArchetypeCatalog, type MotionArchetypeName } from "@/src/platform/motionArchetypes";
+import type { MotionArchetypeName } from "@/src/platform/motionArchetypes";
 import { StudioLivePreview } from "@/src/studio/StudioLivePreview";
 import { SequencerEditor } from "@/src/studio/SequencerEditor";
 import { InteractionGraphEditor } from "@/src/studio/InteractionGraphEditor";
@@ -27,14 +27,14 @@ import { LoopEnginePanel } from "@/src/studio/LoopEnginePanel";
 import { capabilitiesForContext, type ResolvedCapability } from "@/src/platform/control-plane/capabilityRegistry";
 import { createProposalDraft, type ForgeProposal } from "@/src/platform/control-plane/proposal";
 import { resolveSelectionContext, type ForgeSelection, type SelectionContext } from "@/src/platform/control-plane/selectionContext";
-import { compileIntent, compiledCapability } from "@/src/platform/control-plane/intentCompiler";
+import { compileIntent, compiledCapability, motionArchetypeForIntent } from "@/src/platform/control-plane/intentCompiler";
 import { recommendNextActions, type NextAction } from "@/src/platform/control-plane/nextAction";
 import { evaluateProjectHealth } from "@/src/platform/control-plane/projectHealth";
 import { prepareFastProposal } from "@/src/platform/control-plane/fastProposal";
 import { attachVerifiedLoopCandidate, type VerifiedLoopCandidate } from "@/src/platform/control-plane/deepCandidate";
 import { ControlPlaneReview } from "@/src/studio/ControlPlaneReview";
 import type { AssetManifest } from "@/src/types/assets";
-import type { ExperienceConfig, MotionTrack, SceneDefinition, Vec3 } from "@/src/types/experience";
+import type { ExperienceConfig, SceneDefinition } from "@/src/types/experience";
 
 const initialExperience = parseExperience(rawExperience);
 const initialProject = parseStudioProject(rawProject);
@@ -56,7 +56,6 @@ export function ProductionStudioWorkbench() {
   const [leftMode, setLeftMode] = useState<LeftMode>("Scenes");
   const [activeScene, setActiveScene] = useState(0);
   const [selection, setSelection] = useState<Selection>({ kind: "scene", index: 0 });
-  const [archetype, setArchetype] = useState<MotionArchetypeName>("editorial-reveal");
   const [advanced, setAdvanced] = useState(false);
   const [notice, setNotice] = useState("");
   const [command, setCommand] = useState("");
@@ -142,56 +141,11 @@ export function ProductionStudioWorkbench() {
     setAdvanced(true);
   };
 
-  const applyArchetype = (name = archetype) => {
-    const created = createMotionArchetype(name, draft.experience, sceneIndex);
-    const authored = scene.motionTracks.filter((track) => !track.id.startsWith("studio-auto-"));
-    const occupied = new Set(authored.map((track) => `${track.viewport}:${track.target}`));
-    const additions = created
-      .filter((track) => !occupied.has(`${track.viewport}:${track.target}`))
-      .map((track) => namespaceTrack(track, `studio-auto-${name}`));
-    updateScene(draft.setExperience, sceneIndex, (current) => ({ ...current, motionTracks: [...authored, ...additions] }));
-    setNotice(`${motionArchetypeCatalog.find((item) => item.id === name)?.label ?? name} applied to ${scene.label}.`);
-  };
-
-  const buildSelectedNode = (node: string) => {
-    const id = slug(node);
-    const tracks: MotionTrack[] = [
-      {
-        id: `studio-node-${id}-position`, label: `${node} build`, type: "vector", target: `rig:${node}:position`, blend: "offset", viewport: "all", muted: false, locked: false,
-        keyframes: [
-          { id: `${id}-p0`, at: 0, value: [0, -0.7, 0] as Vec3, easing: "linear" },
-          { id: `${id}-p1`, at: 0.2, value: [0, -0.7, 0] as Vec3, easing: "linear" },
-          { id: `${id}-p2`, at: 0.72, value: [0, 0, 0] as Vec3, easing: "cubic", curve: [0.16, 1, 0.3, 1] },
-          { id: `${id}-p3`, at: 1, value: [0, 0, 0] as Vec3, easing: "linear" },
-        ],
-      },
-      {
-        id: `studio-node-${id}-opacity`, label: `${node} reveal`, type: "number", target: `rig:${node}:opacity`, blend: "absolute", viewport: "all", muted: false, locked: false,
-        keyframes: [
-          { id: `${id}-o0`, at: 0, value: 0, easing: "linear" },
-          { id: `${id}-o1`, at: 0.2, value: 0, easing: "linear" },
-          { id: `${id}-o2`, at: 0.56, value: 1, easing: "cubic", curve: [0.16, 1, 0.3, 1] },
-          { id: `${id}-o3`, at: 1, value: 1, easing: "linear" },
-        ],
-      },
-    ];
-    updateScene(draft.setExperience, sceneIndex, (current) => {
-      const targets = new Set(tracks.map((track) => track.target));
-      return { ...current, motionTracks: [...current.motionTracks.filter((track) => !targets.has(track.target)), ...tracks] };
-    });
-    setNotice(`${node} now has a reversible build + reveal motion.`);
-  };
-
-  const resetSceneMotion = () => {
-    updateScene(draft.setExperience, sceneIndex, (current) => ({ ...current, motionTracks: [] }));
-    setNotice(`Motion cleared from ${scene.label}.`);
-  };
-
   const runCapability = (
     capability: ResolvedCapability,
     intent=capability.label,
     source:"semantic-action"|"command"|"next-action"|"system"="semantic-action",
-    requestedArchetype:MotionArchetypeName=archetype,
+    requestedArchetype:MotionArchetypeName=motionArchetypeForIntent(selectionContext,intent),
   ) => {
     const id=`proposal-${Date.now()}`;
     const createdAt=new Date().toISOString();
@@ -444,7 +398,6 @@ export function ProductionStudioWorkbench() {
       setNotice("This selection does not support scene motion composition.");
       return;
     }
-    setArchetype(name);
     runCapability(capability,label,"command",name);
   };
 
