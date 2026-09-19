@@ -67,7 +67,6 @@ const registry:ForgeCapability[]=[
     id:"scene.fix-mobile",label:"Fix mobile",description:"Re-compose the scene for narrow viewports while preserving its defining idea.",
     selectionKinds:["scene"],intents:["mobile","responsive","phone"],executionClass:"deep",riskClass:"preview-required",
     systems:["loops","camera","motion"],verifiers:["schema","functional","motion","mobile","visual"],dispatch:{type:"loop",loop:"mobile-translation"},priority:62,
-    eligible:(context)=>context.state.hasMobileCamera,
   },
   {
     id:"camera.coordinate-motion",label:"Coordinate motion",description:"Coordinate scene motion around the selected shot.",
