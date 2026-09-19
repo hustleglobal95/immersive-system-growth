@@ -8,7 +8,7 @@ export function createLoopRunReport(input:{
   definition:LoopDefinition;
   projectId?:string;
   sourceVersionId?:string;
-  controlPlane?:{proposalId:string;selectionKey:string;intent:string};
+  controlPlane?:{proposalId:string;selectionKey:string;baselineFingerprint:string;intent:string};
   source:string;
   baselineFingerprint:string;
   startedAt?:string;
