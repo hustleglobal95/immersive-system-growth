@@ -487,7 +487,7 @@ function ContextualDirection({ selection, experience, manifest, assetScore, scen
   }
 
   if(selection.kind==="asset") return <section className="production-context" data-kind="asset">
-    <span>ASSET DIRECTION</span><strong>{Math.round(assetScore)}/100 production suitability</strong>
+    <span>ASSET DIRECTION</span><strong>{Math.round(assetScore)}/100 manifest health</strong>
     <p>{assetScore<75 ? "Asset pressure needs attention before more visual complexity is added." : "The manifest is inside its current budget envelope; verify the selected asset against its actual camera role."}</p>
     <div><button type="button" className="primary" onClick={() => onWorkspace("Assets")}>Inspect + optimize</button><Link href="/studio/assets/create">Create variant</Link><button type="button" onClick={onLoops}>Run improvement loop</button></div>
   </section>;
@@ -507,7 +507,7 @@ function ContextualDirection({ selection, experience, manifest, assetScore, scen
       <button type="button" onClick={onApplyMotion}>{motionCount ? "Re-compose motion" : "Compose motion"}</button>
       <button type="button" onClick={() => onWorkspace("Interact")}>Add behavior</button>
     </div>
-    <small>{assetCount} registered asset{assetCount===1?"":"s"} · asset suitability {Math.round(assetScore)}/100</small>
+    <small>{assetCount ? `${assetCount} registered asset${assetCount===1?"":"s"} · manifest health ${Math.round(assetScore)}/100` : "No assets registered yet"}</small>
   </section>;
 }
 
