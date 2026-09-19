@@ -30,6 +30,16 @@ for (const projectType of projectTypes) {
       if (result.report.precedents.length < 2) failures.push(`${projectType}/${tier}: precedent retrieval too thin`);
       if (!result.productionPlan.creativePlan?.scenes?.length) failures.push(`${projectType}/${tier}: production plan did not compile`);
       if (result.debate.pairwise.length !== 3) failures.push(`${projectType}/${tier}: pairwise tournament incomplete`);
+      if (!result.creativeDNA?.northStar || result.creativeDNA.northStar.length < 12) failures.push(`${projectType}/${tier}: Creative DNA missing north star`);
+      if (result.visualLanguages?.length !== 3) failures.push(`${projectType}/${tier}: expected three visual-language worlds`);
+      if (new Set((result.visualLanguages ?? []).map((item) => item.modeId)).size !== 3) failures.push(`${projectType}/${tier}: visual-language modes collapsed`);
+      if (result.visualLanguageDivergence?.matrix?.length !== 3) failures.push(`${projectType}/${tier}: visual-language distance matrix incomplete`);
+      if (result.artDirection?.sceneFrames?.length !== result.report.treatment.emotionalArc.length) failures.push(`${projectType}/${tier}: Art Director scene coverage incomplete`);
+      if (Object.keys(result.disciplineDirections ?? {}).length !== 8) failures.push(`${projectType}/${tier}: specialist creative directors incomplete`);
+      if ((result.creativeMutations?.length ?? 0) < 5) failures.push(`${projectType}/${tier}: mutation set too shallow`);
+      if (Object.keys(result.creativeCeiling?.dimensions ?? {}).length !== 13) failures.push(`${projectType}/${tier}: Creative Ceiling V2 dimension coverage incomplete`);
+      if (result.creativeCeiling && result.creativeCeiling.projected < result.creativeCeiling.current) failures.push(`${projectType}/${tier}: projected creative ceiling regressed`);
+      if (!result.productionPlan.creativeIntelligence?.dna?.northStar) failures.push(`${projectType}/${tier}: production plan dropped Creative DNA`);
     } catch (error) {
       failures.push(`${projectType}/${tier}: ${error instanceof Error ? error.message : String(error)}`);
     }
