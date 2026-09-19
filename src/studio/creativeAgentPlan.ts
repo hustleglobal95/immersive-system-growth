@@ -11,6 +11,10 @@ import {
 } from "@/src/studio/creativeAgentAssets";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig } from "@/src/types/experience";
+import type { CreativeDNA } from "@/src/platform/director-intelligence/creativeDNA";
+import type { ArtDirectionPlan } from "@/src/platform/director-intelligence/artDirector";
+import type { DisciplineDirections } from "@/src/platform/director-intelligence/disciplineDirectors";
+import type { CreativeMutation } from "@/src/platform/director-intelligence/creativeMutation";
 
 export type CreativeMedium = AgentExecutionMedium;
 
@@ -38,6 +42,14 @@ export interface CreativeExecutionPlan {
   productionOrder: string[];
   risks: string[];
   signatureMoment: string;
+  creativeDirection?:{
+    northStar:string;
+    artRule:string;
+    typography:string;
+    lighting:string;
+    material:string;
+    mutationQuestions:string[];
+  };
   patchSummary: string[];
 }
 
@@ -47,6 +59,10 @@ export function planCreativeExecution(input: {
   manifest: AssetManifest;
   variation?: number;
   preferredMedia?: CreativeMedium[];
+  creativeDNA?:CreativeDNA;
+  artDirection?:ArtDirectionPlan;
+  disciplineDirections?:DisciplineDirections;
+  mutations?:CreativeMutation[];
 }): CreativeExecutionPlan {
   const { idea, experience, manifest } = input;
   const variation = input.variation ?? 0;
@@ -60,7 +76,7 @@ export function planCreativeExecution(input: {
   const medium = chooseMedium({ lower, modelCount, imageCount, videoCount, hasRig, variation, preferredMedia: input.preferredMedia });
   const mediumCopy = mediumDescription(medium, { modelCount, imageCount, hasRig });
   const baseMoves = buildSceneMoves(experience, lower, medium, variation, hasRig);
-  const signatureMoment = signatureFor(medium, lower, hasRig);
+  const signatureMoment = input.creativeDNA?.signatureMechanism ?? signatureFor(medium, lower, hasRig);
   const assetPlans = buildSceneAssetPlans({
     experience,
     manifest,
@@ -69,15 +85,22 @@ export function planCreativeExecution(input: {
     idea,
     signatureMoment,
   });
-  const sceneMoves: CreativeSceneMove[] = baseMoves.map((move, index) => ({
-    ...move,
-    signatureRole: move.role === "reveal" || move.role === "threshold" ? "primary" : index === 0 ? "secondary" : "none",
-    assetPlan: assetPlans[index],
-  }));
+  const sceneMoves: CreativeSceneMove[] = baseMoves.map((move, index) => {
+    const frame=input.artDirection?.sceneFrames[Math.min(input.artDirection.sceneFrames.length-1,Math.round((index/Math.max(1,baseMoves.length-1))*Math.max(0,input.artDirection.sceneFrames.length-1)))];
+    const cameraRule=input.disciplineDirections?.camera.rules[index % Math.max(1,input.disciplineDirections.camera.rules.length)];
+    return {
+      ...move,
+      cameraStrategy:cameraRule ? `${move.cameraStrategy} Creative Director: ${cameraRule}` : move.cameraStrategy,
+      purpose:frame ? `${move.purpose} Art direction: ${frame.dominant} ${frame.motionBehavior}` : move.purpose,
+      signatureRole: move.role === "reveal" || move.role === "threshold" ? "primary" : index === 0 ? "secondary" : "none",
+      assetPlan: assetPlans[index],
+    };
+  });
   const assetSummary = buildAssetPlanSummary(assetPlans);
   const validation = validateSceneAssetPlans(assetPlans, assetSummary);
 
   const assetStrategy = [
+    input.creativeDNA ? `Creative DNA north star: ${input.creativeDNA.northStar}` : "Protect one coherent visual system across every proposed asset.",
     "Every proposed scene carries its own execution medium, existing/reusable asset list, create list, blockers, cheapest acceptable version and best version.",
     medium === "depth-image"
       ? "Use the strongest hero image as a depth source; generate foreground/midground/background separation before adding effects."
@@ -96,7 +119,7 @@ export function planCreativeExecution(input: {
 
   return {
     title: planTitle(medium, variation),
-    thesis: makeThesis(idea, medium, signatureMoment),
+    thesis: input.artDirection?.thesis ?? makeThesis(idea, medium, signatureMoment),
     medium,
     mediumLabel: mediumCopy.label,
     mediumReason: mediumCopy.reason,
@@ -105,7 +128,8 @@ export function planCreativeExecution(input: {
     validation,
     sceneMoves,
     productionOrder: [
-      "Lock the one-line experience thesis and signature moment.",
+      input.creativeDNA ? `Lock Creative DNA before craft: ${input.creativeDNA.northStar}` : "Lock the one-line experience thesis and signature moment.",
+      input.artDirection ? `Protect the Art Director rule: ${input.artDirection.visualRule}` : "Confirm one visual rule before secondary styling.",
       assetSummary.highestLeverageAssetToCreateFirst
         ? `Create or source ${assetSummary.highestLeverageAssetToCreateFirst} before spending time on secondary polish.`
         : "Confirm the registered hero assets selected by the scene asset plans.",
@@ -114,8 +138,19 @@ export function planCreativeExecution(input: {
       "Apply motion across the selected scene arc, then reduce anything that competes with the signature moment.",
       "Review mobile framing and performance before increasing visual complexity.",
     ],
-    risks: buildRisks(medium, { modelCount, imageCount, hasRig, sceneCount, blockedSceneCount: assetSummary.blockedScenes.length }),
+    risks: [
+      ...buildRisks(medium, { modelCount, imageCount, hasRig, sceneCount, blockedSceneCount: assetSummary.blockedScenes.length }),
+      ...(input.artDirection?.reject.slice(0,4) ?? []),
+    ].filter(uniqueString),
     signatureMoment,
+    creativeDirection:input.creativeDNA && input.artDirection && input.disciplineDirections ? {
+      northStar:input.creativeDNA.northStar,
+      artRule:input.artDirection.visualRule,
+      typography:input.disciplineDirections.typography.premise,
+      lighting:input.disciplineDirections.lighting.premise,
+      material:input.disciplineDirections.material.premise,
+      mutationQuestions:(input.mutations ?? []).slice(0,3).map((item)=>item.question),
+    } : undefined,
     patchSummary: sceneMoves.map((move) => {
       const create = move.assetPlan.assetsToCreate.length ? move.assetPlan.assetsToCreate.map((asset) => asset.name).join(", ") : "no required new assets";
       return `${String(move.sceneIndex + 1).padStart(2, "0")} ${move.label}: ${move.archetype} · ${move.assetPlan.executionMedium} · create ${create}`;
@@ -263,4 +298,9 @@ function rotate<T>(items: T[], amount: number) {
 
 function unique(values: number[]) {
   return [...new Set(values)];
+}
+
+
+function uniqueString(value:string,index:number,array:string[]) {
+  return value.length>0 && array.indexOf(value)===index;
 }
