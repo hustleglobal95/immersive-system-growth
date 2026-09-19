@@ -47,7 +47,13 @@ const projectId=options.project ? String(options.project) : undefined;
 if(!process.env.FORGE_VISUAL_CRITIC_URL) fail("FORGE_VISUAL_CRITIC_URL is required. Loop Engine fails closed without pairwise visual evidence.");
 
 await fs.mkdir(workRoot,{recursive:true});
-const source=await resolveSource({ projectId,experiencePath:options.experience ? String(options.experience) : undefined,workRoot });
+const source=await resolveSource({
+  projectId,
+  experiencePath:options.experience ? String(options.experience) : undefined,
+  manifestPath:options.manifest ? String(options.manifest) : undefined,
+  graphPath:options.graph ? String(options.graph) : undefined,
+  workRoot,
+});
 await fs.writeFile(currentIncumbentPath,JSON.stringify(source.experience,null,2)+"\n");
 await fs.writeFile(currentCandidatePath,JSON.stringify(source.experience,null,2)+"\n");
 await fs.writeFile(currentIncumbentManifestPath,JSON.stringify(source.assetManifest,null,2)+"\n");
@@ -447,22 +453,35 @@ async function writeReportWithCyclePreview(cycle) {
   const preview={...report,cycles:[...report.cycles,{...cycle,endedAt:cycle.endedAt ?? new Date().toISOString()}]};
   await fs.writeFile(reportPath,JSON.stringify(loopRunReportSchema.parse(preview),null,2)+"\n");
 }
-async function resolveSource({ projectId,experiencePath,workRoot }) {
+async function resolveSource({ projectId,experiencePath,manifestPath,graphPath,workRoot }) {
   if(projectId) {
     const snapshot=await readVaultProject(projectId);
     if(!snapshot) fail("Project Vault does not contain project "+projectId+". Save a checkpoint before running a project loop.");
-    const file=path.join(workRoot,"vault-source-experience.json");
-    await fs.writeFile(file,JSON.stringify(snapshot.experience,null,2)+"\n");
+    await fs.writeFile(path.join(workRoot,"vault-source-experience.json"),JSON.stringify(snapshot.experience,null,2)+"\n");
+    await fs.writeFile(path.join(workRoot,"vault-source-asset-manifest.json"),JSON.stringify(snapshot.assetManifest,null,2)+"\n");
+    await fs.writeFile(path.join(workRoot,"vault-source-interaction-graph.json"),JSON.stringify(snapshot.interactionGraph,null,2)+"\n");
     return {
       experience:snapshot.experience,
+      assetManifest:snapshot.assetManifest,
+      interactionGraph:snapshot.interactionGraph,
       label:"Project Vault "+projectId+" @ "+snapshot.versionId,
       versionId:snapshot.versionId,
       context:snapshot.project.name+". "+snapshot.experience.meta.description,
     };
   }
   const file=path.resolve(experiencePath || "config/experience.json");
+  const manifestFile=path.resolve(manifestPath || "config/asset-manifest.json");
+  const graphFile=path.resolve(graphPath || "config/interaction-graph.json");
   const experience=parseExperience(JSON.parse(await fs.readFile(file,"utf8")));
-  return { experience,label:file,context:(experience.meta?.name || "Forge experience")+". "+(experience.meta?.description || "") };
+  const assetManifest=parseAssetManifest(JSON.parse(await fs.readFile(manifestFile,"utf8")));
+  const interactionGraph=parseInteractionGraph(JSON.parse(await fs.readFile(graphFile,"utf8")));
+  return {
+    experience,
+    assetManifest,
+    interactionGraph,
+    label:file,
+    context:(experience.meta?.name || "Forge experience")+". "+(experience.meta?.description || ""),
+  };
 }
 async function recordVaultStart() {
   if(!projectId) return;
