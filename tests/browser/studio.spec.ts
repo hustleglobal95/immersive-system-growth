@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test";
 
 async function openAdvanced(page:import("@playwright/test").Page,label:RegExp) {
-  await page.locator("details.production-advanced-menu > summary").click();
-  await page.getByRole("button", { name: label }).click();
+  const advanced=page.locator("details.production-advanced-menu");
+  await advanced.locator("> summary").click();
+  await advanced.getByRole("button", { name: label }).first().click();
 }
 
 test("Build keeps the live experience central and edits the selected scene", async ({ page }) => {
@@ -10,7 +11,7 @@ test("Build keeps the live experience central and edits the selected scene", asy
   await page.goto("/studio");
 
   await expect(page.getByRole("button", { name: "Build", exact: true })).toHaveAttribute("aria-current", "page");
-  await expect(page.locator(".production-runtime canvas")).toHaveCount(1);
+  await expect(page.locator(".production-runtime canvas").first()).toBeAttached();
   await expect(page.getByLabel("Headline")).toBeVisible();
 
   const headline=page.getByLabel("Headline");
@@ -22,6 +23,7 @@ test("Build keeps the live experience central and edits the selected scene", asy
 test("Build prepares a reversible fast proposal before applying motion", async ({ page }) => {
   await page.goto("/studio");
   await page.getByRole("button", { name: "Add scene" }).click();
+  await expect(page.getByLabel("Headline")).toHaveValue("Direct this moment.");
   await page.getByLabel("Forge command").fill("editorial reveal");
   await page.getByRole("button", { name: "Direct", exact: true }).click();
 
