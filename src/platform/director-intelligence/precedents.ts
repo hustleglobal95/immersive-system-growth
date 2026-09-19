@@ -116,13 +116,38 @@ export function retrievePrecedents(brief: DirectorBrief, library: CreativePreced
 
 export function deconstructReference(label: string, lesson: string) {
   const clauses = lesson.split(/[.;]/).map((part) => part.trim()).filter(Boolean);
+  const lower=lesson.toLowerCase();
+  const evidenced=(terms:string[],fallback:string)=>terms.some((term)=>lower.includes(term))
+    ? clauses.find((clause)=>terms.some((term)=>clause.toLowerCase().includes(term))) ?? lesson
+    : fallback;
+  const unknown="Not evidenced in the supplied reference lesson; leave open rather than inventing a style.";
+
   return {
+    version:2 as const,
     label,
+    evidenceScope:"brief-reference-lesson-only" as const,
     problem: clauses[0] ?? lesson,
-    strongestPrinciple: clauses[1] ?? "Extract the underlying pacing or hierarchy principle, not the surface style.",
-    emotionalEffect: clauses[2] ?? "Unknown; treat as a hypothesis until reviewed.",
+    strongestPrinciple: clauses[1] ?? "Extract the underlying pacing, hierarchy or interaction principle, not the surface style.",
+    emotionalEffect: clauses[2] ?? "Unknown; treat emotional effect as a hypothesis until reviewed.",
     transferableLesson: clauses.slice(0, 2).join("; ") || lesson,
-    doNotCopy: ["surface palette", "typeface", "distinctive composition", "signature interaction"],
-    similarityRisk: clauses.length < 2 ? "high" : "medium",
+    lenses:{
+      composition:evidenced(["composition","grid","frame","space","layout","crop","scale"],unknown),
+      typography:evidenced(["type","typography","headline","text","glyph","font"],unknown),
+      camera:evidenced(["camera","lens","shot","horizon","orbit","dolly","crane","macro"],unknown),
+      motion:evidenced(["motion","scroll","timing","easing","pace","reveal","animation"],unknown),
+      color:evidenced(["color","palette","grade","temperature","contrast"],unknown),
+      image:evidenced(["image","photo","film","video","crop","photography"],unknown),
+      material:evidenced(["material","glass","metal","stone","fabric","surface","texture"],unknown),
+      interaction:evidenced(["interaction","hover","drag","pointer","click","navigation","cursor"],unknown),
+      transitions:evidenced(["transition","threshold","handoff","wipe","mask","cross"],unknown),
+      density:evidenced(["density","dense","sparse","silence","whitespace","space"],unknown),
+      narrative:evidenced(["story","narrative","journey","sequence","chapter","arrival"],unknown),
+      signatureMechanism:evidenced(["signature","memorable","climax","moment","transformation"],unknown),
+      mobile:evidenced(["mobile","phone","portrait","responsive","touch"],unknown),
+    },
+    transferRule:"Transfer the causal principle into Forge's own project-specific Creative DNA. Never transfer the reference's exact composition, palette, typeface or signature interaction as a bundle.",
+    doNotCopy:["surface palette","typeface","distinctive composition","signature interaction","brand-owned asset","exact transition sequence"],
+    similarityRisk:clauses.length<2 ? "high" : clauses.length<4 ? "medium" : "low",
+    confidence:Number(Math.min(.9,.35+Math.min(5,clauses.length)*.1).toFixed(2)),
   };
 }
