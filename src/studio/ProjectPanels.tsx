@@ -1,4 +1,6 @@
 "use client";
+import { writeStored } from "@/src/lib/useClientValue";
+import { STUDIO_GUIDE_SHIP_KEY } from "@/src/studio/StudioWorkflowGuide";
 
 import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import type { ExperienceConfig } from "@/src/types/experience";
@@ -126,6 +128,7 @@ export function PublishPanel({ project, setProject, experience, assetManifest, v
       const response = await fetch("/api/studio/publish", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ experience, project, assetManifest, title, summary }) });
       const body = await response.json() as { ok?: boolean; error?: string; url?: string; number?: number };
       if (!response.ok || !body.ok) throw new Error(body.error ?? "Publishing failed");
+      writeStored(STUDIO_GUIDE_SHIP_KEY, project.id);
       setResult({ message: `Review #${body.number} created successfully.`, url: body.url });
     } catch (error) {
       setResult({ message: error instanceof Error ? error.message : "Publishing failed" });
