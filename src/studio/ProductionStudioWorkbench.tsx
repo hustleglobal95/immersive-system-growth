@@ -31,6 +31,7 @@ import { compileIntent, compiledCapability } from "@/src/platform/control-plane/
 import { recommendNextActions, type NextAction } from "@/src/platform/control-plane/nextAction";
 import { evaluateProjectHealth } from "@/src/platform/control-plane/projectHealth";
 import { prepareFastProposal } from "@/src/platform/control-plane/fastProposal";
+import { attachVerifiedLoopCandidate, type VerifiedLoopCandidate } from "@/src/platform/control-plane/deepCandidate";
 import { ControlPlaneReview } from "@/src/studio/ControlPlaneReview";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig, MotionTrack, SceneDefinition, Vec3 } from "@/src/types/experience";
@@ -40,8 +41,9 @@ const initialProject = parseStudioProject(rawProject);
 const initialManifest = rawAssetManifest as AssetManifest;
 const initialGraph = parseInteractionGraph(rawInteractionGraph);
 
-const workspaces = ["Create", "Motion", "Interact", "Assets", "Ship"] as const;
-type Workspace = (typeof workspaces)[number];
+const primarySurfaces = ["Build", "Review", "Ship"] as const;
+type StudioSurface = (typeof primarySurfaces)[number];
+type Workspace = "Motion" | "Interact" | "Assets" | "Telemetry";
 type LeftMode = "Scenes" | "Structure" | "Assets";
 type Selection = ForgeSelection;
 
@@ -49,7 +51,8 @@ type ProjectKind = "real-estate" | "product" | "hospitality" | "automotive" | "f
 
 export function ProductionStudioWorkbench() {
   const draft = useStudioDraft(initialExperience, initialProject, initialManifest, initialGraph);
-  const [workspace, setWorkspace] = useState<Workspace>("Create");
+  const [surface, setSurface] = useState<StudioSurface>("Build");
+  const [workspace, setWorkspace] = useState<Workspace>("Motion");
   const [leftMode, setLeftMode] = useState<LeftMode>("Scenes");
   const [activeScene, setActiveScene] = useState(0);
   const [selection, setSelection] = useState<Selection>({ kind: "scene", index: 0 });
@@ -68,6 +71,9 @@ export function ProductionStudioWorkbench() {
   const [requestedLoop, setRequestedLoop] = useState<string | undefined>();
   const [preparedProposal, setPreparedProposal] = useState<ForgeProposal | null>(null);
   const [candidateExperience, setCandidateExperience] = useState<ExperienceConfig | null>(null);
+  const [candidateAssetManifest, setCandidateAssetManifest] = useState<AssetManifest | null>(null);
+  const [candidateInteractionGraph, setCandidateInteractionGraph] = useState<typeof initialGraph | null>(null);
+  const [rollbackBundle, setRollbackBundle] = useState<{experience:ExperienceConfig;assetManifest:AssetManifest;interactionGraph:typeof initialGraph}|null>(null);
   const [previewMode, setPreviewMode] = useState<"current"|"candidate">("current");
   const importRef = useRef<HTMLInputElement>(null);
 
@@ -131,9 +137,9 @@ export function ProductionStudioWorkbench() {
     setSelection({ kind: "scene", index });
   };
 
-  // The cockpit is the Create screen; its advanced controls live in the Motion workspace tab.
-  const openAdvanced = () => {
-    setWorkspace((current) => (current === "Create" ? "Motion" : current));
+  // Build is the default product surface; specialist editors are summoned under Advanced.
+  const openAdvanced = (target:Workspace="Motion") => {
+    setWorkspace(target);
     setAdvanced(true);
   };
 
@@ -204,8 +210,12 @@ export function ProductionStudioWorkbench() {
     }
 
     const proposal=createProposalDraft({id,createdAt,capability,context:selectionContext,intent,source});
-    setPreparedProposal(proposal);
+    const routedProposal=dispatch.type==="loop" ? {...proposal,state:"verifying" as const} : proposal;
+    setPreparedProposal(routedProposal);
     setCandidateExperience(null);
+    setCandidateAssetManifest(null);
+    setCandidateInteractionGraph(null);
+    setRollbackBundle(null);
     setPreviewMode("current");
 
     if(dispatch.type==="select") {
@@ -230,19 +240,59 @@ export function ProductionStudioWorkbench() {
 
   const acceptCandidate = () => {
     if(!candidateExperience || !preparedProposal) return;
+    setRollbackBundle({
+      experience:draft.experience,
+      assetManifest:draft.assetManifest,
+      interactionGraph:draft.interactionGraph,
+    });
     draft.setExperience(candidateExperience);
+    if(candidateAssetManifest) draft.setAssetManifest(candidateAssetManifest);
+    if(candidateInteractionGraph) draft.setInteractionGraph(candidateInteractionGraph);
     setPreparedProposal({...preparedProposal,state:"accepted"});
     setCandidateExperience(null);
+    setCandidateAssetManifest(null);
+    setCandidateInteractionGraph(null);
     setPreviewMode("current");
-    setNotice(`${preparedProposal.intent.raw} accepted. The prior experience remains available through Undo.`);
+    setNotice(`${preparedProposal.intent.raw} accepted into the working draft. Vault/production state is unchanged.`);
   };
 
   const rejectCandidate = () => {
     const label=preparedProposal?.intent.raw;
     setPreparedProposal(null);
     setCandidateExperience(null);
+    setCandidateAssetManifest(null);
+    setCandidateInteractionGraph(null);
+    setRollbackBundle(null);
     setPreviewMode("current");
     if(label) setNotice(`${label} rejected. Working project unchanged.`);
+  };
+
+  const revertAcceptedProposal = () => {
+    if(!rollbackBundle || !preparedProposal) return;
+    draft.setExperience(rollbackBundle.experience);
+    draft.setAssetManifest(rollbackBundle.assetManifest);
+    draft.setInteractionGraph(rollbackBundle.interactionGraph);
+    setRollbackBundle(null);
+    setPreparedProposal({...preparedProposal,state:"rejected"});
+    setNotice(`${preparedProposal.intent.raw} reverted. The prior working project state was restored.`);
+  };
+
+  const loadVerifiedLoopCandidate = (candidate:VerifiedLoopCandidate) => {
+    if(!preparedProposal) {
+      setNotice("The verified Loop result has no active Control Plane proposal to attach to.");
+      return;
+    }
+    try {
+      const proposal=attachVerifiedLoopCandidate(preparedProposal,candidate);
+      setPreparedProposal(proposal);
+      setCandidateExperience(candidate.experience);
+      setCandidateAssetManifest(candidate.assetManifest);
+      setCandidateInteractionGraph(candidate.interactionGraph);
+      setPreviewMode("candidate");
+      setNotice(`${candidate.loopId} returned a verified winning candidate. Compare it before accepting.`);
+    } catch(error) {
+      setNotice(error instanceof Error ? error.message : "Could not attach verified Loop evidence.");
+    }
   };
 
   const addScene = () => {
