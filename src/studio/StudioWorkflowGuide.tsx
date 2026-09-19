@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { readStored, useClientValue } from "@/src/lib/useClientValue";
+import { readStored, useClientValue, useStoredValue } from "@/src/lib/useClientValue";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig } from "@/src/types/experience";
 import type { StudioProject } from "@/src/platform/studioSchema";
 
 export const STUDIO_GUIDE_BRIEF_KEY = "forge-studio-guide-brief-v1";
+export const STUDIO_GUIDE_SHIP_KEY = "forge-studio-guide-shipped-project-v1";
 const BRIEF_KEY = STUDIO_GUIDE_BRIEF_KEY;
 
 type StepId = "idea" | "assets" | "structure" | "motion" | "review" | "ship";
@@ -37,6 +38,7 @@ export function StudioWorkflowGuide({
   // Read the stored brief during render rather than setting it from an effect, so the guide
   // never renders an empty textarea for a frame and then replaces it.
   const storedBrief = useClientValue(() => readStored(BRIEF_KEY), "");
+  const shippedProjectId = useStoredValue(STUDIO_GUIDE_SHIP_KEY);
   const dialogRef = useRef<HTMLElement>(null);
   useEffect(() => { dialogRef.current?.focus(); }, []);
   useEffect(() => {
@@ -70,7 +72,7 @@ export function StudioWorkflowGuide({
     structure: customStructure,
     motion: hasMotion,
     review: isReviewable,
-    ship: false,
+    ship: shippedProjectId === project.id,
   };
 
   const nextStep = useMemo<StepId>(() => {
@@ -101,8 +103,8 @@ export function StudioWorkflowGuide({
 
       <section className="workflow-guide__next">
         <span>DO THIS NEXT</span>
-        <strong>{stepTitle(nextStep)}</strong>
-        <p>{stepDescription(nextStep)}</p>
+        <strong>{status.ship ? "Project shipped." : stepTitle(nextStep)}</strong>
+        <p>{status.ship ? "The review handoff was created successfully. Reopen Ship whenever you need another review or release." : stepDescription(nextStep)}</p>
       </section>
 
       <div className="workflow-guide__steps">
@@ -128,7 +130,7 @@ export function StudioWorkflowGuide({
           <button type="button" onClick={onOpenCreate}>Review live preview</button>
         </GuideStep>
 
-        <GuideStep number="06" done={false} title="Publish when it is ready" description="Finish through Guided Ship. Workspace setup and engineering controls stay behind Advanced so authors can review and hand off without learning build commands or deployment internals.">
+        <GuideStep number="06" done={status.ship} title="Publish when it is ready" description="Finish through Guided Ship. Workspace setup and engineering controls stay behind Advanced so authors can review and hand off without learning build commands or deployment internals.">
           <button type="button" className="workflow-guide__primary" onClick={onOpenShip}>Review & publish</button>
         </GuideStep>
       </div>
