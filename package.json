@@ -99,7 +99,8 @@
     "internal:user-hash": "node scripts/hash-internal-secret.mjs",
     "internal:readiness": "node scripts/internal-readiness.mjs",
     "loop:list": "node --import tsx scripts/loop-list.mjs",
-    "loop:run": "node --import tsx scripts/loop-run.mjs"
+    "loop:run": "node --import tsx scripts/loop-run.mjs",
+    "loop:accept": "node --import tsx scripts/loop-accept.mjs"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "5.3.0",
