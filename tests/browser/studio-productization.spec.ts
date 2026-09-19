@@ -71,7 +71,7 @@ test("Improvement evidence keeps the Loop Engine behind the simplified surface",
   await expect(dialog.getByText(/Production is never overwritten by the loop/)).toBeVisible();
   await dialog.getByRole("button", { name: "Performance" }).click();
   await expect(dialog.getByText("EXECUTABLE LOOP")).toBeVisible();
-  await expect(dialog.getByRole("button", { name: "Load verified candidate" })).toBeVisible();
+  await expect(dialog.getByRole("button", { name: "Start from a proposal to compare" })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0);
 });
