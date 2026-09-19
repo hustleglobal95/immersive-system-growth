@@ -42,7 +42,9 @@ export function LoopEnginePanel({
   useEffect(()=>{ dialogRef.current?.focus(); },[]);
   useEffect(()=>{
     const next=loopDefinitions.find((item)=>item.id===initialLoopId)?.id;
-    if(next) setSelectedId(next);
+    let cancelled=false;
+    if(next) queueMicrotask(()=>{ if(!cancelled) setSelectedId(next); });
+    return ()=>{ cancelled=true; };
   },[initialLoopId]);
   useEffect(()=>{
     const onKey=(event:KeyboardEvent)=>{ if(event.key==="Escape") onClose(); };
@@ -71,7 +73,7 @@ export function LoopEnginePanel({
       queueMicrotask(()=>{ if(!cancelled) setVaultSnapshot(null); });
       return ()=>{ cancelled=true; };
     }
-    setVaultSnapshot(undefined);
+    queueMicrotask(()=>{ if(!cancelled) setVaultSnapshot(undefined); });
     void fetch(`/api/studio/vault/projects/${encodeURIComponent(projectId)}`,{cache:"no-store"})
       .then(async(response)=>{
         const body=await response.json() as {ok?:boolean;snapshot?:ControlPlaneProjectState;error?:string};
