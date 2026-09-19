@@ -49,14 +49,14 @@ export async function verifyStudioUserSecret(user: z.infer<typeof userSchema>, s
 }
 
 export async function createStudioSessionToken(identity: StudioIdentity, sessionSecret: string, expiresAt = Math.floor(Date.now() / 1000) + SESSION_SECONDS) {
-  if (!sessionSecret) throw new StudioAccessError("FORGE_INTERNAL_SESSION_SECRET is not configured", 503);
+  if (sessionSecret.length < 32) throw new StudioAccessError("FORGE_INTERNAL_SESSION_SECRET must be at least 32 characters", 503);
   const payload = toBase64Url(encoder.encode(JSON.stringify({ ...identity, exp: expiresAt })));
   const signature = await hmac(sessionSecret, payload);
   return payload + "." + toBase64Url(signature);
 }
 
 export async function verifyStudioSessionToken(token: string, sessionSecret: string): Promise<StudioIdentity | null> {
-  if (!token || !sessionSecret) return null;
+  if (!token || sessionSecret.length < 32) return null;
   const [payload, rawSignature] = token.split(".");
   if (!payload || !rawSignature) return null;
   const expected = await hmac(sessionSecret, payload);
