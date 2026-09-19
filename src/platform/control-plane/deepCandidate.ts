@@ -11,6 +11,7 @@ export interface VerifiedLoopCandidate {
   sourceVersionId?:string;
   proposalId:string;
   selectionKey:string;
+  baselineFingerprint:string;
   fingerprint:string;
   repairSummary:string[];
   preferenceAgreement:number|null;
@@ -25,6 +26,7 @@ export function attachVerifiedLoopCandidate(proposal:ForgeProposal,candidate:Ver
   if(capability.dispatch.loop!==candidate.loopId) throw new Error("Loop result does not match the proposal capability.");
   if(candidate.proposalId!==proposal.id) throw new Error("Loop result belongs to a different Control Plane proposal.");
   if(candidate.selectionKey!==proposal.selectionKey) throw new Error("Loop result belongs to a different selected target.");
+  if(!proposal.baselineFingerprint || candidate.baselineFingerprint!==proposal.baselineFingerprint) throw new Error("Loop result belongs to a different working-project baseline.");
   const detail=`Verified by ${candidate.loopId} run ${candidate.runId}; candidate survived all required hard gates and pairwise acceptance.`;
   return {
     ...proposal,
