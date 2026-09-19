@@ -38,7 +38,7 @@ npm run interaction:validate
 npm run content:sync -- config/studio-project.json
 ```
 
-Read [Studio](docs/STUDIO.md), [internal product operations](docs/INTERNAL_PRODUCT.md), [motion sequencer](docs/MOTION_SEQUENCER.md), [interaction graph](docs/INTERACTION_GRAPH.md), [mask reveals](docs/MASK_REVEALS.md), [integrations](docs/INTEGRATIONS.md), [telemetry](docs/TELEMETRY.md) and [deployment](docs/DEPLOYMENT.md) before configuring external systems.
+Read [Studio](docs/STUDIO.md), [internal product operations](docs/INTERNAL_PRODUCT.md), [Loop Engine](docs/LOOP_ENGINE.md), [motion sequencer](docs/MOTION_SEQUENCER.md), [interaction graph](docs/INTERACTION_GRAPH.md), [mask reveals](docs/MASK_REVEALS.md), [integrations](docs/INTEGRATIONS.md), [telemetry](docs/TELEMETRY.md) and [deployment](docs/DEPLOYMENT.md) before configuring external systems.
 
 ## Runtime interaction targets
 
