@@ -25,6 +25,9 @@ import { StudioVaultPanel } from "@/src/studio/StudioVaultPanel";
 import { StudioIdentityBadge } from "@/src/studio/StudioIdentityBadge";
 import { LoopEnginePanel } from "@/src/studio/LoopEnginePanel";
 import { analyzeAssetManifest } from "@/src/platform/assetIntelligence";
+import { capabilitiesForContext, type ResolvedCapability } from "@/src/platform/control-plane/capabilityRegistry";
+import { createProposalDraft, type ForgeProposal } from "@/src/platform/control-plane/proposal";
+import { resolveSelectionContext, type ForgeSelection, type SelectionContext } from "@/src/platform/control-plane/selectionContext";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig, MotionTrack, SceneDefinition, Vec3 } from "@/src/types/experience";
 
@@ -36,12 +39,7 @@ const initialGraph = parseInteractionGraph(rawInteractionGraph);
 const workspaces = ["Create", "Motion", "Interact", "Assets", "Ship"] as const;
 type Workspace = (typeof workspaces)[number];
 type LeftMode = "Scenes" | "Structure" | "Assets";
-type Selection =
-  | { kind: "scene"; index: number }
-  | { kind: "camera"; index: number }
-  | { kind: "node"; index: number; name: string }
-  | { kind: "asset"; index: number }
-  | { kind: "environment"; index: number };
+type Selection = ForgeSelection;
 
 type ProjectKind = "real-estate" | "product" | "hospitality" | "automotive" | "fashion" | "custom";
 
@@ -63,13 +61,23 @@ export function ProductionStudioWorkbench() {
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [vaultOpen, setVaultOpen] = useState(false);
   const [loopOpen, setLoopOpen] = useState(false);
+  const [requestedLoop, setRequestedLoop] = useState<string | undefined>();
+  const [preparedProposal, setPreparedProposal] = useState<ForgeProposal | null>(null);
   const importRef = useRef<HTMLInputElement>(null);
 
   const sceneIndex = Math.min(activeScene, draft.experience.scenes.length - 1);
   const scene = draft.experience.scenes[sceneIndex];
   const rigNodes = draft.experience.productRig?.nodes ?? [];
-  const selectionLabel = useMemo(() => labelForSelection(selection, draft.experience), [selection, draft.experience]);
   const assetIntelligence = useMemo(() => analyzeAssetManifest(draft.assetManifest), [draft.assetManifest]);
+  const selectionContext = useMemo(() => resolveSelectionContext({
+    experience:draft.experience,
+    manifest:draft.assetManifest,
+    graph:draft.interactionGraph,
+    selection,
+    validationIssues:draft.validation,
+  }), [draft.assetManifest, draft.experience, draft.interactionGraph, draft.validation, selection]);
+  const selectionCapabilities = useMemo(() => capabilitiesForContext(selectionContext), [selectionContext]);
+  const selectionLabel = selectionContext.label;
   const guideBrief = useClientValue(() => readStored(STUDIO_GUIDE_BRIEF_KEY), "");
   const guideSeen = useClientValue(() => readStored("forge-studio-guided-first-run-v1"), "");
   const shippedProjectId = useStoredValue(STUDIO_GUIDE_SHIP_KEY);
@@ -160,6 +168,44 @@ export function ProductionStudioWorkbench() {
   const resetSceneMotion = () => {
     updateScene(draft.setExperience, sceneIndex, (current) => ({ ...current, motionTracks: [] }));
     setNotice(`Motion cleared from ${scene.label}.`);
+  };
+
+  const runCapability = (capability: ResolvedCapability) => {
+    const proposal=createProposalDraft({
+      id:`proposal-${Date.now()}`,
+      createdAt:new Date().toISOString(),
+      capability,
+      context:selectionContext,
+      intent:capability.label,
+      source:"semantic-action",
+    });
+    setPreparedProposal(proposal);
+
+    const dispatch=capability.dispatch;
+    if(dispatch.type==="select") {
+      if(dispatch.target==="camera") setSelection({kind:"camera",index:sceneIndex});
+      setNotice(`${capability.label} selected.`);
+      return;
+    }
+    if(dispatch.type==="fast-action") {
+      if(dispatch.action==="compose-motion") applyArchetype();
+      else if(dispatch.action==="build-node" && selection.kind==="node") buildSelectedNode(selection.name);
+      setNotice(`${capability.label} applied as an instant reversible action.`);
+      return;
+    }
+    if(dispatch.type==="workspace") {
+      setWorkspace(dispatch.workspace);
+      setAdvanced(true);
+      setNotice(`${capability.label} opened in ${capability.advancedSurface ?? dispatch.workspace}.`);
+      return;
+    }
+    if(dispatch.type==="route") {
+      window.location.assign(dispatch.href);
+      return;
+    }
+    setRequestedLoop(dispatch.loop);
+    setLoopOpen(true);
+    setNotice(`${capability.label} prepared as a preview-required proposal.`);
   };
 
   const addScene = () => {
@@ -362,7 +408,7 @@ export function ProductionStudioWorkbench() {
           {workspaces.map((item) => <button key={item} type="button" aria-current={workspace === item ? "page" : undefined} onClick={() => { setWorkspace(item); setAdvanced(item !== "Create"); }}>{item}</button>)}
         </nav>
         <div className="production-top-actions">
-          <button id="studio-guided-build-button" type="button" className="production-guided-button" onClick={() => setGuidedOpen(true)}><span>Guided Build</span><strong>{workflow.completed}/6</strong></button><button type="button" className="production-vault-button" onClick={() => setVaultOpen(true)}>Vault</button><button type="button" className="production-loop-button" onClick={() => setLoopOpen(true)}>Loops</button>
+          <button id="studio-guided-build-button" type="button" className="production-guided-button" onClick={() => setGuidedOpen(true)}><span>Guided Build</span><strong>{workflow.completed}/6</strong></button><button type="button" className="production-vault-button" onClick={() => setVaultOpen(true)}>Vault</button><button type="button" className="production-loop-button" onClick={() => { setRequestedLoop(undefined); setLoopOpen(true); }}>Loops</button>
           <span className="production-status" data-valid={!draft.validation.length}><i />{draft.validation.length ? `${draft.validation.length} issue` : "Ready"}</span>
           <details className="production-assist"><summary>Assist</summary><div><Link href="/studio/agent"><strong>Creative Agent</strong><span>Turn the idea into a production strategy.</span></Link><Link href="/director"><strong>Director</strong><span>Critique and strengthen the creative direction.</span></Link><Link href="/studio/assets/create"><strong>Asset Creator</strong><span>Create a missing image, video or 3D asset.</span></Link></div></details>
           <details><summary>Project</summary><div><button type="button" onClick={() => setLoopOpen(true)}>Loop Engine</button><button type="button" onClick={() => setVaultOpen(true)}>Project Vault</button><button type="button" onClick={() => setNewProjectOpen(true)}>New project</button><button type="button" onClick={() => importRef.current?.click()}>Import</button><button type="button" onClick={draft.reset}>Reset local draft</button></div></details>
@@ -404,16 +450,10 @@ export function ProductionStudioWorkbench() {
           <aside className="production-right">
             <div className="production-panel-title"><div><span>INSPECTOR</span><strong>{selectionLabel}</strong></div><button type="button" aria-label="Open advanced inspector" onClick={openAdvanced}>•••</button></div>
             <ContextualDirection
-              selection={selection}
-              experience={draft.experience}
-              manifest={draft.assetManifest}
-              assetScore={assetIntelligence.score}
-              sceneIndex={sceneIndex}
-              onSelect={setSelection}
-              onApplyMotion={() => applyArchetype()}
-              onBuildNode={buildSelectedNode}
-              onWorkspace={(next) => { setWorkspace(next); setAdvanced(true); }}
-              onLoops={() => setLoopOpen(true)}
+              context={selectionContext}
+              capabilities={selectionCapabilities}
+              proposal={preparedProposal}
+              onCapability={runCapability}
             />
             <Inspector selection={selection} experience={draft.experience} setExperience={draft.setExperience} sceneIndex={sceneIndex} archetype={archetype} setArchetype={setArchetype} applyArchetype={applyArchetype} buildSelectedNode={buildSelectedNode} resetSceneMotion={resetSceneMotion} openAdvanced={openAdvanced} setWorkspace={setWorkspace} />
           </aside>
@@ -440,7 +480,7 @@ export function ProductionStudioWorkbench() {
           </div>
         </section>
       </div>}
-      {loopOpen && <LoopEnginePanel projectId={draft.project.id} projectName={draft.project.name} onClose={() => setLoopOpen(false)} onOpenVault={() => { setLoopOpen(false); setVaultOpen(true); }} />}
+      {loopOpen && <LoopEnginePanel projectId={draft.project.id} projectName={draft.project.name} initialLoopId={requestedLoop} onClose={() => setLoopOpen(false)} onOpenVault={() => { setLoopOpen(false); setVaultOpen(true); }} />}
       {vaultOpen && <StudioVaultPanel draft={draft} onClose={() => setVaultOpen(false)} />}
       {newProjectOpen && <NewProjectDialog name={newName} setName={setNewName} kind={newKind} setKind={setNewKind} onCreate={createProject} onClose={() => setNewProjectOpen(false)} />}
     </main>
@@ -454,60 +494,44 @@ function Navigator({ mode, experience, manifest, activeScene, selection, onSelec
   return <div className="production-tree">{assets.length ? assets.map((asset, index) => <button type="button" key={`${asset.kind}-${asset.path}`} className={selection.kind === "asset" && selection.index === index ? "active" : ""} onClick={() => onSelect({ kind: "asset", index })}><span>▧</span><strong>{asset.path.split("/").pop()}</strong><small>{asset.kind}</small></button>) : <p className="production-empty">No banked assets yet. Import assets to begin.</p>}</div>;
 }
 
-function ContextualDirection({ selection, experience, manifest, assetScore, sceneIndex, onSelect, onApplyMotion, onBuildNode, onWorkspace, onLoops }: {
-  selection: Selection;
-  experience: ExperienceConfig;
-  manifest: AssetManifest;
-  assetScore: number;
-  sceneIndex: number;
-  onSelect: (value: Selection) => void;
-  onApplyMotion: () => void;
-  onBuildNode: (node: string) => void;
-  onWorkspace: (value: Workspace) => void;
-  onLoops: () => void;
+function ContextualDirection({ context, capabilities, proposal, onCapability }: {
+  context: SelectionContext;
+  capabilities: ResolvedCapability[];
+  proposal: ForgeProposal | null;
+  onCapability: (capability: ResolvedCapability) => void;
 }) {
-  const scene=experience.scenes[sceneIndex];
-  const motionCount=scene.motionTracks.length;
-  const mediaKind=scene.media?.kind;
-  const assetCount=manifest.models.length+manifest.textures.length+manifest.hdr.length+manifest.video.length;
+  const directionLabel=context.kind==="camera" ? "CAMERA DIRECTION"
+    : context.kind==="node" ? "OBJECT DIRECTION"
+      : context.kind==="asset" ? "ASSET DIRECTION"
+        : context.kind==="environment" ? "ENVIRONMENT DIRECTION"
+          : "SCENE DIRECTION";
+  const highestIssue=context.issues.find((issue)=>issue.severity==="blocker")
+    ?? context.issues.find((issue)=>issue.severity==="warning")
+    ?? context.issues[0];
+  const primary=capabilities.slice(0,3);
+  const activeProposal=proposal?.selectionKey===context.selectionKey ? proposal : null;
 
-  if(selection.kind==="camera") return <section className="production-context" data-kind="camera">
-    <span>CAMERA DIRECTION</span><strong>{scene.camera.path} shot · {scene.camera.from.fov}° → {scene.camera.to.fov}°</strong>
-    <p>Shape framing first, then coordinate object and typography motion around the shot instead of animating them independently.</p>
-    <div><button type="button" className="primary" onClick={onApplyMotion}>Coordinate motion</button><button type="button" onClick={() => onWorkspace("Motion")}>Fine tune shot</button><Link href="/director">Ask Director</Link></div>
-  </section>;
-
-  if(selection.kind==="node") {
-    const tracks=scene.motionTracks.filter((track)=>track.target.startsWith(`rig:${selection.name}:`)).length;
-    return <section className="production-context" data-kind="node">
-      <span>OBJECT DIRECTION</span><strong>{tracks ? `${tracks} authored track${tracks===1?"":"s"}` : "No authored behavior yet"}</strong>
-      <p>{tracks ? "Refine this node only if the change strengthens the scene beat; keep the rest pose authoritative." : "Give this part one reversible entrance/reveal before adding secondary movement."}</p>
-      <div><button type="button" className="primary" onClick={() => onBuildNode(selection.name)}>Build + reveal</button><button type="button" onClick={() => onWorkspace("Motion")}>Open tracks</button><button type="button" onClick={() => onWorkspace("Assets")}>Inspect model</button></div>
-    </section>;
-  }
-
-  if(selection.kind==="asset") return <section className="production-context" data-kind="asset">
-    <span>ASSET DIRECTION</span><strong>{Math.round(assetScore)}/100 manifest health</strong>
-    <p>{assetScore<75 ? "Asset pressure needs attention before more visual complexity is added." : "The manifest is inside its current budget envelope; verify the selected asset against its actual camera role."}</p>
-    <div><button type="button" className="primary" onClick={() => onWorkspace("Assets")}>Inspect + optimize</button><Link href="/studio/assets/create">Create variant</Link><button type="button" onClick={onLoops}>Run improvement loop</button></div>
-  </section>;
-
-  if(selection.kind==="environment") return <section className="production-context" data-kind="environment">
-    <span>ENVIRONMENT DIRECTION</span><strong>{scene.post.bloom>0.35 ? "High effect pressure" : "Controlled atmosphere"}</strong>
-    <p>Lighting, exposure and post should support the subject hierarchy. Treat bloom and atmosphere as scene structure, not decoration.</p>
-    <div><button type="button" className="primary" onClick={() => onWorkspace("Motion")}>Sequence atmosphere</button><button type="button" onClick={onLoops}>Performance / polish loops</button></div>
-  </section>;
-
-  return <section className="production-context" data-kind="scene">
-    <span>SCENE DIRECTION</span>
-    <strong>{motionCount ? `${motionCount} motion track${motionCount===1?"":"s"} · ${mediaKind ?? "3D"} scene` : "Direction before detail"}</strong>
-    <p>{motionCount ? "The scene has authored motion. Refine the camera, focal hierarchy or interaction only where the current beat needs more intent." : "This scene is structurally valid but still static. Establish one coordinated motion idea before adding micro-effects."}</p>
+  return <section className="production-context" data-kind={context.kind}>
+    <span>{directionLabel}</span>
+    <strong>{context.summary}</strong>
+    <p>{highestIssue?.message ?? primary[0]?.description ?? "Forge has enough context to direct this selection without exposing subsystem machinery first."}</p>
     <div>
-      <button type="button" className="primary" onClick={() => onSelect({kind:"camera",index:sceneIndex})}>Direct camera</button>
-      <button type="button" onClick={onApplyMotion}>{motionCount ? "Re-compose motion" : "Compose motion"}</button>
-      <button type="button" onClick={() => onWorkspace("Interact")}>Add behavior</button>
+      {primary.map((capability,index)=><button
+        key={capability.id}
+        type="button"
+        className={index===0 ? "primary" : undefined}
+        title={capability.description}
+        data-capability={capability.id}
+        data-risk={capability.riskClass}
+        onClick={()=>onCapability(capability)}
+      >{capability.label}</button>)}
     </div>
-    <small>{assetCount ? `${assetCount} registered asset${assetCount===1?"":"s"} · manifest health ${Math.round(assetScore)}/100` : "No assets registered yet"}</small>
+    <small>{context.signals.join(" · ")}</small>
+    {activeProposal && <div className="production-context__proposal" data-risk={activeProposal.riskClass}>
+      <span>PROPOSAL · {activeProposal.riskClass.replaceAll("-"," ").toUpperCase()}</span>
+      <strong>{activeProposal.intent.raw}</strong>
+      <small>{activeProposal.verification.required.length ? `Verify: ${activeProposal.verification.required.join(" · ")}` : "No verification gate required before routing."}</small>
+    </div>}
   </section>;
 }
 
@@ -571,12 +595,6 @@ function scenePreviewStyle(scene: SceneDefinition) {
   return { background: `linear-gradient(135deg, ${scene.world.background}, #262b31)` };
 }
 
-function labelForSelection(selection: Selection, experience: ExperienceConfig) {
-  if (selection.kind === "node") return selection.name;
-  if (selection.kind === "camera") return "Camera";
-  if (selection.kind === "environment") return "Environment";
-  if (selection.kind === "asset") return "Asset";
-  return experience.scenes[Math.min(selection.index, experience.scenes.length - 1)]?.label ?? "Scene";
-}
+
 
 function slug(value: string) { return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 64); }
