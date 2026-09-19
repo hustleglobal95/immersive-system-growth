@@ -8,6 +8,9 @@ import type { CreativeTasteLayers } from "@/src/platform/director-intelligence/c
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
 
+const TASTE_ROOT=path.join(process.cwd(),"forge-intelligence","taste");
+const MEMORY_ROOT=path.join(process.cwd(),"forge-intelligence","projects");
+
 export async function GET(request:Request) {
   try {
     const identity=await requireStudioRole(request,"reviewer");
@@ -17,10 +20,10 @@ export async function GET(request:Request) {
     const projectId=slug(projectName);
 
     const [studio,operator,project,memoryGraphs]=await Promise.all([
-      readTaste("forge-intelligence/taste/profile.json"),
-      readTaste(`forge-intelligence/taste/operators/${slug(identity.id)}.json`),
-      readTaste(`forge-intelligence/taste/projects/${projectId}.json`),
-      readMemoryDirectory("forge-intelligence/projects",projectId),
+      readStudioTaste(),
+      readOperatorTaste(identity.id),
+      readProjectTaste(projectId),
+      readMemoryDirectory(projectId),
     ]);
     const tasteLayers:CreativeTasteLayers={
       ...(studio ? {studio}:{}),
@@ -48,9 +51,21 @@ export async function GET(request:Request) {
   }
 }
 
-async function readTaste(file:string):Promise<TasteProfile|undefined> {
+async function readStudioTaste():Promise<TasteProfile|undefined> {
+  return readTasteFile(path.join(TASTE_ROOT,"profile.json"));
+}
+
+async function readOperatorTaste(operatorId:string):Promise<TasteProfile|undefined> {
+  return readTasteFile(path.join(TASTE_ROOT,"operators",`${slug(operatorId)}.json`));
+}
+
+async function readProjectTaste(projectId:string):Promise<TasteProfile|undefined> {
+  return readTasteFile(path.join(TASTE_ROOT,"projects",`${slug(projectId)}.json`));
+}
+
+async function readTasteFile(file:string):Promise<TasteProfile|undefined> {
   try {
-    const value=JSON.parse(await fs.readFile(path.resolve(process.cwd(),file),"utf8"));
+    const value=JSON.parse(await fs.readFile(file,"utf8"));
     return normalizeTaste(value);
   } catch(error) {
     if(isMissing(error)) return undefined;
@@ -58,13 +73,12 @@ async function readTaste(file:string):Promise<TasteProfile|undefined> {
   }
 }
 
-async function readMemoryDirectory(directory:string,currentProjectId:string) {
+async function readMemoryDirectory(currentProjectId:string) {
   try {
-    const root=path.resolve(process.cwd(),directory);
-    const entries=await fs.readdir(root,{withFileTypes:true});
+    const entries=await fs.readdir(MEMORY_ROOT,{withFileTypes:true});
     const graphs:CreativeMemoryGraph[]=[];
     for(const entry of entries.filter((item)=>item.isFile() && item.name.endsWith(".memory.json")).sort((a,b)=>a.name.localeCompare(b.name))) {
-      const value=JSON.parse(await fs.readFile(path.join(root,entry.name),"utf8"));
+      const value=JSON.parse(await fs.readFile(path.join(MEMORY_ROOT,entry.name),"utf8"));
       const graph=normalizeMemory(value,currentProjectId);
       if(graph.nodes.length) graphs.push(graph);
     }
