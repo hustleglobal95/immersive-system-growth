@@ -17,7 +17,7 @@ export type CapabilityVerifier="schema"|"functional"|"visual"|"motion"|"mobile"|
 export type CapabilityDispatch =
   | { type:"select"; target:"camera" }
   | { type:"fast-action"; action:"compose-motion"|"build-node" }
-  | { type:"workspace"; workspace:"Motion"|"Interact"|"Assets"|"Ship" }
+  | { type:"workspace"; workspace:"Motion"|"Interact"|"Assets"|"Telemetry" }
   | { type:"route"; href:"/director"|"/studio/assets/create" }
   | { type:"loop"; loop:"visual-polish"|"mobile-translation"|"motion-polish"|"performance"|"asset-quality"|"construction" };
 
