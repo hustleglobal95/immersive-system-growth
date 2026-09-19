@@ -522,3 +522,13 @@ body[data-project] .studio-preview__canvas .cinematic-media { position: absolute
 @media (max-width: 800px) {
   .telemetry-summary__stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+
+
+.asset-intelligence{margin-top:14px;padding-top:13px;border-top:1px solid var(--studio-line)}
+.asset-intelligence .studio-card__head h3{margin:2px 0 0;font-size:13px}
+.asset-intelligence__findings{display:grid;gap:6px}
+.asset-intelligence__findings article{padding:9px;border:1px solid var(--studio-line);border-radius:8px;background:#0d0d0d;display:grid;gap:4px}
+.asset-intelligence__findings article strong{font-size:9px}
+.asset-intelligence__findings article small,.asset-intelligence__findings article p{margin:0;color:var(--studio-muted);font-size:8px;line-height:1.45}
+.asset-intelligence__findings article[data-severity="blocker"]{border-color:#ff775544;background:#ff775508}
+.asset-intelligence__findings article[data-severity="warning"]{border-color:#eab75c33}
