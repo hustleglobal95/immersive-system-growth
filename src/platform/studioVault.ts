@@ -34,7 +34,7 @@ const vaultJournalEventSchema = z.object({
 }).strict();
 const vaultJournalSchema = z.object({ version: z.literal(1), events: z.array(vaultJournalEventSchema).max(1000) }).strict();
 
-type VaultConfigurationEnvironment=Partial<Record<"FORGE_GITHUB_REPOSITORY"|"FORGE_GITHUB_TOKEN"|"FORGE_VAULT_BRANCH",string>>;
+type VaultConfigurationEnvironment={ [key:string]:string|undefined };
 
 export interface VaultActor { id: string; name: string; role: string; }
 export interface VaultDraftInput { experience: unknown; project: unknown; assetManifest: unknown; interactionGraph: unknown; }
