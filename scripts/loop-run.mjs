@@ -367,7 +367,13 @@ try {
     const winner=selectTournamentWinner(cycle.candidates,definition);
     if(winner?.candidatePath) {
       await fs.copyFile(winner.candidatePath,currentIncumbentPath);
-      report.currentFingerprint=winner.fingerprint || fingerprint(JSON.parse(await fs.readFile(currentIncumbentPath,"utf8")));
+      if(winner.candidateAssetManifestPath) await fs.copyFile(winner.candidateAssetManifestPath,currentIncumbentManifestPath);
+      if(winner.candidateInteractionGraphPath) await fs.copyFile(winner.candidateInteractionGraphPath,currentIncumbentGraphPath);
+      report.currentFingerprint=winner.fingerprint || fingerprint({
+        experience:JSON.parse(await fs.readFile(currentIncumbentPath,"utf8")),
+        assetManifest:JSON.parse(await fs.readFile(currentIncumbentManifestPath,"utf8")),
+        interactionGraph:JSON.parse(await fs.readFile(currentIncumbentGraphPath,"utf8")),
+      });
       report.acceptedImprovements++;
       report.noProgressStreak=0;
       cycle.acceptedCandidateId=winner.id;
@@ -394,7 +400,11 @@ try {
   if(report.status==="running") finish("completed","Loop cycle plan completed with the strongest verified incumbent preserved.");
   if(report.acceptedImprovements>0) {
     await fs.copyFile(currentIncumbentPath,acceptedPath);
+    await fs.copyFile(currentIncumbentManifestPath,acceptedManifestPath);
+    await fs.copyFile(currentIncumbentGraphPath,acceptedGraphPath);
     report.acceptedExperiencePath=acceptedPath;
+    report.acceptedAssetManifestPath=acceptedManifestPath;
+    report.acceptedInteractionGraphPath=acceptedGraphPath;
   }
   report.learningCandidate=learningCandidate(report);
   report.endedAt=new Date().toISOString();
@@ -405,7 +415,11 @@ try {
   console.log(report.stopReason || "Complete.");
   console.log("Accepted improvements: "+report.acceptedImprovements);
   console.log("Evidence: "+reportPath);
-  if(report.acceptedExperiencePath) console.log("Human-review candidate: "+report.acceptedExperiencePath);
+  if(report.acceptedExperiencePath) {
+    console.log("Human-review experience: "+report.acceptedExperiencePath);
+    console.log("Human-review asset manifest: "+report.acceptedAssetManifestPath);
+    console.log("Human-review interaction graph: "+report.acceptedInteractionGraphPath);
+  }
   if(report.status==="escalated") process.exitCode=2;
   else if(report.status==="failed") process.exitCode=2;
 } catch(error) {
