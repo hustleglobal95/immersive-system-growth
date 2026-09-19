@@ -97,6 +97,7 @@ export const loopRunReportSchema=z.object({
   controlPlane:z.object({
     proposalId:z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
     selectionKey:z.string().min(1).max(320),
+    baselineFingerprint:z.string().min(16).max(128),
     intent:z.string().min(1).max(1200),
   }).strict().optional(),
   objective:z.string().min(1).max(1200),
