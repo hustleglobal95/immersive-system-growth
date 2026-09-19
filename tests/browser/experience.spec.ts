@@ -16,9 +16,9 @@ test("semantic story and final CTA survive without JavaScript", async ({ browser
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1, name: "Beyond the view." })).toBeVisible();
-  await page.locator("#private-presentation").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("link", { name: "Request a private presentation" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "A house set into a forty-metre fall to the sea." })).toBeVisible();
+  await page.locator("#enquire").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("link", { name: "Enquire about a commission" })).toBeVisible();
   await context.close();
 });
 
@@ -30,7 +30,7 @@ test("production canvas stays persistent across scroll, reverse and quality cont
   await expect(page.getByText("The 3D view is loading.", { exact: false })).toHaveCount(0);
   const canvas = await page.locator("canvas").elementHandle();
   const sceneNavigation = page.getByRole("navigation", { name: "Experience scenes" });
-  for (const id of ["detail", "threshold", "horizon", "arrival"]) {
+  for (const id of ["threshold", "material", "horizon", "approach"]) {
     const sceneLink = sceneNavigation.locator(`a[href="#${id}"]`);
     await sceneLink.click();
     await expect(sceneLink).toHaveAttribute("aria-current", "step");
@@ -42,7 +42,7 @@ test("production canvas stays persistent across scroll, reverse and quality cont
   await page.getByLabel("Free camera", { exact: true }).check();
   await page.getByLabel("Show authoring guides", { exact: true }).check();
   await expect(page.getByLabel("Show authoring guides", { exact: true })).toBeChecked();
-  await page.locator("#arrival").scrollIntoViewIfNeeded();
+  await page.locator("#approach").scrollIntoViewIfNeeded();
   expect(await canvas?.evaluate((element) => element.isConnected)).toBe(true);
   expect(errors).toEqual([]);
 });
@@ -52,8 +52,8 @@ test("reduced motion, final conversion and no horizontal overflow across viewpor
   await page.goto("/");
   for (const [width, height] of sizes) {
     await page.setViewportSize({ width, height });
-    await page.locator("#private-presentation").scrollIntoViewIfNeeded();
-    await expect(page.getByRole("link", { name: "Request a private presentation" })).toBeVisible();
+    await page.locator("#enquire").scrollIntoViewIfNeeded();
+    await expect(page.getByRole("link", { name: "Enquire about a commission" })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   }
   await expect(page.locator(".experience-root")).toHaveAttribute("data-reduced-motion", "true");
@@ -72,16 +72,16 @@ test("missing GLB preserves semantic content and exposes retry", async ({ page }
     await (retryRequested ? route.continue() : route.abort());
   });
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1, name: "Beyond the view." })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "A house set into a forty-metre fall to the sea." })).toBeVisible();
   await expect(page.getByRole("button", { name: "Retry 3D" })).toBeVisible();
   await page.getByRole("button", { name: "Retry 3D" }).click();
   await expect(page.getByRole("button", { name: "Retry 3D" })).toHaveCount(0);
   await expect(page.locator("canvas")).toHaveCount(1);
-  await page.locator("#private-presentation").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("link", { name: "Request a private presentation" })).toBeVisible();
+  await page.locator("#enquire").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("link", { name: "Enquire about a commission" })).toBeVisible();
 });
 
-test("WebGL failure leaves NOCTERRA content and details usable", async ({ page }) => {
+test("WebGL failure leaves Casa Lumen content and details usable", async ({ page }) => {
   await page.addInitScript(() => {
     const original = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.getContext = function (
@@ -94,10 +94,10 @@ test("WebGL failure leaves NOCTERRA content and details usable", async ({ page }
     } as typeof original;
   });
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1, name: "Beyond the view." })).toBeVisible();
-  await page.locator("#detail").scrollIntoViewIfNeeded();
-  await page.getByText("Sculpted coachwork", { exact: true }).click();
-  await expect(page.getByText("arrival ritual", { exact: false })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "A house set into a forty-metre fall to the sea." })).toBeVisible();
+  await page.locator("#material").scrollIntoViewIfNeeded();
+  await page.getByText("Honed travertine", { exact: true }).click();
+  await expect(page.getByText("Open-pore travertine", { exact: false })).toBeVisible();
 });
 
 test("range keyboard does not invoke global scene shortcut", async ({ page }) => {
@@ -122,6 +122,6 @@ test("context restoration does not remove the document", async ({ page, browserN
     return true;
   });
   test.skip(!supported, "Context loss extension unavailable");
-  await expect(page.getByRole("heading", { level: 1, name: "Beyond the view." })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "A house set into a forty-metre fall to the sea." })).toBeVisible();
   await expect(page.getByText("The 3D view was interrupted.", { exact: false })).toHaveCount(0);
 });
