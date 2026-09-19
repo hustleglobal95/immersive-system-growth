@@ -106,7 +106,8 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
   const hierarchyBlockers = hierarchyApprovalBlockers(hierarchy);
   const visualLanguages = generateVisualLanguages(brief,treatment);
   const visualLanguageDivergence = evaluateVisualLanguageDivergence(brief,visualLanguages);
-  const creativeDNA = buildCreativeDNA({brief,treatment,precedents});
+  const selectedVisualLanguage=visualLanguages.find((item)=>item.territoryId===treatment.selectedTerritoryId) ?? visualLanguages[0];
+  const creativeDNA = buildCreativeDNA({brief,treatment,precedents,visualLanguage:selectedVisualLanguage});
   const artDirection = directArt({brief,treatment,dna:creativeDNA});
   const disciplineDirections = directDisciplines({brief,treatment,dna:creativeDNA,art:artDirection});
   const creativeMutations = generateCreativeMutations(brief,treatment,creativeDNA);
@@ -136,7 +137,7 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
     creativeIntelligence:{
       dna:creativeDNA,
       artDirection,
-      visualLanguage:visualLanguages.find((item)=>item.territoryId===treatment.selectedTerritoryId) ?? visualLanguages[0],
+      visualLanguage:selectedVisualLanguage,
       disciplineDirections,
       mutations:creativeMutations.slice(0,3),
       ceiling:creativeCeiling,
