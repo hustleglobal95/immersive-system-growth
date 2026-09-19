@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import type { DirectorBrief } from "@/src/platform/directorSchema";
 import type { DirectorHumanApprovals, DirectorHumanGateId } from "@/src/platform/director-intelligence/humanGates";
 import { runDirectorIntelligence } from "@/src/platform/director-intelligence/orchestrator";
+import { useCreativeIntelligenceContext } from "@/src/studio/useCreativeIntelligenceContext";
 
 const starterBrief: DirectorBrief = {
   projectName: "Aster House",
@@ -32,10 +33,17 @@ export function DirectorIntelligenceWorkbench() {
   const [finalCutRequested, setFinalCutRequested] = useState(false);
   const [result, setResult] = useState(() => runDirectorIntelligence({ brief: starterBrief }));
   const [tab, setTab] = useState<IntelligenceTab>("verdict");
+  const creativeContext=useCreativeIntelligenceContext(brief.projectName);
   const report = result.report;
   const selected = report.treatment.territories.find((item) => item.id === report.treatment.selectedTerritoryId)!;
 
-  const run = (nextApprovals = approvals, nextFinalCut = finalCutRequested) => setResult(runDirectorIntelligence({ brief, approvals: nextApprovals, finalCutRequested: nextFinalCut }));
+  const run = (nextApprovals = approvals, nextFinalCut = finalCutRequested) => setResult(runDirectorIntelligence({
+    brief,
+    approvals:nextApprovals,
+    finalCutRequested:nextFinalCut,
+    ...(creativeContext.tasteLayers ? {tasteLayers:creativeContext.tasteLayers}:{}),
+    ...(creativeContext.memory?.nodes.length ? {memory:creativeContext.memory}:{}),
+  }));
   const approveGate = (id: DirectorHumanGateId) => {
     const next: DirectorHumanApprovals = { ...approvals };
     let nextFinalCut = finalCutRequested;
@@ -54,6 +62,7 @@ export function DirectorIntelligenceWorkbench() {
       <p className="director-kicker">DIRECTOR INTELLIGENCE V2</p>
       <h1>Creative review board</h1>
       <p className="director-muted">The system is rewarded for rejecting weak direction, not for always producing an answer.</p>
+      <small className="director-intelligence__memory-status">{creativeContext.loading ? "Loading studio creative memory…" : creativeContext.error ? "Studio memory unavailable · brief-only direction active" : `${creativeContext.counts?.priorProjects ?? 0} prior project${(creativeContext.counts?.priorProjects ?? 0)===1?"":"s"} · ${creativeContext.counts?.tasteLayers ?? 0} taste layer${(creativeContext.counts?.tasteLayers ?? 0)===1?"":"s"} · applied on next intelligence run`}</small>
       <label>Project<input value={brief.projectName} onChange={(e) => setBrief({ ...brief, projectName: e.target.value })} /></label>
       <div className="director-field-row"><label>Type<select value={brief.projectType} onChange={(e) => setBrief({ ...brief, projectType: e.target.value as DirectorBrief["projectType"] })}>{["brand","product","property","hospitality","portfolio","saas","commerce","campaign","automotive","fashion"].map((value) => <option key={value}>{value}</option>)}</select></label><label>Tier<select value={brief.tier} onChange={(e) => setBrief({ ...brief, tier: e.target.value as DirectorBrief["tier"] })}>{["cinematic","immersive","signature","flagship"].map((value) => <option key={value}>{value}</option>)}</select></label></div>
       <label>Audience<textarea value={brief.audience} onChange={(e) => setBrief({ ...brief, audience: e.target.value })} /></label>
