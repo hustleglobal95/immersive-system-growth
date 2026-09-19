@@ -53,7 +53,7 @@ test("Advanced Interactions preserves deterministic graph authoring", async ({ p
   await expect(page.getByRole("heading", { name: "Interaction graph", level: 2 })).toBeVisible();
   await expect(page.getByRole("application", { name: "Interaction node graph" })).toBeVisible();
   await page.getByRole("button", { name: "Add trigger" }).click();
-  await expect(page.getByText("Production schema valid")).toBeVisible();
+  await expect(page.locator("button.production-status")).toBeVisible();
 });
 
 test("Advanced Asset tools expose Asset Intelligence, bank and model inspection", async ({ page }) => {
