@@ -420,7 +420,7 @@ export function ProductionStudioWorkbench() {
     else if (value.includes("telemetry")) openAdvanced("Telemetry");
     else if (value.includes("new scene") || value.includes("add scene")) addScene();
     else if (value.includes("duplicate")) duplicateScene();
-    else if (value.includes("clear motion") || value.includes("reset motion")) resetSceneMotion();
+    else if (value.includes("clear motion") || value.includes("reset motion")) { openAdvanced("Motion"); setNotice("Destructive motion clearing stays in Advanced so Build never bypasses proposal safety."); }
     else {
       const compiled=compileIntent(selectionContext,input);
       const capability=compiledCapability(selectionContext,compiled);
