@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { loopRunReportSchema } from "../src/platform/loops/loopSchema.ts";
 import { appendVaultJournal, readVaultProject, saveVaultProject } from "../src/platform/studioVault.ts";
@@ -16,7 +17,11 @@ if(!report.acceptedExperiencePath || report.acceptedImprovements<1) fail("The lo
 if(!["completed","stopped"].includes(report.status)) fail("Only a completed/stopped loop with a preserved winning artifact may be accepted.");
 const snapshot=await readVaultProject(report.projectId);
 if(!snapshot) fail("Project Vault no longer contains "+report.projectId+".");
-const experience=JSON.parse(await fs.readFile(path.resolve(report.acceptedExperiencePath),"utf8"));
+if(report.sourceVersionId && snapshot.versionId!==report.sourceVersionId) fail("Project Vault changed after this loop began. Current "+snapshot.versionId+" != loop baseline "+report.sourceVersionId+". Re-run the loop or reconcile explicitly.");
+const acceptedRaw=await fs.readFile(path.resolve(report.acceptedExperiencePath),"utf8");
+const experience=JSON.parse(acceptedRaw);
+const acceptedFingerprint=createHash("sha256").update(JSON.stringify(experience)).digest("hex");
+if(acceptedFingerprint!==report.currentFingerprint) fail("Accepted loop artifact fingerprint does not match the run report. Evidence or artifact changed after evaluation.");
 
 const result=await saveVaultProject({
   experience,
