@@ -47,7 +47,7 @@ export interface SelectionContext {
     derivativeSavingsBytes:number;
     hasProductRig:boolean;
     hasMobileCamera:boolean;
-    mediaKind:SceneDefinition["media"] extends infer T ? T extends {kind:infer K} ? K : never : never | null;
+    mediaKind:"image"|"video"|"color"|"shader"|null;
     postPressure:"controlled"|"elevated";
   };
   issues:SelectionIssue[];
