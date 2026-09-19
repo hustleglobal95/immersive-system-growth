@@ -27,8 +27,16 @@ import { applyTasteCalibration, inferTasteTraits, tasteAdjustment } from "@/src/
 import { buildHierarchyReport, hierarchyApprovalBlockers } from "@/src/platform/director-intelligence/hierarchy";
 import { buildConstructionDirectives } from "@/src/platform/director-intelligence/constructionKnowledge";
 import { planImmersiveConstruction } from "@/src/platform/director-intelligence/constructionPlanner";
+import { buildCreativeDNA } from "@/src/platform/director-intelligence/creativeDNA";
+import { directArt } from "@/src/platform/director-intelligence/artDirector";
+import { evaluateVisualLanguageDivergence, generateVisualLanguages } from "@/src/platform/director-intelligence/visualLanguage";
+import { generateCreativeMutations } from "@/src/platform/director-intelligence/creativeMutation";
+import { directDisciplines } from "@/src/platform/director-intelligence/disciplineDirectors";
+import { estimateCreativeCeilingV2 } from "@/src/platform/director-intelligence/creativeCeilingV2";
+import { reviewCreativeMemory } from "@/src/platform/director-intelligence/creativeMemory";
+import { resolveCreativeTaste, type CreativeTasteLayers } from "@/src/platform/director-intelligence/creativeTaste";
 
-export function runDirectorIntelligence(input: DirectorIntelligenceInput & { approvals?: DirectorHumanApprovals; finalCutRequested?: boolean }) {
+export function runDirectorIntelligence(input: DirectorIntelligenceInput & { approvals?: DirectorHumanApprovals; finalCutRequested?: boolean; tasteLayers?: CreativeTasteLayers }) {
   const brief = parseDirectorBrief(input.brief);
   const baseline = directProject(brief);
   const diverged = divergeTreatment(brief, baseline);
@@ -50,11 +58,12 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
   const stressByTerritory = new Map<string, ReturnType<typeof runStressLab>>();
   const clicheByTerritory = new Map<string, ReturnType<typeof scanCategoryCliches>>();
   const tasteByTerritory = new Map<string, ReturnType<typeof tasteAdjustment>>();
+  const resolvedTaste = resolveCreativeTaste(input.tasteLayers,input.taste);
 
   for (const territory of treatment.territories) {
     const cliches = scanCategoryCliches(brief, treatment, territory);
     const stress = runStressLab(brief, treatment, territory);
-    const taste = tasteAdjustment(input.taste, inferTasteTraits(treatment, territory));
+    const taste = tasteAdjustment(resolvedTaste.profile, inferTasteTraits(treatment, territory));
     const scores = applyTasteCalibration(createEvaluationScores(brief, treatment, territory, collisions, stress), taste.adjustment);
     const council = runDirectorCouncil(brief, treatment, territory, scores, { cliches, collisions, stress });
     const originality = buildOriginalityFingerprint(brief, treatment, territory, collisions, cliches);
@@ -95,12 +104,24 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
   const inflation = detectCouncilInflation(selectedEvaluation.critiques);
   const hierarchy = buildHierarchyReport(brief, treatment);
   const hierarchyBlockers = hierarchyApprovalBlockers(hierarchy);
+  const visualLanguages = generateVisualLanguages(brief,treatment);
+  const visualLanguageDivergence = evaluateVisualLanguageDivergence(brief,visualLanguages);
+  const creativeDNA = buildCreativeDNA({brief,treatment,precedents});
+  const artDirection = directArt({brief,treatment,dna:creativeDNA});
+  const disciplineDirections = directDisciplines({brief,treatment,dna:creativeDNA,art:artDirection});
+  const creativeMutations = generateCreativeMutations(brief,treatment,creativeDNA);
+  const creativeMemory = reviewCreativeMemory(creativeDNA,input.memory);
+  const creativeCeiling = estimateCreativeCeilingV2({
+    brief,treatment,selected:selectedEvaluation,assetGap,dna:creativeDNA,art:artDirection,divergence:visualLanguageDivergence,
+  });
 
   const blockers = [...selectedEvaluation.blockers, ...whyBlockers, ...hierarchyBlockers];
   if (inflation.warning) blockers.push(inflation.warning);
   if (!diverged.diversity.sufficient) blockers.push(`Territory diversity score ${diverged.diversity.score} is below the required divergence threshold.`);
   if (brief.tier === "signature" || brief.tier === "flagship") {
     if (!precedents.some((item) => !item.precedent.industries.includes(brief.projectType))) blockers.push("Signature/Flagship direction lacks a cross-domain precedent transfer.");
+    if (!visualLanguageDivergence.sufficient) blockers.push(...visualLanguageDivergence.blockers);
+    if (creativeMemory.verdict==="rewrite") blockers.push("Creative Memory detects material house-style repetition; rewrite the strongest repeated creative devices before lock.");
   }
 
   let verdict: DirectorIntelligenceReport["verdict"] = debate.disposition === "REJECT ALL" ? "REJECT" : debate.disposition;
@@ -112,13 +133,26 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
   const gateBlockers = humanGates.pending.map((gate) => `Human gate: ${gate.label} — ${gate.reason}`);
   const productionPlan = {
     ...baseProductionPlan,
+    creativeIntelligence:{
+      dna:creativeDNA,
+      artDirection,
+      visualLanguage:visualLanguages.find((item)=>item.territoryId===treatment.selectedTerritoryId) ?? visualLanguages[0],
+      disciplineDirections,
+      mutations:creativeMutations.slice(0,3),
+      ceiling:creativeCeiling,
+    },
     readiness: {
       ...baseProductionPlan.readiness,
       blockers: unique([...baseProductionPlan.readiness.blockers, ...report.blockers, ...gateBlockers]),
       readyForProduction: baseProductionPlan.readiness.readyForProduction && report.verdict === "LOCK" && humanGates.authorizedForProduction,
     },
   };
-  return { report, productionPlan, debate, audience, brandAssets, referenceDeconstructions, construction, constructionPlan, divergence: diverged.diversity, councilCalibration: inflation, humanGates, tasteCalibration: selectedTaste };
+  return {
+    report,productionPlan,debate,audience,brandAssets,referenceDeconstructions,construction,constructionPlan,
+    divergence:diverged.diversity,visualLanguages,visualLanguageDivergence,creativeDNA,artDirection,disciplineDirections,
+    creativeMutations,creativeMemory,creativeCeiling,councilCalibration:inflation,humanGates,tasteCalibration:selectedTaste,
+    tasteModel:resolvedTaste,
+  };
 }
 
 function selectTerritory(treatment: DirectorTreatment, territoryId: string) {
