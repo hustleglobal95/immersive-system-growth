@@ -7,7 +7,7 @@ import rawGraph from "../config/interaction-graph.json";
 import { parseExperience } from "../src/lib/configSchema";
 import { parseInteractionGraph } from "../src/lib/interactionGraph";
 import { parseAssetManifest } from "../src/platform/assetManifestSchema";
-import { capabilitiesForContext, forgeCapabilityRegistry, matchCapabilityIntent } from "../src/platform/control-plane/capabilityRegistry";
+import { capabilitiesForContext, forgeCapabilityRegistry, matchCapabilityIntent, validateCapabilityRegistry } from "../src/platform/control-plane/capabilityRegistry";
 import { createProposalDraft, forgeProposalSchema, proposalCanMutateAuthoritativeState, proposalRequiresPreview } from "../src/platform/control-plane/proposal";
 import { resolveSelectionContext } from "../src/platform/control-plane/selectionContext";
 
@@ -40,6 +40,14 @@ test("Selection Context fails closed when a selected asset no longer exists",()=
   });
   assert.ok(context.issues.some((issue)=>issue.code==="missing-asset" && issue.severity==="blocker"));
   assert.match(context.selectionKey,/asset:missing/);
+});
+
+test("Capability Registry contracts validate as a closed orchestration surface",()=>{
+  assert.deepEqual(validateCapabilityRegistry(),[]);
+  assert.equal(new Set(forgeCapabilityRegistry.map((item)=>item.id)).size,forgeCapabilityRegistry.length);
+  for(const capability of forgeCapabilityRegistry.filter((item)=>item.executionClass==="deep")) {
+    assert.notEqual(capability.riskClass,"instant-reversible");
+  }
 });
 
 test("Capability Registry exposes intent instead of subsystem menus",()=>{
