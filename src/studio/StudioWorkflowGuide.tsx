@@ -17,22 +17,28 @@ export function StudioWorkflowGuide({
   experience,
   manifest,
   validationCount,
+  projectHealthReady,
+  projectHealthIssueCount,
   onClose,
   onNewProject,
   onOpenCreate,
   onOpenAssets,
   onOpenMotion,
+  onOpenReview,
   onOpenShip,
 }: {
   project: StudioProject;
   experience: ExperienceConfig;
   manifest: AssetManifest;
   validationCount: number;
+  projectHealthReady: boolean;
+  projectHealthIssueCount: number;
   onClose: () => void;
   onNewProject: () => void;
   onOpenCreate: () => void;
   onOpenAssets: () => void;
   onOpenMotion: () => void;
+  onOpenReview: () => void;
   onOpenShip: () => void;
 }) {
   // Read the stored brief during render rather than setting it from an effect, so the guide
@@ -64,7 +70,7 @@ export function StudioWorkflowGuide({
   const hasIdea = brief.trim().length >= 12;
   const hasAssets = assetCount > 0;
   const hasMotion = motionCount > 0;
-  const isReviewable = validationCount === 0 && hasIdea && customStructure && hasMotion;
+  const isReviewable = projectHealthReady && validationCount === 0 && hasIdea && customStructure && hasMotion;
 
   const status: Record<StepId, boolean> = {
     idea: hasIdea,
@@ -126,8 +132,8 @@ export function StudioWorkflowGuide({
           <button type="button" className="workflow-guide__primary" onClick={onOpenMotion}>Open motion</button>
         </GuideStep>
 
-        <GuideStep number="05" done={status.review} title="Check readiness" description={validationCount ? `${validationCount} project issue${validationCount === 1 ? "" : "s"} still need attention before this is production-ready.` : "Forge currently reports no configuration issues. Review the experience and make sure the signature moment works before shipping."}>
-          <button type="button" onClick={onOpenCreate}>Review live preview</button>
+        <GuideStep number="05" done={status.review} title="Check readiness" description={projectHealthReady ? "Project Health is ready. Review the complete experience before shipping." : `${projectHealthIssueCount} production-health issue${projectHealthIssueCount === 1 ? "" : "s"} still need attention before this is production-ready.`}>
+          <button type="button" onClick={onOpenReview}>Open Project Health</button>
         </GuideStep>
 
         <GuideStep number="06" done={status.ship} title="Publish when it is ready" description="Finish through Guided Ship. Workspace setup and engineering controls stay behind Advanced so authors can review and hand off without learning build commands or deployment internals.">
