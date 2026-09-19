@@ -84,7 +84,7 @@ export function LoopEnginePanel({
       })
       .catch(()=>{ if(!cancelled) setVaultSnapshot(null); });
     return ()=>{ cancelled=true; };
-  },[projectId,vaultProject?.updatedAt]);
+  },[projectId,vaultProject]);
 
   if(!selected) return null;
   const proposalCapability=proposal ? capabilityById(proposal.capabilityId) : null;
