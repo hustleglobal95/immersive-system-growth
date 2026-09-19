@@ -21,7 +21,7 @@ const browser=await chromium.launch({
 });
 try {
   for(const viewport of ["desktop","mobile"]) {
-    const context=await browser.newContext({ viewport:viewportFor[viewport],deviceScaleFactor:1 });
+    const context=await browser.newContext({ viewport:viewportFor[viewport],deviceScaleFactor:viewport==="mobile" ? 3 : 2 });
     const page=await context.newPage();
     const captures=representative(plan.captures.filter((item)=>item.viewport===viewport),4);
     for(const capture of captures) {
@@ -102,7 +102,7 @@ function summarize(states) {
     maxDrawingBufferPixels,
     score,
     evidenceClass:"relative-headless",
-    note:"Headless renderer evidence is suitable for incumbent/candidate comparison, not a substitute for physical-device GPU profiling.",
+    note:"Headless high-density renderer evidence is suitable for incumbent/candidate comparison, not a substitute for physical-device GPU profiling.",
   };
 }
 function args(argv) {
