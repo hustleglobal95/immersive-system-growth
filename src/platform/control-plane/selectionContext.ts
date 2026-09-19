@@ -41,6 +41,8 @@ export interface SelectionContext {
   selectedAsset?:SelectedAsset;
   state:{
     motionTrackCount:number;
+    copyMotionTrackCount:number;
+    mediaMotionTrackCount:number;
     selectedNodeTrackCount:number;
     interactionReferenceCount:number;
     assetCount:number;
@@ -127,6 +129,8 @@ export function resolveSelectionContext(input:{
     selectedAsset,
     state:{
       motionTrackCount:scene.motionTracks.length,
+      copyMotionTrackCount:scene.motionTracks.filter((track)=>track.target.startsWith("copy.")).length,
+      mediaMotionTrackCount:scene.motionTracks.filter((track)=>track.target.startsWith("media.") || track.target.startsWith("layer:")).length,
       selectedNodeTrackCount,
       interactionReferenceCount,
       assetCount:assets.length,
