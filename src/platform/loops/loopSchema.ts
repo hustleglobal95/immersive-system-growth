@@ -94,6 +94,11 @@ export const loopRunReportSchema=z.object({
   loopId:z.string().min(1).max(100),
   projectId:z.string().max(100).optional(),
   sourceVersionId:z.string().max(160).optional(),
+  controlPlane:z.object({
+    proposalId:z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+    selectionKey:z.string().min(1).max(320),
+    intent:z.string().min(1).max(1200),
+  }).strict().optional(),
   objective:z.string().min(1).max(1200),
   status:loopStatusSchema,
   startedAt:z.iso.datetime(),
