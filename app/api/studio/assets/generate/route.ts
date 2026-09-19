@@ -27,6 +27,8 @@ export async function GET(request: Request) {
     const status = await readAssetGenerationStatus(provider, taskId, phase, process.env);
     return Response.json({ ok: true, status });
   } catch (error) {
+    const access = studioAccessErrorResponse(error);
+    if (access) return access;
     return Response.json({ ok: false, error: messageFor(error) }, { status: 400 });
   }
 }
