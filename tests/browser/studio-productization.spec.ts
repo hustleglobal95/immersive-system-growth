@@ -63,7 +63,9 @@ test("Project Vault is reachable without permanent top-level navigation", async 
 test("Improvement evidence keeps the Loop Engine behind the simplified surface", async ({ page }) => {
   await page.goto("/studio");
   await page.keyboard.press(process.platform === "darwin" ? "Meta+K" : "Control+K");
-  await page.getByRole("button", { name: "Improvement evidence", exact: true }).click();
+  const palette=page.getByRole("dialog", { name: "Go anywhere. Do anything." });
+  await expect(palette).toBeVisible();
+  await palette.getByRole("button", { name: "Improvement evidence", exact: true }).click();
   const dialog=page.getByRole("dialog", { name: "Closed-loop improvement with proof." });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("heading", { name: "Visual Polish" })).toBeVisible();
@@ -83,9 +85,10 @@ test("Review exposes Project Health and Advanced keeps specialist editors out of
   await expect(page.getByText("REVIEW / PROJECT HEALTH")).toBeVisible();
   await expect(page.getByRole("heading", { name: /Ready for release review|Resolve blockers|Production quality needs attention/ })).toBeVisible();
 
-  await page.locator("details.production-advanced-menu > summary").click();
-  await expect(page.getByRole("button", { name: /Sequencer/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Interactions/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Asset tools/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Telemetry/ })).toBeVisible();
+  const advanced=page.locator("details.production-advanced-menu");
+  await advanced.locator("> summary").click();
+  await expect(advanced.getByRole("button", { name: /Sequencer/ }).first()).toBeVisible();
+  await expect(advanced.getByRole("button", { name: /Interactions/ }).first()).toBeVisible();
+  await expect(advanced.getByRole("button", { name: /Asset tools/ }).first()).toBeVisible();
+  await expect(advanced.getByRole("button", { name: /Telemetry/ }).first()).toBeVisible();
 });
