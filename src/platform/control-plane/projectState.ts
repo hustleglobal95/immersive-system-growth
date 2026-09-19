@@ -14,7 +14,12 @@ export function projectStateFingerprint(input:ControlPlaneProjectState) {
     assetManifest:input.assetManifest,
     interactionGraph:input.interactionGraph,
   });
-  return hash32(value,0x811c9dc5)+hash32(value,0x9e3779b1);
+  return [
+    hash32(value,0x811c9dc5),
+    hash32(value,0x9e3779b1),
+    hash32(value,0x85ebca6b),
+    hash32(value,0xc2b2ae35),
+  ].join("");
 }
 
 function stableStringify(value:unknown):string {
