@@ -163,3 +163,35 @@ export function matchCapabilityIntent(context:SelectionContext,input:string) {
     .filter((row)=>row.score>0)
     .sort((a,b)=>b.score-a.score || b.capability.priority-a.capability.priority)[0]?.capability ?? null;
 }
+
+
+export interface CapabilityRegistryIssue {
+  capabilityId:string;
+  message:string;
+}
+
+export function validateCapabilityRegistry(registryInput:ForgeCapability[]=registry):CapabilityRegistryIssue[] {
+  const issues:CapabilityRegistryIssue[]=[];
+  const ids=new Set<string>();
+  for(const capability of registryInput) {
+    if(ids.has(capability.id)) issues.push({capabilityId:capability.id,message:"Capability ID must be unique."});
+    ids.add(capability.id);
+    if(!capability.selectionKinds.length) issues.push({capabilityId:capability.id,message:"Capability must support at least one selection kind."});
+    if(!capability.intents.length) issues.push({capabilityId:capability.id,message:"Capability must declare at least one operator intent."});
+    if(!capability.systems.length) issues.push({capabilityId:capability.id,message:"Capability must name the Forge systems it orchestrates."});
+    if(capability.executionClass==="deep" && capability.riskClass==="instant-reversible") {
+      issues.push({capabilityId:capability.id,message:"Deep capabilities must require preview or approval."});
+    }
+    if(capability.dispatch.type==="loop") {
+      if(!capability.systems.includes("loops")) issues.push({capabilityId:capability.id,message:"Loop dispatch must declare the Loop Engine system."});
+      if(capability.riskClass!=="preview-required" && capability.riskClass!=="approval-required") {
+        issues.push({capabilityId:capability.id,message:"Loop dispatch must require preview or approval."});
+      }
+      if(!capability.verifiers.length) issues.push({capabilityId:capability.id,message:"Loop dispatch must carry verification requirements."});
+    }
+    if(capability.dispatch.type==="fast-action" && capability.riskClass!=="instant-reversible") {
+      issues.push({capabilityId:capability.id,message:"Fast actions must remain instant and reversible."});
+    }
+  }
+  return issues;
+}
