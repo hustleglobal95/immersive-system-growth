@@ -219,7 +219,7 @@ export function LoopEnginePanel({
               <button type="button" disabled={!ready || loadingResult || !proposalBound} onClick={()=>void loadVerifiedCandidate()}>{loadingResult ? "Checking evidence…" : proposalBound ? "Load verified candidate" : "Start from a proposal to compare"}</button>
               <small>{proposalBound ? "After the bound Loop finishes, load its exact winning bundle into the same Current / Candidate review surface used by fast actions. This does not promote Vault or production state." : "Generic Loop runs remain available for expert evidence work, but Studio only attaches a winner to Current / Candidate when the run is bound to the active proposal and selected target."}</small>
             </div>
-            {!vaultProject && <button type="button" className="production-loop-vault" onClick={onOpenVault}>Open Project Vault</button>
+            {(!vaultProject || (proposalBound && !vaultMatchesWorking)) && <button type="button" className="production-loop-vault" onClick={onOpenVault}>{vaultProject ? "Save current checkpoint" : "Open Project Vault"}</button>}
           </section> : <section className="production-loop-planned"><strong>Repair worker intentionally not enabled yet.</strong><p>The loop contract, budgets, memory, stop policy and verification requirements are defined. Forge will not expose this loop as executable until its repair worker can produce bounded changes and pass the same evidence gates.</p></section>}
 
           {message && <p className="production-loop-message" role="status">{message}</p>}
