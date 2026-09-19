@@ -165,9 +165,8 @@ Loop Engine adds bounded cycles, candidate tournaments, compact fresh context, n
 
 ## Next implementation stages
 
-1. Production-safe performance repair worker under the Loop Engine contract.
-2. Multi-candidate asset generation/selection worker with credit budgets.
-3. Construction worker spanning grounded brief → structure → build → verified candidate.
-4. Pairwise studio-taste learning and judge calibration.
-5. Production-trace clustering and failure-pattern mining.
-6. Real-device motion/performance calibration beyond headless browser metrics.
+1. Multi-candidate asset generation/selection worker with credit budgets and durable derivative lineage.
+2. Construction worker spanning grounded brief → structure → build → verified candidate.
+3. Pairwise studio-taste learning and judge calibration.
+4. Production-trace clustering and failure-pattern mining.
+5. Real-device motion/performance calibration beyond comparative headless renderer metrics.
