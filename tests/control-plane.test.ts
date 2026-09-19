@@ -171,21 +171,24 @@ test("Project Health is the single production-readiness abstraction",()=>{
 });
 
 test("Fast proposal prepares a candidate before working state changes",()=>{
-  const context=resolveSelectionContext({experience,manifest,graph,selection:{kind:"scene",index:0}});
+  const source=parseExperience(rawExperience);
+  source.scenes[0].motionTracks=[];
+  const context=resolveSelectionContext({experience:source,manifest,graph,selection:{kind:"scene",index:0}});
   const capability=capabilitiesForContext(context).find((item)=>item.id==="scene.compose-motion")!;
+  const before=JSON.stringify(source);
   const prepared=prepareFastProposal({
     id:"proposal-fast-motion",
     createdAt:"2026-09-19T14:00:00.000Z",
     capability,
     context,
-    experience,
+    experience:source,
     intent:"compose motion",
     archetype:"editorial-reveal",
   });
   assert.equal(prepared.proposal.state,"ready");
-  assert.notEqual(prepared.candidateExperience,experience);
+  assert.ok(prepared.candidateExperience.scenes[0].motionTracks.length>0);
   assert.ok(prepared.proposal.changes.length>0);
-  assert.equal(parseExperience(rawExperience).scenes[0].motionTracks.length,experience.scenes[0].motionTracks.length);
+  assert.equal(JSON.stringify(source),before);
 });
 
 test("Verified Loop candidates attach only to matching deep proposals",()=>{
