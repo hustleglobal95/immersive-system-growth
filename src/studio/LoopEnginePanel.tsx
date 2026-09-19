@@ -102,6 +102,8 @@ export function LoopEnginePanel({
             <section>
               <span>VERIFIERS</span>
               <div className="production-loop-tags">{selected.verifiers.map((item)=><i key={item}>{item}</i>)}</div>
+              <span className="production-loop-subkicker">ALLOWED REPAIRS</span>
+              <div className="production-loop-tags">{selected.allowedRepairCommands.map((item)=><i key={item}>{item.replace("scene.","").replace("motion.","").replace("camera.","")}</i>)}</div>
             </section>
           </div>
 
