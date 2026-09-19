@@ -8,6 +8,8 @@ export interface LoopStopDecision {
 
 export function eligibleCandidate(candidate:LoopCandidateEvidence,definition:LoopDefinition) {
   if(candidate.duplicateOf) return false;
+  if(definition.verifiers.includes("functional") && candidate.functionalPassed!==true) return false;
+  if(definition.verifiers.includes("motion") && candidate.motionScore===null) return false;
   if(definition.acceptance.requireHardGates && candidate.hardGateFailures.length) return false;
   if(definition.acceptance.requireCandidateWin && (!candidate.comparisonAccepted || candidate.comparisonWinner!=="candidate")) return false;
   if((candidate.preferenceAgreement ?? 0) < definition.acceptance.minPreferenceAgreement) return false;
