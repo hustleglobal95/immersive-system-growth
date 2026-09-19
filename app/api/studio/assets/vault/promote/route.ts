@@ -31,7 +31,9 @@ export async function POST(request: Request) {
     const size = Number(request.headers.get("content-length") ?? 0);
     if (!Number.isFinite(size) || size > 16_000) return Response.json({ ok: false, error: "Asset promotion request is too large" }, { status: 413 });
     const input = inputSchema.parse(await request.json());
-    return Response.json({ ok: true, asset: await promoteGeneratedAsset(input) }, { status: 201 });
+    const asset = await promoteGeneratedAsset(input);
+    try { await appendVaultJournal(input.projectId, identity, "asset-promote", `${input.name} → ${asset.path}`); } catch { /* Asset storage must not fail because optional production history is unavailable. */ }
+    return Response.json({ ok: true, asset }, { status: 201 });
   } catch (error) {
     const access = studioAccessErrorResponse(error);
     if (access) return access;
