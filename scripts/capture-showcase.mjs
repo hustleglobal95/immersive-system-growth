@@ -32,16 +32,16 @@ async function prepare(page) {
 
 async function captureScreenshot(page,path) {
   let lastError;
-  for(let attempt=1;attempt<=2;attempt++) {
+  for(let attempt=1;attempt<=3;attempt++) {
     try {
-      await page.screenshot({ path, animations:"disabled", caret:"hide", timeout:10000 });
+      await page.screenshot({ path, animations:"disabled", caret:"hide", timeout:25000 });
       return;
     } catch(error) {
       lastError=error;
-      if(attempt===2) break;
+      if(attempt===3) break;
       console.warn(`Screenshot retry for ${path} after transient timeout.`);
       await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(650);
     }
   }
   throw lastError;
