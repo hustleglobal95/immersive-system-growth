@@ -45,13 +45,20 @@ const acceptedGraphPath=path.join(workRoot,"accepted-interaction-graph.json");
 const projectId=options.project ? String(options.project) : undefined;
 const proposalId=options["proposal-id"] ? String(options["proposal-id"]) : undefined;
 const selectionKey=options["selection-key"] ? String(options["selection-key"]) : undefined;
+const proposalBaseline=options["baseline-fingerprint"] ? String(options["baseline-fingerprint"]) : undefined;
 const controlPlane=proposalId ? {
   proposalId,
   selectionKey:String(selectionKey || ""),
+  baselineFingerprint:String(proposalBaseline || ""),
   intent:String(options.context || ""),
 } : undefined;
-if(controlPlane && (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(controlPlane.proposalId) || !controlPlane.selectionKey || !controlPlane.intent)) {
-  fail("Control Plane Loop runs require valid --proposal-id, --selection-key and --context values.");
+if(controlPlane && (
+  !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(controlPlane.proposalId)
+  || !controlPlane.selectionKey
+  || !/^[a-f0-9]{16,128}$/.test(controlPlane.baselineFingerprint)
+  || !controlPlane.intent
+)) {
+  fail("Control Plane Loop runs require valid --proposal-id, --selection-key, --baseline-fingerprint and --context values.");
 }
 
 if(!process.env.FORGE_VISUAL_CRITIC_URL) fail("FORGE_VISUAL_CRITIC_URL is required. Loop Engine fails closed without pairwise visual evidence.");
