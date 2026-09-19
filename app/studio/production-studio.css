@@ -246,3 +246,26 @@
   .production-surface-hero{flex-direction:column}
   .production-next-action{flex-direction:column;align-items:stretch}
 }
+
+
+/* Forge Operator Intelligence */
+.operator-mission{display:grid;gap:14px;padding:18px;border:1px solid color-mix(in srgb,var(--line,#2b2b2b) 82%,transparent);border-radius:18px;background:color-mix(in srgb,var(--panel,#111) 92%,transparent)}
+.operator-mission__head,.operator-mission__primary,.operator-mission__footer{display:flex;gap:18px;align-items:flex-start;justify-content:space-between}
+.operator-mission__head>div,.operator-mission__primary>div{min-width:0;flex:1}
+.operator-mission__head span,.operator-mission__primary span,.operator-mission__footer span,.operator-mission__summary span{display:block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.64}
+.operator-mission__head h2{margin:4px 0 6px;font-size:clamp(18px,2.2vw,28px);line-height:1.05}
+.operator-mission__head p,.operator-mission__primary p,.operator-mission__footer p{margin:0;max-width:72ch;opacity:.76}
+.operator-mission__mode{display:flex;gap:6px;flex-wrap:wrap}
+.operator-mission__mode button{text-transform:capitalize}
+.operator-mission__mode button.is-active{border-color:currentColor;background:color-mix(in srgb,currentColor 10%,transparent)}
+.operator-mission__summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.operator-mission__summary article{padding:12px;border:1px solid color-mix(in srgb,var(--line,#2b2b2b) 72%,transparent);border-radius:12px}
+.operator-mission__summary strong{display:block;margin-top:5px}
+.operator-mission__summary small{display:block;margin-top:3px;opacity:.58}
+.operator-mission__primary{padding:14px;border-radius:14px;background:color-mix(in srgb,var(--panel-strong,#181818) 88%,transparent)}
+.operator-mission__primary strong{display:block;margin:4px 0 5px;font-size:16px}
+.operator-mission__primary small{display:block;margin-top:7px;opacity:.58}
+.operator-mission__footer{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.operator-mission__footer>div{padding:12px;border-top:1px solid color-mix(in srgb,var(--line,#2b2b2b) 72%,transparent)}
+@media (max-width:900px){.operator-mission__summary{grid-template-columns:1fr 1fr}.operator-mission__head,.operator-mission__primary{flex-direction:column}.operator-mission__footer{grid-template-columns:1fr}}
+@media (max-width:560px){.operator-mission{padding:14px}.operator-mission__summary{grid-template-columns:1fr}}
