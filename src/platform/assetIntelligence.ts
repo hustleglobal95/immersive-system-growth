@@ -24,6 +24,8 @@ export interface AssetIntelligenceReport {
   oversized:Array<{kind:AssetKind;path:string;bytes:number;budgetShare:number}>;
   remoteAssets:number;
   localAssets:number;
+  derivativeCount:number;
+  derivativeSavingsBytes:number;
   findings:AssetIntelligenceFinding[];
   score:number;
 }
@@ -101,6 +103,12 @@ export function analyzeAssetManifest(manifest:AssetManifest):AssetIntelligenceRe
   });
 
   const remoteAssets=all.filter(({entry})=>/^https:\/\//.test(entry.path)).length;
+  const byPath=new Map(all.map(({entry})=>[entry.path,entry]));
+  const derivatives=all.filter(({entry})=>Boolean(entry.derivative));
+  const derivativeSavingsBytes=derivatives.reduce((total,{entry})=>{
+    const source=entry.derivative ? byPath.get(entry.derivative.sourcePath) : undefined;
+    return total+(source ? Math.max(0,source.bytes-entry.bytes) : 0);
+  },0);
   const blockers=findings.filter((item)=>item.severity==="blocker").length;
   const warnings=findings.filter((item)=>item.severity==="warning").length;
   const pressure=Math.max(0,totalBytes/budgetBytes-0.7)*35;
@@ -109,7 +117,7 @@ export function analyzeAssetManifest(manifest:AssetManifest):AssetIntelligenceRe
   return {
     version:1,totalBytes,budgetBytes,utilization:budgetBytes?totalBytes/budgetBytes:0,
     categoryBytes,categoryUtilization,duplicateHashes,oversized,remoteAssets,
-    localAssets:all.length-remoteAssets,findings,score,
+    localAssets:all.length-remoteAssets,derivativeCount:derivatives.length,derivativeSavingsBytes,findings,score,
   };
 }
 
