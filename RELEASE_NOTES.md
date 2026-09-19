@@ -1,4 +1,7 @@
-# Release Notes\n\n- Upgraded Forge Loop Engine so all six loop families are executable: added Asset Quality with derivative lineage and safe duplicate/derivative repair, Construction with grounded Director planning and the full verifier stack, explicit accessibility verification, and atomic experience/asset-manifest/interaction-graph candidate bundles for human Vault promotion.
+# Release Notes\n\n- Added the Forge PRO+ Control Plane foundation: shared Selection Context, self-validating Capability Registry, typed Proposal Contract, Studio capability routing, semantic Loop preselection and a Control Plane audit enforced by `npm run check`.
+- Replaced the cockpit's hardcoded per-selection action branches with registry-driven contextual actions while preserving the existing Sequencer, Interaction Graph, Asset, Director and Loop implementations underneath.
+
+- Upgraded Forge Loop Engine so all six loop families are executable: added Asset Quality with derivative lineage and safe duplicate/derivative repair, Construction with grounded Director planning and the full verifier stack, explicit accessibility verification, and atomic experience/asset-manifest/interaction-graph candidate bundles for human Vault promotion.
 - Added selection-aware Studio direction plus Asset Intelligence manifest health, derivative coverage/savings, duplicate-binary detection and production-specific optimization guidance.
 - Added evidence-gated Performance Loop profiling and bounded DPR/pixel/preload repair with incumbent/candidate renderer re-measurement.
 
