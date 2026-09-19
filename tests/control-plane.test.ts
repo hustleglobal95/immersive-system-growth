@@ -10,7 +10,7 @@ import { parseAssetManifest } from "../src/platform/assetManifestSchema";
 import { capabilitiesForContext, forgeCapabilityRegistry, matchCapabilityIntent, validateCapabilityRegistry } from "../src/platform/control-plane/capabilityRegistry";
 import { createProposalDraft, forgeProposalSchema, proposalCanMutateAuthoritativeState, proposalRequiresPreview } from "../src/platform/control-plane/proposal";
 import { resolveSelectionContext } from "../src/platform/control-plane/selectionContext";
-import { compileIntent } from "../src/platform/control-plane/intentCompiler";
+import { compileIntent, motionArchetypeForIntent } from "../src/platform/control-plane/intentCompiler";
 import { recommendNextActions } from "../src/platform/control-plane/nextAction";
 import { evaluateProjectHealth } from "../src/platform/control-plane/projectHealth";
 import { prepareFastProposal } from "../src/platform/control-plane/fastProposal";
@@ -150,6 +150,15 @@ test("Intent Compiler maps outcome language to valid capabilities without exposi
   assert.ok(compiled.confidence>0);
 });
 
+test("Motion intent resolves to a context-appropriate archetype",()=>{
+  const scene=resolveSelectionContext({experience,manifest,graph,selection:{kind:"scene",index:0}});
+  assert.equal(motionArchetypeForIntent(scene,"editorial reveal"),"editorial-reveal");
+  assert.equal(motionArchetypeForIntent(scene,"move through the threshold"),"threshold-passage");
+  const productExperience=parseExperience(rawExperience);
+  const product=resolveSelectionContext({experience:productExperience,manifest,graph,selection:{kind:"scene",index:0}});
+  assert.equal(motionArchetypeForIntent(product,"make the assembly more mechanical"),"product-hero");
+});
+
 test("Next Action prioritizes unfinished production work",()=>{
   const source=parseExperience(rawExperience);
   source.scenes[0].motionTracks=[];
@@ -248,4 +257,24 @@ test("Deep proposal evidence returns through the verified local Loop result brid
   assert.match(route,/requireStudioRole\(request,"reviewer"\)/);
   assert.match(route,/acceptedExperiencePath/);
   assert.match(route,/safeArtifactPath/);
+});
+
+
+test("Build no longer exposes raw camera/environment mutation controls",()=>{
+  const studio=fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx","utf8");
+  assert.doesNotMatch(studio,/Start FOV/);
+  assert.doesNotMatch(studio,/Apply motion/);
+  assert.doesNotMatch(studio,/createMotionArchetype/);
+  assert.doesNotMatch(studio,/buildSelectedNode/);
+  assert.match(studio,/RefinePanel/);
+});
+
+test("Accepted proposal bundles have atomic undo and redo history",()=>{
+  const draft=fs.readFileSync("src/studio/useStudioDraft.ts","utf8");
+  assert.match(draft,/applyProjectBundle/);
+  assert.match(draft,/undoProjectBundle/);
+  assert.match(draft,/redoProjectBundle/);
+  assert.match(draft,/clearProjectBundleHistory/);
+  assert.match(draft,/setAssetManifestState/);
+  assert.match(draft,/setInteractionGraphState/);
 });
