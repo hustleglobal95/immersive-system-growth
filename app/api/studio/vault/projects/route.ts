@@ -5,9 +5,9 @@ export const runtime = "nodejs";
 
 export async function GET(request: Request) {
   try {
-    await requireStudioRole(request, "reviewer");
+    const identity = await requireStudioRole(request, "reviewer");
     const configuration = vaultConfiguration();
-    return Response.json({ ok: true, configuration, projects: configuration.configured ? await listVaultProjects() : [] });
+    return Response.json({ ok: true, identity, configuration, projects: configuration.configured ? await listVaultProjects() : [] });
   } catch (error) {
     const access = studioAccessErrorResponse(error);
     if (access) return access;
