@@ -77,7 +77,6 @@ export function ProductionStudioWorkbench() {
 
   const sceneIndex = Math.min(activeScene, draft.experience.scenes.length - 1);
   const scene = draft.experience.scenes[sceneIndex];
-  const rigNodes = draft.experience.productRig?.nodes ?? [];
   const selectionContext = useMemo(() => resolveSelectionContext({
     experience:draft.experience,
     manifest:draft.assetManifest,
@@ -104,13 +103,13 @@ export function ProductionStudioWorkbench() {
     const ideaDone = guideBrief.trim().length >= 12;
     const assetsDone = assetCount > 0;
     const motionDone = motionCount > 0;
-    const reviewDone = draft.validation.length === 0 && ideaDone && customStructure && motionDone;
+    const reviewDone = projectHealth.status === "ready" && ideaDone && customStructure && motionDone;
     const shipDone = shippedProjectId === draft.project.id;
     const completed = [ideaDone, assetsDone, customStructure, motionDone, reviewDone, shipDone].filter(Boolean).length;
     const nextLabel = !ideaDone ? "Describe the experience" : !assetsDone ? "Create or import the hero assets" : !customStructure ? "Shape the scene journey" : !motionDone ? "Direct the movement" : !reviewDone ? "Resolve review issues" : !shipDone ? "Review and publish" : "Project shipped";
     const unconfigured = draft.experience.scenes.length === 1 && assetCount === 0 && motionCount === 0 && !draft.experience.heroModel && !draft.experience.scenes[0]?.media;
     return { completed, nextLabel, unconfigured };
-  }, [draft.assetManifest, draft.experience, draft.project.id, draft.validation.length, guideBrief, shippedProjectId]);
+  }, [draft.assetManifest, draft.experience, draft.project.id, guideBrief, projectHealth.status, shippedProjectId]);
   const guideVisible = guidedOpen || (!guideDismissed && draft.hydrated && !guideSeen && workflow.unconfigured);
   const closeGuide = () => {
     setGuidedOpen(false);
@@ -447,11 +446,14 @@ export function ProductionStudioWorkbench() {
         experience={draft.experience}
         manifest={draft.assetManifest}
         validationCount={draft.validation.length}
+        projectHealthReady={projectHealth.status==="ready"}
+        projectHealthIssueCount={projectHealth.issues.filter((issue)=>issue.severity!=="info").length}
         onClose={closeGuide}
         onNewProject={() => { closeGuide(); setNewProjectOpen(true); }}
         onOpenCreate={() => { closeGuide(); setSurface("Build"); setAdvanced(false); }}
         onOpenAssets={() => { closeGuide(); setSurface("Build"); openAdvanced("Assets"); }}
         onOpenMotion={() => { closeGuide(); setSurface("Build"); openAdvanced("Motion"); }}
+        onOpenReview={() => { closeGuide(); setSurface("Review"); setAdvanced(false); }}
         onOpenShip={() => { closeGuide(); setSurface("Ship"); setAdvanced(false); }}
       />}
       <header className="production-topbar">
