@@ -3,7 +3,7 @@ import { forgeCapabilityRegistry, validateCapabilityRegistry } from "../src/plat
 
 const issues=validateCapabilityRegistry();
 const selectionKinds=new Set(forgeCapabilityRegistry.flatMap((item)=>item.selectionKinds));
-const requiredKinds=["scene","camera","node","asset","environment"];
+const requiredKinds=["scene","camera","node","copy","media","asset","environment"];
 for(const kind of requiredKinds) {
   if(!selectionKinds.has(kind)) issues.push({capabilityId:"registry",message:"No Control Plane capability covers selection kind "+kind+"."});
 }
