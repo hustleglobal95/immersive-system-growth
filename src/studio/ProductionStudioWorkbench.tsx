@@ -10,6 +10,7 @@ import rawInteractionGraph from "@/config/interaction-graph.json";
 import { parseExperience } from "@/src/lib/configSchema";
 import { parseInteractionGraph } from "@/src/lib/interactionGraph";
 import { parseStudioProject } from "@/src/platform/studioSchema";
+import { parseAssetManifest } from "@/src/platform/assetManifestSchema";
 import { emptyInteractionGraph } from "@/src/platform/emptyInteractionGraph";
 import type { MotionArchetypeName } from "@/src/platform/motionArchetypes";
 import { StudioLivePreview } from "@/src/studio/StudioLivePreview";
