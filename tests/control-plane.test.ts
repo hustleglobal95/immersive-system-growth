@@ -36,7 +36,7 @@ test("Selection Context fails closed when a selected asset no longer exists",()=
     experience,
     manifest,
     graph,
-    selection:{kind:"asset",index:999},
+    selection:{kind:"asset",index:999,sceneIndex:0},
   });
   assert.ok(context.issues.some((issue)=>issue.code==="missing-asset" && issue.severity==="blocker"));
   assert.match(context.selectionKey,/asset:missing/);
@@ -66,7 +66,7 @@ test("Capability Registry changes recommendations with selection context",()=>{
   assert.equal(cameraCapabilities[0]?.id,"camera.coordinate-motion");
   assert.ok(cameraCapabilities.some((item)=>item.advancedSurface==="Sequencer"));
 
-  const asset=resolveSelectionContext({experience,manifest,graph,selection:{kind:"asset",index:0}});
+  const asset=resolveSelectionContext({experience,manifest,graph,selection:{kind:"asset",index:0,sceneIndex:0}});
   const assetCapabilities=capabilitiesForContext(asset);
   assert.equal(assetCapabilities[0]?.id,"asset.inspect-optimize");
   assert.ok(assetCapabilities.some((item)=>item.dispatch.type==="loop" && item.dispatch.loop==="asset-quality"));
@@ -84,7 +84,7 @@ test("Intent matching stays bounded to capabilities valid for the current select
 });
 
 test("Proposal Contract records scope and verification before mutation",()=>{
-  const context=resolveSelectionContext({experience,manifest,graph,selection:{kind:"asset",index:0}});
+  const context=resolveSelectionContext({experience,manifest,graph,selection:{kind:"asset",index:0,sceneIndex:0}});
   const capability=capabilitiesForContext(context).find((item)=>item.id==="asset.improve")!;
   const proposal=createProposalDraft({
     id:"proposal-asset-improve",
