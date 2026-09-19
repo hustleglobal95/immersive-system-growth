@@ -10,6 +10,11 @@ import { parseAssetManifest } from "../src/platform/assetManifestSchema";
 import { capabilitiesForContext, forgeCapabilityRegistry, matchCapabilityIntent, validateCapabilityRegistry } from "../src/platform/control-plane/capabilityRegistry";
 import { createProposalDraft, forgeProposalSchema, proposalCanMutateAuthoritativeState, proposalRequiresPreview } from "../src/platform/control-plane/proposal";
 import { resolveSelectionContext } from "../src/platform/control-plane/selectionContext";
+import { compileIntent } from "../src/platform/control-plane/intentCompiler";
+import { recommendNextActions } from "../src/platform/control-plane/nextAction";
+import { evaluateProjectHealth } from "../src/platform/control-plane/projectHealth";
+import { prepareFastProposal } from "../src/platform/control-plane/fastProposal";
+import { attachVerifiedLoopCandidate } from "../src/platform/control-plane/deepCandidate";
 
 const experience=parseExperience(rawExperience);
 const manifest=parseAssetManifest(rawManifest);
@@ -129,4 +134,115 @@ test("Studio consumes the Control Plane instead of hardcoding contextual capabil
   assert.match(studio,/data-capability=/);
   assert.doesNotMatch(studio,/if\(selection\.kind==="camera"\) return <section className="production-context"/);
   assert.match(loops,/initialLoopId/);
+});
+
+
+test("Intent Compiler maps outcome language to valid capabilities without exposing subsystems",()=>{
+  const node=resolveSelectionContext({
+    experience,
+    manifest,
+    graph,
+    selection:{kind:"node",index:0,name:experience.productRig?.nodes[0] ?? "missing"},
+  });
+  const compiled=compileIntent(node,"make this part inspectable");
+  assert.equal(compiled.status,"matched");
+  assert.equal(compiled.capabilityId,"node.add-behavior");
+  assert.ok(compiled.confidence>0);
+});
+
+test("Next Action prioritizes unfinished production work",()=>{
+  const source=parseExperience(rawExperience);
+  source.scenes[0].motionTracks=[];
+  const context=resolveSelectionContext({experience:source,manifest,graph,selection:{kind:"scene",index:0}});
+  const next=recommendNextActions(context,1)[0];
+  assert.equal(next?.capability.id,"scene.compose-motion");
+  assert.equal(next?.urgency,"now");
+});
+
+test("Project Health is the single production-readiness abstraction",()=>{
+  const source=parseExperience(rawExperience);
+  source.scenes[0].motionTracks=[];
+  delete source.scenes[0].mobileCamera;
+  const health=evaluateProjectHealth({experience:source,manifest,graph,validationIssues:[]});
+  assert.equal(health.status,"attention");
+  assert.ok(health.issues.some((issue)=>issue.domain==="motion"));
+  assert.ok(health.issues.some((issue)=>issue.domain==="mobile"));
+  assert.ok(health.score<100);
+});
+
+test("Fast proposal prepares a candidate before working state changes",()=>{
+  const context=resolveSelectionContext({experience,manifest,graph,selection:{kind:"scene",index:0}});
+  const capability=capabilitiesForContext(context).find((item)=>item.id==="scene.compose-motion")!;
+  const prepared=prepareFastProposal({
+    id:"proposal-fast-motion",
+    createdAt:"2026-09-19T14:00:00.000Z",
+    capability,
+    context,
+    experience,
+    intent:"compose motion",
+    archetype:"editorial-reveal",
+  });
+  assert.equal(prepared.proposal.state,"ready");
+  assert.notEqual(prepared.candidateExperience,experience);
+  assert.ok(prepared.proposal.changes.length>0);
+  assert.equal(parseExperience(rawExperience).scenes[0].motionTracks.length,experience.scenes[0].motionTracks.length);
+});
+
+test("Verified Loop candidates attach only to matching deep proposals",()=>{
+  const context=resolveSelectionContext({experience,manifest,graph,selection:{kind:"scene",index:0}});
+  const capability=capabilitiesForContext(context).find((item)=>item.id==="scene.polish");
+  if(!capability) return;
+  const proposal=createProposalDraft({
+    id:"proposal-loop-polish",
+    createdAt:"2026-09-19T14:00:00.000Z",
+    capability,
+    context,
+    intent:"polish this scene",
+  });
+  const attached=attachVerifiedLoopCandidate(proposal,{
+    runId:"loop-test-visual-polish",
+    loopId:"visual-polish",
+    projectId:"test-project",
+    fingerprint:"a".repeat(64),
+    repairSummary:["Improved hierarchy without a hard-gate regression."],
+    preferenceAgreement:.9,
+    experience,
+    assetManifest:manifest,
+    interactionGraph:graph,
+  });
+  assert.equal(attached.state,"ready");
+  assert.ok(attached.verification.results.every((result)=>result.status==="passed"));
+  assert.equal(attached.candidate?.fingerprint,"a".repeat(64));
+  assert.throws(()=>attachVerifiedLoopCandidate(proposal,{
+    runId:"loop-test-performance",
+    loopId:"performance",
+    projectId:"test-project",
+    fingerprint:"b".repeat(64),
+    repairSummary:[],
+    preferenceAgreement:.9,
+    experience,
+    assetManifest:manifest,
+    interactionGraph:graph,
+  }));
+});
+
+test("Studio exposes Build Review Ship and keeps specialist tools under Advanced",()=>{
+  const studio=fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx","utf8");
+  assert.match(studio,/primarySurfaces = \["Build", "Review", "Ship"\]/);
+  assert.match(studio,/production-advanced-menu/);
+  assert.match(studio,/ReviewSurface/);
+  assert.match(studio,/ShipSurface/);
+  assert.match(studio,/NEXT BEST ACTION/);
+  assert.match(studio,/Project Health/);
+  assert.doesNotMatch(studio,/const workspaces = \["Create", "Motion", "Interact", "Assets", "Ship"\]/);
+});
+
+test("Deep proposal evidence returns through the verified local Loop result bridge",()=>{
+  const loopPanel=fs.readFileSync("src/studio/LoopEnginePanel.tsx","utf8");
+  const route=fs.readFileSync("app/api/studio/loops/results/route.ts","utf8");
+  assert.match(loopPanel,/Load verified candidate/);
+  assert.match(loopPanel,/onCandidateReady/);
+  assert.match(route,/requireStudioRole\(request,"reviewer"\)/);
+  assert.match(route,/acceptedExperiencePath/);
+  assert.match(route,/safeArtifactPath/);
 });
