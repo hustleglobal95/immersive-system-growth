@@ -73,6 +73,46 @@ export function DirectorIntelligenceWorkbench() {
         <section className="director-intelligence__gates"><h4>Human authority gates</h4>{result.humanGates.gates.map((gate) => <article key={gate.id}><div><strong>{gate.label}</strong><span>{gate.required ? gate.satisfied ? "APPROVED" : "REQUIRED" : "NOT REQUIRED"}</span></div><p>{gate.reason}</p>{gate.required && !gate.satisfied && <button onClick={() => approveGate(gate.id)}>Approve deliberately</button>}</article>)}</section>
       </Panel>}
 
+      {tab === "dna" && <Panel title="Creative DNA">
+        <div className="director-intelligence__north-star"><span>NORTH STAR</span><strong>{result.creativeDNA.northStar}</strong><p>{result.creativeDNA.contradiction}</p><small>Memory promise: {result.creativeDNA.memoryPromise}</small></div>
+        <div className="director-intelligence__dna-grid">
+          <DNAGroup title="Composition" values={result.creativeDNA.composition} />
+          <DNAGroup title="Typography" values={result.creativeDNA.typography} />
+          <DNAGroup title="Color" values={result.creativeDNA.color} />
+          <DNAGroup title="Image" values={result.creativeDNA.image} />
+          <DNAGroup title="3D / Material" values={result.creativeDNA.threeD} />
+          <DNAGroup title="Motion" values={result.creativeDNA.motion} />
+          <DNAGroup title="Lighting" values={result.creativeDNA.lighting} />
+          <DNAGroup title="Interaction" values={result.creativeDNA.interaction} />
+          <DNAGroup title="Sound" values={result.creativeDNA.sound} />
+        </div>
+        <List title="Anti-patterns" items={result.creativeDNA.antiPatterns} />
+        <List title="Cross-domain precedent transfers" items={result.creativeDNA.precedentTransfers.length ? result.creativeDNA.precedentTransfers : ["No cross-domain transfer selected."]} />
+      </Panel>}
+
+      {tab === "art" && <Panel title="Art Director">
+        <div className="director-intelligence__north-star"><span>VISUAL RULE</span><strong>{result.artDirection.visualRule}</strong><p>{result.artDirection.hierarchyRule}</p></div>
+        <div className="director-intelligence__art-grid">
+          <List title="Typography system" items={result.artDirection.typeSystem} />
+          <List title="Color system" items={result.artDirection.colorSystem} />
+          <List title="Image system" items={result.artDirection.imageSystem} />
+          <List title="Material system" items={result.artDirection.materialSystem} />
+          <List title="Lighting system" items={result.artDirection.lightingSystem} />
+          <List title="Motion system" items={result.artDirection.motionSystem} />
+        </div>
+        <div className="director-intelligence__scene-frames">{result.artDirection.sceneFrames.map((frame)=><article key={frame.beatId}><div><span>{frame.label}</span><strong>{frame.intensity}/10</strong></div><p>{frame.dominant}</p><small>{frame.composition}</small><small>{frame.colorLightBehavior}</small><small>{frame.motionBehavior}</small></article>)}</div>
+        <List title="Reject" items={result.artDirection.reject} />
+      </Panel>}
+
+      {tab === "disciplines" && <Panel title="Specialist Creative Directors">
+        <div className="director-intelligence__discipline-grid">{Object.values(result.disciplineDirections).map((direction)=><article key={direction.id}><span>{direction.id.toUpperCase()}</span><h4>{direction.premise}</h4><ul>{direction.rules.slice(0,5).map((rule)=><li key={rule}>{rule}</li>)}</ul><small>AVOID</small>{direction.avoid.slice(0,2).map((rule)=><p key={rule}>{rule}</p>)}</article>)}</div>
+      </Panel>}
+
+      {tab === "mutations" && <Panel title="Creative Mutation Engine">
+        <p className="director-muted">Forge deliberately challenges the first strong idea before production. A mutation may change the mechanism, but it must preserve brand truth, memory and conversion intent.</p>
+        <div className="director-intelligence__mutation-grid">{result.creativeMutations.map((mutation)=><article key={mutation.id}><div><span>{mutation.score}/10</span><small>RISK {mutation.productionRisk}/10</small></div><h4>{mutation.title}</h4><p>{mutation.question}</p><strong>{mutation.systems.join(" · ")}</strong></article>)}</div>
+      </Panel>}
+
       {tab === "hierarchy" && <Panel title="Hierarchy Engine"><MetricGrid items={[["Overall", report.hierarchy.overallScore], ...report.hierarchy.levels.map((level) => [level.label, level.score] as [string, number])]} />
         <List title="Recommended narrative" items={[report.hierarchy.recommendedNarrative.join(" → ")]} />
         <div className="director-intelligence__cards">{report.hierarchy.levels.map((level) => <article key={level.id}><span>{level.status.toUpperCase()} · {level.score}/10</span><h4>{level.label}</h4><p>{level.principle}</p><small>Dominant: {level.dominant}</small>{level.issues.map((item) => <small key={item.id}>{item.severity.toUpperCase()}: {item.message}</small>)}</article>)}</div>
@@ -100,3 +140,8 @@ export function DirectorIntelligenceWorkbench() {
 function Panel({ title, children }: { title: string; children: ReactNode }) { return <section className="director-panel"><div className="director-section-heading"><span>V2</span><div><h3>{title}</h3><p>Judgment before production.</p></div></div>{children}</section>; }
 function MetricGrid({ items }: { items: Array<[string, number]> }) { return <div className="director-dimensions">{items.map(([key,value]) => <div key={key}><span>{key}</span><strong>{Number(value).toFixed(1)}</strong></div>)}</div>; }
 function List({ title, items }: { title: string; items: string[] }) { return <section className="director-critique-list"><h4>{title}</h4>{items.length ? items.map((item) => <p key={item}>{item}</p>) : <p>None.</p>}</section>; }
+
+
+function DNAGroup({title,values}:{title:string;values:Record<string,string>}) {
+  return <article><span>{title.toUpperCase()}</span>{Object.entries(values).map(([key,value])=><div key={key}><small>{key}</small><p>{value}</p></div>)}</article>;
+}
