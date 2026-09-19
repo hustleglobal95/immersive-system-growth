@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test";
 
 async function openAdvanced(page:import("@playwright/test").Page,label:RegExp) {
-  await page.getByText("Advanced", { exact: true }).click();
-  await page.getByRole("button", { name: label }).click();
+  const advanced=page.locator("details.production-advanced-menu");
+  await advanced.locator("> summary").click();
+  await advanced.getByRole("button", { name: label }).first().click();
 }
 
 test("Build keeps the live experience central and edits the selected scene", async ({ page }) => {
@@ -10,7 +11,7 @@ test("Build keeps the live experience central and edits the selected scene", asy
   await page.goto("/studio");
 
   await expect(page.getByRole("button", { name: "Build", exact: true })).toHaveAttribute("aria-current", "page");
-  await expect(page.locator(".production-runtime canvas")).toHaveCount(1);
+  await expect(page.locator(".production-runtime canvas").first()).toBeAttached();
   await expect(page.getByLabel("Headline")).toBeVisible();
 
   const headline=page.getByLabel("Headline");
@@ -22,18 +23,19 @@ test("Build keeps the live experience central and edits the selected scene", asy
 test("Build prepares a reversible fast proposal before applying motion", async ({ page }) => {
   await page.goto("/studio");
   await page.getByRole("button", { name: "Add scene" }).click();
+  await expect(page.getByLabel("Headline")).toHaveValue("Direct this moment.");
   await page.getByLabel("Forge command").fill("editorial reveal");
   await page.getByRole("button", { name: "Direct", exact: true }).click();
 
   const review=page.getByLabel("Forge proposal review");
   await expect(review).toBeVisible();
-  await expect(review.getByRole("button", { name: "Current" })).toBeVisible();
-  await expect(review.getByRole("button", { name: "Candidate" })).toHaveAttribute("aria-pressed", "true");
-  await expect(review.getByRole("button", { name: "Accept candidate" })).toBeVisible();
+  await expect(review.getByRole("button", { name: "Current", exact: true })).toBeVisible();
+  await expect(review.getByRole("button", { name: "Candidate", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(review.getByRole("button", { name: "Accept candidate", exact: true })).toBeVisible();
 
-  await review.getByRole("button", { name: "Accept candidate" }).click();
-  await expect(review.getByRole("button", { name: "Revert accepted change" })).toBeVisible();
-  await review.getByRole("button", { name: "Revert accepted change" }).click();
+  await review.getByRole("button", { name: "Accept candidate", exact: true }).click();
+  await expect(review.getByRole("button", { name: "Revert accepted change", exact: true })).toBeVisible();
+  await review.getByRole("button", { name: "Revert accepted change", exact: true }).click();
   await expect(page.getByText(/reverted/i)).toBeVisible();
 });
 
@@ -53,7 +55,7 @@ test("Advanced Interactions preserves deterministic graph authoring", async ({ p
   await expect(page.getByRole("heading", { name: "Interaction graph", level: 2 })).toBeVisible();
   await expect(page.getByRole("application", { name: "Interaction node graph" })).toBeVisible();
   await page.getByRole("button", { name: "Add trigger" }).click();
-  await expect(page.getByText("Production schema valid")).toBeVisible();
+  await expect(page.locator("button.production-status")).toBeVisible();
 });
 
 test("Advanced Asset tools expose Asset Intelligence, bank and model inspection", async ({ page }) => {

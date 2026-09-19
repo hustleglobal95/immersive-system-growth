@@ -3,7 +3,7 @@ import type { RenderReviewCapture, VisualCriticDimension, VisualCriticFinding } 
 import type { PairwiseJudgment } from "@/src/platform/autonomy/forcedOptimization";
 
 export const visualCriticFindingSchema=z.object({
-  critic:z.enum(["composition","typography","camera","motion","continuity","brand","interaction","mobile","performance"]),
+  critic:z.enum(["composition","typography","camera","motion","continuity","brand","art-direction","color","lighting","material","image-direction","sound","originality","craft","interaction","mobile","performance"]),
   captureId:z.string().min(1).max(240),
   severity:z.enum(["blocker","major","minor","advisory"]),
   finding:z.string().min(8).max(1200),
@@ -88,6 +88,54 @@ export const specialistCriticBriefs:SpecialistCriticBrief[]=[
     objective:"Judge whether the frame feels project-specific rather than transferable to a competitor.",
     checks:["Prompt thesis is visible","Category cliché density is controlled","Signature mechanism belongs to the project","Proof supports the brand/product claim"],
     prohibited:["Do not praise generic luxury/cinematic language as specificity"],
+  },
+  {
+    id:"art-direction",
+    objective:"Judge whether composition, typography, color, image, material, lighting and motion feel downstream of one coherent visual thesis.",
+    checks:["One visual north star is legible","Disciplines reinforce rather than contradict each other","Supporting detail stays subordinate","The frame has a specific authored point of view"],
+    prohibited:["Do not reward polish when the disciplines do not belong to the same world","Do not collapse critique into generic premium styling"],
+  },
+  {
+    id:"color",
+    objective:"Judge palette hierarchy, temperature, contrast behavior and whether color changes support narrative state.",
+    checks:["Dominant/support/accent roles are legible","Accent is not overused","Temperature supports the emotional beat","Contrast directs attention rather than flattening it"],
+    prohibited:["Do not recommend fashionable palettes without a project reason","Do not use color alone to compensate for weak hierarchy"],
+  },
+  {
+    id:"lighting",
+    objective:"Judge whether light shapes form, material and hierarchy with a motivated direction and progression.",
+    checks:["Key direction is legible","Subject/background separation is controlled","Highlights reveal material","Lighting state supports the scene beat"],
+    prohibited:["Do not reward bloom as a substitute for lighting","Do not add rim light to every object by default"],
+  },
+  {
+    id:"material",
+    objective:"Judge whether surface response, roughness, reflectance, transmission and micro-detail feel intentional and believable for the subject.",
+    checks:["Materials remain distinguishable","Surface response matches scale","Hero materials hold up at macro distance","Expensive material effects earn their cost"],
+    prohibited:["Do not equate chrome/glass with premium","Do not reward physically implausible material merely because it is dramatic"],
+  },
+  {
+    id:"image-direction",
+    objective:"Judge lens/crop/subject distance/grade/texture consistency across image and video media.",
+    checks:["Crop language feels authored","Image assets share a coherent visual grammar","Subject distance changes with purpose","Grade preserves useful evidence"],
+    prohibited:["Do not hide weak source imagery behind heavy grading","Do not accept mixed stock-photo languages as variety"],
+  },
+  {
+    id:"sound",
+    objective:"Judge the intended sonic role, silence, ambience and interaction detail from the supplied project context; do not invent unheard audio evidence.",
+    checks:["Sound has a defined narrative role","Silence is intentionally protected","Interaction cues are world-specific","Autoplay/mobile constraints have an equivalent plan"],
+    prohibited:["Do not claim to hear audio from still frames","Do not recommend continuous music as a default solution"],
+  },
+  {
+    id:"originality",
+    objective:"Judge whether the visible mechanism feels specific to this project rather than a reusable Forge house effect or category cliché.",
+    checks:["Signature device depends on project truth","Composition is not generic category shorthand","Motion/camera devices are not interchangeable with another client","The frame contains a memorable project-specific mechanism"],
+    prohibited:["Do not reward novelty without relevance","Do not confuse unusual styling with original thinking"],
+  },
+  {
+    id:"craft",
+    objective:"Judge the small finishing decisions that separate a strong concept from a production-ready frame.",
+    checks:["Edges/crops are intentional","Spacing and alignment are resolved","Material/lighting artifacts are controlled","No tiny inconsistency breaks the illusion"],
+    prohibited:["Do not nitpick invisible detail before major hierarchy issues","Do not recommend decorative micro-polish that adds noise"],
   },
   {
     id:"interaction",

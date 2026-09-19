@@ -1,24 +1,18 @@
 import { mkdir } from "node:fs/promises";
 import { test } from "@playwright/test";
+import experience from "../../config/experience.json";
 
-const desktopShots = [
-  ["01-arrival", 0.015],
-  ["02-automotive-detail", 0.19],
-  ["03-profile", 0.285],
-  ["04-residence", 0.445],
-  ["05-threshold", 0.535],
-  ["06-interior", 0.625],
-  ["07-terrace", 0.79],
-  ["08-horizon", 0.88],
-  ["09-private-presentation", 0.975],
-] as const;
-
-const mobileShots = [
-  ["01-arrival", 0.015],
-  ["02-threshold", 0.535],
-  ["03-horizon", 0.88],
-  ["04-private-presentation", 0.975],
-] as const;
+const midpoint=(range:readonly [number,number])=>range[0]+(range[1]-range[0])*.52;
+const desktopShots=experience.scenes.map((scene,index)=>[
+  `${String(index+1).padStart(2,"0")}-${scene.id}`,
+  midpoint(scene.range as [number,number]),
+] as const);
+const mobileIndexes=Array.from(new Set([0,2,Math.floor(experience.scenes.length/2),experience.scenes.length-2,experience.scenes.length-1]))
+  .filter((index)=>index>=0&&index<experience.scenes.length);
+const mobileShots=mobileIndexes.map((index)=>{
+  const scene=experience.scenes[index];
+  return [`${String(index+1).padStart(2,"0")}-${scene.id}`,midpoint(scene.range as [number,number])] as const;
+});
 
 async function seek(page: import("@playwright/test").Page, progress: number) {
   await page.evaluate((value) => {
@@ -31,31 +25,31 @@ async function seek(page: import("@playwright/test").Page, progress: number) {
 
 async function prepare(page: import("@playwright/test").Page) {
   await page.goto("/", { waitUntil: "domcontentloaded", timeout: 15000 });
-  await page.locator("canvas").waitFor({ state: "attached", timeout: 10000 });
+  await page.locator("canvas").first().waitFor({ state: "attached", timeout: 10000 });
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(3000);
 }
 
-test("NOCTERRA desktop delivery screenshots", async ({ page }, testInfo) => {
+test("Casa Lumen desktop delivery screenshots", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium", "Chromium visual evidence only");
-  test.setTimeout(30000);
-  await mkdir("test-results/nocterra/desktop", { recursive: true });
+  test.setTimeout(300000);
+  await mkdir("test-results/atelier-maris/desktop", { recursive: true });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await prepare(page);
   for (const [name, progress] of desktopShots) {
     await seek(page, progress);
-    await page.screenshot({ path: `test-results/nocterra/desktop/${name}.png`, animations: "disabled" });
+    await page.screenshot({ path: `test-results/atelier-maris/desktop/${name}.png`, animations: "allow", timeout: 60000 });
   }
 });
 
-test("NOCTERRA mobile delivery screenshots", async ({ page }, testInfo) => {
+test("Casa Lumen mobile delivery screenshots", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium", "Chromium visual evidence only");
-  test.setTimeout(30000);
-  await mkdir("test-results/nocterra/mobile", { recursive: true });
+  test.setTimeout(180000);
+  await mkdir("test-results/atelier-maris/mobile", { recursive: true });
   await page.setViewportSize({ width: 390, height: 844 });
   await prepare(page);
   for (const [name, progress] of mobileShots) {
     await seek(page, progress);
-    await page.screenshot({ path: `test-results/nocterra/mobile/${name}.png`, animations: "disabled" });
+    await page.screenshot({ path: `test-results/atelier-maris/mobile/${name}.png`, animations: "allow", timeout: 60000 });
   }
 });

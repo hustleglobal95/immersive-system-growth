@@ -94,6 +94,14 @@ test("render review plan covers desktop and mobile scene states deterministicall
   assert.ok(plan.captures.some((item) => item.role === "handoff"));
   assert.ok(plan.dimensions.includes("composition"));
   assert.ok(plan.dimensions.includes("motion"));
+  assert.equal(plan.dimensions.length,17);
+  assert.ok(plan.dimensions.includes("art-direction"));
+  assert.ok(plan.dimensions.includes("lighting"));
+  assert.ok(plan.dimensions.includes("material"));
+  assert.ok(plan.dimensions.includes("image-direction"));
+  assert.ok(plan.dimensions.includes("sound"));
+  assert.ok(plan.dimensions.includes("originality"));
+  assert.ok(plan.dimensions.includes("craft"));
 });
 
 test("functional verification derives commercial and mobile gates from prompt intelligence", () => {

@@ -9,6 +9,7 @@ const panels = fs.readFileSync("src/studio/ProjectPanels.tsx", "utf8");
 const agent = fs.readFileSync("src/studio/CreativeAgentWorkbench.tsx", "utf8");
 const assetCreator = fs.readFileSync("src/studio/AssetCreationWorkbench.tsx", "utf8");
 const assetManager = fs.readFileSync("src/studio/AssetManager.tsx", "utf8");
+const controlPlaneSurfaces = fs.readFileSync("src/studio/ControlPlaneSurfaces.tsx", "utf8");
 
 test("Studio exposes one guided entry hierarchy instead of floating launchers", () => {
   assert.doesNotMatch(studioPage, /studio-intelligence-dock|StudioWorkflowDock/);
@@ -40,11 +41,13 @@ test("client-facing Studio family hides internal release labels", () => {
 
 test("Studio routes selections through contextual direction instead of exposing raw machinery first", () => {
   assert.match(studio, /ContextualDirection/);
-  assert.match(studio, /SCENE DIRECTION/);
-  assert.match(studio, /CAMERA DIRECTION/);
-  assert.match(studio, /OBJECT DIRECTION/);
-  assert.match(studio, /ASSET DIRECTION/);
-  assert.match(studio, /ENVIRONMENT DIRECTION/);
+  assert.match(controlPlaneSurfaces, /SCENE DIRECTION/);
+  assert.match(controlPlaneSurfaces, /CAMERA DIRECTION/);
+  assert.match(controlPlaneSurfaces, /OBJECT DIRECTION/);
+  assert.match(controlPlaneSurfaces, /COPY DIRECTION/);
+  assert.match(controlPlaneSurfaces, /MEDIA DIRECTION/);
+  assert.match(controlPlaneSurfaces, /ASSET DIRECTION/);
+  assert.match(controlPlaneSurfaces, /ENVIRONMENT DIRECTION/);
 });
 
 test("Studio asset intake surfaces Asset Intelligence guidance", () => {

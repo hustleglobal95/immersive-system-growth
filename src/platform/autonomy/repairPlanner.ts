@@ -60,6 +60,11 @@ export function planVisualRepairs(input:{
     }
 
     const text=[finding.finding,finding.repair,...finding.evidence,...finding.affectedSystems].join(" ").toLowerCase();
+    const diagnosticOnly=new Set<VisualCriticFinding["critic"]>(["originality","sound","material"]);
+    if(diagnosticOnly.has(finding.critic)) {
+      unresolved.push(finding);
+      return;
+    }
     let handled=false;
 
     if(finding.critic==="camera" || finding.affectedSystems.some((item)=>/camera|lens|framing/i.test(item))) {

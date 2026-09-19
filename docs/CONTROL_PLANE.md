@@ -25,6 +25,10 @@ The operator should think in outcomes:
 - direct camera;
 - compose motion;
 - make inspectable;
+- develop art direction;
+- direct typography;
+- direct image language;
+- rethink the visual world;
 - improve asset;
 - fix mobile;
 - polish;
@@ -177,6 +181,9 @@ Polish environment
 
 Optimize runtime
 → Performance Loop
+
+Develop art direction / direct typography / direct image language / direct visual world
+→ Creative Agent + Creative Intelligence 2 with the selected target and original operator intent preserved
 ```
 
 Loop-backed actions preselect the matching Loop rather than opening a generic engineering menu.

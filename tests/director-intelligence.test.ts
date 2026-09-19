@@ -11,6 +11,10 @@ import { recordClientFeedback } from "../src/platform/director-intelligence/clie
 import { reviewProduction } from "../src/platform/director-intelligence/continuousCritic";
 import { synthesizePostmortem } from "../src/platform/director-intelligence/learning";
 import { buildResearchBrief, auditResearchFindings } from "../src/platform/director-intelligence/research";
+import { resolveCreativeTaste } from "../src/platform/director-intelligence/creativeTaste";
+import { reviewCreativeMemory } from "../src/platform/director-intelligence/creativeMemory";
+import { createEmptyMemoryGraph, ingestCreativeIntelligenceMemory, ingestProjectMemory } from "../src/platform/director-intelligence/memory";
+import { deconstructReference } from "../src/platform/director-intelligence/precedents";
 
 const brief = {
   projectName: "Aurelia Tower",
@@ -42,6 +46,104 @@ test("advanced Director runs full intelligence pipeline", () => {
   assert.ok(result.constructionPlan.sceneDecisions.every((scene) => scene.continuityAnchor.length > 0));
   assert.ok(result.constructionPlan.criticalBootStrategy.length > 0);
   assert.ok(["LOCK", "REVISE", "RESEARCH REQUIRED", "ASSET BLOCKED", "REJECT"].includes(result.report.verdict));
+});
+
+test("Creative Intelligence 2 produces a complete project-specific creative system", () => {
+  const result = runDirectorIntelligence({ brief });
+  assert.equal(result.creativeDNA.version,1);
+  assert.equal(result.creativeDNA.projectName,brief.projectName);
+  assert.ok(result.creativeDNA.northStar.length > 20);
+  assert.ok(result.creativeDNA.signatureMechanism.length > 20);
+  assert.equal(result.visualLanguages.length,3);
+  assert.equal(new Set(result.visualLanguages.map((item)=>item.modeId)).size,3);
+  assert.equal(result.visualLanguageDivergence.matrix.length,3);
+  assert.ok(result.visualLanguageDivergence.minimumDistance > 0);
+  assert.equal(result.artDirection.sceneFrames.length,result.report.treatment.emotionalArc.length);
+  assert.equal(Object.keys(result.disciplineDirections).length,8);
+  assert.ok(result.creativeMutations.length >= 5);
+  assert.ok(result.creativeMutations.every((item)=>item.preserves.length >= 3));
+  assert.equal(Object.keys(result.creativeCeiling.dimensions).length,13);
+  assert.ok(result.creativeCeiling.current >= 0 && result.creativeCeiling.current <= 10);
+  assert.ok(result.creativeCeiling.projected >= result.creativeCeiling.current);
+  assert.ok(result.productionPlan.creativeIntelligence.dna.northStar.length > 0);
+});
+
+test("visual-language divergence is enforced more aggressively at signature tiers", () => {
+  const signature = runDirectorIntelligence({ brief });
+  const cinematic = runDirectorIntelligence({ brief:{...brief,tier:"cinematic"} });
+  assert.ok(signature.visualLanguageDivergence.threshold > cinematic.visualLanguageDivergence.threshold);
+  assert.equal(signature.visualLanguageDivergence.matrix.length,3);
+});
+
+test("Creative Mutation challenges the mechanism without discarding brand truth", () => {
+  const result = runDirectorIntelligence({ brief });
+  const top=result.creativeMutations[0];
+  assert.ok(top.question.endsWith("?"));
+  assert.ok(top.preserves.some((item)=>item.includes(brief.differentiators[0])));
+  assert.ok(top.systems.length >= 2);
+  assert.ok(top.originalityPotential >= 7);
+});
+
+test("layered taste keeps studio preference dominant without becoming a hard brand rule", () => {
+  const studio=recordPreference(createTasteProfile(),{id:"studio-1",winnerId:"a",loserId:"b",reasons:["Prefer restraint"],dimensions:{restraintVsSpectacle:-1},createdAt:"2026-01-01T00:00:00.000Z"});
+  const operator=recordPreference(createTasteProfile(),{id:"operator-1",winnerId:"b",loserId:"a",reasons:["Prefer spectacle"],dimensions:{restraintVsSpectacle:1},createdAt:"2026-01-02T00:00:00.000Z"});
+  const resolved=resolveCreativeTaste({studio,operator});
+  assert.ok(resolved.profile.dimensions.restraintVsSpectacle < 0);
+  assert.equal(resolved.contributions[0]?.layer,"studio");
+  assert.match(resolved.rule,/None may override factual brief or brand constraints/);
+});
+
+test("Creative Memory flags repeated house-style signals without turning them into fake laws", () => {
+  const result=runDirectorIntelligence({brief});
+  const memory={
+    version:1 as const,
+    nodes:[
+      {id:"old-signature",type:"SignatureMoment" as const,label:"Repeated signature",text:result.creativeDNA.signatureMechanism,tags:["signature","property"],projectId:"old-project",confidence:.9},
+      {id:"lesson",type:"Lesson" as const,label:"Quiet transitions",text:"Quiet transitions protected architectural authority.",tags:["architecture","restraint"],projectId:"old-project",confidence:.6},
+    ],
+    edges:[],
+  };
+  const review=reviewCreativeMemory(result.creativeDNA,memory);
+  assert.ok(review.repeatedSignals.some((item)=>item.nodeId==="old-signature"));
+  assert.ok(["watch","rewrite"].includes(review.verdict));
+});
+
+
+test("approved Creative Intelligence becomes reusable memory without storing unselected mutations",()=>{
+  const result=runDirectorIntelligence({brief});
+  const projectId="aurelia-tower";
+  let graph=ingestProjectMemory(createEmptyMemoryGraph(),projectId,brief,result.report.treatment);
+  const language=result.visualLanguages.find((item)=>item.territoryId===result.report.treatment.selectedTerritoryId)!;
+  graph=ingestCreativeIntelligenceMemory(graph,projectId,brief,{
+    dna:result.creativeDNA,
+    artDirection:result.artDirection,
+    visualLanguage:language,
+    disciplineDirections:result.disciplineDirections,
+  });
+  assert.ok(graph.nodes.some((node)=>node.type==="ArtDirection"));
+  assert.ok(graph.nodes.some((node)=>node.type==="VisualLanguage"));
+  assert.ok(graph.nodes.some((node)=>node.type==="LightingGrammar"));
+  assert.ok(graph.nodes.some((node)=>node.type==="MaterialGrammar"));
+  assert.ok(!graph.nodes.some((node)=>node.type==="CreativeMutation"));
+
+  graph=ingestCreativeIntelligenceMemory(graph,projectId,brief,{
+    dna:result.creativeDNA,
+    artDirection:result.artDirection,
+    visualLanguage:language,
+    disciplineDirections:result.disciplineDirections,
+    selectedMutation:result.creativeMutations[0],
+  });
+  assert.ok(graph.nodes.some((node)=>node.type==="CreativeMutation" && node.id.includes(result.creativeMutations[0].id)));
+});
+
+test("reference deconstruction transfers principles without inventing unseen disciplines",()=>{
+  const deconstruction=deconstructReference("Film study","Stable horizon and slow camera movement. Use a threshold transition into warmer light.");
+  assert.equal(deconstruction.version,2);
+  assert.match(deconstruction.lenses.camera,/Stable horizon|slow camera/i);
+  assert.match(deconstruction.lenses.transitions,/threshold/i);
+  assert.match(deconstruction.lenses.typography,/Not evidenced/);
+  assert.match(deconstruction.transferRule,/Never transfer the reference's exact composition/);
+  assert.ok(deconstruction.doNotCopy.includes("typeface"));
 });
 
 test("portfolio collision catches identical prior work", () => {

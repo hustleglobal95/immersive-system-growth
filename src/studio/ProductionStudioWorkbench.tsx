@@ -10,6 +10,7 @@ import rawInteractionGraph from "@/config/interaction-graph.json";
 import { parseExperience } from "@/src/lib/configSchema";
 import { parseInteractionGraph } from "@/src/lib/interactionGraph";
 import { parseStudioProject } from "@/src/platform/studioSchema";
+import { parseAssetManifest } from "@/src/platform/assetManifestSchema";
 import { emptyInteractionGraph } from "@/src/platform/emptyInteractionGraph";
 import type { MotionArchetypeName } from "@/src/platform/motionArchetypes";
 import { StudioLivePreview } from "@/src/studio/StudioLivePreview";
@@ -190,7 +191,12 @@ export function ProductionStudioWorkbench() {
       return;
     }
     if(dispatch.type==="route") {
-      window.location.assign(dispatch.href);
+      if(dispatch.href==="/studio/agent") {
+        const idea=[intent,`Selected target: ${selectionContext.selectionKey}.`,`Current scene: ${selectionContext.sceneLabel}.`].join(" ");
+        window.location.assign(`${dispatch.href}?idea=${encodeURIComponent(idea)}`);
+      } else {
+        window.location.assign(dispatch.href);
+      }
       return;
     }
     setRequestedLoop(dispatch.loop);
@@ -432,16 +438,16 @@ export function ProductionStudioWorkbench() {
     else if (value.includes("new scene") || value.includes("add scene")) addScene();
     else if (value.includes("duplicate")) duplicateScene();
     else if (value.includes("clear motion") || value.includes("reset motion")) { openAdvanced("Motion"); setNotice("Destructive motion clearing stays in Advanced so Build never bypasses proposal safety."); }
+    else if (value === "architectural build") runMotionPreset("architectural-build",input);
+    else if (value === "product hero") runMotionPreset("product-hero",input);
+    else if (value === "parallax story") runMotionPreset("parallax-story",input);
+    else if (value === "threshold passage") runMotionPreset("threshold-passage",input);
+    else if (value === "editorial reveal") runMotionPreset("editorial-reveal",input);
     else {
       const compiled=compileIntent(selectionContext,input);
       const capability=compiledCapability(selectionContext,compiled);
       if(capability) runCapability(capability,input,"command");
       else if(compiled.status==="ambiguous") setNotice(compiled.reason+" Choose a contextual action to disambiguate.");
-      else if (value === "architectural build") runMotionPreset("architectural-build",input);
-      else if (value === "product hero") runMotionPreset("product-hero",input);
-      else if (value === "parallax story") runMotionPreset("parallax-story",input);
-      else if (value === "threshold passage") runMotionPreset("threshold-passage",input);
-      else if (value === "editorial reveal") runMotionPreset("editorial-reveal",input);
       else setNotice("Forge could not map that intent to a safe capability for the current selection.");
     }
     setCommand("");

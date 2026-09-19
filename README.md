@@ -21,7 +21,7 @@ For development use `npm run dev`. Dev/build prepares locally served Draco and B
 
 ## Forge Studio
 
-Open `/studio` to direct the production runtime without editing source code. The default product surface is intentionally small: **Build / Review / Ship**. Forge resolves the current selection, ranks relevant capabilities, accepts outcome-level commands, prepares reversible proposals and uses Project Health as the release-readiness abstraction. Sequencer, Interactions, Asset tools and Telemetry remain available under **Advanced**.
+Open `/studio` to direct the production runtime without editing source code. The default product surface is intentionally small: **Build / Review / Ship**. Forge resolves the current selection, ranks relevant capabilities, accepts outcome-level commands, prepares reversible proposals and uses Project Health as the release-readiness abstraction. Creative-direction intents can route the selected scene, copy, media or environment into **Creative Intelligence 2**, which develops project-specific Creative DNA, Art Direction, divergent visual languages, specialist discipline direction and concept mutations without exposing those subsystems as permanent navigation. Sequencer, Interactions, Asset tools and Telemetry remain available under **Advanced**.
 
 The Sequence workspace provides a dope sheet, loopable real-time playback, in/out ranges, rate and duration controls, track filtering, snapping, zoom, multi-key selection, timing reversal and distribution, copy/paste, undo/redo, reusable motion presets, desktop/mobile override tracks, cubic Bezier handles and Three.js transform gizmos for vector recording.
 
@@ -38,7 +38,7 @@ npm run interaction:validate
 npm run content:sync -- config/studio-project.json
 ```
 
-Read [Studio](docs/STUDIO.md), [PRO+ Control Plane](docs/CONTROL_PLANE.md), [internal product operations](docs/INTERNAL_PRODUCT.md), [Loop Engine](docs/LOOP_ENGINE.md), [motion sequencer](docs/MOTION_SEQUENCER.md), [interaction graph](docs/INTERACTION_GRAPH.md), [mask reveals](docs/MASK_REVEALS.md), [integrations](docs/INTEGRATIONS.md), [telemetry](docs/TELEMETRY.md) and [deployment](docs/DEPLOYMENT.md) before configuring external systems.
+Read [Studio](docs/STUDIO.md), [PRO+ Control Plane](docs/CONTROL_PLANE.md), [Creative Intelligence 2](docs/CREATIVE_INTELLIGENCE_2.md), [internal product operations](docs/INTERNAL_PRODUCT.md), [Loop Engine](docs/LOOP_ENGINE.md), [motion sequencer](docs/MOTION_SEQUENCER.md), [interaction graph](docs/INTERACTION_GRAPH.md), [mask reveals](docs/MASK_REVEALS.md), [integrations](docs/INTEGRATIONS.md), [telemetry](docs/TELEMETRY.md) and [deployment](docs/DEPLOYMENT.md) before configuring external systems.
 
 ## Runtime interaction targets
 

@@ -1,6 +1,8 @@
 import { createHash } from "node:crypto";
 import { readAssetGenerationStatus, type AssetGenerationProvider, type ForgeAssetType } from "@/src/platform/assetGeneration";
 
+type AssetVaultConfigurationEnvironment={ [key:string]:string|undefined };
+
 export interface PromoteGeneratedAssetInput {
   provider: AssetGenerationProvider;
   taskId: string;
@@ -10,7 +12,7 @@ export interface PromoteGeneratedAssetInput {
   name: string;
 }
 
-export function assetVaultConfiguration(environment: NodeJS.ProcessEnv = process.env) {
+export function assetVaultConfiguration(environment: AssetVaultConfigurationEnvironment = process.env) {
   return {
     configured: Boolean(environment.FORGE_ASSET_VAULT_ENDPOINT && environment.FORGE_ASSET_VAULT_PUBLIC_BASE_URL && environment.FORGE_ASSET_VAULT_TOKEN),
     endpointConfigured: Boolean(environment.FORGE_ASSET_VAULT_ENDPOINT),

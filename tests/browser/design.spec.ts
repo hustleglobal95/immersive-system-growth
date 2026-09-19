@@ -11,13 +11,13 @@ test("design directions, catalog and inquiry are operable without cinematic mach
     await expect(page.locator(".ds-root")).toHaveAttribute("data-direction", id);
     await expect(page.getByRole("button", { name, exact: true })).toHaveAttribute("aria-pressed", "true");
     await page.evaluate(() => document.fonts.ready);
-    await page.screenshot({ path: info.outputPath(`${id}-desktop.png`), fullPage: true });
+    await page.screenshot({ path: info.outputPath(`${id}-desktop.png`), animations: "disabled" });
   }
   expect(new Set(fonts).size).toBe(3);
   expect(fonts.every(url => url.startsWith("http://127.0.0.1:3000/"))).toBe(true);
   await page.getByLabel("Search fonts").fill("cormorant");
   await expect(page.getByRole("link", { name: "Cormorant Garamond", exact: true })).toBeVisible();
-  await page.getByRole("combobox").selectOption("Mono");
+  await page.getByLabel("Category", { exact: false }).selectOption("Mono");
   await expect(page.getByText("No matches.", { exact: false })).toBeVisible();
   await page.getByLabel("Your name", { exact: true }).fill("Sample visitor");
   await page.getByLabel("Email address", { exact: true }).fill("sample@example.com");
@@ -52,7 +52,7 @@ test("design preview is readable without JavaScript", async ({ browser }) => {
   const page = await context.newPage();
   await page.goto("http://127.0.0.1:3000/design");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(page.locator(".ds-font-list li")).toHaveCount(36);
+  await expect(page.locator(".ds-font-list li")).toHaveCount(117);
   await expect(page.getByRole("button", { name: "Send inquiry" })).toBeDisabled();
   await context.close();
 });

@@ -128,11 +128,12 @@ test("Proposal Contract never grants authoritative mutation to a preview-only pr
 
 test("Studio consumes the Control Plane instead of hardcoding contextual capability branches",()=>{
   const studio=fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx","utf8");
+  const surfaces=fs.readFileSync("src/studio/ControlPlaneSurfaces.tsx","utf8");
   const loops=fs.readFileSync("src/studio/LoopEnginePanel.tsx","utf8");
   assert.match(studio,/resolveSelectionContext/);
   assert.match(studio,/capabilitiesForContext/);
   assert.match(studio,/createProposalDraft/);
-  assert.match(studio,/data-capability=/);
+  assert.match(surfaces,/data-capability=/);
   assert.doesNotMatch(studio,/if\(selection\.kind==="camera"\) return <section className="production-context"/);
   assert.match(loops,/initialLoopId/);
 });
@@ -189,6 +190,24 @@ test("Intent Compiler maps outcome language to valid capabilities without exposi
   assert.ok(compiled.confidence>0);
 });
 
+test("Creative-direction intent routes through the simple Control Plane surface",()=>{
+  const scene=resolveSelectionContext({experience,manifest,graph,selection:{kind:"scene",index:0}});
+  const sceneIntent=compileIntent(scene,"this feels generic, develop a more original visual language");
+  assert.equal(sceneIntent.status,"matched");
+  assert.equal(sceneIntent.capabilityId,"scene.art-direct");
+
+  const copy=resolveSelectionContext({experience,manifest,graph,selection:{kind:"copy",index:0}});
+  const copyIntent=compileIntent(copy,"make the typography more editorial");
+  assert.equal(copyIntent.status,"matched");
+  assert.equal(copyIntent.capabilityId,"copy.art-direct");
+
+  const environment=resolveSelectionContext({experience,manifest,graph,selection:{kind:"environment",index:0}});
+  const worldIntent=compileIntent(environment,"make this world more alien but not sci fi");
+  assert.equal(worldIntent.status,"matched");
+  assert.equal(worldIntent.capabilityId,"environment.art-direct");
+  assert.ok(capabilitiesForContext(environment).some((item)=>item.dispatch.type==="route" && item.dispatch.href==="/studio/agent"));
+});
+
 test("Motion intent resolves to a context-appropriate archetype",()=>{
   const scene=resolveSelectionContext({experience,manifest,graph,selection:{kind:"scene",index:0}});
   assert.equal(motionArchetypeForIntent(scene,"editorial reveal"),"editorial-reveal");
@@ -220,7 +239,9 @@ test("Project Health is the single production-readiness abstraction",()=>{
   const source=parseExperience(rawExperience);
   source.scenes[0].motionTracks=[];
   delete source.scenes[0].mobileCamera;
-  const health=evaluateProjectHealth({experience:source,manifest,graph,validationIssues:[]});
+  const healthyManifest=structuredClone(manifest);
+  healthyManifest.budgets={modelMb:500,textureMb:500,hdrMb:500,videoMb:500,totalMb:2000};
+  const health=evaluateProjectHealth({experience:source,manifest:healthyManifest,graph,validationIssues:[]});
   assert.equal(health.status,"attention");
   assert.ok(health.issues.some((issue)=>issue.domain==="motion"));
   assert.ok(health.issues.some((issue)=>issue.domain==="mobile"));

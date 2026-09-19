@@ -6,9 +6,9 @@ test("media preview overlaps, reverses, and respects reduced motion",async({page
   const first=page.locator('[data-media-panel="0"]');
   await expect(first).toHaveCSS("visibility","visible");
   expect(await page.locator("[data-media-panel]").count()).toBeLessThanOrEqual(3);
-  await page.locator('a[href="#signature"]').click();
-  await expect(page.locator('[data-media-panel="2"]')).toHaveCSS("visibility","visible");
-  await page.locator('a[href="#arrival"]').click();
+  await page.locator('a[href="#material"]').first().click();
+  await expect(page.locator('[data-media-panel="3"]')).toHaveCSS("visibility","visible");
+  await page.locator('a[href="#approach"]').first().click();
   await expect(first).toHaveCSS("visibility","visible");
   await page.getByLabel("Reduced motion",{exact:true}).check();
   await expect(page.locator(".cinematic-media")).toHaveCount(0);

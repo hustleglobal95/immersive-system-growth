@@ -93,6 +93,15 @@ Immersive Site Forge 6.0 is organized as a multi-project production platform rat
 - reference-deconstruction workflow that maps immersive precedents onto existing Forge systems before new dependencies
 - evidence-weighted, source-diverse precedent retrieval plus a reference corpus integrity audit
 - eight-layer hierarchy intelligence spanning strategy, narrative, section, information, visual, interaction, motion/spatial and semantic/accessibility priority
+- Creative Intelligence 2 with project-specific Creative DNA across composition, typography, color, image, 3D/material, motion, lighting, interaction, sound and mobile
+- deterministic Art Director that compiles one visual north star into type/color/image/material/lighting/motion systems plus beat-level scene direction and explicit reject rules
+- three materially different visual-language worlds per Director run with ten-dimension pairwise territory-distance gates that become stricter at Signature/Flagship tiers
+- Creative Mutation Engine that challenges first-order concepts with counterfactual mechanisms while preserving brand truth, memory promise and conversion intent
+- eight specialist creative directors for typography, camera, motion, lighting, material, image, interaction and sound
+- Creative Ceiling V2 across 13 disciplines with bottleneck and highest-leverage intervention reporting
+- Reference Deconstruction 2.0 with evidence-scoped composition/type/camera/motion/color/image/material/interaction/transition/density/narrative/signature/mobile lenses and explicit anti-copy transfer rules
+- layered studio/operator/project taste calibration with studio taste dominant but never allowed to override factual brief or brand constraints
+- expanded Creative Memory graph for approved Art Direction, Visual Language and type/color/light/material/image/sound grammars, plus cross-project anti-repeat review that excludes the current project from self-collision
 - autonomy foundation with grounded short-prompt brief inference, decision-time construction guidance, five autonomy levels, deterministic render-review plans, functional verification contracts and forced-improvement candidate selection\n- Forge Loop Engine control plane with typed loop contracts, multi-candidate tournaments, bounded cycle/attempt/time budgets, saturation and oscillation stops, compact cycle context, evidence ledger, Project Vault memory and explicit human promotion
 - executable evidence-gated Performance Loop with representative desktop/mobile profiling, bounded DPR/pixel/preload repair candidates and incumbent/candidate re-measurement
 - executable Asset Quality Loop with derivative lineage, referenced-byte profiling, same-class SHA-256 alias consolidation, registered-derivative selection and visual/performance regression gates
@@ -100,7 +109,7 @@ Immersive Site Forge 6.0 is organized as a multi-project production platform rat
 - Loop Engine project-state bundles that fingerprint and human-promote experience, asset manifest and interaction graph atomically
 - explicit Playwright accessibility verifier for semantic names, image alternatives, unique IDs, reduced-motion preservation, keyboard focus and primary-action focusability
 - 30-case one-line commercial prompt benchmark enforced by `npm run check`
-- Visual Director with specialist critic contracts, isolated incumbent/candidate preview rendering, bounded reversible presentation repair, reversed-order pairwise judging and forced-optimization acceptance
+- Visual Director with 17 specialist critic dimensions including art direction, color, lighting, material, image direction, sound intent, originality and craft; isolated incumbent/candidate preview rendering; bounded reversible presentation repair; reversed-order pairwise judging and forced-optimization acceptance
 - end-to-end local autonomy repair loop that writes accepted candidates as artifacts without overwriting checked-in production config
 - candidate-aware full runtime verification route with Playwright checks for forward/reverse traversal, keyboard navigation, CTA/hotspot access, mobile equivalence and reduced motion
 - deterministic desktop/mobile motion-quality review with fixed-timestep camera/hero sampling, reverse-state determinism, scene-boundary continuity and optional multimodal ordered-frame critique

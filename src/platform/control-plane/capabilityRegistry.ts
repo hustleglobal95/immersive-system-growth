@@ -18,7 +18,7 @@ export type CapabilityDispatch =
   | { type:"select"; target:"camera" }
   | { type:"fast-action"; action:"compose-motion"|"build-node"|"copy-reveal"|"media-reveal" }
   | { type:"workspace"; workspace:"Motion"|"Interact"|"Assets"|"Telemetry" }
-  | { type:"route"; href:"/director"|"/studio/assets/create" }
+  | { type:"route"; href:"/director"|"/director/intelligence"|"/studio/agent"|"/studio/assets/create" }
   | { type:"loop"; loop:"visual-polish"|"mobile-translation"|"motion-polish"|"performance"|"asset-quality"|"construction" };
 
 export interface ForgeCapability {
@@ -37,9 +37,9 @@ export interface ForgeCapability {
   eligible?:(context:SelectionContext)=>boolean;
 }
 
-export interface ResolvedCapability extends ForgeCapability {
+export type ResolvedCapability=Omit<ForgeCapability,"eligible"> & {
   eligible:true;
-}
+};
 
 const registry:ForgeCapability[]=[
   {
@@ -51,6 +51,11 @@ const registry:ForgeCapability[]=[
     id:"scene.compose-motion",label:"Compose motion",description:"Apply one coordinated motion idea across the current scene.",
     selectionKinds:["scene"],intents:["motion","animate","reveal","build"],executionClass:"fast",riskClass:"instant-reversible",
     systems:["motion","sequencer"],verifiers:["schema","motion"],dispatch:{type:"fast-action",action:"compose-motion"},priority:92,
+  },
+  {
+    id:"scene.art-direct",label:"Develop art direction",description:"Send this scene into Creative Intelligence 2 for a project-specific visual language, discipline direction and concept mutation.",
+    selectionKinds:["scene"],intents:["art direction","creative direction","visual language","less generic","more original","rethink direction"],executionClass:"navigation",riskClass:"instant-reversible",
+    systems:["director","studio"],verifiers:[],dispatch:{type:"route",href:"/studio/agent"},priority:84,
   },
   {
     id:"scene.add-behavior",label:"Add behavior",description:"Open behavior authoring for a deliberate interaction after the scene establishes itself.",
@@ -109,6 +114,11 @@ const registry:ForgeCapability[]=[
     systems:["motion","sequencer"],verifiers:["schema","motion"],dispatch:{type:"fast-action",action:"copy-reveal"},priority:100,
   },
   {
+    id:"copy.art-direct",label:"Direct typography",description:"Develop a project-specific type voice, hierarchy, line-break grammar and relationship to the visual world.",
+    selectionKinds:["copy"],intents:["art direction","typography direction","type system","visual language","less generic","more editorial"],executionClass:"navigation",riskClass:"instant-reversible",
+    systems:["director","studio"],verifiers:[],dispatch:{type:"route",href:"/studio/agent"},priority:90,
+  },
+  {
     id:"copy.polish",label:"Strengthen hierarchy",description:"Compare a bounded visual-polish candidate focused on copy hierarchy and composition.",
     selectionKinds:["copy"],intents:["hierarchy","readability","premium","polish","stronger type"],executionClass:"deep",riskClass:"preview-required",
     systems:["director","loops"],verifiers:["schema","functional","motion","mobile","visual"],dispatch:{type:"loop",loop:"visual-polish"},priority:80,
@@ -122,6 +132,12 @@ const registry:ForgeCapability[]=[
     id:"media.reveal",label:"Direct media reveal",description:"Prepare a deterministic media reveal using the scene's existing media source.",
     selectionKinds:["media"],intents:["reveal","transition","show media","image reveal","video reveal"],executionClass:"fast",riskClass:"instant-reversible",
     systems:["motion","sequencer"],verifiers:["schema","motion"],dispatch:{type:"fast-action",action:"media-reveal"},priority:100,
+    eligible:(context)=>Boolean(context.state.mediaKind),
+  },
+  {
+    id:"media.art-direct",label:"Direct image language",description:"Develop a coherent lens, crop, subject-distance, texture and grading language for this media world.",
+    selectionKinds:["media"],intents:["image direction","film direction","art direction","visual language","grade","photography direction"],executionClass:"navigation",riskClass:"instant-reversible",
+    systems:["director","studio"],verifiers:[],dispatch:{type:"route",href:"/studio/agent"},priority:90,
     eligible:(context)=>Boolean(context.state.mediaKind),
   },
   {
@@ -160,6 +176,11 @@ const registry:ForgeCapability[]=[
     id:"asset.improve",label:"Improve asset",description:"Run evidence-gated Asset Quality against the current project state.",
     selectionKinds:["asset"],intents:["improve","repair","optimize"],executionClass:"deep",riskClass:"preview-required",
     systems:["assets","loops"],verifiers:["schema","assets","performance","visual"],dispatch:{type:"loop",loop:"asset-quality"},priority:72,
+  },
+  {
+    id:"environment.art-direct",label:"Direct visual world",description:"Develop lighting, color, material, atmosphere and spatial rules as one coherent Art Director system.",
+    selectionKinds:["environment"],intents:["art direction","visual world","visual language","lighting direction","material direction","color direction","more alien","less sci fi","less generic","more original"],executionClass:"navigation",riskClass:"instant-reversible",
+    systems:["director","environment","studio"],verifiers:[],dispatch:{type:"route",href:"/studio/agent"},priority:104,
   },
   {
     id:"environment.sequence",label:"Sequence atmosphere",description:"Coordinate lighting, atmosphere and post changes over the scene timeline.",

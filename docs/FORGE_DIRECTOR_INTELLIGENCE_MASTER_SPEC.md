@@ -1,6 +1,6 @@
 # Forge Director Intelligence — Master Specification
 
-Status: Proposed
+Status: Implemented foundation + Creative Intelligence 2.0; real-project calibration remains ongoing
 Scope: Creative intelligence, judgment, originality, critique, precedent reasoning, memory, calibration and learning
 Owner: Forge Director
 Depends on: Forge Director v1, Structure Engine, Creative Plan, Forge capability registry, project/versioning core
@@ -27,7 +27,7 @@ Director decides what deserves to exist. Forge builds it.
 
 # 2. Target outcome
 
-Director Intelligence is complete only when it can reliably do all of the following:
+Director Intelligence is considered production-capable when it can reliably do all of the following. Creative Intelligence 2 now implements the visual-language, Art Director, mutation, layered-taste and multidimensional-ceiling portions of this specification; calibration against repeated human production use remains an ongoing requirement:
 
 1. understand a client brief, business objective, audience, brand truth, asset set, constraints and production tier;
 2. distinguish facts/evidence from hypotheses and creative invention;
@@ -268,10 +268,18 @@ Concept
 Territory
 CreativePrinciple
 FormDecision
+ArtDirection
+VisualLanguage
+CreativeMutation
 SignatureMoment
 CameraGrammar
 MotionGrammar
 TypographyGrammar
+ColorGrammar
+LightingGrammar
+MaterialGrammar
+ImageGrammar
+SoundGrammar
 InteractionGrammar
 StructurePattern
 DistinctiveAsset
@@ -519,6 +527,8 @@ The model should learn standards and preference tendencies while the originality
 The goal is:
 
 > consistent quality judgment, variable creative expression.
+
+Creative Intelligence 2 implements this as three explicitly separate taste layers: studio, operator and project. Studio taste is the durable majority influence; operator and project taste remain secondary. All layers are confidence-weighted and none may override client facts, brand truth, accessibility, production constraints or originality gates.
 
 ---
 

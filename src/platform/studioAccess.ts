@@ -5,6 +5,8 @@ export const studioRoles = ["reviewer", "designer", "director", "developer", "ow
 export type StudioRole = (typeof studioRoles)[number];
 export interface StudioIdentity { id: string; name: string; role: StudioRole; }
 
+type StudioAccessEnvironment={ [key:string]:string|undefined };
+
 const userSchema = z.object({
   id: z.string().regex(/^[a-z0-9][a-z0-9._-]{1,63}$/),
   name: z.string().min(1).max(100),
@@ -21,11 +23,11 @@ export class StudioAccessError extends Error {
   constructor(message: string, public status: 401 | 403 | 503) { super(message); }
 }
 
-export function studioAccessEnabled(environment: NodeJS.ProcessEnv = process.env) {
+export function studioAccessEnabled(environment: StudioAccessEnvironment = process.env) {
   return environment.FORGE_INTERNAL_ACCESS_ENABLED === "true";
 }
 
-export function parseStudioUsers(environment: NodeJS.ProcessEnv = process.env) {
+export function parseStudioUsers(environment: StudioAccessEnvironment = process.env) {
   const raw = environment.FORGE_INTERNAL_USERS_JSON ?? "[]";
   const parsed = z.array(userSchema).max(100).parse(JSON.parse(raw));
   if (new Set(parsed.map((user) => user.id)).size !== parsed.length) throw new Error("FORGE_INTERNAL_USERS_JSON contains duplicate user ids");
@@ -72,13 +74,13 @@ export async function verifyStudioSessionToken(token: string, sessionSecret: str
   }
 }
 
-export async function studioIdentityFromRequest(request: Request, environment: NodeJS.ProcessEnv = process.env): Promise<StudioIdentity | null> {
+export async function studioIdentityFromRequest(request: Request, environment: StudioAccessEnvironment = process.env): Promise<StudioIdentity | null> {
   if (!studioAccessEnabled(environment)) return { id: "local-owner", name: "Local owner", role: "owner" };
   const token = readCookie(request.headers.get("cookie"), STUDIO_SESSION_COOKIE);
   return verifyStudioSessionToken(token, environment.FORGE_INTERNAL_SESSION_SECRET ?? "");
 }
 
-export async function requireStudioRole(request: Request, minimum: StudioRole, environment: NodeJS.ProcessEnv = process.env) {
+export async function requireStudioRole(request: Request, minimum: StudioRole, environment: StudioAccessEnvironment = process.env) {
   const identity = await studioIdentityFromRequest(request, environment);
   if (!identity) throw new StudioAccessError("Forge internal access is required", 401);
   if (!hasStudioRole(identity, minimum)) throw new StudioAccessError(`This action requires the ${minimum} role or higher`, 403);
