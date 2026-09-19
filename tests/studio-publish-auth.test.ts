@@ -7,7 +7,7 @@ test("publish session token is deterministic without exposing the owner secret",
   const token = publishSessionToken(secret);
   assert.equal(token, publishSessionToken(secret));
   assert.notEqual(token, secret);
-  assert.match(token, /^\\d+\\.[a-f0-9]{64}$/);
+  assert.match(token, /^\d+\.[a-f0-9]{64}$/);
 });
 
 test("publish authorization accepts the legacy bearer secret", () => {
