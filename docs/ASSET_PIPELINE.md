@@ -14,7 +14,15 @@ Create a non-destructive AVIF or WebP derivative from a source already under `pu
 npm run assets:optimize -- public/textures/client/hero.jpg --format=avif --width=2048 --quality=78
 ```
 
-The command rotates from metadata, resizes without enlargement, preserves the source, rejects paths outside `public/textures`, refuses output replacement unless `--force` is explicit, enforces the texture byte budget, calculates SHA-256 and atomically updates `config/asset-manifest.json`. Use `--no-manifest` only for an exploratory derivative that will not be referenced by runtime.
+The command rotates from metadata, resizes without enlargement, preserves the source, rejects paths outside `public/textures`, refuses output replacement unless `--force` is explicit, enforces the texture byte budget, calculates SHA-256 and atomically updates `config/asset-manifest.json`. Registered optimized outputs also record derivative lineage: source path, operation, format, actual width and quality. Use `--no-manifest` only for an exploratory derivative that will not be referenced by runtime.
+
+## Asset Quality Loop
+
+`npm run loop:run -- --loop asset-quality --project <project>` evaluates the asset manifest together with the paths actually referenced by the experience.
+
+The current production-safe worker is intentionally narrow. It can choose a registered lower-byte derivative only when lineage is explicit, the source remains available and savings are material. It can also consolidate exact SHA-256 duplicate aliases inside the same asset class. Every candidate is re-profiled and visually compared; a material performance regression or missing local asset is a hard failure.
+
+The worker does **not** fetch and recompress arbitrary remote client imagery, invent LODs, transcode production video, or mutate a GLB merely to improve a score. Those operations stay in the source-specific production toolchain until Forge can preserve provenance, licensing, semantics and visual equivalence with equivalent evidence.
 
 Image optimization is automated. GLB geometry/texture compression and production video encoding still depend on the source asset and licensed toolchain. Inspect those outputs in Studio and audit their actual deployed files; Forge does not claim that renaming or byte-budgeting a model/video optimizes it.
 
