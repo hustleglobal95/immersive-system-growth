@@ -133,11 +133,11 @@ function constructScene(
   return next;
 }
 
-function beatForScene<T>(index:number,sceneCount:number,beats:T[]):T & {intensity:number} {
-  if(!beats.length) return {intensity:5} as T & {intensity:number};
+function beatForScene(index:number,sceneCount:number,beats:Array<{intensity:number}>) {
+  if(!beats.length) return {intensity:5};
   const denominator=Math.max(1,sceneCount-1);
   const beatIndex=Math.min(beats.length-1,Math.round((index/denominator)*(beats.length-1)));
-  return beats[beatIndex] as T & {intensity:number};
+  return beats[beatIndex];
 }
 
 function signatureSceneIndex(sceneCount:number,beats:Array<{intensity:number}>) {
