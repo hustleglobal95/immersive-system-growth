@@ -23,7 +23,15 @@ const studioTaste = await readOptionalJson("forge-intelligence/taste/profile.jso
 const operatorTaste = operatorId ? await readOptionalJson(`forge-intelligence/taste/operators/${slug(operatorId)}.json`) : undefined;
 const projectTaste = await readOptionalJson(`forge-intelligence/taste/projects/${projectTasteId}.json`);
 const tasteLayers = studioTaste || operatorTaste || projectTaste ? { studio:studioTaste,operator:operatorTaste,project:projectTaste } : undefined;
-const memory = memoryPath ? await readOptionalJson(memoryPath) : undefined;
+const storedMemories=(await loadJsonDirectory("forge-intelligence/projects",".memory.json"))
+  .filter((graph)=>graph?.version===1)
+  .map((graph)=>({
+    version:1,
+    nodes:(graph.nodes ?? []).filter((node)=>node?.projectId!==projectTasteId),
+    edges:graph.edges ?? [],
+  }));
+const explicitMemory = memoryPath ? await readOptionalJson(memoryPath) : undefined;
+const memory = mergeMemoryGraphs([...storedMemories,...(explicitMemory ? [explicitMemory] : [])]);
 const decisions = decisionsPath ? await readOptionalJson(decisionsPath) : undefined;
 
 const approvals = {
@@ -39,7 +47,7 @@ const result = runDirectorIntelligence({
   precedents: [...seedPrecedents, ...externalPrecedents],
   portfolio,
   ...(tasteLayers ? { tasteLayers } : {}),
-  ...(memory ? { memory } : {}),
+  ...(memory.nodes.length ? { memory } : {}),
   ...(decisions ? { decisions } : {}),
   approvals,
   finalCutRequested,
@@ -56,7 +64,7 @@ console.log(`Stored portfolio fingerprints considered: ${portfolio.length}`);
 console.log(`External precedents loaded: ${externalPrecedents.length}`);
 console.log(`Taste model: ${result.tasteModel.contributions.map((item) => `${item.layer}:${Math.round(item.confidence*100)}%`).join(" · ") || "none"}`);
 console.log(`Visual-language minimum distance: ${result.visualLanguageDivergence.minimumDistance}% (required ${result.visualLanguageDivergence.threshold}%)`);
-console.log(`Creative-memory verdict: ${result.creativeMemory.verdict}`);
+console.log(`Creative-memory verdict: ${result.creativeMemory.verdict} across ${memory.nodes.length} prior memory nodes`);
 console.log(`Wrote ${outputPath}`);
 
 async function readOptionalJson(filePath) {
@@ -79,4 +87,19 @@ async function loadJsonDirectory(directory, suffix = ".json") {
 
 function slug(value) {
   return String(value || "").toLowerCase().replace(/[^a-z0-9-]+/g,"-").replace(/^-+|-+$/g,"") || "project";
+}
+
+
+function mergeMemoryGraphs(graphs) {
+  const nodes=[];
+  const edges=[];
+  for(const graph of graphs) {
+    for(const node of graph?.nodes ?? []) {
+      if(!nodes.some((item)=>item.id===node.id)) nodes.push(node);
+    }
+    for(const edge of graph?.edges ?? []) {
+      if(!edges.some((item)=>item.from===edge.from && item.to===edge.to && item.relation===edge.relation)) edges.push(edge);
+    }
+  }
+  return {version:1,nodes,edges};
 }
