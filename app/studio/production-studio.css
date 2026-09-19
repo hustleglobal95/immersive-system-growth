@@ -269,3 +269,6 @@
 .operator-mission__footer>div{padding:12px;border-top:1px solid color-mix(in srgb,var(--line,#2b2b2b) 72%,transparent)}
 @media (max-width:900px){.operator-mission__summary{grid-template-columns:1fr 1fr}.operator-mission__head,.operator-mission__primary{flex-direction:column}.operator-mission__footer{grid-template-columns:1fr}}
 @media (max-width:560px){.operator-mission{padding:14px}.operator-mission__summary{grid-template-columns:1fr}}
+
+.operator-mission__primary-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+@media (max-width:900px){.operator-mission__primary-actions{justify-content:flex-start}}
