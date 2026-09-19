@@ -8,6 +8,8 @@ import { compactLoopContext, evaluateLoopStop, learningCandidate, selectTourname
 import { createLoopRunReport, repairPlanSignature } from "../src/platform/loops/loopEvidence.ts";
 import { appendVaultJournal, readVaultProject } from "../src/platform/studioVault.ts";
 import { parseExperience } from "../src/lib/configSchema.ts";
+import { parseAssetManifest } from "../src/platform/assetManifestSchema.ts";
+import { parseInteractionGraph } from "../src/lib/interactionGraph.ts";
 
 const options=args(process.argv.slice(2));
 const loopId=String(options.loop || "visual-polish");
@@ -32,8 +34,14 @@ const port=Number(options.port || process.env.FORGE_AUTONOMY_PORT || 3101);
 const baseURL="http://127.0.0.1:"+port;
 const currentIncumbentPath=path.join(workRoot,"current-incumbent.json");
 const currentCandidatePath=path.join(workRoot,"current-candidate.json");
+const currentIncumbentManifestPath=path.join(workRoot,"current-incumbent-asset-manifest.json");
+const currentCandidateManifestPath=path.join(workRoot,"current-candidate-asset-manifest.json");
+const currentIncumbentGraphPath=path.join(workRoot,"current-incumbent-interaction-graph.json");
+const currentCandidateGraphPath=path.join(workRoot,"current-candidate-interaction-graph.json");
 const reportPath=path.join(workRoot,"run-report.json");
 const acceptedPath=path.join(workRoot,"accepted-experience.json");
+const acceptedManifestPath=path.join(workRoot,"accepted-asset-manifest.json");
+const acceptedGraphPath=path.join(workRoot,"accepted-interaction-graph.json");
 const projectId=options.project ? String(options.project) : undefined;
 
 if(!process.env.FORGE_VISUAL_CRITIC_URL) fail("FORGE_VISUAL_CRITIC_URL is required. Loop Engine fails closed without pairwise visual evidence.");
@@ -42,7 +50,15 @@ await fs.mkdir(workRoot,{recursive:true});
 const source=await resolveSource({ projectId,experiencePath:options.experience ? String(options.experience) : undefined,workRoot });
 await fs.writeFile(currentIncumbentPath,JSON.stringify(source.experience,null,2)+"\n");
 await fs.writeFile(currentCandidatePath,JSON.stringify(source.experience,null,2)+"\n");
-const baselineFingerprint=fingerprint(source.experience);
+await fs.writeFile(currentIncumbentManifestPath,JSON.stringify(source.assetManifest,null,2)+"\n");
+await fs.writeFile(currentCandidateManifestPath,JSON.stringify(source.assetManifest,null,2)+"\n");
+await fs.writeFile(currentIncumbentGraphPath,JSON.stringify(source.interactionGraph,null,2)+"\n");
+await fs.writeFile(currentCandidateGraphPath,JSON.stringify(source.interactionGraph,null,2)+"\n");
+const baselineFingerprint=fingerprint({
+  experience:source.experience,
+  assetManifest:source.assetManifest,
+  interactionGraph:source.interactionGraph,
+});
 let report=createLoopRunReport({
   runId:"loop-"+stamp+"-"+loopId,
   definition,
