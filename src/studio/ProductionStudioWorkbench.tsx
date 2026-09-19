@@ -32,6 +32,7 @@ import { recommendNextActions, type NextAction } from "@/src/platform/control-pl
 import { evaluateProjectHealth } from "@/src/platform/control-plane/projectHealth";
 import { prepareFastProposal } from "@/src/platform/control-plane/fastProposal";
 import { attachVerifiedLoopCandidate, type VerifiedLoopCandidate } from "@/src/platform/control-plane/deepCandidate";
+import { projectStateFingerprint } from "@/src/platform/control-plane/projectState";
 import { ControlPlaneReview } from "@/src/studio/ControlPlaneReview";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig, SceneDefinition } from "@/src/types/experience";
@@ -92,6 +93,11 @@ export function ProductionStudioWorkbench() {
     graph:draft.interactionGraph,
     validationIssues:draft.validation,
   }), [draft.assetManifest, draft.experience, draft.interactionGraph, draft.validation]);
+  const workingFingerprint = useMemo(() => projectStateFingerprint({
+    experience:draft.experience,
+    assetManifest:draft.assetManifest,
+    interactionGraph:draft.interactionGraph,
+  }), [draft.assetManifest,draft.experience,draft.interactionGraph]);
   const selectionLabel = selectionContext.label;
   const guideBrief = useClientValue(() => readStored(STUDIO_GUIDE_BRIEF_KEY), "");
   const guideSeen = useClientValue(() => readStored("forge-studio-guided-first-run-v1"), "");
@@ -152,7 +158,7 @@ export function ProductionStudioWorkbench() {
 
     if(dispatch.type==="fast-action") {
       const prepared=prepareFastProposal({
-        id,createdAt,capability,context:selectionContext,experience:draft.experience,intent,source,archetype:requestedArchetype,
+        id,createdAt,capability,context:selectionContext,experience:draft.experience,intent,baselineFingerprint:workingFingerprint,source,archetype:requestedArchetype,
       });
       setPreparedProposal(prepared.proposal);
       setCandidateExperience(prepared.candidateExperience);
@@ -163,7 +169,7 @@ export function ProductionStudioWorkbench() {
       return;
     }
 
-    const proposal=createProposalDraft({id,createdAt,capability,context:selectionContext,intent,source});
+    const proposal=createProposalDraft({id,createdAt,capability,context:selectionContext,intent,baselineFingerprint:workingFingerprint,source});
     const routedProposal=dispatch.type==="loop" ? {...proposal,state:"verifying" as const} : proposal;
     setPreparedProposal(routedProposal);
     setCandidateExperience(null);
@@ -569,7 +575,7 @@ export function ProductionStudioWorkbench() {
           </div>
         </section>
       </div>}
-      {loopOpen && <LoopEnginePanel projectId={draft.project.id} projectName={draft.project.name} initialLoopId={requestedLoop} proposal={preparedProposal} onCandidateReady={loadVerifiedLoopCandidate} onClose={() => setLoopOpen(false)} onOpenVault={() => { setLoopOpen(false); setVaultOpen(true); }} />}
+      {loopOpen && <LoopEnginePanel projectId={draft.project.id} projectName={draft.project.name} workingBundle={{experience:draft.experience,assetManifest:draft.assetManifest,interactionGraph:draft.interactionGraph}} initialLoopId={requestedLoop} proposal={preparedProposal} onCandidateReady={loadVerifiedLoopCandidate} onClose={() => setLoopOpen(false)} onOpenVault={() => { setLoopOpen(false); setVaultOpen(true); }} />}
       {vaultOpen && <StudioVaultPanel draft={draft} onClose={() => setVaultOpen(false)} />}
       {newProjectOpen && <NewProjectDialog name={newName} setName={setNewName} kind={newKind} setKind={setNewKind} onCreate={createProject} onClose={() => setNewProjectOpen(false)} />}
     </main>
