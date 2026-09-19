@@ -97,6 +97,7 @@
     "autonomy:functional-verify": "node --import tsx scripts/autonomy-functional-verify.mjs",
     "autonomy:motion-review": "node --import tsx scripts/autonomy-motion-review.mjs",
     "autonomy:performance-profile": "node --import tsx scripts/autonomy-performance-profile.mjs",
+    "autonomy:asset-profile": "node --import tsx scripts/autonomy-asset-profile.mjs",
     "internal:user-hash": "node scripts/hash-internal-secret.mjs",
     "internal:readiness": "node scripts/internal-readiness.mjs",
     "loop:list": "node --import tsx scripts/loop-list.mjs",
