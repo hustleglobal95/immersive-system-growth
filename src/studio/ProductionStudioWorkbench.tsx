@@ -24,7 +24,6 @@ import { STUDIO_GUIDE_BRIEF_KEY, STUDIO_GUIDE_SHIP_KEY, StudioWorkflowGuide } fr
 import { StudioVaultPanel } from "@/src/studio/StudioVaultPanel";
 import { StudioIdentityBadge } from "@/src/studio/StudioIdentityBadge";
 import { LoopEnginePanel } from "@/src/studio/LoopEnginePanel";
-import { analyzeAssetManifest } from "@/src/platform/assetIntelligence";
 import { capabilitiesForContext, type ResolvedCapability } from "@/src/platform/control-plane/capabilityRegistry";
 import { createProposalDraft, type ForgeProposal } from "@/src/platform/control-plane/proposal";
 import { resolveSelectionContext, type ForgeSelection, type SelectionContext } from "@/src/platform/control-plane/selectionContext";
@@ -68,7 +67,6 @@ export function ProductionStudioWorkbench() {
   const sceneIndex = Math.min(activeScene, draft.experience.scenes.length - 1);
   const scene = draft.experience.scenes[sceneIndex];
   const rigNodes = draft.experience.productRig?.nodes ?? [];
-  const assetIntelligence = useMemo(() => analyzeAssetManifest(draft.assetManifest), [draft.assetManifest]);
   const selectionContext = useMemo(() => resolveSelectionContext({
     experience:draft.experience,
     manifest:draft.assetManifest,
