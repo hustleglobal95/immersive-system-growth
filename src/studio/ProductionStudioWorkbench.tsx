@@ -656,14 +656,12 @@ function ContextualDirection({ context, capabilities, proposal, nextActions, onC
     ?? context.issues[0];
   const recommendedIds=new Set(nextActions.map((item)=>item.capability.id));
   const primary=[...nextActions.map((item)=>item.capability),...capabilities.filter((item)=>!recommendedIds.has(item.id))].slice(0,3);
-  const next=nextActions[0];
   const activeProposal=proposal?.selectionKey===context.selectionKey ? proposal : null;
 
   return <section className="production-context" data-kind={context.kind}>
     <span>{directionLabel}</span>
     <strong>{context.summary}</strong>
     <p>{highestIssue?.message ?? primary[0]?.description ?? "Forge has enough context to direct this selection without exposing subsystem machinery first."}</p>
-    {next && <aside className="production-context__next" data-urgency={next.urgency}><span>NEXT BEST ACTION</span><strong>{next.capability.label}</strong><small>{next.reason}</small></aside>}
     <div>
       {primary.map((capability,index)=><button
         key={capability.id}
