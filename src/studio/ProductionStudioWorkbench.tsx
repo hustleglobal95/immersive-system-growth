@@ -27,6 +27,11 @@ import { LoopEnginePanel } from "@/src/studio/LoopEnginePanel";
 import { capabilitiesForContext, type ResolvedCapability } from "@/src/platform/control-plane/capabilityRegistry";
 import { createProposalDraft, type ForgeProposal } from "@/src/platform/control-plane/proposal";
 import { resolveSelectionContext, type ForgeSelection, type SelectionContext } from "@/src/platform/control-plane/selectionContext";
+import { compileIntent, compiledCapability } from "@/src/platform/control-plane/intentCompiler";
+import { recommendNextActions, type NextAction } from "@/src/platform/control-plane/nextAction";
+import { evaluateProjectHealth } from "@/src/platform/control-plane/projectHealth";
+import { prepareFastProposal } from "@/src/platform/control-plane/fastProposal";
+import { ControlPlaneReview } from "@/src/studio/ControlPlaneReview";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig, MotionTrack, SceneDefinition, Vec3 } from "@/src/types/experience";
 
@@ -62,6 +67,8 @@ export function ProductionStudioWorkbench() {
   const [loopOpen, setLoopOpen] = useState(false);
   const [requestedLoop, setRequestedLoop] = useState<string | undefined>();
   const [preparedProposal, setPreparedProposal] = useState<ForgeProposal | null>(null);
+  const [candidateExperience, setCandidateExperience] = useState<ExperienceConfig | null>(null);
+  const [previewMode, setPreviewMode] = useState<"current"|"candidate">("current");
   const importRef = useRef<HTMLInputElement>(null);
 
   const sceneIndex = Math.min(activeScene, draft.experience.scenes.length - 1);
@@ -75,6 +82,13 @@ export function ProductionStudioWorkbench() {
     validationIssues:draft.validation,
   }), [draft.assetManifest, draft.experience, draft.interactionGraph, draft.validation, selection]);
   const selectionCapabilities = useMemo(() => capabilitiesForContext(selectionContext), [selectionContext]);
+  const nextActions = useMemo(() => recommendNextActions(selectionContext,3), [selectionContext]);
+  const projectHealth = useMemo(() => evaluateProjectHealth({
+    experience:draft.experience,
+    manifest:draft.assetManifest,
+    graph:draft.interactionGraph,
+    validationIssues:draft.validation,
+  }), [draft.assetManifest, draft.experience, draft.interactionGraph, draft.validation]);
   const selectionLabel = selectionContext.label;
   const guideBrief = useClientValue(() => readStored(STUDIO_GUIDE_BRIEF_KEY), "");
   const guideSeen = useClientValue(() => readStored("forge-studio-guided-first-run-v1"), "");
@@ -168,27 +182,34 @@ export function ProductionStudioWorkbench() {
     setNotice(`Motion cleared from ${scene.label}.`);
   };
 
-  const runCapability = (capability: ResolvedCapability) => {
-    const proposal=createProposalDraft({
-      id:`proposal-${Date.now()}`,
-      createdAt:new Date().toISOString(),
-      capability,
-      context:selectionContext,
-      intent:capability.label,
-      source:"semantic-action",
-    });
-    setPreparedProposal(proposal);
-
+  const runCapability = (
+    capability: ResolvedCapability,
+    intent=capability.label,
+    source:"semantic-action"|"command"|"next-action"|"system"="semantic-action",
+  ) => {
+    const id=`proposal-${Date.now()}`;
+    const createdAt=new Date().toISOString();
     const dispatch=capability.dispatch;
+
+    if(dispatch.type==="fast-action") {
+      const prepared=prepareFastProposal({
+        id,createdAt,capability,context:selectionContext,experience:draft.experience,intent,source,archetype,
+      });
+      setPreparedProposal(prepared.proposal);
+      setCandidateExperience(prepared.candidateExperience);
+      setPreviewMode("candidate");
+      setNotice(`${capability.label} prepared. Compare Current vs Candidate before accepting.`);
+      return;
+    }
+
+    const proposal=createProposalDraft({id,createdAt,capability,context:selectionContext,intent,source});
+    setPreparedProposal(proposal);
+    setCandidateExperience(null);
+    setPreviewMode("current");
+
     if(dispatch.type==="select") {
       if(dispatch.target==="camera") setSelection({kind:"camera",index:sceneIndex});
       setNotice(`${capability.label} selected.`);
-      return;
-    }
-    if(dispatch.type==="fast-action") {
-      if(dispatch.action==="compose-motion") applyArchetype();
-      else if(dispatch.action==="build-node" && selection.kind==="node") buildSelectedNode(selection.name);
-      setNotice(`${capability.label} applied as an instant reversible action.`);
       return;
     }
     if(dispatch.type==="workspace") {
@@ -204,6 +225,23 @@ export function ProductionStudioWorkbench() {
     setRequestedLoop(dispatch.loop);
     setLoopOpen(true);
     setNotice(`${capability.label} prepared as a preview-required proposal.`);
+  };
+
+  const acceptCandidate = () => {
+    if(!candidateExperience || !preparedProposal) return;
+    draft.setExperience(candidateExperience);
+    setPreparedProposal({...preparedProposal,state:"accepted"});
+    setCandidateExperience(null);
+    setPreviewMode("current");
+    setNotice(`${preparedProposal.intent.raw} accepted. The prior experience remains available through Undo.`);
+  };
+
+  const rejectCandidate = () => {
+    const label=preparedProposal?.intent.raw;
+    setPreparedProposal(null);
+    setCandidateExperience(null);
+    setPreviewMode("current");
+    if(label) setNotice(`${label} rejected. Working project unchanged.`);
   };
 
   const addScene = () => {
@@ -358,8 +396,7 @@ export function ProductionStudioWorkbench() {
   const runCommandValue = (input: string) => {
     const value = input.trim().toLowerCase();
     if (!value) return;
-    if (value.includes("loop") || value.includes("polish") || value.includes("self improve")) setLoopOpen(true);
-    else if (value.includes("vault") || value.includes("versions") || value.includes("history")) setVaultOpen(true);
+    if (value.includes("vault") || value.includes("versions") || value.includes("history")) setVaultOpen(true);
     else if (value.includes("guided")) setGuidedOpen(true);
     else if (value.includes("creative agent")) window.location.assign("/studio/agent");
     else if (value === "director" || value.includes("open director")) window.location.assign("/director");
@@ -378,7 +415,13 @@ export function ProductionStudioWorkbench() {
     else if (value.includes("new scene") || value.includes("add scene")) addScene();
     else if (value.includes("duplicate")) duplicateScene();
     else if (value.includes("clear motion") || value.includes("reset motion")) resetSceneMotion();
-    else setNotice("Command not matched. Try Guided Build, Creative Agent, Ship, architectural build, product hero, add scene, or reset motion.");
+    else {
+      const compiled=compileIntent(selectionContext,input);
+      const capability=compiledCapability(selectionContext,compiled);
+      if(capability) runCapability(capability,input,"command");
+      else if(compiled.status==="ambiguous") setNotice(compiled.reason+" Choose a contextual action to disambiguate.");
+      else setNotice("Forge could not map that intent to a safe capability for the current selection.");
+    }
     setCommand("");
     closeCommandPalette();
   };
@@ -407,7 +450,7 @@ export function ProductionStudioWorkbench() {
         </nav>
         <div className="production-top-actions">
           <button id="studio-guided-build-button" type="button" className="production-guided-button" onClick={() => setGuidedOpen(true)}><span>Guided Build</span><strong>{workflow.completed}/6</strong></button><button type="button" className="production-vault-button" onClick={() => setVaultOpen(true)}>Vault</button><button type="button" className="production-loop-button" onClick={() => { setRequestedLoop(undefined); setLoopOpen(true); }}>Loops</button>
-          <span className="production-status" data-valid={!draft.validation.length}><i />{draft.validation.length ? `${draft.validation.length} issue` : "Ready"}</span>
+          <span className="production-status" data-valid={projectHealth.status==="ready"} data-health={projectHealth.status}><i />{projectHealth.status==="ready" ? "Ready" : projectHealth.status==="blocked" ? `${projectHealth.issues.filter((issue)=>issue.severity==="blocker").length} blocker` : `${projectHealth.issues.filter((issue)=>issue.severity==="warning").length} issue`}</span>
           <details className="production-assist"><summary>Assist</summary><div><Link href="/studio/agent"><strong>Creative Agent</strong><span>Turn the idea into a production strategy.</span></Link><Link href="/director"><strong>Director</strong><span>Critique and strengthen the creative direction.</span></Link><Link href="/studio/assets/create"><strong>Asset Creator</strong><span>Create a missing image, video or 3D asset.</span></Link></div></details>
           <details><summary>Project</summary><div><button type="button" onClick={() => setLoopOpen(true)}>Loop Engine</button><button type="button" onClick={() => setVaultOpen(true)}>Project Vault</button><button type="button" onClick={() => setNewProjectOpen(true)}>New project</button><button type="button" onClick={() => importRef.current?.click()}>Import</button><button type="button" onClick={draft.reset}>Reset local draft</button></div></details>
           <details><summary>Export</summary><div className="align-right"><button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Experience</button><button type="button" onClick={() => downloadJson("interaction-graph.json", draft.interactionGraph)}>Interactions</button><button type="button" onClick={() => downloadJson("studio-project.json", draft.project)}>Project</button><button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Assets</button></div></details><StudioIdentityBadge />
@@ -438,10 +481,18 @@ export function ProductionStudioWorkbench() {
             {workflow.unconfigured && <section className="production-first-run" aria-labelledby="studio-first-run-title"><div><span>START HERE</span><h2 id="studio-first-run-title">What do you want to create?</h2><p>Start with the outcome. Forge will guide assets, scenes, motion, review and publishing without asking you to learn the machinery first.</p></div><div><button type="button" className="primary" onClick={() => setGuidedOpen(true)}>Start Guided Build</button><button type="button" onClick={() => importRef.current?.click()}>Import an existing project</button><button type="button" onClick={() => { setGuideDismissed(true); try { window.localStorage.setItem("forge-studio-guided-first-run-v1", "seen"); } catch { /* storage can be blocked */ } }}>Open Studio anyway</button></div></section>}
             {!workflow.unconfigured && <button type="button" className="production-guided-next" onClick={() => setGuidedOpen(true)}><span>NEXT · {workflow.completed}/6 COMPLETE</span><strong>{workflow.nextLabel}</strong><small>Continue →</small></button>}
             <div className="production-runtime">
-              <StudioLivePreview experience={draft.experience} active={sceneIndex} setActive={selectScene} />
+              <StudioLivePreview experience={previewMode==="candidate" && candidateExperience ? candidateExperience : draft.experience} active={sceneIndex} setActive={selectScene} />
             </div>
+            <ControlPlaneReview
+              proposal={preparedProposal}
+              hasCandidate={Boolean(candidateExperience)}
+              previewMode={previewMode}
+              onPreviewMode={setPreviewMode}
+              onAccept={acceptCandidate}
+              onReject={rejectCandidate}
+            />
             <form className="production-command" onSubmit={(event) => { event.preventDefault(); runCommand(); }}>
-              <button type="button" className="production-command-shortcut" aria-label="Open command palette" onClick={() => setCommandPaletteOpen(true)}>⌘K</button><input aria-label="Forge command" value={command} onChange={(event) => setCommand(event.target.value)} placeholder="Command Forge: ‘architectural build’, ‘add scene’, ‘product hero’…" /><button type="submit">Run</button>
+              <button type="button" className="production-command-shortcut" aria-label="Open command palette" onClick={() => setCommandPaletteOpen(true)}>⌘K</button><input aria-label="Forge command" value={command} onChange={(event) => setCommand(event.target.value)} placeholder="Tell Forge the outcome: ‘make this cinematic’, ‘fix mobile’, ‘make it inspectable’…" /><button type="submit">Direct</button>
             </form>
           </section>
 
@@ -451,7 +502,8 @@ export function ProductionStudioWorkbench() {
               context={selectionContext}
               capabilities={selectionCapabilities}
               proposal={preparedProposal}
-              onCapability={runCapability}
+              nextActions={nextActions}
+              onCapability={(capability)=>runCapability(capability)}
             />
             <Inspector selection={selection} experience={draft.experience} setExperience={draft.setExperience} sceneIndex={sceneIndex} archetype={archetype} setArchetype={setArchetype} applyArchetype={applyArchetype} buildSelectedNode={buildSelectedNode} resetSceneMotion={resetSceneMotion} openAdvanced={openAdvanced} setWorkspace={setWorkspace} />
           </aside>
@@ -492,10 +544,11 @@ function Navigator({ mode, experience, manifest, activeScene, selection, onSelec
   return <div className="production-tree">{assets.length ? assets.map((asset, index) => <button type="button" key={`${asset.kind}-${asset.path}`} className={selection.kind === "asset" && selection.index === index ? "active" : ""} onClick={() => onSelect({ kind: "asset", index, sceneIndex: activeScene })}><span>▧</span><strong>{asset.path.split("/").pop()}</strong><small>{asset.kind}</small></button>) : <p className="production-empty">No banked assets yet. Import assets to begin.</p>}</div>;
 }
 
-function ContextualDirection({ context, capabilities, proposal, onCapability }: {
+function ContextualDirection({ context, capabilities, proposal, nextActions, onCapability }: {
   context: SelectionContext;
   capabilities: ResolvedCapability[];
   proposal: ForgeProposal | null;
+  nextActions: NextAction[];
   onCapability: (capability: ResolvedCapability) => void;
 }) {
   const directionLabel=context.kind==="camera" ? "CAMERA DIRECTION"
@@ -506,13 +559,16 @@ function ContextualDirection({ context, capabilities, proposal, onCapability }: 
   const highestIssue=context.issues.find((issue)=>issue.severity==="blocker")
     ?? context.issues.find((issue)=>issue.severity==="warning")
     ?? context.issues[0];
-  const primary=capabilities.slice(0,3);
+  const recommendedIds=new Set(nextActions.map((item)=>item.capability.id));
+  const primary=[...nextActions.map((item)=>item.capability),...capabilities.filter((item)=>!recommendedIds.has(item.id))].slice(0,3);
+  const next=nextActions[0];
   const activeProposal=proposal?.selectionKey===context.selectionKey ? proposal : null;
 
   return <section className="production-context" data-kind={context.kind}>
     <span>{directionLabel}</span>
     <strong>{context.summary}</strong>
     <p>{highestIssue?.message ?? primary[0]?.description ?? "Forge has enough context to direct this selection without exposing subsystem machinery first."}</p>
+    {next && <aside className="production-context__next" data-urgency={next.urgency}><span>NEXT BEST ACTION</span><strong>{next.capability.label}</strong><small>{next.reason}</small></aside>}
     <div>
       {primary.map((capability,index)=><button
         key={capability.id}
