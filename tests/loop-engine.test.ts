@@ -30,6 +30,8 @@ test("candidate tournament rejects hard-gate failures, duplicates and weak prefe
     candidate("runner-up","hierarchy-first",{ comparisonAccepted:true,comparisonWinner:"candidate",preferenceAgreement:.75,motionScore:96 }),
   ];
   assert.equal(eligibleCandidate(candidates[0],definition),false);
+  assert.equal(eligibleCandidate(candidate("no-functional","camera-first",{ functionalPassed:false,comparisonAccepted:true,comparisonWinner:"candidate",preferenceAgreement:.99 }),definition),false);
+  assert.equal(eligibleCandidate(candidate("no-motion","camera-first",{ motionScore:null,comparisonAccepted:true,comparisonWinner:"candidate",preferenceAgreement:.99 }),definition),false);
   assert.equal(eligibleCandidate(candidates[1],definition),false);
   assert.equal(eligibleCandidate(candidates[2],definition),false);
   assert.equal(selectTournamentWinner(candidates,definition)?.id,"winner");
@@ -114,6 +116,8 @@ test("Loop Engine scripts preserve human approval and legacy repair compatibilit
   assert.match(runner,/accepted-experience\.json/);
   assert.match(runner,/current-incumbent\.json/);
   assert.match(runner,/Project Vault does not contain project/);
+  assert.match(runner,/parseExperience/);
+  assert.match(runner,/boundedFailures/);
   assert.doesNotMatch(runner,/writeFile\([^\n]*config\/experience\.json/);
   assert.match(accept,/Human approval is required/);
   assert.match(accept,/--approve/);
