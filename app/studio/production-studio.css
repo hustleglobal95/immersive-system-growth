@@ -334,3 +334,15 @@
 .production-section .studio-check{display:flex;grid-template-columns:none;align-items:center;gap:7px}
 .production-section .studio-check input{width:auto!important}
 @media(max-width:600px){.production-quick-grid,.production-quick-grid--colors,.production-vector-fields{grid-template-columns:1fr}.production-vector-fields--two{grid-template-columns:1fr 1fr}}
+
+
+/* Loop Engine remote execution */
+.production-loop-command--remote{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.production-loop-command--remote .primary{padding:9px 12px;border:1px solid #f4774d66;border-radius:8px;background:#f4774d18;color:#ffd2c3;font:inherit;font-size:8px;font-weight:800}
+.production-loop-command--remote .primary:disabled{opacity:.42;cursor:not-allowed}
+.production-loop-command--remote a{color:#bfc3c5;font-size:7px;text-decoration:underline;text-underline-offset:3px}
+.production-loop-local{margin-top:8px;padding:8px;border:1px solid #ffffff0d;border-radius:8px;background:#0a0c0d}
+.production-loop-local summary{cursor:pointer;color:#81878a;font-size:7px}
+.production-loop-local p{margin:6px 0;color:#6f7578;font-size:7px}
+.production-loop-local code{display:block;padding:8px;max-height:96px;overflow:auto;border-radius:6px;background:#050607;color:#989ea1;font-size:6px;white-space:pre-wrap;word-break:break-word}
+.production-loop-local button{margin-top:6px;padding:6px 8px;border:1px solid var(--ps-line);border-radius:6px;background:#141719;color:#bfc2c4;font:inherit;font-size:7px}
