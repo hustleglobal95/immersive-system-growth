@@ -154,7 +154,7 @@ export function StudioWorkbench() {
       {tab === "bank" && <AssetBankPanel experience={draft.experience} setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} interactionGraph={draft.interactionGraph} undo={draft.undoExperience} canUndo={draft.canUndoExperience} />}
       {tab === "model" && <GlbInspectorPanel experience={draft.experience} setExperience={draft.setExperience} />}
       {tab === "integrations" && <IntegrationsPanel project={draft.project} setProject={draft.setProject} />}
-      {tab === "publish" && <PublishPanel project={draft.project} setProject={draft.setProject} experience={draft.experience} assetManifest={draft.assetManifest} />}
+      {tab === "publish" && <PublishPanel project={draft.project} setProject={draft.setProject} experience={draft.experience} assetManifest={draft.assetManifest} interactionGraph={draft.interactionGraph} cinematicSystems={draft.cinematicSystems} />}
       {tab === "telemetry" && <TelemetryPanel project={draft.project} setProject={draft.setProject} />}
 
       <footer className="studio-footer">
