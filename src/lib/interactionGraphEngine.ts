@@ -7,14 +7,9 @@ import type {
   InteractionPrimitive,
   InteractionTriggerNode,
 } from "@/src/lib/interactionGraph";
+import { parseInteractionEventInput, type RuntimeInteractionEvent } from "@/src/lib/interactionEventSecurity";
 
-export interface InteractionEvent {
-  type: InteractionEventType;
-  target?: string;
-  sceneId?: string;
-  name?: string;
-  payload?: Record<string, InteractionPrimitive>;
-}
+export type InteractionEvent = RuntimeInteractionEvent;
 
 export interface InteractionContext {
   quality: "low" | "medium" | "high";
@@ -56,6 +51,9 @@ export function expandInteractionEventForDevice(
   event: InteractionEvent,
   coarsePointer: boolean,
 ): InteractionEvent[] {
+  const safeEvent=parseInteractionEventInput(event);
+  if(!safeEvent) return [];
+  event=safeEvent;
   if (!coarsePointer) return [event];
   const substitutes = graph.mobileSubstitutions
     .filter((candidate) => candidate.to === event.type && (!candidate.target || candidate.target === event.target))
@@ -74,6 +72,18 @@ export function runInteractionEvent(
   event: InteractionEvent,
   context: InteractionContext,
 ): InteractionRunResult {
+  const safeEvent=parseInteractionEventInput(event);
+  if(!safeEvent) {
+    return {
+      state:snapshot.state,
+      variables:structuredClone(snapshot.variables),
+      matchedTriggers:[],
+      effects:[],
+      trace:[{nodeId:"runtime",kind:"guard",detail:"Rejected invalid interaction event"}],
+      halted:true,
+    };
+  }
+  event=safeEvent;
   const nodeById = new Map(graph.nodes.map((node) => [node.id, node]));
   const outgoing = new Map<string, InteractionEdge[]>();
   for (const edge of graph.edges) {

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import rawExperience from "@/config/experience.json";
 import { parseExperience } from "@/src/lib/configSchema";
 import { AutonomyPreviewClient } from "@/src/studio/AutonomyPreviewClient";
+import { requireStudioPageAccess } from "@/src/platform/studioPageAccess";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +13,7 @@ export default async function AutonomyPreviewPage({
 }: {
   searchParams: Promise<{ progress?: string; viewport?: string; variant?: string }>;
 }) {
+  await requireStudioPageAccess("/studio/autonomy-preview");
   if (process.env.FORGE_AUTONOMY_PREVIEW !== "1") notFound();
   const params=await searchParams;
   const progress=clamp(Number(params.progress ?? "0"));

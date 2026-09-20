@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { studioAuthEnabled, studioAvailableInProduction } from "@/src/platform/studioPerimeter";
 
 export const STUDIO_SESSION_COOKIE = "forge_internal_session";
 export const studioRoles = ["reviewer", "designer", "director", "developer", "owner"] as const;
@@ -20,11 +21,11 @@ const decoder = new TextDecoder();
 const SESSION_SECONDS = 12 * 60 * 60;
 
 export class StudioAccessError extends Error {
-  constructor(message: string, public status: 401 | 403 | 503) { super(message); }
+  constructor(message: string, public status: 401 | 403 | 404 | 503) { super(message); }
 }
 
 export function studioAccessEnabled(environment: StudioAccessEnvironment = process.env) {
-  return environment.FORGE_INTERNAL_ACCESS_ENABLED === "true";
+  return studioAuthEnabled(environment);
 }
 
 export function parseStudioUsers(environment: StudioAccessEnvironment = process.env) {
@@ -81,6 +82,7 @@ export async function studioIdentityFromRequest(request: Request, environment: S
 }
 
 export async function requireStudioRole(request: Request, minimum: StudioRole, environment: StudioAccessEnvironment = process.env) {
+  if (!studioAvailableInProduction(environment)) throw new StudioAccessError("Studio is disabled in production", 404);
   const identity = await studioIdentityFromRequest(request, environment);
   if (!identity) throw new StudioAccessError("Forge internal access is required", 401);
   if (!hasStudioRole(identity, minimum)) throw new StudioAccessError(`This action requires the ${minimum} role or higher`, 403);

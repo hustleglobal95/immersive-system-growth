@@ -103,7 +103,8 @@ Internal access is optional so solo local development stays frictionless.
 Enable it with:
 
 ```text
-FORGE_INTERNAL_ACCESS_ENABLED=true
+STUDIO_AUTH_ENABLED=true
+ENABLE_STUDIO_IN_PROD=true
 FORGE_INTERNAL_SESSION_SECRET=<long random server secret>
 FORGE_INTERNAL_USERS_JSON=[...]
 ```

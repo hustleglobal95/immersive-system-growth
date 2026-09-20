@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import rawExperience from "@/config/experience.json";
 import { parseExperience } from "@/src/lib/configSchema";
 import { AutonomyRuntimeClient } from "@/src/studio/AutonomyRuntimeClient";
+import { requireStudioPageAccess } from "@/src/platform/studioPageAccess";
 
 export const dynamic="force-dynamic";
 
@@ -12,6 +13,7 @@ export default async function AutonomyRuntimePage({
 }:{
   searchParams:Promise<{ variant?:string }>;
 }) {
+  await requireStudioPageAccess("/studio/autonomy-runtime");
   if(process.env.FORGE_AUTONOMY_PREVIEW!=="1") notFound();
   const params=await searchParams;
   const variant=params.variant==="candidate" ? "candidate" : "incumbent";

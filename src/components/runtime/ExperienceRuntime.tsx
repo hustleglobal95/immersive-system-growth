@@ -1,4 +1,5 @@
 "use client";
+import "@/src/security/installSriFetchGuard";
 import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";

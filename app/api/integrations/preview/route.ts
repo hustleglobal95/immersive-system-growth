@@ -1,7 +1,9 @@
+import { requireStudioRole, studioAccessErrorResponse } from "@/src/platform/studioAccess";
 import { contentSourceSchema } from "@/src/platform/studioSchema";
 import { fetchContentSource } from "@/src/platform/integrations";
 
 export async function POST(request: Request) {
+  try { await requireStudioRole(request, "designer"); } catch (error) { return studioAccessErrorResponse(error) ?? Response.json({ ok: false, error: "Forge internal access failed" }, { status: 500 }); }
   const size = Number(request.headers.get("content-length") ?? 0);
   if (size > 32_000) return Response.json({ ok: false, error: "Request is too large" }, { status: 413 });
   try {

@@ -111,6 +111,8 @@ const server=spawn(process.platform==="win32" ? "npm.cmd" : "npm",["run","dev","
   env:{
     ...process.env,
     FORGE_AUTONOMY_PREVIEW:"1",
+    STUDIO_AUTH_ENABLED:"false",
+    ENABLE_STUDIO_IN_PROD:"true",
     FORGE_AUTONOMY_INCUMBENT_PATH:currentIncumbentPath,
     FORGE_AUTONOMY_CANDIDATE_PATH:currentCandidatePath,
   },

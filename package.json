@@ -8,8 +8,8 @@
     "node": ">=22.13"
   },
   "scripts": {
-    "dev": "node scripts/prepare-decoders.mjs && next dev",
-    "build": "node scripts/prepare-decoders.mjs && next build",
+    "dev": "node scripts/prepare-decoders.mjs && npm run sri:generate && next dev",
+    "build": "node scripts/prepare-decoders.mjs && npm run sri:generate && next build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
@@ -51,8 +51,8 @@
     "scene:new": "node scripts/new-scene.mjs",
     "recipe:list": "node scripts/recipe-list.mjs",
     "recipe:apply": "node --import tsx scripts/apply-recipe.mjs",
-    "test": "node --import tsx --test tests/*.test.ts",
-    "check": "npm run project:integrity && npm run doctor && npm run architecture:audit && npm run command:catalog:audit && npm run control-plane:audit && npm run studio:actionability:audit && npm run discoverability:audit && npm run operator:intelligence:audit && npm run director:audit && npm run director:intelligence:audit && npm run reference:corpus:audit && npm run autonomy:benchmark && npm run project:validate && npm run release:report && npm run creative:audit && npm run creative:recipes && npm run experience:validate && npm run experience:modes:audit && npm run interaction:validate && npm run cinematic:systems:audit && npm run motion:systems:audit && npm run cinematic:audit && npm run camera:audit && npm run camera:spatial:audit && npm run rig:audit && npm run visual:audit && npm run assets:audit && npm run performance:audit && npm run test && npm run typecheck && npm run lint",
+    "test": "STUDIO_AUTH_ENABLED=false ENABLE_STUDIO_IN_PROD=true node --import tsx --test tests/*.test.ts tests/security/*.test.ts",
+    "check": "node scripts/prepare-decoders.mjs && npm run sri:generate && npm run security:audit && npm run project:integrity && npm run doctor && npm run architecture:audit && npm run command:catalog:audit && npm run control-plane:audit && npm run studio:actionability:audit && npm run discoverability:audit && npm run operator:intelligence:audit && npm run director:audit && npm run director:intelligence:audit && npm run reference:corpus:audit && npm run autonomy:benchmark && npm run project:validate && npm run release:report && npm run creative:audit && npm run creative:recipes && npm run experience:validate && npm run experience:modes:audit && npm run interaction:validate && npm run cinematic:systems:audit && npm run motion:systems:audit && npm run cinematic:audit && npm run camera:audit && npm run camera:spatial:audit && npm run rig:audit && npm run visual:audit && npm run assets:audit && npm run performance:audit && npm run test && npm run typecheck && npm run lint",
     "cinematic:audit": "node --import tsx scripts/cinematic-audit.mjs",
     "camera:audit": "node --import tsx scripts/camera-audit.mjs",
     "camera:spatial:audit": "node --import tsx scripts/spatial-camera-audit.mjs",
@@ -108,7 +108,9 @@
     "loop:accept": "node --import tsx scripts/loop-accept.mjs",
     "operator:intelligence:audit": "node scripts/operator-intelligence-audit.mjs",
     "studio:actionability:audit": "node --import tsx scripts/studio-actionability-audit.mjs",
-    "discoverability:audit": "node --import tsx scripts/discoverability-audit.mjs"
+    "discoverability:audit": "node --import tsx scripts/discoverability-audit.mjs",
+    "sri:generate": "node --import tsx scripts/generate-sri-manifest.ts",
+    "security:audit": "node scripts/security-audit.mjs"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "5.3.0",
