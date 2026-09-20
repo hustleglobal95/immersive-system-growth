@@ -37,6 +37,10 @@ Immersive Site Forge 6.1 is organized as a multi-project production platform rat
 - eight deterministic image/video mask reveals with DOM and WebGL renderers
 - automatic mask fallback for quality, WebGL loss and reduced motion
 - pointer-driven cursor reveal engine with lens, persistent trail and projected GPU-fluid modes
+- WarpSurface visual physics with elastic, cloth, water, heat and shockwave deformation driven by pointer velocity and scroll
+- RefractiveSurface visual physics with lens, panel and liquid refraction, chromatic dispersion, edge refraction, sheen and ripple
+- ShaderTransitionEngine with ripple, liquid, noise, pixel, chromatic, directional, iris, slats, grain and depth scene transitions
+- shared WebGL2 cinematic compositor for reveal, spatial, warp, refraction and scene-transition passes with quality/reduced-motion fallback
 - touch-drag policy, pressure/velocity response, linger/fade decay and Canvas/GPU fallback
 - runtime draw-call and triangle telemetry
 
@@ -64,6 +68,7 @@ Immersive Site Forge 6.1 is organized as a multi-project production platform rat
 - live camera, hero and named GLB-node vector recording with Three.js transform gizmos
 - desktop and mobile motion override tracks
 - browser Mask Lab with DOM/WebGL comparison and preset controls
+- Visual Effects authoring for cursor reveal, WarpSurface, RefractiveSurface, ShaderTransitionEngine and combined visual-physics presets
 - browser and CLI GLB inspection with hierarchy paths, geometry totals, complexity grading and confidence-scored node mapping
 - six reusable industry templates plus scene and media-transition presets
 - bounded image and color transition-layer composition
