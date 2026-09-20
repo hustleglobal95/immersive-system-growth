@@ -146,14 +146,14 @@ export function CreativeAgentWorkbench() {
 
       <section className="creative-agent__stage">
         <div className="creative-agent__verdict">
-          <div><span>DIRECTOR VERDICT</span><strong>{report.verdict}</strong></div>
+          <div><span>PLANNING</span><strong>{report.planningDisposition}</strong></div><div><span>RENDERED JUDGMENT</span><strong>{report.verdict}</strong></div>
           <div><span>PROMPT READ</span><strong>{promptIntelligence.projectType.value} · {promptIntelligence.tier.value}</strong></div>
           <div><span>INFERENCE</span><strong>{Math.round(promptIntelligence.confidence * 100)}%</strong></div>
           <div><span>HIERARCHY</span><strong>{report.hierarchy.overallScore}/10</strong></div>
           <div><span>EXECUTION MEDIUM</span><strong>{plan.mediumLabel}</strong></div>
           <div><span>ASSET READY</span><strong>{plan.assetSummary.scenesBuildableNow.length}/{plan.sceneMoves.length} scenes</strong></div>
           <div><span>CREATE</span><strong>{plan.assetSummary.totalAssetsToCreate} required assets</strong></div>
-          <div><span>EVIDENCE</span><strong>{Math.round(report.evidence.confidence * 100)}%</strong></div>
+          <div><span>EVIDENCE</span><strong>{Math.round(report.evidence.coverage * 100)}%</strong></div>
         </div>
 
         <article className="creative-agent__hero">
@@ -291,11 +291,11 @@ export function CreativeAgentWorkbench() {
         </div>
 
         <section className="creative-agent__council">
-          <header><span>DIRECTOR COUNCIL</span><h3>Independent pressure test</h3></header>
+          <header><span>PLANNING LENSES</span><h3>Deterministic pressure test — not independent creative judgment</h3></header>
           {report.selectedEvaluation.critiques.slice(0, 6).map((critique) => <article key={critique.role}>
             <strong>{critique.role}</strong>
             <span>{critique.recommendation}</span>
-            <p>{critique.concerns[0] ?? critique.strengths[0] ?? "No material concern."}</p>
+            <p>{critique.concerns[0] ?? critique.strengths[0] ?? "No material concern."}</p><small>{critique.basis} · {Math.round(critique.evidenceCoverage*100)}% evidence coverage</small>
           </article>)}
         </section>
       </section>
