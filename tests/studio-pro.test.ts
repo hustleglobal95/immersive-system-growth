@@ -7,6 +7,7 @@ import rawExperience from "../config/experience.json";
 import rawManifest from "../config/asset-manifest.json";
 import rawProject from "../config/studio-project.json";
 import rawCinematic from "../config/cinematic-systems.json";
+import rawGraph from "../config/interaction-graph.json";
 import { parseExperience, sceneMediaSchema } from "../src/lib/configSchema";
 import { sampleExperience } from "../src/lib/sampleExperience";
 import { sampleTransitionLayer } from "../src/lib/transitionLayers";
@@ -93,18 +94,40 @@ test("Studio publishing opens a review PR without exposing its token", async () 
     return Response.json({});
   }) as typeof fetch;
   const result = await publishStudioDraft(
-    { experience: rawExperience, project: rawProject, assetManifest: rawManifest, title: "Studio direction", summary: "Review camera, layers and assets." },
+    { experience: rawExperience, project: rawProject, assetManifest: rawManifest, interactionGraph: rawGraph, title: "Studio direction", summary: "Review camera, layers and assets." },
     { repository: "example/repo", token: "server-only-token" },
     fetcher,
   );
   assert.equal(result.number, 42);
   assert.match(result.branch, new RegExp(`^forge/studio-${rawProject.id}-`));
-  assert.equal(calls.length, 9);
+  assert.equal(calls.length, 11);
   assert.ok(calls.every((call) => new Headers(call.init.headers).get("authorization") === "Bearer server-only-token"));
   assert.ok(calls.every((call) => !String(call.init.body ?? "").includes("server-only-token")));
   const pullBody = JSON.parse(String(calls.at(-1)?.init.body));
   assert.equal(pullBody.base, "main");
   assert.equal(pullBody.head, result.branch);
+});
+
+test("Studio publishing carries authored interactions into the review branch", async () => {
+  const calls:Array<{url:string;init:RequestInit}>=[];
+  const fetcher=(async(input:string|URL|Request,init:RequestInit={})=>{
+    const url=String(input);
+    calls.push({url,init});
+    if(url.includes("/git/ref/heads/")) return Response.json({object:{sha:"base-sha"}});
+    if(url.endsWith("/pulls")) return Response.json({number:44,html_url:"https://github.com/example/repo/pull/44"});
+    if(init.method==="GET"||!init.method) return Response.json({sha:"old-file-sha"});
+    return Response.json({});
+  }) as typeof fetch;
+  await publishStudioDraft(
+    {experience:rawExperience,project:rawProject,assetManifest:rawManifest,interactionGraph:rawGraph},
+    {repository:"example/repo",token:"server-only-token"},
+    fetcher,
+  );
+  const graphPut=calls.find((call)=>call.url.includes("/contents/config/interaction-graph.json") && call.init.method==="PUT");
+  assert.ok(graphPut);
+  const payload=JSON.parse(String(graphPut?.init.body));
+  const decoded=JSON.parse(Buffer.from(payload.content,"base64").toString("utf8"));
+  assert.deepEqual(decoded,rawGraph);
 });
 
 test("Studio publishing carries live cinematic systems into the review branch", async () => {
@@ -118,7 +141,7 @@ test("Studio publishing carries live cinematic systems into the review branch", 
     return Response.json({});
   }) as typeof fetch;
   await publishStudioDraft(
-    {experience:rawExperience,project:rawProject,assetManifest:rawManifest,cinematicSystems:rawCinematic},
+    {experience:rawExperience,project:rawProject,assetManifest:rawManifest,interactionGraph:rawGraph,cinematicSystems:rawCinematic},
     {repository:"example/repo",token:"server-only-token"},
     fetcher,
   );
@@ -130,5 +153,5 @@ test("Studio publishing carries live cinematic systems into the review branch", 
 });
 
 test("Studio publishing fails closed on invalid repository settings", async () => {
-  await assert.rejects(() => publishStudioDraft({ experience: rawExperience, project: rawProject, assetManifest: rawManifest }, { repository: "not-a-repository", token: "token" }), /owner\/name/);
+  await assert.rejects(() => publishStudioDraft({ experience: rawExperience, project: rawProject, assetManifest: rawManifest, interactionGraph: rawGraph }, { repository: "not-a-repository", token: "token" }), /owner\/name/);
 });
