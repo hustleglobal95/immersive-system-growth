@@ -178,6 +178,73 @@ export async function appendVaultJournal(projectId: string, actor: VaultActor, a
   await github.commitFiles({ [`.forge/vault/projects/${projectId}/journal.json`]: nextJournal }, `Forge Vault: ${action} ${projectId}`);
 }
 
+export interface VaultLoopCandidate {
+  version:1;
+  runId:string;
+  loopId:string;
+  projectId:string;
+  sourceVersionId?:string;
+  proposalId:string;
+  selectionKey:string;
+  baselineFingerprint:string;
+  fingerprint:string;
+  repairSummary:string[];
+  preferenceAgreement:number|null;
+  experience:ReturnType<typeof parseExperience>;
+  assetManifest:ReturnType<typeof parseAssetManifest>;
+  interactionGraph:ReturnType<typeof parseInteractionGraph>;
+  cinematicSystems:ReturnType<typeof parseCinematicSystems>;
+  savedAt:string;
+}
+
+export async function saveVaultLoopCandidate(input:VaultLoopCandidate, environment:NodeJS.ProcessEnv=process.env) {
+  assertProjectId(input.projectId);
+  assertLoopToken(input.loopId,"loop");
+  assertLoopToken(input.proposalId,"proposal");
+  const candidate=parseLoopCandidate(input);
+  const github=vaultGithub(environment);
+  await github.commitFiles({
+    [`.forge/vault/projects/${input.projectId}/loops/${input.loopId}/${input.proposalId}.json`]:candidate,
+  },`Forge Loop: verified ${input.loopId} candidate for ${input.projectId}`);
+  return candidate;
+}
+
+export async function readVaultLoopCandidate(projectId:string,loopId:string,proposalId:string,environment:NodeJS.ProcessEnv=process.env):Promise<VaultLoopCandidate|null> {
+  assertProjectId(projectId);
+  assertLoopToken(loopId,"loop");
+  assertLoopToken(proposalId,"proposal");
+  const github=vaultGithub(environment);
+  const raw=await github.readJson<unknown|null>(`.forge/vault/projects/${projectId}/loops/${loopId}/${proposalId}.json`,null);
+  return raw ? parseLoopCandidate(raw) : null;
+}
+
+function parseLoopCandidate(input:unknown):VaultLoopCandidate {
+  if(!input || typeof input!=="object") throw new Error("Vault Loop candidate is invalid");
+  const value=input as Record<string,unknown>;
+  const required=["runId","loopId","projectId","proposalId","selectionKey","baselineFingerprint","fingerprint","savedAt"] as const;
+  for(const key of required) if(typeof value[key]!=="string" || !String(value[key])) throw new Error(`Vault Loop candidate is missing ${key}`);
+  if(!Array.isArray(value.repairSummary) || !value.repairSummary.every((item)=>typeof item==="string")) throw new Error("Vault Loop candidate repair summary is invalid");
+  if(value.preferenceAgreement!==null && typeof value.preferenceAgreement!=="number") throw new Error("Vault Loop candidate preference agreement is invalid");
+  return {
+    version:1,
+    runId:String(value.runId),
+    loopId:String(value.loopId),
+    projectId:String(value.projectId),
+    sourceVersionId:typeof value.sourceVersionId==="string" ? value.sourceVersionId : undefined,
+    proposalId:String(value.proposalId),
+    selectionKey:String(value.selectionKey),
+    baselineFingerprint:String(value.baselineFingerprint),
+    fingerprint:String(value.fingerprint),
+    repairSummary:(value.repairSummary as string[]).slice(0,8).map((item)=>item.slice(0,400)),
+    preferenceAgreement:value.preferenceAgreement as number|null,
+    experience:parseExperience(value.experience),
+    assetManifest:parseAssetManifest(value.assetManifest),
+    interactionGraph:parseInteractionGraph(value.interactionGraph),
+    cinematicSystems:parseCinematicSystems(value.cinematicSystems ?? productionCinematicSystems),
+    savedAt:new Date(String(value.savedAt)).toISOString(),
+  };
+}
+
 function makeSnapshot(input: VaultDraftInput, actor: VaultActor, label: string, note: string): VaultSnapshot {
   const savedAt = new Date().toISOString();
   const versionId = `v-${savedAt.replace(/[-:.TZ]/g, "").slice(0, 17)}-${crypto.randomUUID().slice(0, 8)}`;
@@ -222,6 +289,7 @@ function journalEvent(actor: VaultActor, action: VaultJournalEvent["action"], de
 function clean(value: string, max: number) { return value.replace(/[<>\u0000-\u001f]/g, " ").trim().slice(0, max); }
 function assertProjectId(value: string) { if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) throw new Error("Invalid Forge Vault project id"); }
 function assertVersionId(value: string) { if (!/^v-[a-zA-Z0-9-]+$/.test(value)) throw new Error("Invalid Forge Vault version id"); }
+function assertLoopToken(value:string,label:string) { if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) throw new Error(`Invalid Forge ${label} id`); }
 
 function vaultGithub(environment: NodeJS.ProcessEnv) {
   const repository = environment.FORGE_GITHUB_REPOSITORY ?? "";
