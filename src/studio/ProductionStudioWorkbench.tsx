@@ -43,7 +43,7 @@ import { ControlPlaneReview } from "@/src/studio/ControlPlaneReview";
 import { ContextualDirection, RefinePanel, ReviewSurface, ShipSurface, type AdvancedWorkspaceName } from "@/src/studio/ControlPlaneSurfaces";
 import { OperatorMissionControl } from "@/src/studio/OperatorMissionControl";
 import type { AssetManifest } from "@/src/types/assets";
-import type { CinematicSystemsManifest } from "@/src/lib/cinematic/schema";
+import { parseCinematicSystems, type CinematicSystemsManifest } from "@/src/lib/cinematic/schema";
 import type { ExperienceConfig, SceneDefinition } from "@/src/types/experience";
 
 const initialExperience = parseExperience(rawExperience);
@@ -427,14 +427,36 @@ export function ProductionStudioWorkbench() {
     const starter = makeStarterExperience(draft.experience, name, kind);
     draft.setExperience(starter);
     draft.setProject((current) => ({ ...current, id, name, deployment: { ...current.deployment, projectName: id } }));
+    draft.setAssetManifest(parseAssetManifest({
+      models:[],
+      textures:[],
+      hdr:[],
+      video:[],
+      budgets:structuredClone(initialManifest.budgets),
+    }));
     draft.setInteractionGraph(emptyInteractionGraph(id));
+    draft.setCinematicSystems(parseCinematicSystems({
+      version:1,
+      defaults:draft.cinematicSystems.defaults,
+      scenes:[],
+    }));
+    setPreparedProposal(null);
+    setCandidateExperience(null);
+    setCandidateAssetManifest(null);
+    setCandidateInteractionGraph(null);
+    setCandidateCinematicSystems(null);
+    setPreviewMode("current");
+    setAnimateOpen(false);
+    setAnimateTarget(undefined);
     setActiveScene(0);
     setSelection({ kind: "scene", index: 0 });
     setSurface("Build");
     setWorkspace("Motion");
     setAdvanced(false);
+    setLoopOpen(false);
+    setVaultOpen(false);
     setNewProjectOpen(false);
-    setNotice(`${name} created from zero with a valid Forge runtime and starter scene.`);
+    setNotice(`${name} created from zero with isolated assets, interactions and visual effects.`);
   };
   const createProject = () => startProject(newName, newKind);
 
@@ -462,6 +484,15 @@ export function ProductionStudioWorkbench() {
           draft.setProject(parseStudioProject(payload.project));
           draft.setAssetManifest(parseAssetManifest(payload.assetManifest));
           draft.setInteractionGraph(parseInteractionGraph(payload.interactionGraph));
+          draft.setCinematicSystems(parseCinematicSystems(payload.cinematicSystems));
+          setPreparedProposal(null);
+          setCandidateExperience(null);
+          setCandidateAssetManifest(null);
+          setCandidateInteractionGraph(null);
+          setCandidateCinematicSystems(null);
+          setPreviewMode("current");
+          setAnimateOpen(false);
+          setAnimateTarget(undefined);
           setActiveScene(0);
           setSelection({ kind: "scene", index: 0 });
           setSurface("Build");
@@ -502,7 +533,7 @@ export function ProductionStudioWorkbench() {
       draft.setExperience(next);
       setActiveScene(0);
       setSelection({ kind: "scene", index: 0 });
-      setNotice(`${file.name} imported and validated.`);
+      setNotice(`${file.name} imported as experience state only. Existing assets, interactions and visual effects were intentionally left unchanged.`);
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "Import failed validation.");
     } finally {
@@ -585,8 +616,8 @@ export function ProductionStudioWorkbench() {
           <button type="button" className="production-status" data-valid={projectHealth.status==="ready"} data-health={projectHealth.status} onClick={() => { setSurface("Review"); setAdvanced(false); }}><i />{projectHealth.status==="ready" ? "Ready" : projectHealth.status==="blocked" ? `${projectHealth.issues.filter((issue)=>issue.severity==="blocker").length} blocker` : `${projectHealth.issues.filter((issue)=>issue.severity==="warning").length} issue`}</button>
           <details className="production-assist"><summary>Assist</summary><div><Link href="/studio/agent"><strong>Creative Agent</strong><span>Turn the idea into a production strategy.</span></Link><Link href="/director"><strong>Director</strong><span>Critique and strengthen the creative direction.</span></Link><Link href="/studio/assets/create"><strong>Asset Creator</strong><span>Create a missing image, video or 3D asset.</span></Link></div></details>
           <details className="production-advanced-menu"><summary>Advanced</summary><div><button type="button" onClick={() => openAdvanced("Motion")}><strong>Sequencer</strong><span>Tracks, curves and camera timing.</span></button><button type="button" onClick={() => openAdvanced("Interact")}><strong>Interactions</strong><span>Triggers, state and behavior graph.</span></button><button type="button" onClick={() => openAdvanced("Assets")}><strong>Asset tools</strong><span>Manifest, bank and GLB inspection.</span></button><button type="button" onClick={() => openAdvanced("Visuals")}><strong>Visual effects</strong><span>Cinematic systems, masks and cursor reveals.</span></button><button type="button" onClick={() => openAdvanced("Telemetry")}><strong>Telemetry</strong><span>Real-device performance evidence.</span></button></div></details>
-          <details><summary>Project</summary><div><button type="button" onClick={() => { setRequestedLoop(undefined); setLoopOpen(true); }}>Improvement evidence</button><button type="button" onClick={() => setVaultOpen(true)}>Project Vault</button><button type="button" disabled={!draft.canUndoProjectBundle} onClick={() => { if(draft.undoProjectBundle()) { setPreparedProposal(null); setNotice("Last accepted proposal reverted atomically."); } }}>Undo accepted proposal</button><button type="button" disabled={!draft.canRedoProjectBundle} onClick={() => { if(draft.redoProjectBundle()) { setPreparedProposal(null); setNotice("Last reverted proposal restored atomically."); } }}>Redo accepted proposal</button><button type="button" onClick={() => setNewProjectOpen(true)}>New project</button><button type="button" onClick={() => importRef.current?.click()}>Import</button><button type="button" onClick={draft.reset}>Reset local draft</button></div></details>
-          <details><summary>Export</summary><div className="align-right"><button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Experience</button><button type="button" onClick={() => downloadJson("interaction-graph.json", draft.interactionGraph)}>Interactions</button><button type="button" onClick={() => downloadJson("studio-project.json", draft.project)}>Project</button><button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Assets</button></div></details><StudioIdentityBadge />
+          <details><summary>Project</summary><div><button type="button" onClick={() => { setRequestedLoop(undefined); setLoopOpen(true); }}>Improvement evidence</button><button type="button" onClick={() => setVaultOpen(true)}>Project Vault</button><button type="button" disabled={!draft.canUndoProjectBundle} onClick={() => { if(draft.undoProjectBundle()) { setPreparedProposal(null); setNotice("Last accepted proposal reverted atomically."); } }}>Undo accepted proposal</button><button type="button" disabled={!draft.canRedoProjectBundle} onClick={() => { if(draft.redoProjectBundle()) { setPreparedProposal(null); setNotice("Last reverted proposal restored atomically."); } }}>Redo accepted proposal</button><button type="button" onClick={() => setNewProjectOpen(true)}>New project</button><button type="button" onClick={() => importRef.current?.click()}>Import experience only</button><button type="button" onClick={draft.reset}>Reset local draft</button></div></details>
+          <details><summary>Export</summary><div className="align-right"><button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Experience</button><button type="button" onClick={() => downloadJson("interaction-graph.json", draft.interactionGraph)}>Interactions</button><button type="button" onClick={() => downloadJson("studio-project.json", draft.project)}>Project</button><button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Assets</button><button type="button" onClick={() => downloadJson("cinematic-systems.json", draft.cinematicSystems)}>Visual effects</button></div></details><StudioIdentityBadge />
           <input ref={importRef} hidden type="file" accept="application/json,.json" onChange={(event) => void importExperience(event.target.files?.[0])} />
         </div>
       </header>
