@@ -56,23 +56,23 @@ export function summarizeEvaluation(territoryId: string, scores: EvaluationScore
   const gates = applyHardGates(scores, tier);
   const blockers = [...gates.blockers, ...extraBlockers, ...critiques.flatMap((critique) => critique.blockers)].filter((value, index, values) => values.indexOf(value) === index);
   const recommendations = critiques.map((item) => item.recommendation);
-  let recommendation: EvaluationReport["recommendation"] = blockers.length ? "REVISE" : "LOCK";
+  let recommendation: EvaluationReport["recommendation"] = blockers.length ? "REVISE" : "ADVANCE";
   if (recommendations.includes("reject")) recommendation = "REJECT";
   else if (recommendations.includes("asset-blocked")) recommendation = "ASSET BLOCKED";
   else if (recommendations.includes("research")) recommendation = "RESEARCH REQUIRED";
   const disagreements: string[] = [];
   if (critiques.length) {
-    const rolesForLock = critiques.filter((item) => item.recommendation === "lock").map((item) => item.role);
-    const rolesAgainst = critiques.filter((item) => item.recommendation !== "lock").map((item) => item.role);
-    if (rolesForLock.length && rolesAgainst.length) disagreements.push(`Council split: lock from ${rolesForLock.join(", ")}; reservations from ${rolesAgainst.join(", ")}.`);
+    const rolesForAdvance = critiques.filter((item) => item.recommendation === "advance").map((item) => item.role);
+    const rolesAgainst = critiques.filter((item) => item.recommendation !== "advance").map((item) => item.role);
+    if (rolesForAdvance.length && rolesAgainst.length) disagreements.push(`Planning lenses split: advance from ${rolesForAdvance.join(", ")}; reservations from ${rolesAgainst.join(", ")}.`);
   }
-  return { territoryId, scores, critiques, blockers, disagreements, passedHardGates: gates.passed && blockers.length === 0, recommendation };
+  return { territoryId, scores, critiques, blockers, disagreements, passedHardGates: gates.passed && blockers.length === 0, recommendation, scoreSemantics:"deterministic-planning-proxy" };
 }
 
 export function rankEvaluations(reports: EvaluationReport[]) {
   const priority: EvaluationDimension[] = ["brandAdherence", "conceptualClarity", "distinctiveness", "memorability", "portfolioNovelty", "commercialAlignment", "productionFeasibility"];
   const score = (report: EvaluationReport) => priority.reduce((sum, dimension, index) => sum + report.scores[dimension] * (priority.length - index), 0);
-  const dispositionPenalty: Record<EvaluationReport["recommendation"], number> = { LOCK: 0, REVISE: 50, "RESEARCH REQUIRED": 65, "ASSET BLOCKED": 70, REJECT: 100 };
+  const dispositionPenalty: Record<EvaluationReport["recommendation"], number> = { ADVANCE: 0, REVISE: 50, "RESEARCH REQUIRED": 65, "ASSET BLOCKED": 70, REJECT: 100 };
   return [...reports].sort((a, b) => (score(b) - dispositionPenalty[b.recommendation]) - (score(a) - dispositionPenalty[a.recommendation]));
 }
 
