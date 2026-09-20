@@ -8,7 +8,7 @@ function rec(score: number, blockerCount: number, research = false, assetBlocked
   if (assetBlocked) return "asset-blocked";
   if (research) return "research";
   if (score < 7.5 || blockerCount > 0) return "revise";
-  return "lock";
+  return "advance";
 }
 
 function roleScore(role: CouncilRole, scores: EvaluationScores) {
@@ -80,7 +80,8 @@ export function runDirectorCouncil(brief: DirectorBrief, treatment: DirectorTrea
       concerns,
       blockers,
       recommendation: rec(score, blockers.length, research, assetBlocked),
-      confidence: Number(Math.max(0.45, Math.min(0.95, 0.62 + selected.length * 0.04 - (brief.differentiators.length === 0 ? 0.08 : 0))).toFixed(2)),
+      basis:"deterministic-lens",
+      evidenceCoverage:Number(Math.max(0,Math.min(1,0.35+selected.length*0.08+(brief.differentiators.length?0.12:0)+(brief.references.length?0.08:0))).toFixed(2)),
     };
   });
 }
