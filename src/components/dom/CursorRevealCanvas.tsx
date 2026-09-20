@@ -87,6 +87,12 @@ function makeDouble(gl:WebGL2RenderingContext,width:number,height:number,floatTa
 function clearTarget(gl:WebGL2RenderingContext,target:Target){gl.bindFramebuffer(gl.FRAMEBUFFER,target.fbo);gl.viewport(0,0,target.width,target.height);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);}
 function loadImage(url:string){return new Promise<HTMLImageElement>((resolve,reject)=>{const image=new Image();image.crossOrigin="anonymous";image.decoding="async";image.onload=()=>resolve(image);image.onerror=()=>reject(new Error("Unable to load cursor reveal media "+url));image.src=url;});}
 function point(pointer:CinematicPointerSignal):[number,number]{return[pointer.x*.5+.5,pointer.y*.5+.5];}
+function canvasCssSize(element:HTMLCanvasElement){
+  const rect=element.parentElement?.getBoundingClientRect();
+  const width=rect && rect.width>1 ? rect.width : window.innerWidth;
+  const height=rect && rect.height>1 ? rect.height : window.innerHeight;
+  return {width:Math.max(1,width),height:Math.max(1,height)};
+}
 
 export function CursorRevealCanvas(props:Props){
   const canvas=useRef<HTMLCanvasElement>(null),values=useRef(props),[fallback,setFallback]=useState(false);
@@ -102,7 +108,7 @@ export function CursorRevealCanvas(props:Props){
         const ctx=element.getContext("2d"),mask=document.createElement("canvas"),maskCtx=mask.getContext("2d");if(!ctx||!maskCtx)throw new Error("2D cursor reveal unavailable");
         let width=0,height=0;
         unsubscribe=forgeTicker.subscribe((delta)=>{
-          const current=values.current,config=current.config,pointer=current.pointer,nextWidth=Math.max(1,window.innerWidth),nextHeight=Math.max(1,window.innerHeight),dpr=Math.min(window.devicePixelRatio||1,1.5);
+          const current=values.current,config=current.config,pointer=current.pointer,size=canvasCssSize(element),nextWidth=size.width,nextHeight=size.height,dpr=Math.min(window.devicePixelRatio||1,1.5);
           if(width!==nextWidth||height!==nextHeight){width=nextWidth;height=nextHeight;element.width=Math.round(width*dpr);element.height=Math.round(height*dpr);element.style.width=width+"px";element.style.height=height+"px";mask.width=Math.round(width*dpr);mask.height=Math.round(height*dpr);}
           ctx.setTransform(dpr,0,0,dpr,0,0);maskCtx.setTransform(dpr,0,0,dpr,0,0);
           const idle=Math.max(0,performance.now()-pointer.lastMoveAt),recent=idle<90,allowed=shouldInjectCursorReveal(config,pointer),inject=allowed&&(config.mode==="lens"||recent||(pointer.pointerType==="touch"&&pointer.down)),brush=cursorRevealBrush(config,pointer.speed,pointer.pressure);
@@ -124,7 +130,7 @@ export function CursorRevealCanvas(props:Props){
       const trailProgram=makeProgram(gl,trailFragment),advectProgram=makeProgram(gl,advectFragment),splatProgram=makeProgram(gl,splatFragment),divergenceProgram=makeProgram(gl,divergenceFragment),pressureProgram=makeProgram(gl,pressureFragment),gradientProgram=makeProgram(gl,gradientFragment),renderProgram=makeProgram(gl,renderFragment);
       const imageTexture=gl.createTexture();if(!imageTexture)throw new Error("Unable to create cursor reveal image texture");
       gl.bindTexture(gl.TEXTURE_2D,imageTexture);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image);
-      const hasFloat=!!gl.getExtension("EXT_color_buffer_float")&&!!gl.getExtension("OES_texture_float_linear"),backend=resolveCursorRevealBackend(props.config,{quality:props.quality,webgl2:true,floatTargets:hasFloat,reducedMotion:false}),fluid=backend==="webgl-fluid",aspect=Math.max(.4,Math.min(2.5,window.innerWidth/Math.max(1,window.innerHeight))),base=Math.max(64,Math.min(512,props.config.fluidResolution)),simWidth=aspect>=1?Math.min(512,Math.round(base*aspect)):base,simHeight=aspect>=1?base:Math.min(512,Math.round(base/aspect));
+      const initialSize=canvasCssSize(element),hasFloat=!!gl.getExtension("EXT_color_buffer_float")&&!!gl.getExtension("OES_texture_float_linear"),backend=resolveCursorRevealBackend(props.config,{quality:props.quality,webgl2:true,floatTargets:hasFloat,reducedMotion:false}),fluid=backend==="webgl-fluid",aspect=Math.max(.4,Math.min(2.5,initialSize.width/Math.max(1,initialSize.height))),base=Math.max(64,Math.min(512,props.config.fluidResolution)),simWidth=aspect>=1?Math.min(512,Math.round(base*aspect)):base,simHeight=aspect>=1?base:Math.min(512,Math.round(base/aspect));
       const trailField=makeDouble(gl,simWidth,simHeight,false),velocity=fluid?makeDouble(gl,simWidth,simHeight,true):null,dye=fluid?makeDouble(gl,simWidth,simHeight,true):null,pressure=fluid?makeDouble(gl,simWidth,simHeight,true):null,divergence=fluid?makeTarget(gl,simWidth,simHeight,true):null;
       [trailField.read,trailField.write,velocity?.read,velocity?.write,dye?.read,dye?.write,pressure?.read,pressure?.write,divergence].filter(Boolean).forEach(value=>clearTarget(gl,value as Target));
       const uniform=(program:WebGLProgram,name:string)=>gl.getUniformLocation(program,name),bind=(unit:number,texture:WebGLTexture,location:WebGLUniformLocation|null)=>{gl.activeTexture(gl.TEXTURE0+unit);gl.bindTexture(gl.TEXTURE_2D,texture);gl.uniform1i(location,unit);},draw=(program:WebGLProgram,target:Target|null,width:number,height:number,setup:()=>void)=>{if(target)gl.disable(gl.BLEND);gl.bindFramebuffer(gl.FRAMEBUFFER,target?.fbo??null);gl.viewport(0,0,width,height);gl.useProgram(program);gl.bindVertexArray(vao);setup();gl.drawArrays(gl.TRIANGLES,0,3);};
@@ -144,7 +150,7 @@ export function CursorRevealCanvas(props:Props){
         }else if(config.mode!=="lens"){
           draw(trailProgram,trailField.write,simWidth,simHeight,()=>{bind(0,trailField.read.texture,uniform(trailProgram,"uSource"));gl.uniform2f(uniform(trailProgram,"uPoint"),p[0],p[1]);gl.uniform1f(uniform(trailProgram,"uRadius"),brush.radius);gl.uniform1f(uniform(trailProgram,"uStrength"),brush.strength);gl.uniform1f(uniform(trailProgram,"uDecay"),decay);gl.uniform1f(uniform(trailProgram,"uInject"),inject?1:0);gl.uniform1f(uniform(trailProgram,"uSoftness"),config.softness);});trailField.swap();maskTexture=trailField.read.texture;
         }
-        const dpr=Math.min(window.devicePixelRatio||1,2),width=Math.max(1,window.innerWidth),height=Math.max(1,window.innerHeight),dw=Math.round(width*dpr),dh=Math.round(height*dpr);if(element.width!==dw||element.height!==dh){element.width=dw;element.height=dh;element.style.width=width+"px";element.style.height=height+"px";}
+        const size=canvasCssSize(element),dpr=Math.min(window.devicePixelRatio||1,2),width=size.width,height=size.height,dw=Math.round(width*dpr),dh=Math.round(height*dpr);if(element.width!==dw||element.height!==dh){element.width=dw;element.height=dh;element.style.width=width+"px";element.style.height=height+"px";}
         gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.clearColor(0,0,0,0);gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.viewport(0,0,dw,dh);gl.clear(gl.COLOR_BUFFER_BIT);
         draw(renderProgram,null,dw,dh,()=>{bind(0,imageTexture,uniform(renderProgram,"uImage"));bind(1,maskTexture,uniform(renderProgram,"uMask"));gl.uniform2f(uniform(renderProgram,"uResolution"),dw,dh);gl.uniform2f(uniform(renderProgram,"uImageSize"),image.naturalWidth,image.naturalHeight);gl.uniform2f(uniform(renderProgram,"uPointer"),p[0],p[1]);gl.uniform2f(uniform(renderProgram,"uPosition"),config.position[0]/100,config.position[1]/100);gl.uniform1f(uniform(renderProgram,"uMode"),mode);gl.uniform1f(uniform(renderProgram,"uRadius"),brush.radius);gl.uniform1f(uniform(renderProgram,"uSoftness"),config.softness);gl.uniform1f(uniform(renderProgram,"uFit"),config.fit==="cover"?0:1);});
       });
