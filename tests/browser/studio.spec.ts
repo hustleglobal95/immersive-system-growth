@@ -21,6 +21,10 @@ test("Build keeps the live experience central and edits the selected scene", asy
 });
 
 test("New Project starts from isolated project state", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem("forge-studio-guide-brief-v1", "Previous client mission that must not leak.");
+    window.localStorage.setItem("forge-studio-guide-shipped-project-v1", "previous-client");
+  });
   await page.goto("/studio");
   await page.getByLabel("Forge command").fill("new project");
   await page.getByRole("button", { name: "Direct", exact: true }).click();
@@ -43,6 +47,8 @@ test("New Project starts from isolated project state", async ({ page }) => {
       video:draft.assetManifest?.video?.length,
       graph:draft.interactionGraph?.id,
       cinematicScenes:draft.cinematicSystems?.scenes?.length,
+      guideBrief:window.localStorage.getItem("forge-studio-guide-brief-v1"),
+      shipped:window.localStorage.getItem("forge-studio-guide-shipped-project-v1"),
     };
   })).toEqual({
     id:"isolation-test",
@@ -53,6 +59,8 @@ test("New Project starts from isolated project state", async ({ page }) => {
     video:0,
     graph:"isolation-test-interactions",
     cinematicScenes:0,
+    guideBrief:"",
+    shipped:"",
   });
 });
 
