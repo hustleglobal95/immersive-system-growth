@@ -61,7 +61,7 @@ test("visual physics parses warp, refraction and shader transitions with determi
   assert.equal(resolveVisualPhysicsBackend({quality:"low",webgl2:true,reducedMotion:false}),"fallback");
   assert.equal(resolveVisualPhysicsBackend({quality:"high",webgl2:true,reducedMotion:true}),"fallback");
   assert.deepEqual(sampleSceneTransition(scene.sceneTransition!,0.5),{progress:0,active:false,complete:false});
-  assert.equal(sampleSceneTransition(scene.sceneTransition!,0.85).progress,.5);
+  assert.ok(Math.abs(sampleSceneTransition(scene.sceneTransition!,0.85).progress-.5)<1e-9);
   assert.deepEqual(sampleSceneTransition(scene.sceneTransition!,1),{progress:1,active:false,complete:true});
   assert.equal(visualPhysicsCost(scene),"heavy");
 });
