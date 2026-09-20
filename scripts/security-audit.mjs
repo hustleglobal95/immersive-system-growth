@@ -48,6 +48,22 @@ for(const token of ["/studio/:path*","/api/studio/:path*","/api/project/:path*",
 
 const projectApi=read("app/api/forge/projects/[slug]/route.ts");
 if(!projectApi.includes('requireStudioRole(request, "reviewer")')) failures.push("Forge project API must enforce route-level Studio auth.");
+for(const file of [
+  "app/api/asset-bank/route.ts",
+  "app/api/integrations/preview/route.ts",
+  "app/api/type-vault/route.ts",
+]) {
+  if(!read(file).includes("requireStudioRole")) failures.push(`${file}: internal API must enforce route-level Studio auth`);
+}
+for(const file of [
+  "app/studio/page.tsx",
+  "app/studio/agent/page.tsx",
+  "app/studio/assets/create/page.tsx",
+  "app/studio/autonomy-preview/page.tsx",
+  "app/studio/autonomy-runtime/page.tsx",
+]) {
+  if(!read(file).includes("requireStudioPageAccess")) failures.push(`${file}: Studio page must enforce signed session access`);
+}
 
 const engine=read("src/lib/interactionGraphEngine.ts");
 if(!engine.includes("parseInteractionEventInput(event)")) failures.push("Interaction engine must validate runtime events before trigger evaluation.");
