@@ -10,7 +10,7 @@ import { PublishPanel } from "@/src/studio/ProjectPanels";
 import type { useStudioDraft } from "@/src/studio/useStudioDraft";
 import type { ExperienceConfig, SceneDefinition } from "@/src/types/experience";
 
-export type AdvancedWorkspaceName="Motion"|"Interact"|"Assets"|"Telemetry";
+export type AdvancedWorkspaceName="Motion"|"Interact"|"Assets"|"Visuals"|"Telemetry";
 
 export function ContextualDirection({ context, capabilities, proposal, nextActions, onCapability }: {
   context:SelectionContext;

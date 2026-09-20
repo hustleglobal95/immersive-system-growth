@@ -1,6 +1,6 @@
 # Repository Manifest
 
-Immersive Site Forge 6.0 is organized as a multi-project production platform rather than a one-off demo.
+Immersive Site Forge 6.1 is organized as a multi-project production platform rather than a one-off demo.
 
 ## Runtime
 
@@ -36,13 +36,15 @@ Immersive Site Forge 6.0 is organized as a multi-project production platform rat
 - adaptive postprocessing
 - eight deterministic image/video mask reveals with DOM and WebGL renderers
 - automatic mask fallback for quality, WebGL loss and reduced motion
+- pointer-driven cursor reveal engine with lens, persistent trail and projected GPU-fluid modes
+- touch-drag policy, pressure/velocity response, linger/fade decay and Canvas/GPU fallback
 - runtime draw-call and triangle telemetry
 
 ## Authoring and automation
 
 - browser-based Forge Studio at `/studio`
 - PRO+ Control Plane with seven first-class selection kinds (scene, camera, rig node, copy, media, asset, environment), self-validating Capability Registry, Intent Compiler, Next Action Engine, Project Health and non-mutating Proposal Contract
-- Build / Review / Ship primary Studio surfaces with Sequencer, Interactions, Asset tools and Telemetry moved under Advanced
+- Build / Review / Ship primary Studio surfaces with Sequencer, Interactions, Asset tools, Visual effects and Telemetry moved under Advanced
 - registry-driven contextual actions that route semantic operator intent into existing camera, motion, interaction, asset, Director and Loop systems without duplicating those engines
 - unified Current / Candidate review for reversible fast proposals and proposal-bound verified Loop project-state bundles, with exact working/Vault baseline parity and atomic local bundle undo/redo
 - reviewer-protected local Loop-result bridge that validates winning evidence before Studio can preview a deep candidate

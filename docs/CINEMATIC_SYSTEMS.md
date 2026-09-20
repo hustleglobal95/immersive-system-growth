@@ -11,6 +11,7 @@ Forge cinematic systems are reusable creative-technology primitives layered on t
 - physical spring response
 - cinematic stack recession
 - reveal fields
+- cursor reveal fields (lens, persistent trail and projected fluid)
 - spatial image treatment
 - procedural graphics
 - foreground occlusion
@@ -59,6 +60,16 @@ Available reveal effects:
 - `contour`
 
 Every reveal has a CPU/CSS fallback. Medium/high tiers can use the WebGL2 compositor for per-pixel image reveals. Pointer and trail influence are normalized inputs rather than project-specific mouse listeners.
+
+## Cursor reveal engine
+
+Cursor reveals expose a second image through normalized pointer input without adding project-specific mouse listeners. Three modes are available:
+
+- `lens`: a soft positional reveal window;
+- `trail`: a persistent brush field with authored linger and fade;
+- `fluid`: velocity/dye advection with curl response plus divergence, iterative pressure solve and pressure-gradient subtraction before dye transport.
+
+Fluid mode uses WebGL2 floating render targets when supported. If the required floating-target/filter capability is unavailable it falls back to the persistent GPU trail, and low-quality/no-WebGL paths use the Canvas implementation. Touch defaults to deliberate drag rather than hover simulation. See [cursor reveals](CURSOR_REVEALS.md).
 
 ## Spatial image system
 
@@ -115,12 +126,13 @@ Reusable preset builders currently include:
 - Technical Reveal
 - Editorial Image Transition
 - Luxury Material Spotlight
+- Cursor Reveal
 
 Presets produce ordinary cinematic scene configuration and can be edited after application. They are starting points, not locked templates.
 
 ## Studio
 
-Studio exposes cinematic systems under Visual Systems. The panel can select a production scene, apply a preset, enable stack/reveal behavior, tune principal values, and export `cinematic-systems.json`.
+Studio exposes cinematic systems under **Advanced → Visual effects** in the current Build / Review / Ship shell. The panel can select a production scene, apply a preset, enable stack/reveal behavior, tune principal values, and export `cinematic-systems.json`.
 
 The current Studio integration is an authoring/export surface. Production runtime continues to read the committed manifest so reviewable configuration remains the source of truth.
 

@@ -93,6 +93,21 @@ test("Advanced Telemetry remains available without permanent navigation", async 
   await expect(page.getByLabel("Sample rate")).toBeVisible();
 });
 
+test("Advanced Visual effects authors cursor reveal modes without permanent navigation", async ({ page }) => {
+  await page.goto("/studio");
+  await openAdvanced(page,/Visual effects/);
+  await expect(page.getByRole("heading", { name: "Cinematic systems", level: 2 })).toBeVisible();
+  const preset=page.getByLabel("Preset");
+  await preset.selectOption("cursor");
+  await expect(page.getByLabel("Cursor mode")).toBeVisible();
+  await page.getByLabel("Cursor mode").selectOption("fluid");
+  await expect(page.getByLabel("Fluid resolution")).toBeVisible();
+  await expect(page.getByLabel("Curl")).toBeVisible();
+  await expect(page.getByLabel("Splat force")).toBeVisible();
+  await page.getByRole("button", { name: /Back to Studio/ }).click();
+  await expect(page.getByRole("button", { name: "Build", exact: true })).toBeVisible();
+});
+
 
 test("Mission Control promotes project-wide outcomes without adding navigation", async ({ page }) => {
   await page.addInitScript(() => {
