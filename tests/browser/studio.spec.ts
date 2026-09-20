@@ -20,6 +20,42 @@ test("Build keeps the live experience central and edits the selected scene", asy
   await expect(page.locator(".production-context")).toBeVisible();
 });
 
+test("New Project starts from isolated project state", async ({ page }) => {
+  await page.goto("/studio");
+  await page.getByLabel("Forge command").fill("new project");
+  await page.getByRole("button", { name: "Direct", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Start from zero.", level: 2 })).toBeVisible();
+
+  await page.getByLabel("Project name").fill("Isolation Test");
+  await page.getByRole("button", { name: "Create project", exact: true }).click();
+  await expect(page.getByText(/created from zero with isolated assets, interactions and visual effects/i)).toBeVisible();
+
+  await expect.poll(async () => page.evaluate(() => {
+    const raw=window.localStorage.getItem("forge-studio-v2");
+    if(!raw) return null;
+    const draft=JSON.parse(raw);
+    return {
+      id:draft.project?.id,
+      scenes:draft.experience?.scenes?.length,
+      models:draft.assetManifest?.models?.length,
+      textures:draft.assetManifest?.textures?.length,
+      hdr:draft.assetManifest?.hdr?.length,
+      video:draft.assetManifest?.video?.length,
+      graph:draft.interactionGraph?.id,
+      cinematicScenes:draft.cinematicSystems?.scenes?.length,
+    };
+  })).toEqual({
+    id:"isolation-test",
+    scenes:1,
+    models:0,
+    textures:0,
+    hdr:0,
+    video:0,
+    graph:"isolation-test-interactions",
+    cinematicScenes:0,
+  });
+});
+
 test("Build prepares a reversible fast proposal before applying motion", async ({ page }) => {
   await page.goto("/studio");
   await page.getByRole("button", { name: "Add scene" }).click();
