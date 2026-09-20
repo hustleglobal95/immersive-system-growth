@@ -1,3 +1,4 @@
+import { requireStudioRole, studioAccessErrorResponse } from "@/src/platform/studioAccess";
 import { NextResponse } from "next/server";
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -12,6 +13,7 @@ export const dynamic = "force-dynamic";
 let snapshot: ReturnType<typeof load> | undefined;
 async function load() { const bank = await readBank(); return { bank, search: createBankSearch(bank) }; }
 export async function GET(request: Request) {
+  try { await requireStudioRole(request, "reviewer"); } catch (error) { return studioAccessErrorResponse(error) ?? Response.json({ ok: false, error: "Forge internal access failed" }, { status: 500 }); }
   try {
     snapshot ??= load().catch((error) => { snapshot = undefined; throw error; });
     const { bank, search } = await snapshot;
