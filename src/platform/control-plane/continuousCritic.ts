@@ -2,7 +2,7 @@ import type { MissionContract } from "@/src/platform/control-plane/mission";
 import type { MissionPlanGraph } from "@/src/platform/control-plane/planGraph";
 import type { ProjectHealthReport, ProjectHealthSeverity } from "@/src/platform/control-plane/projectHealth";
 
-export type CriticDomain="creative-direction"|"assets"|"motion"|"mobile"|"interaction"|"validation"|"visual-evidence"|"signature";
+export type CriticDomain="creative-direction"|"assets"|"motion"|"mobile"|"interaction"|"validation"|"discoverability"|"visual-evidence"|"signature";
 
 export interface VisualEvidenceFinding {
   id:string;
