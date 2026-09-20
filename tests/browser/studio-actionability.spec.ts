@@ -108,7 +108,7 @@ test("GLB Inspector creates deterministic rig tracks from a staged model",async(
 test("Advanced Telemetry mutates policy without permanent navigation",async({page})=>{
   await page.goto("/studio");
   await openAdvanced(page,/Telemetry/);
-  const sample=page.getByLabel("Sample rate");
+  const sample=page.locator("label").filter({hasText:"Sample rate"}).locator('input[type="range"]');
   await expect(sample).toBeVisible();
   await sample.fill("0.55");
   await expect.poll(()=>page.evaluate(()=>{
