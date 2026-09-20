@@ -65,6 +65,43 @@ export const cursorRevealSchema = z.object({
   splatForce: finite.min(0).max(12).default(4),
 }).strict();
 
+export const warpSchema = z.object({
+  mode: z.enum(["elastic", "cloth", "water", "heat", "shockwave"]).default("elastic"),
+  strength: finite.min(0).max(2.5).default(0.38),
+  radius: finite.min(0.02).max(1).default(0.3),
+  falloff: finite.min(0.1).max(8).default(2),
+  pointerInfluence: finite.min(0).max(3).default(1),
+  velocityInfluence: finite.min(0).max(3).default(0.65),
+  scrollInfluence: finite.min(0).max(3).default(0.25),
+  frequency: finite.min(0.1).max(30).default(8),
+}).strict();
+
+export const refractionSchema = z.object({
+  mode: z.enum(["lens", "panel", "liquid"]).default("lens"),
+  strength: finite.min(0).max(2).default(0.28),
+  radius: finite.min(0.03).max(1.5).default(0.34),
+  dispersion: finite.min(0).max(0.08).default(0.008),
+  edgeRefraction: finite.min(0).max(2).default(0.45),
+  sheen: finite.min(0).max(2).default(0.22),
+  ripple: finite.min(0).max(2).default(0.2),
+  pointerInfluence: finite.min(0).max(3).default(1),
+  center: z.tuple([finite.min(0).max(100), finite.min(0).max(100)]).default([50, 50]),
+}).strict();
+
+export const sceneTransitionSchema = z.object({
+  effect: z.enum(["ripple", "liquid", "noise", "pixel", "chromatic", "directional", "iris", "slats", "grain", "depth"]).default("liquid"),
+  src: assetUrl.optional(),
+  range: range.default([0.72, 1]),
+  direction: z.enum(["left", "right", "up", "down"]).default("right"),
+  softness: finite.min(0.001).max(0.5).default(0.08),
+  intensity: finite.min(0).max(3).default(1),
+  displacement: finite.min(0).max(0.25).default(0.045),
+  chromaticAberration: finite.min(0).max(0.08).default(0.008),
+  blockSize: z.number().int().min(2).max(128).default(24),
+  slats: z.number().int().min(2).max(64).default(12),
+  seed: z.number().int().min(0).max(999999).default(47),
+}).strict();
+
 const spatialPlaneSchema = z.object({
   id,
   src: assetUrl,
@@ -147,6 +184,9 @@ export const cinematicSceneSchema = z.object({
   spring: springSchema.optional(),
   reveal: revealSchema.optional(),
   cursorReveal: cursorRevealSchema.optional(),
+  warp: warpSchema.optional(),
+  refraction: refractionSchema.optional(),
+  sceneTransition: sceneTransitionSchema.optional(),
   spatial: spatialSchema.optional(),
   procedural: z.array(proceduralSchema).max(12).default([]),
   occlusion: z.array(occlusionLayerSchema).max(12).default([]),
@@ -178,6 +218,9 @@ export type SpringConfig = z.infer<typeof springSchema>;
 export type StackConfig = z.infer<typeof stackSchema>;
 export type RevealConfig = z.infer<typeof revealSchema>;
 export type CursorRevealConfig = z.infer<typeof cursorRevealSchema>;
+export type WarpConfig = z.infer<typeof warpSchema>;
+export type RefractionConfig = z.infer<typeof refractionSchema>;
+export type SceneTransitionConfig = z.infer<typeof sceneTransitionSchema>;
 export type SpatialConfig = z.infer<typeof spatialSchema>;
 export type ProceduralConfig = z.infer<typeof proceduralSchema>;
 export type OcclusionLayerConfig = z.infer<typeof occlusionLayerSchema>;
