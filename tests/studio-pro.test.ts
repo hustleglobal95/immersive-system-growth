@@ -13,7 +13,8 @@ import { sampleExperience } from "../src/lib/sampleExperience";
 import { sampleTransitionLayer } from "../src/lib/transitionLayers";
 import { assetManifestSchema } from "../src/platform/assetManifestSchema";
 import type { AssetManifest } from "../src/types/assets";
-import { publishStudioDraft } from "../src/platform/studioPublish";
+import { publishStudioDraft, studioPublishPaths } from "../src/platform/studioPublish";
+import { parseStudioProject } from "../src/platform/studioSchema";
 // @ts-expect-error The optimizer is shared with the JavaScript CLI.
 import { optimizeTexture } from "../scripts/asset-optimize-lib.mjs";
 
@@ -83,6 +84,32 @@ test("image optimizer preserves the source and records a verified output", async
   }
 });
 
+test("Studio publishing resolves files inside the owning project bundle", () => {
+  const active=parseStudioProject(rawProject);
+  assert.deepEqual(studioPublishPaths(active),{
+    project:"config/studio-project.json",
+    assetManifest:"config/asset-manifest.json",
+    interactionGraph:"config/interaction-graph.json",
+    cinematicSystems:"config/cinematic-systems.json",
+  });
+
+  const nocterra=parseStudioProject(JSON.parse(fs.readFileSync("clients/nocterra-residences/studio-project.json","utf8")));
+  assert.deepEqual(studioPublishPaths(nocterra),{
+    project:"clients/nocterra-residences/studio-project.json",
+    assetManifest:"clients/nocterra-residences/asset-manifest.json",
+    interactionGraph:"clients/nocterra-residences/interaction-graph.json",
+    cinematicSystems:"clients/nocterra-residences/cinematic-systems.json",
+  });
+
+  const heliot=parseStudioProject(JSON.parse(fs.readFileSync("clients/heliot/studio-project.json","utf8")));
+  assert.deepEqual(studioPublishPaths(heliot),{
+    project:"clients/heliot/studio-project.json",
+    assetManifest:"src/experiences/heliot/asset-manifest.json",
+    interactionGraph:"clients/heliot/interaction-graph.json",
+    cinematicSystems:"clients/heliot/cinematic-systems.json",
+  });
+});
+
 test("Studio publishing opens a review PR without exposing its token", async () => {
   const calls: Array<{ url: string; init: RequestInit }> = [];
   const fetcher = (async (input: string | URL | Request, init: RequestInit = {}) => {
@@ -128,6 +155,42 @@ test("Studio publishing carries authored interactions into the review branch", a
   const payload=JSON.parse(String(graphPut?.init.body));
   const decoded=JSON.parse(Buffer.from(payload.content,"base64").toString("utf8"));
   assert.deepEqual(decoded,rawGraph);
+});
+
+test("Studio publishing creates missing client config files without borrowing global config", async () => {
+  const project=parseStudioProject({
+    ...rawProject,
+    id:"fresh-client",
+    name:"Fresh Client",
+    experiencePath:"clients/fresh-client/experience.json",
+    visualSystemsPath:"clients/fresh-client/visual-systems.json",
+    creativeDirectionPath:"clients/fresh-client/creative-direction.json",
+    experienceModesPath:"clients/fresh-client/experience-modes.json",
+    deployment:{...rawProject.deployment,projectName:"fresh-client"},
+  });
+  const calls:Array<{url:string;init:RequestInit}>=[];
+  const fetcher=(async(input:string|URL|Request,init:RequestInit={})=>{
+    const url=String(input);
+    calls.push({url,init});
+    if(url.includes("/git/ref/heads/")) return Response.json({object:{sha:"base-sha"}});
+    if(url.endsWith("/pulls")) return Response.json({number:45,html_url:"https://github.com/example/repo/pull/45"});
+    if(url.includes("/contents/clients/fresh-client/") && (!init.method || init.method==="GET")) return Response.json({message:"Not Found"},{status:404});
+    if(!init.method || init.method==="GET") return Response.json({sha:"old-file-sha"});
+    return Response.json({});
+  }) as typeof fetch;
+  await publishStudioDraft(
+    {experience:rawExperience,project,assetManifest:rawManifest,interactionGraph:rawGraph,cinematicSystems:rawCinematic},
+    {repository:"example/repo",token:"server-only-token"},
+    fetcher,
+  );
+  const puts=calls.filter((call)=>call.init.method==="PUT" && call.url.includes("/contents/clients/fresh-client/"));
+  assert.equal(puts.length,5);
+  for(const call of puts) {
+    const payload=JSON.parse(String(call.init.body));
+    assert.equal("sha" in payload,false);
+  }
+  assert.equal(calls.some((call)=>call.url.includes("/contents/config/interaction-graph.json")),false);
+  assert.equal(calls.some((call)=>call.url.includes("/contents/config/cinematic-systems.json")),false);
 });
 
 test("Studio publishing carries live cinematic systems into the review branch", async () => {
