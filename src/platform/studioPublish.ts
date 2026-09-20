@@ -2,11 +2,13 @@ import { Buffer } from "node:buffer";
 import { parseExperience } from "@/src/lib/configSchema";
 import { parseAssetManifest } from "@/src/platform/assetManifestSchema";
 import { parseStudioProject } from "@/src/platform/studioSchema";
+import { parseCinematicSystems } from "@/src/lib/cinematic/schema";
 
 export interface StudioPublishInput {
   experience: unknown;
   project: unknown;
   assetManifest: unknown;
+  cinematicSystems?: unknown;
   title?: string;
   summary?: string;
 }
@@ -22,6 +24,7 @@ export async function publishStudioDraft(input: StudioPublishInput, environment:
   const experience = parseExperience(input.experience);
   const project = parseStudioProject(input.project);
   const assetManifest = parseAssetManifest(input.assetManifest);
+  const cinematicSystems = input.cinematicSystems ? parseCinematicSystems(input.cinematicSystems) : null;
   const base = project.deployment.productionBranch;
   if (!/^[A-Za-z0-9._/-]+$/.test(base) || base.includes("..")) throw new Error("Invalid production branch");
   const stamp = new Date().toISOString().replace(/[-:TZ.]/g, "").slice(0, 14);
@@ -43,6 +46,7 @@ export async function publishStudioDraft(input: StudioPublishInput, environment:
     { path: project.experiencePath, value: experience },
     { path: projectPath, value: project },
     { path: "config/asset-manifest.json", value: assetManifest },
+    ...(cinematicSystems ? [{ path: "config/cinematic-systems.json", value: cinematicSystems }] : []),
   ];
   for (const file of files) {
     const current = await request<{ sha: string }>(`${api}/contents/${file.path}?ref=${encodeURIComponent(branch)}`);
