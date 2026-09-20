@@ -608,7 +608,7 @@ export function ProductionStudioWorkbench() {
             <button type="button" className="production-import" onClick={() => { setWorkspace("Assets"); setAdvanced(true); }}>＋ Import assets</button>
           </aside>
 
-          <section className="production-stage">
+          <section className={`production-stage${animateOpen ? " production-stage--animate" : ""}`}>
             <div className="production-stage-head">
               <div><span>{scene.copy.eyebrow}</span><strong>{scene.label}</strong></div>
               <div className="production-stage-actions"><button type="button" onClick={() => setSelection({ kind: "camera", index: sceneIndex })}>Camera</button><button type="button" className={animateOpen ? "accent" : undefined} aria-pressed={animateOpen} onClick={() => { setPreviewMode("current"); setAnimateOpen((value) => !value); }}>Animate</button><button type="button" onClick={() => openAdvanced("Motion")}>Advanced</button></div>
