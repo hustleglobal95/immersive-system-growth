@@ -1,11 +1,21 @@
 import type { Metadata } from "next";
+import rawProject from "@/config/studio-project.json";
+import { parseStudioProject } from "@/src/platform/studioSchema";
 
-// Development alias for the client experience at "/"; in development "/" opens the Forge
-// workspace. This is the canonical home of the client site, so it carries its own canonical
-// rather than inheriting the root layout's.
-export const metadata: Metadata = { alternates: { canonical: "/site" } };
+const project=parseStudioProject(rawProject);
 
-// Development alias for the client experience at "/"; in development "/" opens the Forge workspace.
+export const metadata:Metadata={
+  title:project.discoverability.defaultTitle,
+  description:project.discoverability.defaultDescription,
+  alternates:{canonical:"/site"},
+  openGraph:{
+    type:"website",
+    siteName:project.discoverability.siteName || project.name,
+    title:project.discoverability.defaultTitle,
+    description:project.discoverability.defaultDescription,
+  },
+};
+
 export default function SitePage() {
   return null;
 }

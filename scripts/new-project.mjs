@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { parseExperience } from "../src/lib/configSchema.ts";
 import { parseStudioProject } from "../src/platform/studioSchema.ts";
+import { discoverabilityDefaults } from "../src/platform/discoverability.ts";
 
 const slug = process.argv[2];
 const recipe = process.argv[3] ?? "burger-showcase";
@@ -38,6 +39,7 @@ const project = parseStudioProject({
   visualSystemsPath: `clients/${slug}/visual-systems.json`,
   experienceModesPath: `clients/${slug}/experience-modes.json`,
   contentSources: [],
+  discoverability: discoverabilityDefaults(slug.split("-").map((part) => part[0].toUpperCase() + part.slice(1)).join(" ")),
   deployment: { provider: "vercel", projectName: slug, productionBranch: "main" },
   telemetry: { enabled: true, endpoint: "/api/telemetry", sampleRate: 1, consent: "analytics", respectDnt: true },
 });

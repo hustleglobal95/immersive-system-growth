@@ -167,3 +167,28 @@ test("Improvement evidence keeps the Loop Engine executable or explicitly fail-c
     expect(String(body.error)).toMatch(/not enabled|requires/i);
   }
 });
+
+
+test("Advanced Search and AI mutates discoverability policy and Project Health",async({page})=>{
+  await page.goto("/studio");
+  await openAdvanced(page,/Search & AI/);
+  await expect(page.getByRole("heading",{name:"Discoverability contract",level:2})).toBeVisible();
+
+  const title=page.getByLabel("Default search title");
+  await title.fill("Atelier Maris — Search and AI Verified");
+  await expect.poll(()=>page.evaluate(()=>{
+    const raw=localStorage.getItem("forge-studio-v2");
+    return raw ? JSON.parse(raw).project?.discoverability?.defaultTitle : null;
+  })).toBe("Atelier Maris — Search and AI Verified");
+
+  const searchToggle=page.getByLabel("Allow AI search crawlers");
+  await searchToggle.uncheck();
+  await expect(page.getByText("AI search crawler access is disabled",{exact:true})).toBeVisible();
+  await searchToggle.check();
+
+  await page.locator(".production-advanced-head").getByRole("button",{name:/Back to Studio/}).click();
+  await page.getByRole("button",{name:"Review",exact:true}).click();
+  const metric=page.locator(".production-health-metrics article").filter({hasText:"Search + AI"});
+  await expect(metric).toBeVisible();
+  await expect(metric.locator("strong")).toContainText("/100");
+});

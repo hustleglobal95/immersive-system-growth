@@ -10,7 +10,7 @@ import { PublishPanel } from "@/src/studio/ProjectPanels";
 import type { useStudioDraft } from "@/src/studio/useStudioDraft";
 import type { ExperienceConfig, SceneDefinition, Vec3 } from "@/src/types/experience";
 
-export type AdvancedWorkspaceName="Motion"|"Interact"|"Assets"|"Visuals"|"Telemetry";
+export type AdvancedWorkspaceName="Motion"|"Interact"|"Assets"|"Visuals"|"Telemetry"|"Discoverability";
 
 export function ContextualDirection({ context, capabilities, proposal, nextActions, onCapability }: {
   context:SelectionContext;
@@ -201,7 +201,7 @@ function safeCameraPosition(position:Vec3,target:Vec3,fallback:Vec3):Vec3 {
   return Math.hypot(...position.map((value,index)=>value-target[index]))>.001 ? position : fallback;
 }
 
-export function ReviewSurface({ health, nextActions, proposal, onRun, onBuildScene, onBuild, onAssets, onTelemetry }: {
+export function ReviewSurface({ health, nextActions, proposal, onRun, onBuildScene, onBuild, onAssets, onTelemetry, onDiscoverability }: {
   health:ProjectHealthReport;
   nextActions:NextAction[];
   proposal:ForgeProposal|null;
@@ -210,6 +210,7 @@ export function ReviewSurface({ health, nextActions, proposal, onRun, onBuildSce
   onBuild:()=>void;
   onAssets:()=>void;
   onTelemetry:()=>void;
+  onDiscoverability:()=>void;
 }) {
   const blockers=health.issues.filter((issue)=>issue.severity==="blocker").length;
   const warnings=health.issues.filter((issue)=>issue.severity==="warning").length;
@@ -224,13 +225,14 @@ export function ReviewSurface({ health, nextActions, proposal, onRun, onBuildSce
       <article><span>Mobile</span><strong>{health.metrics.scenesWithMobileCamera}/{health.metrics.scenes}</strong><small>with mobile camera</small></article>
       <article><span>Assets</span><strong>{Math.round(health.metrics.manifestHealth)}/100</strong><small>{health.metrics.registeredAssets} registered</small></article>
       <article><span>Interactions</span><strong>{health.metrics.interactionNodes}</strong><small>graph nodes</small></article>
+      <article><span>Search + AI</span><strong>{Math.round(health.metrics.discoverabilityScore)}/100</strong><small>{health.metrics.discoverabilityIssues} discoverability issues</small></article>
     </section>
 
     <section className="production-health-issues">
       <div className="production-surface-section-head"><div><span>WHAT NEEDS ATTENTION</span><strong>{blockers} blocker{blockers===1?"":"s"} · {warnings} warning{warnings===1?"":"s"}</strong></div><button type="button" onClick={onBuild}>Back to Build</button></div>
       {health.issues.length ? health.issues.map((issue)=><article key={issue.id} data-severity={issue.severity}>
         <div><span>{issue.domain.toUpperCase()}</span><strong>{issue.title}</strong><p>{issue.detail}</p><small>{issue.recommendedAction}</small></div>
-        <div>{typeof issue.sceneIndex==="number" && <button type="button" onClick={()=>onBuildScene(issue.sceneIndex!)}>Open scene</button>}{issue.domain==="assets" && <button type="button" onClick={onAssets}>Asset tools</button>}</div>
+        <div>{typeof issue.sceneIndex==="number" && <button type="button" onClick={()=>onBuildScene(issue.sceneIndex!)}>Open scene</button>}{issue.domain==="assets" && <button type="button" onClick={onAssets}>Asset tools</button>}{issue.domain==="discoverability" && <button type="button" onClick={onDiscoverability}>Search & AI</button>}</div>
       </article>) : <div className="production-health-clear"><strong>No unresolved production-health issues.</strong><p>Forge still requires the normal release and real-device evidence appropriate to the project.</p></div>}
     </section>
 
@@ -242,12 +244,13 @@ export function ReviewSurface({ health, nextActions, proposal, onRun, onBuildSce
   </div>;
 }
 
-export function ShipSurface({ draft, health, onReview, onVault, onTelemetry }: {
+export function ShipSurface({ draft, health, onReview, onVault, onTelemetry, onDiscoverability }: {
   draft:ReturnType<typeof useStudioDraft>;
   health:ProjectHealthReport;
   onReview:()=>void;
   onVault:()=>void;
   onTelemetry:()=>void;
+  onDiscoverability:()=>void;
 }) {
   const blockers=health.issues.filter((issue)=>issue.severity==="blocker").length;
   const warnings=health.issues.filter((issue)=>issue.severity==="warning").length;
@@ -261,7 +264,7 @@ export function ShipSurface({ draft, health, onReview, onVault, onTelemetry }: {
       <div><span>SHIP</span><h2>Review, checkpoint and release.</h2><p>Shipping stays simple because Project Health owns production readiness and the protected release pipeline owns authority.</p></div>
       <output data-health={health.status}>{Math.round(health.score)}/100 · {health.status.toUpperCase()}</output>
     </header>
-    <div className="production-ship-actions"><button type="button" onClick={onReview}>Project Health</button><button type="button" onClick={onVault}>Project Vault</button><button type="button" onClick={onTelemetry}>Telemetry</button></div>
+    <div className="production-ship-actions"><button type="button" onClick={onReview}>Project Health</button><button type="button" onClick={onDiscoverability}>Search & AI</button><button type="button" onClick={onVault}>Project Vault</button><button type="button" onClick={onTelemetry}>Telemetry</button></div>
     <PublishPanel project={draft.project} setProject={draft.setProject} experience={draft.experience} assetManifest={draft.assetManifest} interactionGraph={draft.interactionGraph} cinematicSystems={draft.cinematicSystems} validationCount={draft.validation.length} healthReady={health.status==="ready"} healthSummary={summary} />
   </div>;
 }

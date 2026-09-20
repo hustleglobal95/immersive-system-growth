@@ -66,6 +66,7 @@ const activeFiles=[
   "src/studio/GlbInspectorPanel.tsx",
   "src/studio/CinematicSystemsPanel.tsx",
   "src/studio/ProjectPanels.tsx",
+  "src/studio/DiscoverabilityPanel.tsx",
   "src/studio/StudioVaultPanel.tsx",
   "src/studio/LoopEnginePanel.tsx",
   "src/studio/ControlPlaneReview.tsx",

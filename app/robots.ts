@@ -1,34 +1,23 @@
 import type { MetadataRoute } from "next";
+import rawProject from "@/config/studio-project.json";
 import { siteUrl } from "@/src/lib/siteUrl";
+import { parseStudioProject } from "@/src/platform/studioSchema";
 
-/**
- * Only the client-facing routes are crawlable.
- *
- * This repository ships the Atelier Maris site alongside its own tooling -- the Studio, the
- * Director, the type vault, the lab and the design workbench. Those are internal surfaces that
- * happen to be routes; none of them should appear in a search result next to the client's work,
- * and several expose editor UI. They are disallowed here rather than left to chance.
- */
+const project=parseStudioProject(rawProject);
+const discoverability=project.discoverability;
+
 export default function robots(): MetadataRoute.Robots {
-  return {
-    rules: [
-      {
-        userAgent: "*",
-        allow: ["/site", "/work", "/about"],
-        disallow: [
-          "/design",
-          "/director",
-          "/forge",
-          "/heliot",
-          "/lab",
-          "/structure",
-          "/studio",
-          "/type-vault",
-          "/api/",
-        ],
-      },
-    ],
-    sitemap: `${siteUrl()}/sitemap.xml`,
-    host: siteUrl(),
-  };
+  const publicPaths=discoverability.publicPaths.length ? discoverability.publicPaths : ["/site"];
+  const privatePaths=discoverability.privatePaths;
+  const rules:MetadataRoute.Robots["rules"]=[
+    {userAgent:"*",allow:publicPaths,disallow:privatePaths},
+    discoverability.ai.allowSearchCrawlers
+      ? {userAgent:["OAI-SearchBot","ChatGPT-User"],allow:publicPaths,disallow:privatePaths}
+      : {userAgent:["OAI-SearchBot","ChatGPT-User"],disallow:"/"},
+    discoverability.ai.allowTrainingCrawlers
+      ? {userAgent:"GPTBot",allow:publicPaths,disallow:privatePaths}
+      : {userAgent:"GPTBot",disallow:"/"},
+  ];
+  const canonical=discoverability.canonicalBaseUrl || siteUrl();
+  return {rules,sitemap:`${canonical}/sitemap.xml`,host:canonical};
 }
