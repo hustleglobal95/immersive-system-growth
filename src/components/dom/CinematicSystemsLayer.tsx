@@ -9,6 +9,7 @@ import { svgSegment } from "@/src/lib/cinematic/diagrams";
 import { useExperienceStore } from "@/src/store/experienceStore";
 import { useCinematicStore } from "@/src/store/cinematicStore";
 import { CinematicShaderCanvas } from "@/src/components/dom/CinematicShaderCanvas";
+import { CursorRevealCanvas } from "@/src/components/dom/CursorRevealCanvas";
 
 const clamp01=(value:number)=>Math.max(0,Math.min(1,value));
 
@@ -19,7 +20,7 @@ export function CinematicSystemsLayer(){
   const base=experience.scenes[Math.min(activeScene,experience.scenes.length-1)],config=base?getCinematicScene(base.id):null;
   const local=base?clamp01((progress-base.range[0])/Math.max(1e-6,base.range[1]-base.range[0])):0;
   const composed=useMemo(()=>config?composeCinematicScene(config,{progress:local,pointer:{x:pointer.x,y:pointer.y,velocity:pointer.speed,trailEnergy:pointer.trailEnergy}}):null,[config,local,pointer.x,pointer.y,pointer.speed,pointer.trailEnergy]);
-  const gpuEligible=!!(base?.media?.kind==="image"&&config&&(config.spatial||config.reveal)&&quality!=="low"&&!reduced&&!shaderFailed);
+  const gpuEligible=!!(base?.media?.kind==="image"&&config&&(config.spatial||config.reveal)&&!config.cursorReveal&&quality!=="low"&&!reduced&&!shaderFailed);
 
   // Each scene compiles its own shader, so readiness resets when the scene changes. Adjusting
   // during render means the layer never paints one frame claiming the previous scene's shader
@@ -72,6 +73,9 @@ export function CinematicSystemsLayer(){
   return <div className="forge-cinematic-systems" aria-hidden="true" style={{position:"fixed",inset:0,zIndex:6,pointerEvents:"none",overflow:"hidden"}}>
     {gpuEligible&&base.media?.kind==="image"&&base.media.src&&<div style={{position:"absolute",inset:0,transform:`scale(${stackScale})`,transformOrigin:"50% 50%",willChange:"transform"}}>
       <CinematicShaderCanvas src={base.media.src} depthMap={config.spatial?.depthMap} normalMap={config.spatial?.normalMap} spatial={config.spatial} reveal={config.reveal} progress={composed?.reveal?.progress??local} pointerX={pointer.x} pointerY={pointer.y} scrollProgress={local} onReady={()=>setShaderReady(true)} onError={()=>{setShaderReady(false);setShaderFailed(true);}} />
+    </div>}
+    {base.media?.kind==="image"&&base.media.src&&config.cursorReveal&&!reduced&&<div style={{position:"absolute",inset:0,transform:`scale(${stackScale})`,transformOrigin:"50% 50%",willChange:"transform"}}>
+      <CursorRevealCanvas src={config.cursorReveal.src} config={config.cursorReveal} pointer={pointer} trail={trail} quality={quality} />
     </div>}
     <canvas ref={canvas} style={{position:"absolute",inset:0,width:"100%",height:"100%"}} />
     {composed?.stack&&<div style={{position:"absolute",inset:0,background:"#000",opacity:reduced?0:composed.stack.shade,pointerEvents:"none"}} />}
