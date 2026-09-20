@@ -36,7 +36,7 @@ export function CinematicSystemsLayer({contained=false}:{contained?:boolean}={})
 
   useEffect(()=>{
     if(!config||!composed)return;
-    const root=contained ? canvas.current?.parentElement : document;
+    const root=contained ? (canvas.current?.closest(".studio-preview__canvas") ?? canvas.current?.parentElement) : document;
     const panel=root?.querySelector<HTMLElement>(`[data-media-panel="${activeScene}"]`),media=panel?.querySelector<HTMLElement>("img,video");
     if(!media)return;
     const previous={transform:media.style.transform,maskImage:media.style.maskImage,webkitMaskImage:media.style.webkitMaskImage,filter:media.style.filter,opacity:media.style.opacity};
@@ -77,7 +77,7 @@ export function CinematicSystemsLayer({contained=false}:{contained?:boolean}={})
 
   if(!config||base?.media?.kind==="color")return null;
   const stackScale=composed?.stack?.scale??1;
-  return <div className="forge-cinematic-systems" data-contained={contained ? "true" : undefined} aria-hidden="true" style={{position:contained?"absolute":"fixed",inset:0,zIndex:6,pointerEvents:"none",overflow:"hidden"}}>
+  return <div className="forge-cinematic-systems" data-contained={contained ? "true" : undefined} aria-hidden="true" style={{position:contained?"absolute":"fixed",inset:0,zIndex:contained?2:6,pointerEvents:"none",overflow:"hidden"}}>
     {gpuEligible&&base.media?.kind==="image"&&base.media.src&&<div style={{position:"absolute",inset:0,transform:`scale(${stackScale})`,transformOrigin:"50% 50%",willChange:"transform"}}>
       <CinematicShaderCanvas src={base.media.src} targetSrc={targetSrc} depthMap={config.spatial?.depthMap} normalMap={config.spatial?.normalMap} spatial={config.spatial} reveal={config.reveal} warp={config.warp} refraction={config.refraction} sceneTransition={config.sceneTransition} transitionProgress={transition?.progress??0} progress={composed?.reveal?.progress??local} pointerX={pointer.x} pointerY={pointer.y} pointerVelocity={pointer.speed} scrollProgress={local} onReady={()=>setShaderReady(true)} onError={()=>{setShaderReady(false);setShaderFailed(true);}} />
     </div>}
