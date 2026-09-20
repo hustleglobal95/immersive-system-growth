@@ -47,6 +47,8 @@ test("New Project starts from isolated project state", async ({ page }) => {
       video:draft.assetManifest?.video?.length,
       graph:draft.interactionGraph?.id,
       cinematicScenes:draft.cinematicSystems?.scenes?.length,
+      experiencePath:draft.project?.experiencePath,
+      visualSystemsPath:draft.project?.visualSystemsPath,
       guideBrief:window.localStorage.getItem("forge-studio-guide-brief-v1"),
       shipped:window.localStorage.getItem("forge-studio-guide-shipped-project-v1"),
     };
@@ -59,6 +61,8 @@ test("New Project starts from isolated project state", async ({ page }) => {
     video:0,
     graph:"isolation-test-interactions",
     cinematicScenes:0,
+    experiencePath:"clients/isolation-test/experience.json",
+    visualSystemsPath:"clients/isolation-test/visual-systems.json",
     guideBrief:"",
     shipped:"",
   });
