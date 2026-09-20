@@ -28,7 +28,7 @@ export function evaluateHumanGates(input: {
   finalCutRequested?: boolean;
 }) {
   const approvals = input.approvals ?? {};
-  const brandUncertain = input.evidence.unknowns.some((item) => /brand truth|differentiator/i.test(item)) || input.evidence.confidence < 0.72;
+  const brandUncertain = input.evidence.unknowns.some((item) => /brand truth|differentiator/i.test(item)) || input.evidence.coverage < 0.72;
   const majorAssetSpend = input.assetGap.items.some((item) => !item.exists && (item.assetClass === "hero-critical" || item.assetClass === "signature-critical"));
   const lockedRevisions = input.decisions.decisions.filter((decision) => decision.status === "locked" && decision.supersedes);
   const gates: DirectorHumanGate[] = [
@@ -37,7 +37,7 @@ export function evaluateHumanGates(input: {
       label: "Confirm brand truth / brief interpretation",
       required: brandUncertain,
       satisfied: !brandUncertain || approvals.brandTruthConfirmed === true,
-      reason: brandUncertain ? "Evidence confidence or differentiation is insufficient for an automatic thesis lock." : "Brief evidence is sufficiently grounded for creative evaluation.",
+      reason: brandUncertain ? "Evidence coverage or differentiation is insufficient for advancing the thesis without human confirmation." : "Brief evidence is sufficiently grounded for creative evaluation.",
     },
     {
       id: "territory-lock",
@@ -69,7 +69,7 @@ export function evaluateHumanGates(input: {
     },
   ];
   const pending = gates.filter((gate) => gate.required && !gate.satisfied);
-  const creativeEligible = input.selectedEvaluation.recommendation === "LOCK";
+  const creativeEligible = input.selectedEvaluation.recommendation === "ADVANCE";
   return {
     gates,
     pending,
