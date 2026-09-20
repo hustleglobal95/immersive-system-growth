@@ -73,8 +73,8 @@ export function RefinePanel({ context, experience, setExperience, openAdvanced, 
         <label>Start FOV<input aria-label="Camera start FOV" type="number" min="15" max="90" step="1" value={scene.camera.from.fov} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,camera:{...current.camera,from:{...current.camera.from,fov:bounded(event.target.value,current.camera.from.fov,15,90)}}}))}/></label>
         <label>End FOV<input aria-label="Camera end FOV" type="number" min="15" max="90" step="1" value={scene.camera.to.fov} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,camera:{...current.camera,to:{...current.camera.to,fov:bounded(event.target.value,current.camera.to.fov,15,90)}}}))}/></label>
       </div>
-      <Vec3Fields label="Start position" ariaPrefix="Camera start position" value={scene.camera.from.position} onChange={(value)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,camera:{...current.camera,from:{...current.camera.from,position:value}}}))}/>
-      <Vec3Fields label="End position" ariaPrefix="Camera end position" value={scene.camera.to.position} onChange={(value)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,camera:{...current.camera,to:{...current.camera.to,position:value}}}))}/>
+      <Vec3Fields label="Start position" ariaPrefix="Camera start position" value={scene.camera.from.position} onChange={(value)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,camera:{...current.camera,from:{...current.camera.from,position:safeCameraPosition(value,current.camera.from.target,current.camera.from.position)}}}))}/>
+      <Vec3Fields label="End position" ariaPrefix="Camera end position" value={scene.camera.to.position} onChange={(value)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,camera:{...current.camera,to:{...current.camera.to,position:safeCameraPosition(value,current.camera.to.target,current.camera.to.position)}}}))}/>
       <Vec3Fields label="Start target" ariaPrefix="Camera start target" value={scene.camera.from.target} onChange={(value)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,camera:{...current.camera,from:{...current.camera.from,target:safeCameraTarget(value,current.camera.from.position,current.camera.from.target)}}}))}/>
       <Vec3Fields label="End target" ariaPrefix="Camera end target" value={scene.camera.to.target} onChange={(value)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,camera:{...current.camera,to:{...current.camera.to,target:safeCameraTarget(value,current.camera.to.position,current.camera.to.target)}}}))}/>
       <label className="studio-check"><input aria-label="Enable mobile camera override" type="checkbox" checked={!!scene.mobileCamera} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,mobileCamera:event.target.checked?structuredClone(current.camera):undefined}))}/> Mobile camera override</label>
@@ -195,6 +195,10 @@ function bounded(raw:string,fallback:number,min:number,max:number) {
 
 function safeCameraTarget(target:Vec3,position:Vec3,fallback:Vec3):Vec3 {
   return Math.hypot(...target.map((value,index)=>value-position[index]))>.001 ? target : fallback;
+}
+
+function safeCameraPosition(position:Vec3,target:Vec3,fallback:Vec3):Vec3 {
+  return Math.hypot(...position.map((value,index)=>value-target[index]))>.001 ? position : fallback;
 }
 
 export function ReviewSurface({ health, nextActions, proposal, onRun, onBuildScene, onBuild, onAssets, onTelemetry }: {
