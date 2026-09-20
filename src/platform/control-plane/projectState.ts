@@ -1,11 +1,13 @@
 import type { InteractionGraph } from "@/src/lib/interactionGraph";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig } from "@/src/types/experience";
+import type { CinematicSystemsManifest } from "@/src/lib/cinematic/schema";
 
 export interface ControlPlaneProjectState {
   experience:ExperienceConfig;
   assetManifest:AssetManifest;
   interactionGraph:InteractionGraph;
+  cinematicSystems?:CinematicSystemsManifest;
 }
 
 export function projectStateFingerprint(input:ControlPlaneProjectState) {
@@ -13,6 +15,7 @@ export function projectStateFingerprint(input:ControlPlaneProjectState) {
     experience:input.experience,
     assetManifest:input.assetManifest,
     interactionGraph:input.interactionGraph,
+    cinematicSystems:input.cinematicSystems ?? null,
   });
   return [
     hash32(value,0x811c9dc5),
