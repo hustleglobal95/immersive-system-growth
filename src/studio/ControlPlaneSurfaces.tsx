@@ -195,7 +195,7 @@ export function ShipSurface({ draft, health, onReview, onVault, onTelemetry }: {
       <output data-health={health.status}>{Math.round(health.score)}/100 · {health.status.toUpperCase()}</output>
     </header>
     <div className="production-ship-actions"><button type="button" onClick={onReview}>Project Health</button><button type="button" onClick={onVault}>Project Vault</button><button type="button" onClick={onTelemetry}>Telemetry</button></div>
-    <PublishPanel project={draft.project} setProject={draft.setProject} experience={draft.experience} assetManifest={draft.assetManifest} validationCount={draft.validation.length} healthReady={health.status==="ready"} healthSummary={summary} />
+    <PublishPanel project={draft.project} setProject={draft.setProject} experience={draft.experience} assetManifest={draft.assetManifest} cinematicSystems={draft.cinematicSystems} validationCount={draft.validation.length} healthReady={health.status==="ready"} healthSummary={summary} />
   </div>;
 }
 
