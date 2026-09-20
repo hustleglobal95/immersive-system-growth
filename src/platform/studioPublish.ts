@@ -44,17 +44,23 @@ export async function publishStudioDraft(input: StudioPublishInput, environment:
   };
   const ref = await request<{ object: { sha: string } }>(`${api}/git/ref/heads/${encodeURIComponent(base)}`);
   await request(`${api}/git/refs`, { method: "POST", body: JSON.stringify({ ref: `refs/heads/${branch}`, sha: ref.object.sha }) });
-  const projectPath = project.experiencePath.includes("/") ? project.experiencePath.replace(/[^/]+$/, "studio-project.json") : "studio-project.json";
+  const paths=studioPublishPaths(project);
   const files = [
     { path: project.experiencePath, value: experience },
-    { path: projectPath, value: project },
-    { path: "config/asset-manifest.json", value: assetManifest },
-    { path: "config/interaction-graph.json", value: interactionGraph },
-    ...(cinematicSystems ? [{ path: "config/cinematic-systems.json", value: cinematicSystems }] : []),
+    { path: paths.project, value: project },
+    { path: paths.assetManifest, value: assetManifest },
+    { path: paths.interactionGraph, value: interactionGraph },
+    ...(cinematicSystems ? [{ path: paths.cinematicSystems, value: cinematicSystems }] : []),
   ];
   for (const file of files) {
-    const current = await request<{ sha: string }>(`${api}/contents/${file.path}?ref=${encodeURIComponent(branch)}`);
-    await request(`${api}/contents/${file.path}`, { method: "PUT", body: JSON.stringify({ message: `Update ${file.path} from Forge Studio`, content: Buffer.from(JSON.stringify(file.value, null, 2) + "\n").toString("base64"), branch, sha: current.sha }) });
+    const current = await readExistingFileSha(`${api}/contents/${file.path}?ref=${encodeURIComponent(branch)}`, headers, fetcher);
+    const body:{message:string;content:string;branch:string;sha?:string}={
+      message:`Update ${file.path} from Forge Studio`,
+      content:Buffer.from(JSON.stringify(file.value, null, 2) + "\n").toString("base64"),
+      branch,
+    };
+    if(current) body.sha=current;
+    await request(`${api}/contents/${file.path}`, { method: "PUT", body: JSON.stringify(body) });
   }
   const title = cleanText(input.title, 100) || `Update ${project.name} from Forge Studio`;
   const summary = cleanText(input.summary, 600) || "Validated visual-authoring update from Forge Studio.";
@@ -64,4 +70,45 @@ export async function publishStudioDraft(input: StudioPublishInput, environment:
 
 function cleanText(value: string | undefined, max: number) {
   return (value ?? "").replace(/[<>\u0000-\u001f]/g, " ").trim().slice(0, max);
+}
+
+
+export function studioPublishPaths(project:StudioPublishProject) {
+  const experienceRoot=parentDirectory(project.experiencePath);
+  const projectRoot=projectConfigRoot(project);
+  return {
+    project:joinJsonPath(projectRoot,"studio-project.json"),
+    assetManifest:joinJsonPath(experienceRoot,"asset-manifest.json"),
+    interactionGraph:joinJsonPath(projectRoot,"interaction-graph.json"),
+    cinematicSystems:joinJsonPath(projectRoot,"cinematic-systems.json"),
+  };
+}
+
+type StudioPublishProject=ReturnType<typeof parseStudioProject>;
+
+function projectConfigRoot(project:StudioPublishProject) {
+  const candidates=[project.visualSystemsPath,project.creativeDirectionPath,project.experienceModesPath];
+  const client=candidates.find((value)=>value.startsWith("clients/"));
+  return parentDirectory(client ?? project.experiencePath);
+}
+
+function parentDirectory(value:string) {
+  const index=value.lastIndexOf("/");
+  return index>=0 ? value.slice(0,index) : "";
+}
+
+function joinJsonPath(root:string,name:string) {
+  return root ? `${root}/${name}` : name;
+}
+
+async function readExistingFileSha(
+  url:string,
+  headers:Record<string,string>,
+  fetcher:typeof fetch,
+) {
+  const response=await fetcher(url,{headers,cache:"no-store"});
+  if(response.status===404) return undefined;
+  if(!response.ok) throw new Error(`GitHub request failed (${response.status}): ${(await response.text()).slice(0,180)}`);
+  const body=await response.json() as {sha?:unknown};
+  return typeof body.sha==="string" ? body.sha : undefined;
 }
