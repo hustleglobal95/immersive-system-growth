@@ -38,6 +38,21 @@ const splatFragment=[
   "uniform sampler2D uTarget;uniform vec2 uPoint,uValue;uniform float uRadius,uStrength;",
   "void main(){vec2 delta=vUv-uPoint;float weight=exp(-dot(delta,delta)/max(.00001,uRadius*uRadius));vec4 base=texture(uTarget,vUv);outColor=base+vec4(uValue*weight*uStrength,0.,0.);}"
 ].join("\n");
+const divergenceFragment=[
+  "#version 300 es","precision highp float;","in vec2 vUv;out vec4 outColor;",
+  "uniform sampler2D uVelocity;uniform vec2 uTexel;",
+  "void main(){float L=texture(uVelocity,vUv-vec2(uTexel.x,0.)).x;float R=texture(uVelocity,vUv+vec2(uTexel.x,0.)).x;float B=texture(uVelocity,vUv-vec2(0.,uTexel.y)).y;float T=texture(uVelocity,vUv+vec2(0.,uTexel.y)).y;outColor=vec4(.5*(R-L+T-B),0.,0.,1.);}"
+].join("\n");
+const pressureFragment=[
+  "#version 300 es","precision highp float;","in vec2 vUv;out vec4 outColor;",
+  "uniform sampler2D uPressure,uDivergence;uniform vec2 uTexel;",
+  "void main(){float L=texture(uPressure,vUv-vec2(uTexel.x,0.)).r;float R=texture(uPressure,vUv+vec2(uTexel.x,0.)).r;float B=texture(uPressure,vUv-vec2(0.,uTexel.y)).r;float T=texture(uPressure,vUv+vec2(0.,uTexel.y)).r;float D=texture(uDivergence,vUv).r;outColor=vec4((L+R+B+T-D)*.25,0.,0.,1.);}"
+].join("\n");
+const gradientFragment=[
+  "#version 300 es","precision highp float;","in vec2 vUv;out vec4 outColor;",
+  "uniform sampler2D uPressure,uVelocity;uniform vec2 uTexel;",
+  "void main(){float L=texture(uPressure,vUv-vec2(uTexel.x,0.)).r;float R=texture(uPressure,vUv+vec2(uTexel.x,0.)).r;float B=texture(uPressure,vUv-vec2(0.,uTexel.y)).r;float T=texture(uPressure,vUv+vec2(0.,uTexel.y)).r;vec2 velocity=texture(uVelocity,vUv).xy-.5*vec2(R-L,T-B);outColor=vec4(velocity,0.,1.);}"
+].join("\n");
 const renderFragment=[
   "#version 300 es","precision highp float;","in vec2 vUv;out vec4 outColor;",
   "uniform sampler2D uImage,uMask;uniform vec2 uResolution,uImageSize,uPointer,uPosition;uniform float uMode,uRadius,uSoftness,uFit;",
@@ -106,19 +121,23 @@ export function CursorRevealCanvas(props:Props){
 
       const gl=element.getContext("webgl2",{alpha:true,antialias:false,premultipliedAlpha:true,powerPreference:"high-performance"});if(!gl){setFallback(true);return;}
       const vao=gl.createVertexArray();if(!vao)throw new Error("Unable to create cursor reveal VAO");gl.bindVertexArray(vao);
-      const trailProgram=makeProgram(gl,trailFragment),advectProgram=makeProgram(gl,advectFragment),splatProgram=makeProgram(gl,splatFragment),renderProgram=makeProgram(gl,renderFragment);
+      const trailProgram=makeProgram(gl,trailFragment),advectProgram=makeProgram(gl,advectFragment),splatProgram=makeProgram(gl,splatFragment),divergenceProgram=makeProgram(gl,divergenceFragment),pressureProgram=makeProgram(gl,pressureFragment),gradientProgram=makeProgram(gl,gradientFragment),renderProgram=makeProgram(gl,renderFragment);
       const imageTexture=gl.createTexture();if(!imageTexture)throw new Error("Unable to create cursor reveal image texture");
       gl.bindTexture(gl.TEXTURE_2D,imageTexture);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image);
-      const hasFloat=!!gl.getExtension("EXT_color_buffer_float"),fluid=props.config.mode==="fluid"&&hasFloat,aspect=Math.max(.4,Math.min(2.5,window.innerWidth/Math.max(1,window.innerHeight))),base=Math.max(64,Math.min(512,props.config.fluidResolution)),simWidth=aspect>=1?Math.min(512,Math.round(base*aspect)):base,simHeight=aspect>=1?base:Math.min(512,Math.round(base/aspect));
-      const trailField=makeDouble(gl,simWidth,simHeight,false),velocity=fluid?makeDouble(gl,simWidth,simHeight,true):null,dye=fluid?makeDouble(gl,simWidth,simHeight,true):null;
-      [trailField.read,trailField.write,velocity?.read,velocity?.write,dye?.read,dye?.write].filter(Boolean).forEach(value=>clearTarget(gl,value as Target));
+      const hasFloat=!!gl.getExtension("EXT_color_buffer_float")&&!!gl.getExtension("OES_texture_float_linear"),fluid=props.config.mode==="fluid"&&hasFloat,aspect=Math.max(.4,Math.min(2.5,window.innerWidth/Math.max(1,window.innerHeight))),base=Math.max(64,Math.min(512,props.config.fluidResolution)),simWidth=aspect>=1?Math.min(512,Math.round(base*aspect)):base,simHeight=aspect>=1?base:Math.min(512,Math.round(base/aspect));
+      const trailField=makeDouble(gl,simWidth,simHeight,false),velocity=fluid?makeDouble(gl,simWidth,simHeight,true):null,dye=fluid?makeDouble(gl,simWidth,simHeight,true):null,pressure=fluid?makeDouble(gl,simWidth,simHeight,true):null,divergence=fluid?makeTarget(gl,simWidth,simHeight,true):null;
+      [trailField.read,trailField.write,velocity?.read,velocity?.write,dye?.read,dye?.write,pressure?.read,pressure?.write,divergence].filter(Boolean).forEach(value=>clearTarget(gl,value as Target));
       const uniform=(program:WebGLProgram,name:string)=>gl.getUniformLocation(program,name),bind=(unit:number,texture:WebGLTexture,location:WebGLUniformLocation|null)=>{gl.activeTexture(gl.TEXTURE0+unit);gl.bindTexture(gl.TEXTURE_2D,texture);gl.uniform1i(location,unit);},draw=(program:WebGLProgram,target:Target|null,width:number,height:number,setup:()=>void)=>{gl.bindFramebuffer(gl.FRAMEBUFFER,target?.fbo??null);gl.viewport(0,0,width,height);gl.useProgram(program);gl.bindVertexArray(vao);setup();gl.drawArrays(gl.TRIANGLES,0,3);};
       unsubscribe=forgeTicker.subscribe((delta)=>{
         const current=values.current,config=current.config,pointer=current.pointer,idle=Math.max(0,performance.now()-pointer.lastMoveAt),recent=idle<90,allowed=shouldInjectCursorReveal(config,pointer),inject=allowed&&(config.mode==="lens"||recent||(pointer.pointerType==="touch"&&pointer.down)),brush=cursorRevealBrush(config,pointer.speed,pointer.pressure),p=point(pointer),dt=Math.min(.033,Math.max(.001,delta)),decay=cursorRevealIdleDecay(config,idle,dt),texel:[number,number]=[1/simWidth,1/simHeight];
         let maskTexture=trailField.read.texture,mode=config.mode==="lens"?0:1;
-        if(fluid&&velocity&&dye){
+        if(fluid&&velocity&&dye&&pressure&&divergence){
           draw(advectProgram,velocity.write,simWidth,simHeight,()=>{bind(0,velocity.read.texture,uniform(advectProgram,"uVelocity"));bind(1,velocity.read.texture,uniform(advectProgram,"uSource"));gl.uniform2f(uniform(advectProgram,"uTexel"),texel[0],texel[1]);gl.uniform1f(uniform(advectProgram,"uDt"),dt);gl.uniform1f(uniform(advectProgram,"uDissipation"),config.velocityDissipation);gl.uniform1f(uniform(advectProgram,"uVorticity"),config.curl);});velocity.swap();
           if(inject){draw(splatProgram,velocity.write,simWidth,simHeight,()=>{bind(0,velocity.read.texture,uniform(splatProgram,"uTarget"));gl.uniform2f(uniform(splatProgram,"uPoint"),p[0],p[1]);gl.uniform2f(uniform(splatProgram,"uValue"),pointer.velocityX*.012*config.splatForce,pointer.velocityY*.012*config.splatForce);gl.uniform1f(uniform(splatProgram,"uRadius"),brush.radius);gl.uniform1f(uniform(splatProgram,"uStrength"),config.motionStrength);});velocity.swap();}
+          draw(divergenceProgram,divergence,simWidth,simHeight,()=>{bind(0,velocity.read.texture,uniform(divergenceProgram,"uVelocity"));gl.uniform2f(uniform(divergenceProgram,"uTexel"),texel[0],texel[1]);});
+          clearTarget(gl,pressure.read);clearTarget(gl,pressure.write);
+          for(let iteration=0;iteration<config.pressureIterations;iteration++){draw(pressureProgram,pressure.write,simWidth,simHeight,()=>{bind(0,pressure.read.texture,uniform(pressureProgram,"uPressure"));bind(1,divergence.texture,uniform(pressureProgram,"uDivergence"));gl.uniform2f(uniform(pressureProgram,"uTexel"),texel[0],texel[1]);});pressure.swap();}
+          draw(gradientProgram,velocity.write,simWidth,simHeight,()=>{bind(0,pressure.read.texture,uniform(gradientProgram,"uPressure"));bind(1,velocity.read.texture,uniform(gradientProgram,"uVelocity"));gl.uniform2f(uniform(gradientProgram,"uTexel"),texel[0],texel[1]);});velocity.swap();
           draw(advectProgram,dye.write,simWidth,simHeight,()=>{bind(0,velocity.read.texture,uniform(advectProgram,"uVelocity"));bind(1,dye.read.texture,uniform(advectProgram,"uSource"));gl.uniform2f(uniform(advectProgram,"uTexel"),texel[0],texel[1]);gl.uniform1f(uniform(advectProgram,"uDt"),dt);gl.uniform1f(uniform(advectProgram,"uDissipation"),idle<=config.lingerMs?1:Math.min(1,config.dyeDissipation*decay));gl.uniform1f(uniform(advectProgram,"uVorticity"),0);});dye.swap();
           if(inject){draw(splatProgram,dye.write,simWidth,simHeight,()=>{bind(0,dye.read.texture,uniform(splatProgram,"uTarget"));gl.uniform2f(uniform(splatProgram,"uPoint"),p[0],p[1]);gl.uniform2f(uniform(splatProgram,"uValue"),1,0);gl.uniform1f(uniform(splatProgram,"uRadius"),brush.radius);gl.uniform1f(uniform(splatProgram,"uStrength"),brush.strength);});dye.swap();}
           maskTexture=dye.read.texture;mode=1;
@@ -129,7 +148,7 @@ export function CursorRevealCanvas(props:Props){
         gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.clearColor(0,0,0,0);gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.viewport(0,0,dw,dh);gl.clear(gl.COLOR_BUFFER_BIT);
         draw(renderProgram,null,dw,dh,()=>{bind(0,imageTexture,uniform(renderProgram,"uImage"));bind(1,maskTexture,uniform(renderProgram,"uMask"));gl.uniform2f(uniform(renderProgram,"uResolution"),dw,dh);gl.uniform2f(uniform(renderProgram,"uImageSize"),image.naturalWidth,image.naturalHeight);gl.uniform2f(uniform(renderProgram,"uPointer"),p[0],p[1]);gl.uniform2f(uniform(renderProgram,"uPosition"),config.position[0]/100,config.position[1]/100);gl.uniform1f(uniform(renderProgram,"uMode"),mode);gl.uniform1f(uniform(renderProgram,"uRadius"),brush.radius);gl.uniform1f(uniform(renderProgram,"uSoftness"),config.softness);gl.uniform1f(uniform(renderProgram,"uFit"),config.fit==="cover"?0:1);});
       });
-      cleanupFns.push(()=>{gl.deleteTexture(imageTexture);[trailProgram,advectProgram,splatProgram,renderProgram].forEach(value=>gl.deleteProgram(value));[trailField.read,trailField.write,velocity?.read,velocity?.write,dye?.read,dye?.write].filter(Boolean).forEach(value=>{const target=value as Target;gl.deleteFramebuffer(target.fbo);gl.deleteTexture(target.texture);});gl.deleteVertexArray(vao);gl.getExtension("WEBGL_lose_context")?.loseContext();});
+      cleanupFns.push(()=>{gl.deleteTexture(imageTexture);[trailProgram,advectProgram,splatProgram,divergenceProgram,pressureProgram,gradientProgram,renderProgram].forEach(value=>gl.deleteProgram(value));[trailField.read,trailField.write,velocity?.read,velocity?.write,dye?.read,dye?.write,pressure?.read,pressure?.write,divergence].filter(Boolean).forEach(value=>{const target=value as Target;gl.deleteFramebuffer(target.fbo);gl.deleteTexture(target.texture);});gl.deleteVertexArray(vao);gl.getExtension("WEBGL_lose_context")?.loseContext();});
       props.onReady?.();
     })().catch(error=>{if(disposed)return;const value=error instanceof Error?error:new Error(String(error));props.onError?.(value);if(!fallback)setFallback(true);});
     return()=>{disposed=true;unsubscribe?.();for(const cleanup of cleanupFns)cleanup();};
