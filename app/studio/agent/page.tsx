@@ -6,6 +6,8 @@ import "./creative-agent-hierarchy.css";
 import "./creative-agent-create.css";
 import { requireStudioPageAccess } from "@/src/platform/studioPageAccess";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Forge Creative Agent",
   description: "Creative direction, hierarchy intelligence, direct asset creation, strategy switching and reversible production moves inside Forge Studio.",
