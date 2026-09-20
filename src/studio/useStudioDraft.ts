@@ -124,7 +124,7 @@ export function useStudioDraft(
 
   const beginExperienceGroup = useCallback(() => {
     groupBase.current ??= experienceRef.current;
-  }, [initialCinematicSystems]);
+  }, []);
 
   const endExperienceGroup = useCallback(() => {
     const base = groupBase.current;
@@ -248,7 +248,7 @@ export function useStudioDraft(
     bundleRedoStack.current = [];
     setBundleHistory({ undo: 0, redo: 0 });
     setHistory({ undo: 0, redo: 0 });
-  }, []);
+  }, [initialCinematicSystems]);
 
   const reset = useCallback(() => {
     experienceRef.current = initialExperience;
