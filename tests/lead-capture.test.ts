@@ -69,6 +69,14 @@ test("a brochure grant is signed, expiring and not editable", () => {
   const [body, signature] = token.split(".");
   const tamperedSignature = `${signature.slice(0, -1)}${signature.endsWith("A") ? "B" : "A"}`;
   assert.equal(verifyBrochureToken(`${body}.${tamperedSignature}`, secret), null);
+  // A 32-byte HMAC has two unused low bits in the final base64url character. Build a
+  // non-canonical textual alias that decodes to the same bytes and require it to fail too.
+  const alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+  const canonicalIndex=alphabet.indexOf(signature.at(-1)!);
+  assert.equal(canonicalIndex & 3,0);
+  const aliasSignature=`${signature.slice(0,-1)}${alphabet[canonicalIndex+1]}`;
+  assert.deepEqual(Buffer.from(aliasSignature,"base64url"),Buffer.from(signature,"base64url"));
+  assert.equal(verifyBrochureToken(`${body}.${aliasSignature}`,secret),null);
   const forged = Buffer.from(JSON.stringify({ b: "private-brochure", e: Date.now() + 60_000 })).toString("base64url");
   assert.equal(verifyBrochureToken(`${forged}.${token.split(".")[1]}`, secret), null);
   assert.equal(verifyBrochureToken(signBrochureToken("x", secret, 1_000, Date.now() - 5_000), secret), null);
