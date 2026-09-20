@@ -1,10 +1,10 @@
 import type { DirectorTerritory } from "@/src/platform/directorSchema";
-import type { EvaluationReport } from "@/src/platform/director-intelligence/types";
+import type { EvaluationReport, PlanningDisposition } from "@/src/platform/director-intelligence/types";
 import { comparePairwiseScores } from "@/src/platform/director-intelligence/taste";
 import { defendTerritory } from "@/src/platform/director-intelligence/divergence";
 
 export interface DebateRound { round: string; notes: string[]; }
-export interface DebateResult { rounds: DebateRound[]; rankings: EvaluationReport[]; winnerId?: string; disposition: "LOCK" | "REVISE" | "RESEARCH REQUIRED" | "ASSET BLOCKED" | "REJECT ALL"; pairwise: Array<{ a: string; b: string; winner: string; reasons: string[] }>; defenses: ReturnType<typeof defendTerritory>[]; }
+export interface DebateResult { rounds: DebateRound[]; rankings: EvaluationReport[]; winnerId?: string; disposition: PlanningDisposition | "REJECT ALL"; pairwise: Array<{ a: string; b: string; winner: string; reasons: string[] }>; defenses: ReturnType<typeof defendTerritory>[]; }
 
 const priorities = ["brandAdherence", "conceptualClarity", "distinctiveness", "memorability", "portfolioNovelty", "commercialAlignment", "productionFeasibility"];
 
