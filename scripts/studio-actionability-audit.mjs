@@ -17,6 +17,7 @@ requireText("src/studio/ControlPlaneSurfaces.tsx",'aria-label="Camera path"',"Ca
 requireText("src/studio/ControlPlaneSurfaces.tsx",'ariaLabel="Environment exposure"',"Environment inspector must author environment state directly");
 requireText("src/studio/ControlPlaneSurfaces.tsx",'aria-label="Media transition"',"Media inspector must author presentation directly");
 requireText("src/studio/ControlPlaneSurfaces.tsx",'openAnimate(`rig:${node}:position`)',"Rig inspector must target simple Animate");
+requireText("src/studio/ControlPlaneSurfaces.tsx","Direct Build controls must never throw","Direct Build edits must fail closed on invalid intermediate values");
 requireText("src/studio/CinematicSystemsPanel.tsx","LIVE DRAFT","Visual Effects must identify itself as live draft authoring");
 requireText("src/studio/CinematicSystemsPanel.tsx","manifest:CinematicSystemsManifest","Visual Effects must be controlled by Studio project state");
 forbidText("src/studio/CinematicSystemsPanel.tsx",'rawCinematic from "@/config/cinematic-systems.json"',"Visual Effects must not maintain a private production manifest");
