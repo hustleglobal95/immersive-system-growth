@@ -93,7 +93,7 @@ test("Advanced Telemetry remains available without permanent navigation", async 
   await expect(page.getByLabel("Sample rate")).toBeVisible();
 });
 
-test("Advanced Visual effects authors cursor reveal modes without permanent navigation", async ({ page }) => {
+test("Advanced Visual effects authors cursor reveal and visual physics without permanent navigation", async ({ page }) => {
   await page.goto("/studio");
   await openAdvanced(page,/Visual effects/);
   await expect(page.getByRole("heading", { name: "Cinematic systems", level: 2 })).toBeVisible();
@@ -104,6 +104,15 @@ test("Advanced Visual effects authors cursor reveal modes without permanent navi
   await expect(page.getByLabel("Fluid resolution")).toBeVisible();
   await expect(page.getByLabel("Curl")).toBeVisible();
   await expect(page.getByLabel("Splat force")).toBeVisible();
+
+  await preset.selectOption("physics");
+  await expect(page.getByLabel("Warp mode")).toBeVisible();
+  await page.getByLabel("Warp mode").selectOption("shockwave");
+  await expect(page.getByLabel("Refraction mode")).toBeVisible();
+  await page.getByLabel("Refraction mode").selectOption("liquid");
+  await expect(page.getByLabel("Transition effect")).toBeVisible();
+  await page.getByLabel("Transition effect").selectOption("slats");
+  await expect(page.getByLabel("Transition target")).toBeVisible();
   await page.getByRole("button", { name: /Back to Studio/ }).click();
   await expect(page.getByRole("button", { name: "Build", exact: true })).toBeVisible();
 });
