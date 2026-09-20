@@ -647,6 +647,7 @@ export function ProductionStudioWorkbench() {
               <StudioLivePreview experience={animateOpen ? draft.experience : previewMode==="candidate" && candidateExperience ? candidateExperience : draft.experience} cinematicSystems={previewMode==="candidate" && candidateCinematicSystems ? candidateCinematicSystems : draft.cinematicSystems} active={sceneIndex} setActive={selectScene} progress={animateOpen ? animateGlobalProgress : undefined} />
             </div>
             {animateOpen && <AnimatePanel
+              key={animateTarget ?? "scene-motion"}
               experience={draft.experience}
               setExperience={draft.setExperience}
               active={sceneIndex}
