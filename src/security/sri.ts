@@ -90,7 +90,7 @@ function normalizeLocalPath(input:string|URL,origin?:string) {
 }
 
 async function digest(algorithm:"SHA-384"|"SHA-512",bytes:Uint8Array) {
-  const copy=bytes.slice().buffer;
+  const copy=bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength) as ArrayBuffer;
   const hash=await crypto.subtle.digest(algorithm,copy);
   return `${algorithm==="SHA-384"?"sha384":"sha512"}-${toBase64(new Uint8Array(hash))}`;
 }
