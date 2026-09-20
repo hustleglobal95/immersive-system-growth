@@ -13,6 +13,7 @@ export async function GET(request:Request) {
       role:identity.role,
       visualCriticConnected:Boolean(process.env.FORGE_VISUAL_CRITIC_URL),
       vaultConfigured:vault.configured,
+      remoteRunnerEnabled:process.env.FORGE_LOOP_REMOTE_ENABLED==="true" && Boolean(process.env.FORGE_GITHUB_REPOSITORY && process.env.FORGE_GITHUB_TOKEN),
       executableLoops:executableLoopDefinitions().map((loop)=>loop.id),
     });
     response.headers.set("cache-control","no-store");
