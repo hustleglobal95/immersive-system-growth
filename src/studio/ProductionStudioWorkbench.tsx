@@ -114,7 +114,7 @@ export function ProductionStudioWorkbench() {
     cinematicSystems:draft.cinematicSystems,
   }), [draft.assetManifest,draft.cinematicSystems,draft.experience,draft.interactionGraph]);
   const selectionLabel = selectionContext.label;
-  const guideBrief = useClientValue(() => readStored(STUDIO_GUIDE_BRIEF_KEY), "");
+  const guideBrief = useStoredValue(STUDIO_GUIDE_BRIEF_KEY);
   const mission = useMemo(() => {
     if(guideBrief.trim().length<12) return null;
     try {
@@ -320,6 +320,8 @@ export function ProductionStudioWorkbench() {
 
   const rejectCandidate = () => {
     const label=preparedProposal?.intent.raw;
+    writeStored(STUDIO_GUIDE_BRIEF_KEY,"");
+    writeStored(STUDIO_GUIDE_SHIP_KEY,"");
     setPreparedProposal(null);
     setCandidateExperience(null);
     setCandidateAssetManifest(null);
