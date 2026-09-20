@@ -86,6 +86,7 @@ export function LoopEnginePanel({
           experience:body.snapshot.experience,
           assetManifest:body.snapshot.assetManifest,
           interactionGraph:body.snapshot.interactionGraph,
+          cinematicSystems:body.snapshot.cinematicSystems,
         });
       })
       .catch(()=>{ if(!cancelled) setVaultSnapshot(null); });
@@ -160,7 +161,7 @@ export function LoopEnginePanel({
 
   const loadVerifiedCandidate=async()=>{
     setLoadingResult(true);
-    setMessage("Checking local Loop evidence…");
+    setMessage("Checking verified Loop evidence…");
     try {
       if(!proposalBound || !proposal) throw new Error("Start this verification from a Control Plane proposal so evidence can be bound to the selected target.");
       const response=await fetch(`/api/studio/loops/results?project=${encodeURIComponent(projectId)}&loop=${encodeURIComponent(selected.id)}&proposal=${encodeURIComponent(proposal.id)}`,{cache:"no-store"});
