@@ -6,7 +6,7 @@ import type { useStudioDraft } from "@/src/studio/useStudioDraft";
 type Draft = ReturnType<typeof useStudioDraft>;
 type VaultSummary = { id: string; name: string; status: "active" | "archived"; updatedAt: string; updatedBy: string; sceneCount: number; versionCount: number };
 type VaultVersion = { versionId: string; label: string; note: string; savedAt: string; savedBy: string };
-type VaultSnapshot = { experience: unknown; project: unknown; assetManifest: unknown; interactionGraph: unknown; versionId: string; label: string; savedAt: string; savedBy: string };
+type VaultSnapshot = { experience: unknown; project: unknown; assetManifest: unknown; interactionGraph: unknown; cinematicSystems?: unknown; versionId: string; label: string; savedAt: string; savedBy: string };
 type VaultIdentity = { id: string; name: string; role: "reviewer" | "designer" | "director" | "developer" | "owner" };
 type VaultEvent = { id: string; at: string; actor: string; role: string; action: string; detail: string };
 
@@ -87,7 +87,7 @@ export function StudioVaultPanel({ draft, onClose }: { draft: Draft; onClose: ()
         body: JSON.stringify({
           label,
           note,
-          draft: { experience: draft.experience, project: draft.project, assetManifest: draft.assetManifest, interactionGraph: draft.interactionGraph },
+          draft: { experience: draft.experience, project: draft.project, assetManifest: draft.assetManifest, interactionGraph: draft.interactionGraph, cinematicSystems: draft.cinematicSystems },
         }),
       });
       const data = await response.json() as { ok?: boolean; error?: string; entry?: VaultVersion };
