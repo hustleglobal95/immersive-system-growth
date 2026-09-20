@@ -275,6 +275,11 @@
 
 
 /* Actionable Animate surface */
+.production-stage--animate{overflow:auto;overscroll-behavior:contain}
+.production-stage--animate .production-stage-head{position:sticky;top:0;z-index:8;flex:0 0 54px;background:#070809}
+.production-stage--animate .production-runtime{flex:0 0 390px;min-height:320px}
+.production-stage--animate .production-command{flex:0 0 42px}
+
 .production-stage-actions button[aria-pressed="true"]{border-color:#f4774d66;background:#f4774d16;color:#ffd2c3}
 .production-animate-panel{margin-top:10px;padding:14px;border:1px solid var(--ps-line);border-radius:12px;background:#0c0e0f;display:grid;gap:12px}
 .production-animate-panel__head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
