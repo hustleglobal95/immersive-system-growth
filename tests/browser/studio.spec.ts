@@ -117,9 +117,9 @@ test("Build camera inspector directly edits shots and hands off to targeted Anim
   const tree=page.locator(".production-tree");
   await tree.getByRole("button", { name: /Camera/ }).first().click();
 
-  await expect(page.getByLabel("Camera path")).toBeVisible();
-  await page.getByLabel("Camera path").selectOption("orbit");
-  await expect(page.getByLabel("Camera path")).toHaveValue("orbit");
+  await expect(page.getByLabel("Camera path", { exact: true })).toBeVisible();
+  await page.getByLabel("Camera path", { exact: true }).selectOption("orbit");
+  await expect(page.getByLabel("Camera path", { exact: true })).toHaveValue("orbit");
   await page.getByLabel("Camera start FOV").fill("47");
   await expect(page.getByLabel("Camera start FOV")).toHaveValue("47");
 
