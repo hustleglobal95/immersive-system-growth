@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from
 import type { ExperienceConfig } from "@/src/types/experience";
 import type { AssetManifest } from "@/src/types/assets";
 import type { CinematicSystemsManifest } from "@/src/lib/cinematic/schema";
+import type { InteractionGraph } from "@/src/lib/interactionGraph";
 import { contentSourceSchema, type ContentSource, type StudioProject } from "@/src/platform/studioSchema";
 import rawForgeProject from "@/config/forge-project.json";
 import { parseForgeProject } from "@/src/platform/forgeProjectSchema";
@@ -102,7 +103,7 @@ export function IntegrationsPanel({ project, setProject }: Pick<StudioPanelProps
   );
 }
 
-export function PublishPanel({ project, setProject, experience, assetManifest, cinematicSystems, validationCount = 0, healthReady = true, healthSummary = "" }: Pick<StudioPanelProps, "project" | "setProject" | "experience" | "assetManifest" | "cinematicSystems"> & { validationCount?: number; healthReady?: boolean; healthSummary?: string }) {
+export function PublishPanel({ project, setProject, experience, assetManifest, interactionGraph, cinematicSystems, validationCount = 0, healthReady = true, healthSummary = "" }: Pick<StudioPanelProps, "project" | "setProject" | "experience" | "assetManifest" | "interactionGraph" | "cinematicSystems"> & { validationCount?: number; healthReady?: boolean; healthSummary?: string }) {
   const [title, setTitle] = useState(`Update ${project.name} experience`);
   const [summary, setSummary] = useState("Studio-authored camera, material, transition and content improvements ready for review.");
   const [result, setResult] = useState<{ message: string; url?: string } | null>(null);
@@ -130,7 +131,7 @@ export function PublishPanel({ project, setProject, experience, assetManifest, c
   const publish = async () => {
     setPublishing(true); setResult({ message: "Creating a protected review branch…" });
     try {
-      const response = await fetch("/api/studio/publish", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ experience, project, assetManifest, cinematicSystems, title, summary }) });
+      const response = await fetch("/api/studio/publish", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ experience, project, assetManifest, interactionGraph, cinematicSystems, title, summary }) });
       const body = await response.json() as { ok?: boolean; error?: string; url?: string; number?: number };
       if (!response.ok || !body.ok) throw new Error(body.error ?? "Publishing failed");
       writeStored(STUDIO_GUIDE_SHIP_KEY, project.id);
@@ -296,5 +297,6 @@ interface StudioPanelProps {
   project: StudioProject;
   setProject: Dispatch<SetStateAction<StudioProject>>;
   assetManifest: AssetManifest;
+  interactionGraph: InteractionGraph;
   cinematicSystems?: CinematicSystemsManifest;
 }
