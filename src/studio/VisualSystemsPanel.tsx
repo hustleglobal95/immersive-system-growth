@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, type Dispatch, type SetStateAction } from "react";
 import rawVisualSystems from "@/config/visual-systems.json";
 import {
   parseVisualSystems,
@@ -11,15 +11,25 @@ import {
 import { useExperienceStore } from "@/src/store/experienceStore";
 import { downloadJson } from "@/src/studio/useStudioDraft";
 import { CinematicSystemsPanel } from "@/src/studio/CinematicSystemsPanel";
+import type { CinematicSystemsManifest } from "@/src/lib/cinematic/schema";
+import type { ExperienceConfig } from "@/src/types/experience";
 import { ExperienceModesPanel } from "@/src/studio/ExperienceModesPanel";
 
 const defaults = parseVisualSystems(rawVisualSystems);
 
-export function VisualSystemsPanel() {
+export function VisualSystemsPanel({
+  experience,
+  cinematicSystems,
+  setCinematicSystems,
+}:{
+  experience:ExperienceConfig;
+  cinematicSystems:CinematicSystemsManifest;
+  setCinematicSystems:Dispatch<SetStateAction<CinematicSystemsManifest>>;
+}) {
   return <>
     <VisualSystemsCorePanel />
     <ExperienceModesPanel />
-    <CinematicSystemsPanel />
+    <CinematicSystemsPanel manifest={cinematicSystems} setManifest={setCinematicSystems} experience={experience} />
   </>;
 }
 
