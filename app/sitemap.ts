@@ -7,7 +7,7 @@ import { parseStudioProject } from "@/src/platform/studioSchema";
 const studioProject=parseStudioProject(rawProject);
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base=siteUrl();
+  const base=studioProject.discoverability.canonicalBaseUrl || siteUrl();
   const now=new Date();
   const publicPaths=new Set(studioProject.discoverability.publicPaths);
   const staticEntries=[
