@@ -1,3 +1,4 @@
+import { requireStudioRole, studioAccessErrorResponse } from "@/src/platform/studioAccess";
 import { NextResponse } from "next/server";
 
 export const revalidate = 86400;
@@ -16,7 +17,8 @@ interface FontsourceFont {
   type: string;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  try { await requireStudioRole(request, "reviewer"); } catch (error) { return studioAccessErrorResponse(error) ?? NextResponse.json({ error: "Type Vault access failed" }, { status: 500 }); }
   try {
     // Bounded, per the contract: a remote endpoint gets a timeout, a redirect refusal and a
     // size ceiling. Without them a slow or hostile response holds this route open indefinitely.
