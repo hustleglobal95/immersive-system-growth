@@ -18,5 +18,6 @@ export default function robots(): MetadataRoute.Robots {
       ? {userAgent:"GPTBot",allow:publicPaths,disallow:privatePaths}
       : {userAgent:"GPTBot",disallow:"/"},
   ];
-  return {rules,sitemap:`${siteUrl()}/sitemap.xml`,host:siteUrl()};
+  const canonical=discoverability.canonicalBaseUrl || siteUrl();
+  return {rules,sitemap:`${canonical}/sitemap.xml`,host:canonical};
 }
