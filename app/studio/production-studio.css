@@ -321,3 +321,16 @@
 .production-animate-notice{margin:0;padding:8px 10px;border:1px solid #7fd7b122;border-radius:8px;background:#7fd7b108;color:#9ed9ba;font-size:7px}
 @media (max-width:1080px){.production-animate-panel__grid{grid-template-columns:1fr 1fr}.production-animate-card--preview{grid-column:1/-1}.production-animate-editor{grid-template-columns:1fr}}
 @media (max-width:700px){.production-animate-panel__grid{grid-template-columns:1fr}.production-animate-card--preview{grid-column:auto}.production-animate-time-row,.production-animate-values{grid-template-columns:1fr}.production-animate-preview-points{grid-template-columns:1fr 1fr 1fr}}
+
+
+/* Direct Build authoring */
+.production-quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.production-quick-grid--colors{grid-template-columns:repeat(2,minmax(0,1fr))}
+.production-vector-fields{margin:9px 0;padding:8px;border:1px solid #ffffff0d;border-radius:8px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.production-vector-fields--two{grid-template-columns:repeat(2,1fr)}
+.production-vector-fields legend{padding:0 4px;color:#8f9295;font-size:7px;letter-spacing:.08em}
+.production-vector-fields label{margin:0!important;gap:3px!important}
+.production-vector-fields input{min-width:0}
+.production-section .studio-check{display:flex;grid-template-columns:none;align-items:center;gap:7px}
+.production-section .studio-check input{width:auto!important}
+@media(max-width:600px){.production-quick-grid,.production-quick-grid--colors,.production-vector-fields{grid-template-columns:1fr}.production-vector-fields--two{grid-template-columns:1fr 1fr}}
