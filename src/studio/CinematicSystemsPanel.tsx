@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
+import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import { parseCinematicSystems, type CinematicSceneConfig, type CinematicSystemsManifest } from "@/src/lib/cinematic/schema";
 import { cinematicPresets } from "@/src/lib/cinematic/presets";
 import { cinematicSystems as productionCinematicSystems } from "@/src/lib/cinematic/config";
@@ -20,15 +20,10 @@ export function CinematicSystemsPanel({
   onSelectScene?:(index:number)=>void;
 }){
   const sceneIds=experience.scenes.map((scene)=>scene.id);
-  const [selected,setSelected]=useState(experience.scenes[activeScene]?.id??sceneIds[0]??"");
+  const activeId=experience.scenes[activeScene]?.id??sceneIds[0]??"";
+  const [localSelected,setLocalSelected]=useState(activeId);
   const [validationMessage,setValidationMessage]=useState("");
-  useEffect(()=>{
-    const activeId=experience.scenes[activeScene]?.id;
-    if(activeId && activeId!==selected) setSelected(activeId);
-  },[activeScene,experience.scenes,selected]);
-  useEffect(()=>{
-    if(selected && !sceneIds.includes(selected)) setSelected(sceneIds[0]??"");
-  },[sceneIds,selected]);
+  const selected=onSelectScene ? activeId : (sceneIds.includes(localSelected)?localSelected:sceneIds[0]??"");
   const scene=useMemo(()=>manifest.scenes.find(item=>item.id===selected)??null,[manifest,selected]);
   const update=(next:CinematicSceneConfig)=>setManifest(current=>{
     const candidate={...current,scenes:[...current.scenes.filter(item=>item.id!==selected),next]};
@@ -56,7 +51,7 @@ export function CinematicSystemsPanel({
     <header className="studio-card__head"><div><span>CINEMATIC AUTHORING · LIVE DRAFT</span><h2 id="cinematic-systems-heading">Visual Effects</h2></div><div className="visual-system-editor__actions"><output data-status="live">LIVE</output><button type="button" onClick={()=>downloadJson("cinematic-systems.json",manifest)}>Download backup</button><button type="button" onClick={()=>{const base=productionCinematicSystems.scenes.find((item)=>item.id===selected);setManifest((current)=>parseCinematicSystems({...current,scenes:[...current.scenes.filter((item)=>item.id!==selected),...(base?[base]:[])]}));}}>Reset scene</button></div></header>
     <p>Every change below writes directly to the current Studio draft and the live production compositor. Download is only an optional backup.</p>
     <div className="visual-system-editor__fields">
-      <label>Scene<select aria-label="Visual Effects scene" value={selected} onChange={event=>{const id=event.target.value;setSelected(id);const index=experience.scenes.findIndex((item)=>item.id===id);if(index>=0)onSelectScene?.(index);}}>{experience.scenes.map((item)=><option key={item.id} value={item.id}>{item.label}</option>)}</select></label>
+      <label>Scene<select aria-label="Visual Effects scene" value={selected} onChange={event=>{const id=event.target.value;const index=experience.scenes.findIndex((item)=>item.id===id);if(onSelectScene&&index>=0)onSelectScene(index);else setLocalSelected(id);}}>{experience.scenes.map((item)=><option key={item.id} value={item.id}>{item.label}</option>)}</select></label>
       <label>Preset<select defaultValue="" onChange={event=>{const value=event.target.value as "threshold"|"technical"|"editorial"|"material"|"cursor"|"warp"|"refract"|"transition"|"physics"|"";if(value)apply(value);event.currentTarget.value="";}}><option value="">Apply preset…</option><option value="threshold">Architectural Threshold</option><option value="technical">Technical Reveal</option><option value="editorial">Editorial Transition</option><option value="material">Luxury Material</option><option value="cursor">Cursor Reveal</option><option value="warp">Warp Surface</option><option value="refract">Refractive Surface</option><option value="transition">Shader Transition</option><option value="physics">Visual Physics Stack</option></select></label>
       <label className="studio-check"><input type="checkbox" checked={!!scene?.stack} onChange={event=>{const next=ensure();update({...next,stack:event.target.checked?(next.stack??{enabled:true,scaleTo:.9,darkenTo:.55,depth:80,overlap:.22,pin:true}):undefined});}}/> Stack engine</label>
       <label className="studio-check"><input type="checkbox" checked={!!scene?.reveal} onChange={event=>{const next=ensure();update({...next,reveal:event.target.checked?(next.reveal??{effect:"liquid",direction:"right",softness:.14,intensity:1,pointerInfluence:.5,trailInfluence:.5,edgeColor:"#f97316",edgeWidth:.01,seed:47,range:[0,1]}):undefined});}}/> Reveal engine</label>
