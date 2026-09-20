@@ -234,7 +234,7 @@ float transitionMask(vec2 uv,float depth){
     float n=hash21(floor(uv*vec2(420.,260.))+uTransitionSeed);
     return smoothstep(n-s,n+s,t);
   }
-  return smoothstep(t-s,t+s,1.-depth);
+  return smoothstep((1.-depth)-s,(1.-depth)+s,t);
 }
 
 void main(){
