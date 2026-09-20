@@ -160,7 +160,7 @@ export function InteractionGraphController() {
       dispatch({
         type: "key",
         target: interactionTarget(event.target),
-        name: cleanToken(event.code),
+        name: event.code.slice(0, 80),
         payload: {
           key: event.key.slice(0, 80),
           code: event.code.slice(0, 80),
