@@ -105,7 +105,7 @@ export const studioActionabilityContracts:readonly StudioActionabilityContract[]
     mode:"author",
     source:"src/studio/AssetBankPanel.tsx",
     evidence:["setExperience","setAssetManifest","applyKit"],
-    browserEvidence:"asset bank kit replacement requires review, blocks incompatible interactions and supports undo",
+    browserEvidence:"kit replacement requires review, blocks incompatible interactions and supports undo",
   },
   {
     id:"advanced.glb-inspector",
