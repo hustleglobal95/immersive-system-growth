@@ -43,6 +43,7 @@ import { ControlPlaneReview } from "@/src/studio/ControlPlaneReview";
 import { ContextualDirection, RefinePanel, ReviewSurface, ShipSurface, type AdvancedWorkspaceName } from "@/src/studio/ControlPlaneSurfaces";
 import { OperatorMissionControl } from "@/src/studio/OperatorMissionControl";
 import type { AssetManifest } from "@/src/types/assets";
+import type { CinematicSystemsManifest } from "@/src/lib/cinematic/schema";
 import type { ExperienceConfig, SceneDefinition } from "@/src/types/experience";
 
 const initialExperience = parseExperience(rawExperience);
@@ -83,6 +84,7 @@ export function ProductionStudioWorkbench() {
   const [candidateExperience, setCandidateExperience] = useState<ExperienceConfig | null>(null);
   const [candidateAssetManifest, setCandidateAssetManifest] = useState<AssetManifest | null>(null);
   const [candidateInteractionGraph, setCandidateInteractionGraph] = useState<typeof initialGraph | null>(null);
+  const [candidateCinematicSystems, setCandidateCinematicSystems] = useState<CinematicSystemsManifest | null>(null);
   const [previewMode, setPreviewMode] = useState<"current"|"candidate">("current");
   const importRef = useRef<HTMLInputElement>(null);
 
@@ -108,7 +110,8 @@ export function ProductionStudioWorkbench() {
     experience:draft.experience,
     assetManifest:draft.assetManifest,
     interactionGraph:draft.interactionGraph,
-  }), [draft.assetManifest,draft.experience,draft.interactionGraph]);
+    cinematicSystems:draft.cinematicSystems,
+  }), [draft.assetManifest,draft.cinematicSystems,draft.experience,draft.interactionGraph]);
   const selectionLabel = selectionContext.label;
   const guideBrief = useClientValue(() => readStored(STUDIO_GUIDE_BRIEF_KEY), "");
   const mission = useMemo(() => {
@@ -224,6 +227,7 @@ export function ProductionStudioWorkbench() {
     setCandidateExperience(null);
     setCandidateAssetManifest(null);
     setCandidateInteractionGraph(null);
+    setCandidateCinematicSystems(null);
     setPreviewMode("current");
 
     if(dispatch.type==="select") {
@@ -294,11 +298,13 @@ export function ProductionStudioWorkbench() {
       experience:candidateExperience,
       assetManifest:candidateAssetManifest ?? draft.assetManifest,
       interactionGraph:candidateInteractionGraph ?? draft.interactionGraph,
+      cinematicSystems:candidateCinematicSystems ?? draft.cinematicSystems,
     });
     setPreparedProposal({...preparedProposal,state:"accepted"});
     setCandidateExperience(null);
     setCandidateAssetManifest(null);
     setCandidateInteractionGraph(null);
+    setCandidateCinematicSystems(null);
     setPreviewMode("current");
     setNotice(`${preparedProposal.intent.raw} accepted into the working draft. The full project bundle remains atomically reversible; Vault/production state is unchanged.`);
   };
@@ -309,6 +315,7 @@ export function ProductionStudioWorkbench() {
     setCandidateExperience(null);
     setCandidateAssetManifest(null);
     setCandidateInteractionGraph(null);
+    setCandidateCinematicSystems(null);
     setPreviewMode("current");
     if(label) setNotice(`${label} rejected. Working project unchanged.`);
   };
@@ -334,6 +341,7 @@ export function ProductionStudioWorkbench() {
       setCandidateExperience(candidate.experience);
       setCandidateAssetManifest(candidate.assetManifest);
       setCandidateInteractionGraph(candidate.interactionGraph);
+      setCandidateCinematicSystems(candidate.cinematicSystems ?? draft.cinematicSystems);
       setPreviewMode("candidate");
       setNotice(`${candidate.loopId} returned a verified winning candidate. Compare it before accepting.`);
     } catch(error) {
@@ -627,7 +635,7 @@ export function ProductionStudioWorkbench() {
               <div><button type="button" className="primary" onClick={() => runCapability(nextActions[0].capability,nextActions[0].capability.label,"next-action")}>Do it</button><button type="button" onClick={() => setGuidedOpen(true)}>Guided path · {workflow.completed}/6</button></div>
             </section>}
             <div className="production-runtime">
-              <StudioLivePreview experience={animateOpen ? draft.experience : previewMode==="candidate" && candidateExperience ? candidateExperience : draft.experience} active={sceneIndex} setActive={selectScene} progress={animateOpen ? animateGlobalProgress : undefined} />
+              <StudioLivePreview experience={animateOpen ? draft.experience : previewMode==="candidate" && candidateExperience ? candidateExperience : draft.experience} cinematicSystems={previewMode==="candidate" && candidateCinematicSystems ? candidateCinematicSystems : draft.cinematicSystems} active={sceneIndex} setActive={selectScene} progress={animateOpen ? animateGlobalProgress : undefined} />
             </div>
             {animateOpen && <AnimatePanel
               experience={draft.experience}
@@ -723,7 +731,7 @@ function AdvancedWorkspace({ workspace, draft, activeScene, setActiveScene, onCl
     {workspace === "Motion" ? <SequencerEditor experience={draft.experience} setExperience={draft.setExperience} active={activeScene} setActive={setActiveScene} beginGroup={draft.beginExperienceGroup} endGroup={draft.endExperienceGroup} undo={draft.undoExperience} redo={draft.redoExperience} canUndo={draft.canUndoExperience} canRedo={draft.canRedoExperience} /> : null}
     {workspace === "Interact" ? <InteractionGraphEditor graph={draft.interactionGraph} setGraph={draft.setInteractionGraph} /> : null}
     {workspace === "Assets" ? <div className="production-advanced-stack"><AssetManager setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} active={activeScene} /><AssetBankPanel experience={draft.experience} setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} interactionGraph={draft.interactionGraph} undo={draft.undoExperience} canUndo={draft.canUndoExperience} /><GlbInspectorPanel experience={draft.experience} setExperience={draft.setExperience} /></div> : null}
-    {workspace === "Visuals" ? <CinematicSystemsPanel /> : null}
+    {workspace === "Visuals" ? <CinematicSystemsPanel manifest={draft.cinematicSystems} setManifest={draft.setCinematicSystems} experience={draft.experience} activeScene={activeScene} onSelectScene={setActiveScene} /> : null}
     {workspace === "Telemetry" ? <TelemetryPanel project={draft.project} setProject={draft.setProject} /> : null}
   </div>;
 }
