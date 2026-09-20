@@ -24,6 +24,8 @@ forbidText("src/studio/CinematicSystemsPanel.tsx",'rawExperience from "@/config/
 requireText("src/studio/useStudioDraft.ts","cinematicSystems","Studio draft must persist cinematic systems");
 requireText("src/studio/StudioLivePreview.tsx","CinematicSystemsLayer contained","Studio preview must render the production cinematic compositor");
 requireText("src/platform/studioPublish.ts",'path: "config/cinematic-systems.json"',"Publishing must carry cinematic systems");
+requireText("src/platform/studioPublish.ts",'path: "config/interaction-graph.json"',"Publishing must carry authored interactions");
+requireText("src/studio/ProjectPanels.tsx","interactionGraph","PublishPanel must send authored interactions");
 requireText("src/platform/studioVault.ts","cinematicSystems","Project Vault must carry cinematic systems");
 requireText("src/platform/control-plane/projectState.ts","cinematicSystems","Proposal fingerprints must include cinematic systems");
 requireText("src/studio/LoopEnginePanel.tsx",'fetch("/api/studio/loops/run"',"Loop Engine must dispatch through Studio instead of requiring a terminal");
