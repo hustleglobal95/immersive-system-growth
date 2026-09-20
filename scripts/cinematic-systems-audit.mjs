@@ -21,6 +21,9 @@ for(const [index,scene] of manifest.scenes.entries()){
     if(cost==="heavy")console.warn(`WARN ${scene.id}: visual physics stack is heavy; verify mobile GPU frame time and fallback behavior.`);
     if(scene.sceneTransition?.effect==="depth"&&!scene.spatial?.depthMap)console.warn(`WARN ${scene.id}: depth transition has no authored depth map and will use the neutral fallback texture.`);
   }
+  if(scene.warp&&scene.refraction&&scene.sceneTransition)console.warn(`WARN ${scene.id}: full visual-physics stack is enabled; verify GPU time on target devices.`);
+  if(scene.sceneTransition?.effect==="pixel"&&scene.sceneTransition.blockSize<8)console.warn(`WARN ${scene.id}: pixel transition block size ${scene.sceneTransition.blockSize} is expensive at full viewport scale.`);
+  if(scene.refraction?.dispersion>0.03)console.warn(`WARN ${scene.id}: refraction dispersion ${scene.refraction.dispersion} is aggressive; verify edge fringing.`);
   if(scene.spatial){
     if(scene.spatial.planes.length>12)errors.push(`${scene.id}: too many spatial planes`);
     if(scene.spatial.depthStrength>80)console.warn(`WARN ${scene.id}: spatial depth strength ${scene.spatial.depthStrength} is aggressive; verify mobile crop.`);
