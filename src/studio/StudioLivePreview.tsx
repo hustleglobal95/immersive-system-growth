@@ -3,12 +3,16 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { ExperienceConfigProvider } from "@/src/components/runtime/ExperienceConfigContext";
+import { CinematicSystemsProvider } from "@/src/components/runtime/CinematicSystemsContext";
 import { StudioEditorProvider, type StudioGizmoState } from "@/src/components/runtime/StudioEditorContext";
 import { CinematicMedia } from "@/src/components/dom/CinematicMedia";
 import { CinematicTransitionLayers } from "@/src/components/dom/CinematicTransitionLayers";
+import { CinematicSystemsLayer } from "@/src/components/dom/CinematicSystemsLayer";
 import { getSceneIndex } from "@/src/lib/experience";
 import { useExperienceStore } from "@/src/store/experienceStore";
 import type { ExperienceConfig, QualityMode } from "@/src/types/experience";
+import type { CinematicSystemsManifest } from "@/src/lib/cinematic/schema";
+import { cinematicSystems as productionCinematicSystems } from "@/src/lib/cinematic/config";
 import { sampleExperience } from "@/src/lib/sampleExperience";
 import type { CSSProperties } from "react";
 
@@ -28,6 +32,7 @@ export function StudioLivePreview({
   gizmo = null,
   reviewMode = false,
   reviewViewport,
+  cinematicSystems = productionCinematicSystems,
 }: {
   experience: ExperienceConfig;
   active: number;
@@ -37,6 +42,7 @@ export function StudioLivePreview({
   gizmo?: StudioGizmoState | null;
   reviewMode?: boolean;
   reviewViewport?: "desktop" | "mobile";
+  cinematicSystems?: CinematicSystemsManifest;
 }) {
   const [internalProgress, setInternalProgress] = useState(() => midpoint(experience.scenes[active].range));
   const progress = controlledProgress ?? internalProgress;
@@ -144,7 +150,7 @@ export function StudioLivePreview({
       </div>}
       <div className="studio-preview__viewport" data-viewport={effectiveViewport} data-review-mode={reviewMode ? "true" : "false"}>
         <div className="studio-preview__canvas">
-          <ExperienceConfigProvider value={experience}><StudioEditorProvider value={gizmo}><SceneCanvas /><CinematicMedia /><CinematicTransitionLayers /></StudioEditorProvider></ExperienceConfigProvider>
+          <ExperienceConfigProvider value={experience}><CinematicSystemsProvider value={cinematicSystems}><StudioEditorProvider value={gizmo}><SceneCanvas /><CinematicMedia /><CinematicTransitionLayers /><CinematicSystemsLayer contained /></StudioEditorProvider></CinematicSystemsProvider></ExperienceConfigProvider>
           <div className="studio-preview__copy" style={{ opacity: sampled.motion.copy.opacity, translate: `0 ${sampled.motion.copy.y}px`, filter: `blur(${sampled.motion.copy.blur}px)` } as CSSProperties}>
             <span>{experience.scenes[active].copy.eyebrow}</span>
             <strong>{experience.scenes[active].copy.headline}</strong>
