@@ -21,6 +21,7 @@ import { AssetBankPanel } from "@/src/studio/AssetBankPanel";
 import { GlbInspectorPanel } from "@/src/studio/GlbInspectorPanel";
 import { TelemetryPanel } from "@/src/studio/ProjectPanels";
 import { CinematicSystemsPanel } from "@/src/studio/CinematicSystemsPanel";
+import { DiscoverabilityPanel } from "@/src/studio/DiscoverabilityPanel";
 import { AnimatePanel } from "@/src/studio/AnimatePanel";
 import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
 import { STUDIO_GUIDE_BRIEF_KEY, STUDIO_GUIDE_SHIP_KEY, StudioWorkflowGuide } from "@/src/studio/StudioWorkflowGuide";
@@ -33,6 +34,7 @@ import { resolveSelectionContext, type ForgeSelection, type SelectionContext } f
 import { compileIntent, compiledCapability, motionArchetypeForIntent } from "@/src/platform/control-plane/intentCompiler";
 import { recommendNextActions } from "@/src/platform/control-plane/nextAction";
 import { evaluateProjectHealth } from "@/src/platform/control-plane/projectHealth";
+import { discoverabilityDefaults } from "@/src/platform/discoverability";
 import { compileMission } from "@/src/platform/control-plane/mission";
 import { buildMissionPlan, type MissionPlanStep } from "@/src/platform/control-plane/planGraph";
 import { decideAutopilot, type OperatorMode } from "@/src/platform/control-plane/autopilot";
@@ -107,7 +109,8 @@ export function ProductionStudioWorkbench() {
     manifest:draft.assetManifest,
     graph:draft.interactionGraph,
     validationIssues:draft.validation,
-  }), [draft.assetManifest, draft.experience, draft.interactionGraph, draft.validation]);
+    project:draft.project,
+  }), [draft.assetManifest, draft.experience, draft.interactionGraph, draft.project, draft.validation]);
   const workingFingerprint = useMemo(() => projectStateFingerprint({
     experience:draft.experience,
     assetManifest:draft.assetManifest,
@@ -445,6 +448,7 @@ export function ProductionStudioWorkbench() {
       visualSystemsPath:`${projectRoot}/visual-systems.json`,
       experienceModesPath:`${projectRoot}/experience-modes.json`,
       deployment:{...initialProject.deployment,projectName:id},
+      discoverability:discoverabilityDefaults(name),
     }));
     draft.setAssetManifest(parseAssetManifest({
       models:[],
@@ -591,6 +595,7 @@ export function ProductionStudioWorkbench() {
     else if (value.includes("new project")) setNewProjectOpen(true);
     else if (value.includes("interact")) openAdvanced("Interact");
     else if (value === "assets" || value.includes("asset workspace")) openAdvanced("Assets");
+    else if (value.includes("seo") || value.includes("search") || value.includes("discoverability")) openAdvanced("Discoverability");
     else if (value === "motion" || value.includes("motion workspace") || value.includes("sequencer")) openAdvanced("Motion");
     else if (value.includes("telemetry")) openAdvanced("Telemetry");
     else if (value.includes("new scene") || value.includes("add scene")) addScene();
@@ -641,7 +646,7 @@ export function ProductionStudioWorkbench() {
           <button id="studio-guided-build-button" type="button" className="production-guided-button" onClick={() => setGuidedOpen(true)}><span>Guided Build</span><strong>{workflow.completed}/6</strong></button>
           <button type="button" className="production-status" data-valid={projectHealth.status==="ready"} data-health={projectHealth.status} onClick={() => { setSurface("Review"); setAdvanced(false); }}><i />{projectHealth.status==="ready" ? "Ready" : projectHealth.status==="blocked" ? `${projectHealth.issues.filter((issue)=>issue.severity==="blocker").length} blocker` : `${projectHealth.issues.filter((issue)=>issue.severity==="warning").length} issue`}</button>
           <details className="production-assist"><summary>Assist</summary><div><Link href="/studio/agent"><strong>Creative Agent</strong><span>Turn the idea into a production strategy.</span></Link><Link href="/director"><strong>Director</strong><span>Critique and strengthen the creative direction.</span></Link><Link href="/studio/assets/create"><strong>Asset Creator</strong><span>Create a missing image, video or 3D asset.</span></Link></div></details>
-          <details className="production-advanced-menu"><summary>Advanced</summary><div><button type="button" onClick={() => openAdvanced("Motion")}><strong>Sequencer</strong><span>Tracks, curves and camera timing.</span></button><button type="button" onClick={() => openAdvanced("Interact")}><strong>Interactions</strong><span>Triggers, state and behavior graph.</span></button><button type="button" onClick={() => openAdvanced("Assets")}><strong>Asset tools</strong><span>Manifest, bank and GLB inspection.</span></button><button type="button" onClick={() => openAdvanced("Visuals")}><strong>Visual effects</strong><span>Cinematic systems, masks and cursor reveals.</span></button><button type="button" onClick={() => openAdvanced("Telemetry")}><strong>Telemetry</strong><span>Real-device performance evidence.</span></button></div></details>
+          <details className="production-advanced-menu"><summary>Advanced</summary><div><button type="button" onClick={() => openAdvanced("Motion")}><strong>Sequencer</strong><span>Tracks, curves and camera timing.</span></button><button type="button" onClick={() => openAdvanced("Interact")}><strong>Interactions</strong><span>Triggers, state and behavior graph.</span></button><button type="button" onClick={() => openAdvanced("Assets")}><strong>Asset tools</strong><span>Manifest, bank and GLB inspection.</span></button><button type="button" onClick={() => openAdvanced("Visuals")}><strong>Visual effects</strong><span>Cinematic systems, masks and cursor reveals.</span></button><button type="button" onClick={() => openAdvanced("Telemetry")}><strong>Telemetry</strong><span>Real-device performance evidence.</span></button><button type="button" onClick={() => openAdvanced("Discoverability")}><strong>Search & AI</strong><span>SEO, entities, crawlability and AI retrieval.</span></button></div></details>
           <details><summary>Project</summary><div><button type="button" onClick={() => { setRequestedLoop(undefined); setLoopOpen(true); }}>Improvement evidence</button><button type="button" onClick={() => setVaultOpen(true)}>Project Vault</button><button type="button" disabled={!draft.canUndoProjectBundle} onClick={() => { if(draft.undoProjectBundle()) { setPreparedProposal(null); setNotice("Last accepted proposal reverted atomically."); } }}>Undo accepted proposal</button><button type="button" disabled={!draft.canRedoProjectBundle} onClick={() => { if(draft.redoProjectBundle()) { setPreparedProposal(null); setNotice("Last reverted proposal restored atomically."); } }}>Redo accepted proposal</button><button type="button" onClick={() => setNewProjectOpen(true)}>New project</button><button type="button" onClick={() => importRef.current?.click()}>Import experience only</button><button type="button" onClick={draft.reset}>Reset local draft</button></div></details>
           <details><summary>Export</summary><div className="align-right"><button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Experience</button><button type="button" onClick={() => downloadJson("interaction-graph.json", draft.interactionGraph)}>Interactions</button><button type="button" onClick={() => downloadJson("studio-project.json", draft.project)}>Project</button><button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Assets</button><button type="button" onClick={() => downloadJson("cinematic-systems.json", draft.cinematicSystems)}>Visual effects</button></div></details><StudioIdentityBadge />
           <input ref={importRef} hidden type="file" accept="application/json,.json" onChange={(event) => void importExperience(event.target.files?.[0])} />
@@ -662,6 +667,7 @@ export function ProductionStudioWorkbench() {
           onBuild={()=>setSurface("Build")}
           onAssets={()=>openAdvanced("Assets")}
           onTelemetry={()=>openAdvanced("Telemetry")}
+          onDiscoverability={()=>openAdvanced("Discoverability")}
         />
       ) : surface === "Ship" ? (
         <ShipSurface
@@ -670,6 +676,7 @@ export function ProductionStudioWorkbench() {
           onReview={()=>setSurface("Review")}
           onVault={()=>setVaultOpen(true)}
           onTelemetry={()=>openAdvanced("Telemetry")}
+          onDiscoverability={()=>openAdvanced("Discoverability")}
         />
       ) : (
         <div className="production-layout">
@@ -813,6 +820,7 @@ function AdvancedWorkspace({ workspace, draft, activeScene, setActiveScene, onCl
     {workspace === "Assets" ? <div className="production-advanced-stack"><AssetManager setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} active={activeScene} /><AssetBankPanel experience={draft.experience} setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} interactionGraph={draft.interactionGraph} undo={draft.undoExperience} canUndo={draft.canUndoExperience} /><GlbInspectorPanel experience={draft.experience} setExperience={draft.setExperience} /></div> : null}
     {workspace === "Visuals" ? <CinematicSystemsPanel manifest={draft.cinematicSystems} setManifest={draft.setCinematicSystems} experience={draft.experience} activeScene={activeScene} onSelectScene={setActiveScene} /> : null}
     {workspace === "Telemetry" ? <TelemetryPanel project={draft.project} setProject={draft.setProject} /> : null}
+    {workspace === "Discoverability" ? <DiscoverabilityPanel project={draft.project} setProject={draft.setProject} experience={draft.experience} /> : null}
   </div>;
 }
 
