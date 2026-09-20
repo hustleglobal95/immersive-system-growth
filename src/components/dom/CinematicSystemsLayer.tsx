@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { experience } from "@/src/lib/experience";
-import { getCinematicScene } from "@/src/lib/cinematic/config";
+import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
+import { cinematicSceneFrom, useCinematicSystemsConfig } from "@/src/components/runtime/CinematicSystemsContext";
 import { composeCinematicScene } from "@/src/lib/cinematic/composer";
 import { generateContourPaths, generateHalftonePoints, lineTracePath } from "@/src/lib/cinematic/procedural";
 import { spatialImageCss } from "@/src/lib/cinematic/spatialImage";
@@ -15,10 +15,12 @@ import { sampleSceneTransition } from "@/src/lib/cinematic/visualPhysics";
 const clamp01=(value:number)=>Math.max(0,Math.min(1,value));
 
 export function CinematicSystemsLayer(){
+  const experience=useExperienceConfig();
+  const cinematicSystems=useCinematicSystemsConfig();
   const activeScene=useExperienceStore(s=>s.activeScene),quality=useExperienceStore(s=>s.quality),reduced=useExperienceStore(s=>s.reducedMotion);
   const progress=useCinematicStore(s=>s.springProgress),pointer=useCinematicStore(s=>s.pointer),trail=useCinematicStore(s=>s.trail),canvas=useRef<HTMLCanvasElement>(null);
   const [shaderReady,setShaderReady]=useState(false),[shaderFailed,setShaderFailed]=useState(false);
-  const base=experience.scenes[Math.min(activeScene,experience.scenes.length-1)],config=base?getCinematicScene(base.id):null;
+  const base=experience.scenes[Math.min(activeScene,experience.scenes.length-1)],config=base?cinematicSceneFrom(cinematicSystems,base.id):null;
   const nextScene=experience.scenes[Math.min(activeScene+1,experience.scenes.length-1)];
   const local=base?clamp01((progress-base.range[0])/Math.max(1e-6,base.range[1]-base.range[0])):0;
   const composed=useMemo(()=>config?composeCinematicScene(config,{progress:local,pointer:{x:pointer.x,y:pointer.y,velocity:pointer.speed,trailEnergy:pointer.trailEnergy}}):null,[config,local,pointer.x,pointer.y,pointer.speed,pointer.trailEnergy]);
