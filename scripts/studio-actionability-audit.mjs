@@ -1,64 +1,166 @@
 import fs from "node:fs";
+import path from "node:path";
+import ts from "typescript";
+import {
+  STUDIO_ACTIONABILITY_TARGET,
+  studioActionabilityContracts,
+  studioActionabilityPercent,
+} from "../src/platform/studioActionability.ts";
 
 const failures=[];
-const read=(path)=>fs.readFileSync(path,"utf8");
-const requireText=(path,text,message)=>{
-  const source=read(path);
-  if(!source.includes(text)) failures.push(message+" ("+path+")");
-};
-const forbidText=(path,text,message)=>{
-  const source=read(path);
-  if(source.includes(text)) failures.push(message+" ("+path+")");
-};
+const root=process.cwd();
+const read=(file)=>fs.readFileSync(path.join(root,file),"utf8");
+const exists=(file)=>fs.existsSync(path.join(root,file));
+const browserDir=path.join(root,"tests/browser");
+const browserCorpus=fs.readdirSync(browserDir)
+  .filter((name)=>name.endsWith(".spec.ts"))
+  .map((name)=>fs.readFileSync(path.join(browserDir,name),"utf8"))
+  .join("\n");
 
-requireText("src/studio/ProductionStudioWorkbench.tsx",'const primarySurfaces = ["Build", "Review", "Ship"] as const',"Studio primary navigation changed");
-requireText("src/studio/ProductionStudioWorkbench.tsx","openSimpleAnimate","Build must expose simple targeted Animate");
-requireText("src/studio/ControlPlaneSurfaces.tsx",'aria-label="Camera path"',"Camera inspector must author camera state directly");
-requireText("src/studio/ControlPlaneSurfaces.tsx",'ariaLabel="Environment exposure"',"Environment inspector must author environment state directly");
-requireText("src/studio/ControlPlaneSurfaces.tsx",'aria-label="Media transition"',"Media inspector must author presentation directly");
-requireText("src/studio/ControlPlaneSurfaces.tsx",'openAnimate(`rig:${node}:position`)',"Rig inspector must target simple Animate");
-requireText("src/studio/ControlPlaneSurfaces.tsx","Direct Build controls must never throw","Direct Build edits must fail closed on invalid intermediate values");
-requireText("src/studio/CinematicSystemsPanel.tsx","LIVE DRAFT","Visual Effects must identify itself as live draft authoring");
-requireText("src/studio/CinematicSystemsPanel.tsx","manifest:CinematicSystemsManifest","Visual Effects must be controlled by Studio project state");
-forbidText("src/studio/CinematicSystemsPanel.tsx",'rawCinematic from "@/config/cinematic-systems.json"',"Visual Effects must not maintain a private production manifest");
-forbidText("src/studio/CinematicSystemsPanel.tsx",'rawExperience from "@/config/experience.json"',"Visual Effects must not use a static scene list");
-requireText("src/studio/useStudioDraft.ts","cinematicSystems","Studio draft must persist cinematic systems");
-requireText("src/studio/ProductionStudioWorkbench.tsx","draft.setAssetManifest(parseAssetManifest({","New Project must clear prior asset state");
-requireText("src/studio/ProductionStudioWorkbench.tsx",'experiencePath:\`\${projectRoot}/experience.json\`',"New Project must use a client-scoped experience path");
-requireText("src/studio/ProductionStudioWorkbench.tsx","draft.setCinematicSystems(parseCinematicSystems({","New Project must clear prior cinematic state");
-requireText("src/platform/forgeProjects.ts","cinematicCandidates","Project loading must resolve project-specific cinematic systems");
-requireText("src/platform/forgeProjects.ts","scenes:[]","Projects without cinematic config must not inherit active-project effects");
-requireText("src/studio/StudioLivePreview.tsx","CinematicSystemsLayer contained","Studio preview must render the production cinematic compositor");
-requireText("src/platform/studioPublish.ts","studioPublishPaths","Publishing must resolve files inside the owning project bundle");
-requireText("src/platform/studioPublish.ts",'assetManifest:joinJsonPath(experienceRoot,"asset-manifest.json")',"Publishing must keep asset manifests with their experience bundle");
-requireText("src/platform/studioPublish.ts",'interactionGraph:joinJsonPath(projectRoot,"interaction-graph.json")',"Publishing must route interactions into the owning project bundle");
-requireText("src/platform/studioPublish.ts",'cinematicSystems:joinJsonPath(projectRoot,"cinematic-systems.json")',"Publishing must route cinematic systems into the owning project bundle");
-requireText("src/studio/ProjectPanels.tsx","interactionGraph","PublishPanel must send authored interactions");
-requireText("src/platform/studioVault.ts","cinematicSystems","Project Vault must carry cinematic systems");
-requireText("src/platform/control-plane/projectState.ts","cinematicSystems","Proposal fingerprints must include cinematic systems");
-requireText("src/studio/LoopEnginePanel.tsx",'fetch("/api/studio/loops/run"',"Loop Engine must dispatch through Studio instead of requiring a terminal");
-requireText("src/studio/LoopEnginePanel.tsx","Run improvement","Loop Engine must expose a direct primary action");
-forbidText("src/studio/LoopEnginePanel.tsx",'ready ? "Copy run command"',"Copying a CLI command must not be the primary Loop workflow");
-requireText("app/api/studio/loops/run/route.ts",'requireStudioRole(request,"director")',"Remote Loop dispatch must be role protected");
-requireText("app/api/studio/loops/run/route.ts","projectStateFingerprint","Remote Loop dispatch must validate source parity");
-requireText("app/api/studio/loops/run/route.ts",'FORGE_LOOP_REMOTE_ENABLED!=="true"',"Remote Loop execution must fail closed unless explicitly enabled");
-requireText(".github/workflows/forge-loop.yml","workflow_dispatch","Forge Loop must have a remote execution workflow");
-requireText(".github/workflows/forge-loop.yml","FORGE_VISUAL_CRITIC_URL","Remote Loop workflow must fail closed without critic evidence");
+const ids=new Set();
+let covered=0;
+for(const contract of studioActionabilityContracts){
+  if(ids.has(contract.id)) failures.push(`Duplicate Studio actionability contract: ${contract.id}`);
+  ids.add(contract.id);
+  if(!exists(contract.source)){
+    failures.push(`${contract.id}: source does not exist: ${contract.source}`);
+    continue;
+  }
+  const source=read(contract.source);
+  let contractOk=true;
+  for(const token of contract.evidence){
+    if(!source.includes(token)){
+      failures.push(`${contract.id}: missing implementation evidence "${token}" in ${contract.source}`);
+      contractOk=false;
+    }
+  }
+  if(!browserCorpus.includes(contract.browserEvidence)){
+    failures.push(`${contract.id}: missing browser evidence test "${contract.browserEvidence}"`);
+    contractOk=false;
+  }
+  if(contract.mode==="review-only" && !/review/i.test(contract.label)){
+    failures.push(`${contract.id}: review-only surfaces must be explicitly labeled as review surfaces`);
+    contractOk=false;
+  }
+  if(contractOk) covered++;
+}
 
-const actionEditors=[
-  ["src/studio/SequencerEditor.tsx","commitTracks","Sequencer must mutate motion tracks"],
-  ["src/studio/InteractionGraphEditor.tsx","setGraph","Interaction Graph must mutate graph state"],
-  ["src/studio/AssetManager.tsx","setExperience","Asset tools must mutate project state"],
-  ["src/studio/AssetBankPanel.tsx","setExperience","Asset Bank must insert into project state"],
-  ["src/studio/StudioVaultPanel.tsx",'method: "POST"',"Project Vault must expose durable save actions"],
-  ["src/studio/ProjectPanels.tsx",'fetch("/api/studio/publish"',"Ship must call the protected publish backend"],
+const percent=studioActionabilityPercent(covered);
+if(percent!==STUDIO_ACTIONABILITY_TARGET){
+  failures.push(`Studio actionability coverage is ${percent}%, expected ${STUDIO_ACTIONABILITY_TARGET}% (${covered}/${studioActionabilityContracts.length} contracts)`);
+}
+
+const route=read("app/studio/page.tsx");
+if(!route.includes("ProductionStudioWorkbench")) failures.push("The /studio route must render ProductionStudioWorkbench.");
+if(/import\s*\{\s*StudioWorkbench\s*\}/.test(route)) failures.push("Legacy StudioWorkbench must never be reachable from /studio.");
+
+const activeFiles=[
+  "src/studio/ProductionStudioWorkbench.tsx",
+  "src/studio/ControlPlaneSurfaces.tsx",
+  "src/studio/OperatorMissionControl.tsx",
+  "src/studio/AnimatePanel.tsx",
+  "src/studio/SequencerEditor.tsx",
+  "src/studio/InteractionGraphEditor.tsx",
+  "src/studio/AssetManager.tsx",
+  "src/studio/AssetBankPanel.tsx",
+  "src/studio/GlbInspectorPanel.tsx",
+  "src/studio/CinematicSystemsPanel.tsx",
+  "src/studio/ProjectPanels.tsx",
+  "src/studio/StudioVaultPanel.tsx",
+  "src/studio/LoopEnginePanel.tsx",
+  "src/studio/ControlPlaneReview.tsx",
+  "src/studio/StudioWorkflowGuide.tsx",
 ];
-for(const [path,text,message] of actionEditors) requireText(path,text,message);
+
+for(const file of activeFiles){
+  auditInteractiveControls(file,read(file));
+}
+
+const requiredChecks=[
+  ["src/studio/ProductionStudioWorkbench.tsx",'const primarySurfaces = ["Build", "Review", "Ship"] as const',"Studio primary navigation changed"],
+  ["src/studio/ProductionStudioWorkbench.tsx","openSimpleAnimate","Build must expose simple targeted Animate"],
+  ["src/studio/CinematicSystemsPanel.tsx","LIVE DRAFT","Visual Effects must identify itself as live draft authoring"],
+  ["src/studio/useStudioDraft.ts","cinematicSystems","Studio draft must persist cinematic systems"],
+  ["src/studio/StudioLivePreview.tsx","CinematicSystemsLayer contained","Studio preview must render the production cinematic compositor"],
+  ["src/platform/studioVault.ts","cinematicSystems","Project Vault must carry cinematic systems"],
+  ["src/platform/control-plane/projectState.ts","cinematicSystems","Proposal fingerprints must include cinematic systems"],
+  ["src/studio/LoopEnginePanel.tsx",'fetch("/api/studio/loops/run"',"Loop Engine must dispatch through Studio"],
+  ["app/api/studio/loops/run/route.ts",'FORGE_LOOP_REMOTE_ENABLED!=="true"',"Remote Loop execution must fail closed unless explicitly enabled"],
+  [".github/workflows/forge-loop.yml","workflow_dispatch","Forge Loop must have a remote execution workflow"],
+];
+for(const [file,token,message] of requiredChecks){
+  if(!read(file).includes(token)) failures.push(`${message} (${file})`);
+}
 
 if(failures.length){
   console.error("Studio actionability audit failed:");
   for(const failure of failures) console.error("- "+failure);
   process.exitCode=1;
 }else{
-  console.log("Studio actionability audit passed: direct Build authoring, live Visual Effects, durable project state, protected Ship and executable Loop paths are wired.");
+  console.log(`Studio actionability audit passed: ${covered}/${studioActionabilityContracts.length} contracted surfaces = ${percent}% · no dead interactive controls in ${activeFiles.length} reachable Studio components.`);
+}
+
+function auditInteractiveControls(file,source){
+  const ast=ts.createSourceFile(file,source,ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
+  const visit=(node)=>{
+    if(ts.isJsxOpeningElement(node)||ts.isJsxSelfClosingElement(node)){
+      const tag=node.tagName.getText(ast);
+      if(tag==="button") auditButton(node);
+      if(tag==="input"||tag==="select"||tag==="textarea") auditField(node,tag);
+      if(tag==="a") auditAnchor(node);
+    }
+    ts.forEachChild(node,visit);
+  };
+  visit(ast);
+
+  function attrs(node){
+    return new Map(node.attributes.properties
+      .filter(ts.isJsxAttribute)
+      .map((attr)=>[attr.name.getText(ast),attr]));
+  }
+  function hasEvent(map,names){
+    return names.some((name)=>map.has(name));
+  }
+  function literal(map,name){
+    const attr=map.get(name);
+    if(!attr?.initializer || !ts.isStringLiteral(attr.initializer)) return "";
+    return attr.initializer.text;
+  }
+  function location(node){
+    const pos=ast.getLineAndCharacterOfPosition(node.getStart(ast));
+    return `${file}:${pos.line+1}`;
+  }
+  function ancestorForm(node){
+    let parent=node.parent;
+    while(parent){
+      if((ts.isJsxElement(parent)||ts.isJsxSelfClosingElement(parent))){
+        const opening=ts.isJsxElement(parent)?parent.openingElement:parent;
+        if(opening.tagName.getText(ast)==="form") return true;
+      }
+      parent=parent.parent;
+    }
+    return false;
+  }
+  function auditButton(node){
+    const map=attrs(node);
+    const actionable=hasEvent(map,["onClick","onPointerDown","onMouseDown","onKeyDown","formAction"]);
+    const submit=literal(map,"type")==="submit" || (!map.has("type")&&ancestorForm(node));
+    if(!actionable&&!submit) failures.push(`Dead button: no action handler or submit behavior at ${location(node)}`);
+  }
+  function auditField(node,tag){
+    const map=attrs(node);
+    const type=literal(map,"type");
+    if(map.has("readOnly")||map.has("disabled")||type==="hidden"||["submit","button","reset"].includes(type)) return;
+    const uncontrolled=map.has("defaultValue")||map.has("defaultChecked");
+    const actionable=hasEvent(map,["onChange","onInput","onBlur"]);
+    if(!actionable&&!uncontrolled){
+      failures.push(`Dead ${tag}: editable control has no mutation/input handler at ${location(node)}`);
+    }
+  }
+  function auditAnchor(node){
+    const map=attrs(node);
+    if(!map.has("href")&&!hasEvent(map,["onClick","onPointerDown"])){
+      failures.push(`Dead link: no href or action handler at ${location(node)}`);
+    }
+  }
 }
