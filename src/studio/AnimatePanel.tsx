@@ -50,7 +50,7 @@ export function AnimatePanel({
   const [archetype, setArchetype] = useState<MotionArchetypeName>("editorial-reveal");
   const [target, setTarget] = useState<string>(initialTarget ?? "camera.position");
   const [viewport, setViewport] = useState<MotionViewport>("all");
-  const [selectedTrackId, setSelectedTrackId] = useState(scene.motionTracks[0]?.id ?? "");
+  const [selectedTrackId, setSelectedTrackId] = useState(scene.motionTracks.find((track)=>track.target===initialTarget)?.id ?? scene.motionTracks[0]?.id ?? "");
   const [notice, setNotice] = useState("");
 
   const selectedTrack = scene.motionTracks.find((track) => track.id === selectedTrackId) ?? scene.motionTracks[0] ?? null;
