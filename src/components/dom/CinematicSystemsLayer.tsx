@@ -10,6 +10,7 @@ import { useExperienceStore } from "@/src/store/experienceStore";
 import { useCinematicStore } from "@/src/store/cinematicStore";
 import { CinematicShaderCanvas } from "@/src/components/dom/CinematicShaderCanvas";
 import { CursorRevealCanvas } from "@/src/components/dom/CursorRevealCanvas";
+import { sampleSceneTransition } from "@/src/lib/cinematic/visualPhysics";
 
 const clamp01=(value:number)=>Math.max(0,Math.min(1,value));
 
@@ -18,9 +19,12 @@ export function CinematicSystemsLayer(){
   const progress=useCinematicStore(s=>s.springProgress),pointer=useCinematicStore(s=>s.pointer),trail=useCinematicStore(s=>s.trail),canvas=useRef<HTMLCanvasElement>(null);
   const [shaderReady,setShaderReady]=useState(false),[shaderFailed,setShaderFailed]=useState(false);
   const base=experience.scenes[Math.min(activeScene,experience.scenes.length-1)],config=base?getCinematicScene(base.id):null;
+  const nextScene=experience.scenes[Math.min(activeScene+1,experience.scenes.length-1)];
   const local=base?clamp01((progress-base.range[0])/Math.max(1e-6,base.range[1]-base.range[0])):0;
   const composed=useMemo(()=>config?composeCinematicScene(config,{progress:local,pointer:{x:pointer.x,y:pointer.y,velocity:pointer.speed,trailEnergy:pointer.trailEnergy}}):null,[config,local,pointer.x,pointer.y,pointer.speed,pointer.trailEnergy]);
-  const gpuEligible=!!(base?.media?.kind==="image"&&config&&(config.spatial||config.reveal)&&!config.cursorReveal&&quality!=="low"&&!reduced&&!shaderFailed);
+  const transition=config?.sceneTransition?sampleSceneTransition(config.sceneTransition,local):null;
+  const targetSrc=config?.sceneTransition?.src??(nextScene?.media?.kind==="image"?nextScene.media.src:base?.media?.kind==="image"?base.media.src:undefined);
+  const gpuEligible=!!(base?.media?.kind==="image"&&base.media.src&&config&&(config.spatial||config.reveal||config.warp||config.refraction||config.sceneTransition)&&!config.cursorReveal&&quality!=="low"&&!reduced&&!shaderFailed);
 
   // Each scene compiles its own shader, so readiness resets when the scene changes. Adjusting
   // during render means the layer never paints one frame claiming the previous scene's shader
@@ -72,7 +76,7 @@ export function CinematicSystemsLayer(){
   const stackScale=composed?.stack?.scale??1;
   return <div className="forge-cinematic-systems" aria-hidden="true" style={{position:"fixed",inset:0,zIndex:6,pointerEvents:"none",overflow:"hidden"}}>
     {gpuEligible&&base.media?.kind==="image"&&base.media.src&&<div style={{position:"absolute",inset:0,transform:`scale(${stackScale})`,transformOrigin:"50% 50%",willChange:"transform"}}>
-      <CinematicShaderCanvas src={base.media.src} depthMap={config.spatial?.depthMap} normalMap={config.spatial?.normalMap} spatial={config.spatial} reveal={config.reveal} progress={composed?.reveal?.progress??local} pointerX={pointer.x} pointerY={pointer.y} scrollProgress={local} onReady={()=>setShaderReady(true)} onError={()=>{setShaderReady(false);setShaderFailed(true);}} />
+      <CinematicShaderCanvas src={base.media.src} targetSrc={targetSrc} depthMap={config.spatial?.depthMap} normalMap={config.spatial?.normalMap} spatial={config.spatial} reveal={config.reveal} warp={config.warp} refraction={config.refraction} sceneTransition={config.sceneTransition} transitionProgress={transition?.progress??0} progress={composed?.reveal?.progress??local} pointerX={pointer.x} pointerY={pointer.y} pointerVelocity={pointer.speed} scrollProgress={local} onReady={()=>setShaderReady(true)} onError={()=>{setShaderReady(false);setShaderFailed(true);}} />
     </div>}
     {base.media?.kind==="image"&&base.media.src&&config.cursorReveal&&!reduced&&<div style={{position:"absolute",inset:0,transform:`scale(${stackScale})`,transformOrigin:"50% 50%",willChange:"transform"}}>
       <CursorRevealCanvas src={config.cursorReveal.src} config={config.cursorReveal} pointer={pointer} trail={trail} quality={quality} />
