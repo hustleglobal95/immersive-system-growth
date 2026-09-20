@@ -10,7 +10,7 @@ type VaultSnapshot = { experience: unknown; project: unknown; assetManifest: unk
 type VaultIdentity = { id: string; name: string; role: "reviewer" | "designer" | "director" | "developer" | "owner" };
 type VaultEvent = { id: string; at: string; actor: string; role: string; action: string; detail: string };
 
-export function StudioVaultPanel({ draft, onClose }: { draft: Draft; onClose: () => void }) {
+export function StudioVaultPanel({ draft, onClose, onProjectChange }: { draft: Draft; onClose: () => void; onProjectChange?: (projectId:string) => void }) {
   const [projects, setProjects] = useState<VaultSummary[]>([]);
   const [selectedId, setSelectedId] = useState(draft.project.id);
   const [versions, setVersions] = useState<VaultVersion[]>([]);
@@ -108,6 +108,8 @@ export function StudioVaultPanel({ draft, onClose }: { draft: Draft; onClose: ()
       const response = await fetch(`/api/studio/vault/projects/${encodeURIComponent(projectId)}`, { cache: "no-store" });
       const data = await response.json() as { ok?: boolean; error?: string; snapshot?: VaultSnapshot };
       if (!response.ok || !data.ok || !data.snapshot) throw new Error(data.error ?? "Could not load project");
+      const nextProjectId=(data.snapshot.project as { id?: string }).id ?? projectId;
+      if(nextProjectId!==draft.project.id) onProjectChange?.(nextProjectId);
       draft.loadDraft(data.snapshot);
       setMessage(`Loaded ${(data.snapshot.project as { name?: string }).name ?? projectId} from Project Vault.`);
       setSelectedId(projectId);
@@ -122,6 +124,8 @@ export function StudioVaultPanel({ draft, onClose }: { draft: Draft; onClose: ()
       const response = await fetch(`/api/studio/vault/projects/${encodeURIComponent(selectedId)}/versions/${encodeURIComponent(version.versionId)}`, { method: "POST" });
       const data = await response.json() as { ok?: boolean; error?: string; snapshot?: VaultSnapshot };
       if (!response.ok || !data.ok || !data.snapshot) throw new Error(data.error ?? "Could not restore version");
+      const nextProjectId=(data.snapshot.project as { id?: string }).id ?? selectedId;
+      if(nextProjectId!==draft.project.id) onProjectChange?.(nextProjectId);
       draft.loadDraft(data.snapshot);
       setMessage(`Restored ${version.label}. The restored state is now the Vault current version.`);
       await refresh();
