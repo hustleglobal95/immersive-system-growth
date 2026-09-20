@@ -5,6 +5,8 @@ import { parseInteractionGraph } from "@/src/lib/interactionGraph";
 import { emptyInteractionGraph } from "@/src/platform/emptyInteractionGraph";
 import { parseStudioProject } from "@/src/platform/studioSchema";
 import { parseAssetManifest } from "@/src/platform/assetManifestSchema";
+import { parseCinematicSystems } from "@/src/lib/cinematic/schema";
+import { cinematicSystems as productionCinematicSystems } from "@/src/lib/cinematic/config";
 
 /** A project Forge can open in Studio: the active configuration plus every client bundle. */
 export interface ForgeProjectSummary {
@@ -42,7 +44,16 @@ function load(entry: ReturnType<typeof projectFiles>[number]) {
   const assetManifest=manifestPath
     ? parseAssetManifest(read(manifestPath))
     : parseAssetManifest({models:[],textures:[],hdr:[],video:[],budgets:{modelMb:12,textureMb:5,hdrMb:12,videoMb:20,totalMb:45}});
-  return { project, experience, assetManifest };
+  const cinematicCandidates=[
+    path.posix.join(path.posix.dirname(project.experiencePath),"cinematic-systems.json"),
+    path.posix.join(path.posix.dirname(entry.file),"cinematic-systems.json"),
+    entry.active ? "config/cinematic-systems.json" : "",
+  ].filter(Boolean);
+  const cinematicPath=cinematicCandidates.find((candidate)=>exists(candidate));
+  const cinematicSystems=cinematicPath
+    ? parseCinematicSystems(read(cinematicPath))
+    : parseCinematicSystems({version:1,defaults:productionCinematicSystems.defaults,scenes:[]});
+  return { project, experience, assetManifest, cinematicSystems };
 }
 
 export function listForgeProjects(): ForgeProjectSummary[] {
@@ -72,10 +83,10 @@ export function listForgeProjects(): ForgeProjectSummary[] {
 export function loadForgeProject(slug: string) {
   const entry = projectFiles().find((item) => item.slug === slug);
   if (!entry) return null;
-  const { project, experience, assetManifest } = load(entry);
+  const { project, experience, assetManifest, cinematicSystems } = load(entry);
   let interactionGraph = emptyInteractionGraph(project.id);
   if (entry.graph && exists(entry.graph)) {
     try { interactionGraph = parseInteractionGraph(read(entry.graph)); } catch { /* fall back to an empty graph */ }
   }
-  return { project, experience, assetManifest, interactionGraph };
+  return { project, experience, assetManifest, interactionGraph, cinematicSystems };
 }
