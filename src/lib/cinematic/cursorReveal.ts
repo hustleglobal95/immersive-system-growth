@@ -20,7 +20,7 @@ export const cursorRevealModeNames = ["lens", "trail", "fluid"] as const;
 
 export function resolveCursorRevealBackend(config: CursorRevealConfig, capability: CursorRevealCapability): CursorRevealBackend {
   if (capability.reducedMotion || config.renderer === "canvas" || capability.quality === "low" || !capability.webgl2) return "canvas";
-  if (config.mode === "fluid" && capability.floatTargets && config.renderer !== "canvas") return "webgl-fluid";
+  if (config.mode === "fluid" && capability.floatTargets) return "webgl-fluid";
   if (config.renderer === "gpu" || config.renderer === "auto") return "webgl-trail";
   return "canvas";
 }
