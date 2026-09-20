@@ -134,5 +134,5 @@ export function CursorRevealCanvas(props:Props){
     })().catch(error=>{if(disposed)return;const value=error instanceof Error?error:new Error(String(error));props.onError?.(value);if(!fallback)setFallback(true);});
     return()=>{disposed=true;unsubscribe?.();for(const cleanup of cleanupFns)cleanup();};
   },[fallback,props.config,props.onError,props.onReady,props.quality,props.src]);
-  return <canvas ref={canvas} className="forge-cursor-reveal" aria-hidden="true" style={{position:"absolute",inset:0,width:"100%",height:"100%",pointerEvents:"none"}}/>;
+  return <canvas key={fallback?"canvas":"webgl"} ref={canvas} className="forge-cursor-reveal" aria-hidden="true" style={{position:"absolute",inset:0,width:"100%",height:"100%",pointerEvents:"none"}}/>;
 }
