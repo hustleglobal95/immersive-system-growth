@@ -43,6 +43,26 @@ export const revealSchema = z.object({
   range: range.default([0, 1]),
 }).strict();
 
+export const cursorRevealSchema = z.object({
+  src: assetUrl,
+  mode: z.enum(["lens", "trail", "fluid"]).default("trail"),
+  renderer: z.enum(["auto", "gpu", "canvas"]).default("auto"),
+  brushSize: finite.min(0.01).max(0.5).default(0.14),
+  brushStrength: finite.min(0).max(3).default(1),
+  softness: finite.min(0.001).max(1).default(0.2),
+  motionStrength: finite.min(0).max(4).default(1),
+  lingerMs: z.number().int().min(0).max(10000).default(260),
+  fadeSeconds: finite.min(0.05).max(20).default(1.2),
+  trailPersistence: finite.min(0).max(1).default(0.82),
+  touch: z.enum(["disabled", "drag", "always"]).default("drag"),
+  fluidResolution: z.number().int().min(64).max(512).default(192),
+  velocityDissipation: finite.min(0.8).max(1).default(0.985),
+  dyeDissipation: finite.min(0.8).max(1).default(0.992),
+  pressureIterations: z.number().int().min(1).max(40).default(12),
+  curl: finite.min(0).max(50).default(18),
+  splatForce: finite.min(0).max(12).default(4),
+}).strict();
+
 const spatialPlaneSchema = z.object({
   id,
   src: assetUrl,
@@ -124,6 +144,7 @@ export const cinematicSceneSchema = z.object({
   stack: stackSchema.optional(),
   spring: springSchema.optional(),
   reveal: revealSchema.optional(),
+  cursorReveal: cursorRevealSchema.optional(),
   spatial: spatialSchema.optional(),
   procedural: z.array(proceduralSchema).max(12).default([]),
   occlusion: z.array(occlusionLayerSchema).max(12).default([]),
@@ -154,6 +175,7 @@ export type CinematicSceneConfig = z.infer<typeof cinematicSceneSchema>;
 export type SpringConfig = z.infer<typeof springSchema>;
 export type StackConfig = z.infer<typeof stackSchema>;
 export type RevealConfig = z.infer<typeof revealSchema>;
+export type CursorRevealConfig = z.infer<typeof cursorRevealSchema>;
 export type SpatialConfig = z.infer<typeof spatialSchema>;
 export type ProceduralConfig = z.infer<typeof proceduralSchema>;
 export type OcclusionLayerConfig = z.infer<typeof occlusionLayerSchema>;
