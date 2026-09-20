@@ -20,6 +20,54 @@ test("Build keeps the live experience central and edits the selected scene", asy
   await expect(page.locator(".production-context")).toBeVisible();
 });
 
+test("New Project starts from isolated project state", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem("forge-studio-guide-brief-v1", "Previous client mission that must not leak.");
+    window.localStorage.setItem("forge-studio-guide-shipped-project-v1", "previous-client");
+  });
+  await page.goto("/studio");
+  await page.getByLabel("Forge command").fill("new project");
+  await page.getByRole("button", { name: "Direct", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Start from zero.", level: 2 })).toBeVisible();
+
+  await page.getByLabel("Project name").fill("Isolation Test");
+  await page.getByRole("button", { name: "Create project", exact: true }).click();
+  await expect(page.getByText(/created from zero with isolated assets, interactions and visual effects/i)).toBeVisible();
+
+  await expect.poll(async () => page.evaluate(() => {
+    const raw=window.localStorage.getItem("forge-studio-v2");
+    if(!raw) return null;
+    const draft=JSON.parse(raw);
+    return {
+      id:draft.project?.id,
+      scenes:draft.experience?.scenes?.length,
+      models:draft.assetManifest?.models?.length,
+      textures:draft.assetManifest?.textures?.length,
+      hdr:draft.assetManifest?.hdr?.length,
+      video:draft.assetManifest?.video?.length,
+      graph:draft.interactionGraph?.id,
+      cinematicScenes:draft.cinematicSystems?.scenes?.length,
+      experiencePath:draft.project?.experiencePath,
+      visualSystemsPath:draft.project?.visualSystemsPath,
+      guideBrief:window.localStorage.getItem("forge-studio-guide-brief-v1"),
+      shipped:window.localStorage.getItem("forge-studio-guide-shipped-project-v1"),
+    };
+  })).toEqual({
+    id:"isolation-test",
+    scenes:1,
+    models:0,
+    textures:0,
+    hdr:0,
+    video:0,
+    graph:"isolation-test-interactions",
+    cinematicScenes:0,
+    experiencePath:"clients/isolation-test/experience.json",
+    visualSystemsPath:"clients/isolation-test/visual-systems.json",
+    guideBrief:"",
+    shipped:"",
+  });
+});
+
 test("Build prepares a reversible fast proposal before applying motion", async ({ page }) => {
   await page.goto("/studio");
   await page.getByRole("button", { name: "Add scene" }).click();
@@ -61,6 +109,57 @@ test("Build Animate provides direct motion authoring before the expert sequencer
 
   await page.getByRole("button", { name: "Open full Sequencer" }).click();
   await expect(page.getByRole("heading", { name: "Motion sequencer", level: 2 })).toBeVisible();
+});
+
+test("Build camera inspector directly edits shots and hands off to targeted Animate", async ({ page }) => {
+  await page.goto("/studio");
+  await page.getByRole("button", { name: "Structure", exact: true }).click();
+  const tree=page.locator(".production-tree");
+  await tree.getByRole("button", { name: /Camera/ }).first().click();
+
+  await expect(page.getByLabel("Camera path", { exact: true })).toBeVisible();
+  await page.getByLabel("Camera path", { exact: true }).selectOption("orbit");
+  await expect(page.getByLabel("Camera path", { exact: true })).toHaveValue("orbit");
+  await page.getByLabel("Camera start FOV").fill("47");
+  await expect(page.getByLabel("Camera start FOV")).toHaveValue("47");
+
+  await page.getByRole("button", { name: "Animate camera", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Make something move.", level: 2 })).toBeVisible();
+  await expect(page.getByLabel("Animate target")).toHaveValue("camera.position");
+});
+
+test("Build environment inspector directly edits lighting and atmosphere", async ({ page }) => {
+  await page.goto("/studio");
+  await page.getByRole("button", { name: "Structure", exact: true }).click();
+  await page.locator(".production-tree").getByRole("button", { name: /Environment/ }).click();
+
+  await page.getByLabel("Environment exposure").fill("1.35");
+  await page.getByLabel("Environment bloom").fill("0.45");
+  await page.getByLabel("Environment key color").fill("#ffaa66");
+  await expect(page.getByLabel("Environment exposure")).toHaveValue("1.35");
+  await expect(page.getByLabel("Environment bloom")).toHaveValue("0.45");
+  await expect(page.getByLabel("Environment key color")).toHaveValue("#ffaa66");
+
+  await page.getByRole("button", { name: "Animate exposure", exact: true }).click();
+  await expect(page.getByLabel("Animate target")).toHaveValue("world.exposure");
+});
+
+test("Build media inspector directly edits presentation when media exists", async ({ page }) => {
+  await page.goto("/studio");
+  await page.getByRole("button", { name: "Structure", exact: true }).click();
+  const media=page.locator(".production-tree").getByRole("button", { name: /Media/ });
+  await expect(media).toBeVisible();
+  await media.click();
+
+  await page.getByLabel("Media transition").selectOption("dissolve");
+  await page.getByLabel("Media desktop position X").fill("42");
+  await page.getByLabel("Media mobile position Y").fill("58");
+  await expect(page.getByLabel("Media transition")).toHaveValue("dissolve");
+  await expect(page.getByLabel("Media desktop position X")).toHaveValue("42");
+  await expect(page.getByLabel("Media mobile position Y")).toHaveValue("58");
+
+  await page.getByRole("button", { name: "Animate reveal", exact: true }).click();
+  await expect(page.getByLabel("Animate target")).toHaveValue("media.reveal");
 });
 
 test("Advanced Sequencer preserves expert motion control", async ({ page }) => {
@@ -120,7 +219,8 @@ test("Advanced Telemetry remains available without permanent navigation", async 
 test("Advanced Visual effects authors cursor reveal and visual physics without permanent navigation", async ({ page }) => {
   await page.goto("/studio");
   await openAdvanced(page,/Visual effects/);
-  await expect(page.getByRole("heading", { name: "Cinematic systems", level: 2 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Visual Effects", level: 2 })).toBeVisible();
+  await expect(page.getByText("LIVE DRAFT")).toBeVisible();
   const preset=page.getByLabel("Preset");
   await preset.selectOption("cursor");
   await expect(page.getByLabel("Cursor mode")).toBeVisible();
@@ -137,8 +237,19 @@ test("Advanced Visual effects authors cursor reveal and visual physics without p
   await expect(page.getByLabel("Transition effect")).toBeVisible();
   await page.getByLabel("Transition effect").selectOption("slats");
   await expect(page.getByLabel("Transition target")).toBeVisible();
+  await expect.poll(async()=>page.evaluate(()=>{
+    const raw=window.localStorage.getItem("forge-studio-v2");
+    if(!raw) return false;
+    const draft=JSON.parse(raw);
+    return draft.cinematicSystems?.scenes?.some((scene:{warp?:{mode?:string}})=>scene.warp?.mode==="shockwave") ?? false;
+  })).toBe(true);
+
   await page.getByRole("button", { name: /Back to Studio/ }).click();
   await expect(page.getByRole("button", { name: "Build", exact: true })).toBeVisible();
+  await page.reload();
+  await openAdvanced(page,/Visual effects/);
+  await expect(page.getByLabel("Warp mode")).toHaveValue("shockwave");
+  await expect(page.getByLabel("Transition effect")).toHaveValue("slats");
 });
 
 

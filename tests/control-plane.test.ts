@@ -4,8 +4,10 @@ import fs from "node:fs";
 import rawExperience from "../config/experience.json";
 import rawManifest from "../config/asset-manifest.json";
 import rawGraph from "../config/interaction-graph.json";
+import rawCinematic from "../config/cinematic-systems.json";
 import { parseExperience } from "../src/lib/configSchema";
 import { parseInteractionGraph } from "../src/lib/interactionGraph";
+import { parseCinematicSystems } from "../src/lib/cinematic/schema";
 import { parseAssetManifest } from "../src/platform/assetManifestSchema";
 import { capabilitiesForContext, forgeCapabilityRegistry, matchCapabilityIntent, validateCapabilityRegistry } from "../src/platform/control-plane/capabilityRegistry";
 import { createProposalDraft, forgeProposalSchema, proposalCanMutateAuthoritativeState, proposalRequiresPreview } from "../src/platform/control-plane/proposal";
@@ -20,6 +22,7 @@ import { projectStateFingerprint } from "../src/platform/control-plane/projectSt
 const experience=parseExperience(rawExperience);
 const manifest=parseAssetManifest(rawManifest);
 const graph=parseInteractionGraph(rawGraph);
+const cinematic=parseCinematicSystems(rawCinematic);
 
 test("Selection Context centralizes scene state and production signals",()=>{
   const context=resolveSelectionContext({
@@ -315,13 +318,18 @@ test("Verified Loop candidates attach only to matching deep proposals",()=>{
   }));
 });
 
-test("Project-state fingerprint is deterministic and changes with project state",()=>{
-  const first=projectStateFingerprint({experience,assetManifest:manifest,interactionGraph:graph});
-  const second=projectStateFingerprint({experience:structuredClone(experience),assetManifest:structuredClone(manifest),interactionGraph:structuredClone(graph)});
+test("Project-state fingerprint is deterministic and includes visual-effects state",()=>{
+  const first=projectStateFingerprint({experience,assetManifest:manifest,interactionGraph:graph,cinematicSystems:cinematic});
+  const second=projectStateFingerprint({experience:structuredClone(experience),assetManifest:structuredClone(manifest),interactionGraph:structuredClone(graph),cinematicSystems:structuredClone(cinematic)});
   assert.equal(first,second);
   const changed=parseExperience(rawExperience);
   changed.scenes[0].copy={...changed.scenes[0].copy,headline:changed.scenes[0].copy.headline+"!"};
-  assert.notEqual(projectStateFingerprint({experience:changed,assetManifest:manifest,interactionGraph:graph}),first);
+  assert.notEqual(projectStateFingerprint({experience:changed,assetManifest:manifest,interactionGraph:graph,cinematicSystems:cinematic}),first);
+  const visual=structuredClone(cinematic);
+  const configured=visual.scenes[0];
+  if(configured) configured.warp={mode:"elastic",strength:.5,radius:.3,falloff:2,pointerInfluence:1,velocityInfluence:.6,scrollInfluence:.2,frequency:8};
+  else visual.scenes.push({id:experience.scenes[0].id,warp:{mode:"elastic",strength:.5,radius:.3,falloff:2,pointerInfluence:1,velocityInfluence:.6,scrollInfluence:.2,frequency:8},procedural:[],occlusion:[]});
+  assert.notEqual(projectStateFingerprint({experience,assetManifest:manifest,interactionGraph:graph,cinematicSystems:visual}),first);
 });
 
 test("Studio exposes Build Review Ship and keeps specialist tools under Advanced",()=>{
@@ -335,24 +343,36 @@ test("Studio exposes Build Review Ship and keeps specialist tools under Advanced
   assert.doesNotMatch(studio,/const workspaces = \["Create", "Motion", "Interact", "Assets", "Ship"\]/);
 });
 
-test("Deep proposal evidence returns through the verified local Loop result bridge",()=>{
+test("Deep proposal evidence has protected remote execution and durable result bridges",()=>{
   const loopPanel=fs.readFileSync("src/studio/LoopEnginePanel.tsx","utf8");
-  const route=fs.readFileSync("app/api/studio/loops/results/route.ts","utf8");
-  assert.match(loopPanel,/Load verified candidate/);
+  const resultRoute=fs.readFileSync("app/api/studio/loops/results/route.ts","utf8");
+  const runRoute=fs.readFileSync("app/api/studio/loops/run/route.ts","utf8");
+  const workflow=fs.readFileSync(".github/workflows/forge-loop.yml","utf8");
+  assert.match(loopPanel,/Run improvement/);
+  assert.match(loopPanel,/\/api\/studio\/loops\/run/);
   assert.match(loopPanel,/onCandidateReady/);
-  assert.match(route,/requireStudioRole\(request,"reviewer"\)/);
-  assert.match(route,/acceptedExperiencePath/);
-  assert.match(route,/safeArtifactPath/);
+  assert.match(resultRoute,/requireStudioRole\(request,"reviewer"\)/);
+  assert.match(resultRoute,/readVaultLoopCandidate/);
+  assert.match(resultRoute,/safeArtifactPath/);
+  assert.match(runRoute,/requireStudioRole\(request,"director"\)/);
+  assert.match(runRoute,/projectStateFingerprint/);
+  assert.match(runRoute,/FORGE_LOOP_REMOTE_ENABLED/);
+  assert.match(workflow,/workflow_dispatch/);
+  assert.match(workflow,/FORGE_VISUAL_CRITIC_URL/);
 });
 
 
-test("Build no longer exposes raw camera/environment mutation controls",()=>{
+test("Build exposes bounded direct authoring without leaking legacy machinery",()=>{
   const studio=fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx","utf8");
-  assert.doesNotMatch(studio,/Start FOV/);
+  const surfaces=fs.readFileSync("src/studio/ControlPlaneSurfaces.tsx","utf8");
   assert.doesNotMatch(studio,/Apply motion/);
   assert.doesNotMatch(studio,/createMotionArchetype/);
   assert.doesNotMatch(studio,/buildSelectedNode/);
-  assert.match(studio,/RefinePanel/);
+  assert.match(studio,/openSimpleAnimate/);
+  assert.match(surfaces,/Camera start FOV/);
+  assert.match(surfaces,/Environment exposure/);
+  assert.match(surfaces,/Media transition/);
+  assert.match(surfaces,/openAnimate\(\`rig:\$\{node\}:position\`\)/);
 });
 
 test("Accepted proposal bundles have atomic undo and redo history",()=>{
@@ -363,4 +383,5 @@ test("Accepted proposal bundles have atomic undo and redo history",()=>{
   assert.match(draft,/clearProjectBundleHistory/);
   assert.match(draft,/setAssetManifestState/);
   assert.match(draft,/setInteractionGraphState/);
+  assert.match(draft,/setCinematicSystemsState/);
 });

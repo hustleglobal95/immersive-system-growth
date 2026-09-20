@@ -43,6 +43,8 @@ import { ControlPlaneReview } from "@/src/studio/ControlPlaneReview";
 import { ContextualDirection, RefinePanel, ReviewSurface, ShipSurface, type AdvancedWorkspaceName } from "@/src/studio/ControlPlaneSurfaces";
 import { OperatorMissionControl } from "@/src/studio/OperatorMissionControl";
 import type { AssetManifest } from "@/src/types/assets";
+import { parseCinematicSystems, type CinematicSystemsManifest } from "@/src/lib/cinematic/schema";
+import { cinematicSystems as initialCinematicSystems } from "@/src/lib/cinematic/config";
 import type { ExperienceConfig, SceneDefinition } from "@/src/types/experience";
 
 const initialExperience = parseExperience(rawExperience);
@@ -68,6 +70,7 @@ export function ProductionStudioWorkbench() {
   const [advanced, setAdvanced] = useState(false);
   const [animateOpen, setAnimateOpen] = useState(false);
   const [animatePreview, setAnimatePreview] = useState(0);
+  const [animateTarget, setAnimateTarget] = useState<string | undefined>();
   const [notice, setNotice] = useState("");
   const [command, setCommand] = useState("");
   const [newProjectOpen, setNewProjectOpen] = useState(false);
@@ -83,6 +86,7 @@ export function ProductionStudioWorkbench() {
   const [candidateExperience, setCandidateExperience] = useState<ExperienceConfig | null>(null);
   const [candidateAssetManifest, setCandidateAssetManifest] = useState<AssetManifest | null>(null);
   const [candidateInteractionGraph, setCandidateInteractionGraph] = useState<typeof initialGraph | null>(null);
+  const [candidateCinematicSystems, setCandidateCinematicSystems] = useState<CinematicSystemsManifest | null>(null);
   const [previewMode, setPreviewMode] = useState<"current"|"candidate">("current");
   const importRef = useRef<HTMLInputElement>(null);
 
@@ -108,9 +112,10 @@ export function ProductionStudioWorkbench() {
     experience:draft.experience,
     assetManifest:draft.assetManifest,
     interactionGraph:draft.interactionGraph,
-  }), [draft.assetManifest,draft.experience,draft.interactionGraph]);
+    cinematicSystems:draft.cinematicSystems,
+  }), [draft.assetManifest,draft.cinematicSystems,draft.experience,draft.interactionGraph]);
   const selectionLabel = selectionContext.label;
-  const guideBrief = useClientValue(() => readStored(STUDIO_GUIDE_BRIEF_KEY), "");
+  const guideBrief = useStoredValue(STUDIO_GUIDE_BRIEF_KEY);
   const mission = useMemo(() => {
     if(guideBrief.trim().length<12) return null;
     try {
@@ -175,12 +180,20 @@ export function ProductionStudioWorkbench() {
     setSelection({ kind: "scene", index });
     setAdvanced(false);
     setAnimatePreview(0);
+    setAnimateTarget(undefined);
   };
 
   // Scene changes inside a full workspace (sequencer scrubbing, playback) keep that workspace open.
   const selectSceneInWorkspace = (index: number) => {
     setActiveScene(index);
     setSelection({ kind: "scene", index });
+  };
+
+  const openSimpleAnimate = (target?:string) => {
+    setPreviewMode("current");
+    setAnimateTarget(target);
+    setAnimateOpen(true);
+    setAdvanced(false);
   };
 
   // Build is the default product surface; specialist editors are summoned under Advanced.
@@ -224,6 +237,7 @@ export function ProductionStudioWorkbench() {
     setCandidateExperience(null);
     setCandidateAssetManifest(null);
     setCandidateInteractionGraph(null);
+    setCandidateCinematicSystems(null);
     setPreviewMode("current");
 
     if(dispatch.type==="select") {
@@ -294,21 +308,26 @@ export function ProductionStudioWorkbench() {
       experience:candidateExperience,
       assetManifest:candidateAssetManifest ?? draft.assetManifest,
       interactionGraph:candidateInteractionGraph ?? draft.interactionGraph,
+      cinematicSystems:candidateCinematicSystems ?? draft.cinematicSystems,
     });
     setPreparedProposal({...preparedProposal,state:"accepted"});
     setCandidateExperience(null);
     setCandidateAssetManifest(null);
     setCandidateInteractionGraph(null);
+    setCandidateCinematicSystems(null);
     setPreviewMode("current");
     setNotice(`${preparedProposal.intent.raw} accepted into the working draft. The full project bundle remains atomically reversible; Vault/production state is unchanged.`);
   };
 
   const rejectCandidate = () => {
     const label=preparedProposal?.intent.raw;
+    writeStored(STUDIO_GUIDE_BRIEF_KEY,"");
+    writeStored(STUDIO_GUIDE_SHIP_KEY,"");
     setPreparedProposal(null);
     setCandidateExperience(null);
     setCandidateAssetManifest(null);
     setCandidateInteractionGraph(null);
+    setCandidateCinematicSystems(null);
     setPreviewMode("current");
     if(label) setNotice(`${label} rejected. Working project unchanged.`);
   };
@@ -334,6 +353,7 @@ export function ProductionStudioWorkbench() {
       setCandidateExperience(candidate.experience);
       setCandidateAssetManifest(candidate.assetManifest);
       setCandidateInteractionGraph(candidate.interactionGraph);
+      setCandidateCinematicSystems(candidate.cinematicSystems ?? draft.cinematicSystems);
       setPreviewMode("candidate");
       setNotice(`${candidate.loopId} returned a verified winning candidate. Compare it before accepting.`);
     } catch(error) {
@@ -407,17 +427,58 @@ export function ProductionStudioWorkbench() {
 
   const startProject = (name: string, kind: ProjectKind) => {
     const id = slug(name) || "untitled-experience";
-    const starter = makeStarterExperience(draft.experience, name, kind);
+    const starter = makeStarterExperience(initialExperience, name, kind);
     draft.setExperience(starter);
-    draft.setProject((current) => ({ ...current, id, name, deployment: { ...current.deployment, projectName: id } }));
+    const projectRoot=`clients/${id}`;
+    draft.setProject(parseStudioProject({
+      ...structuredClone(initialProject),
+      id,
+      name,
+      experiencePath:`${projectRoot}/experience.json`,
+      directorTreatmentPath:`${projectRoot}/director-treatment.json`,
+      directorEvidencePath:`${projectRoot}/director/evidence.json`,
+      directorDecisionsPath:`${projectRoot}/director/decisions.json`,
+      directorFingerprintPath:`${projectRoot}/director/fingerprint.json`,
+      directorCritiquePath:`${projectRoot}/director/critique.json`,
+      directorReviewHistoryPath:`${projectRoot}/director/review-history.json`,
+      creativeDirectionPath:`${projectRoot}/creative-direction.json`,
+      visualSystemsPath:`${projectRoot}/visual-systems.json`,
+      experienceModesPath:`${projectRoot}/experience-modes.json`,
+      deployment:{...initialProject.deployment,projectName:id},
+    }));
+    draft.setAssetManifest(parseAssetManifest({
+      models:[],
+      textures:[],
+      hdr:[],
+      video:[],
+      budgets:structuredClone(initialManifest.budgets),
+    }));
     draft.setInteractionGraph(emptyInteractionGraph(id));
+    draft.setCinematicSystems(parseCinematicSystems({
+      version:1,
+      defaults:initialCinematicSystems.defaults,
+      scenes:[],
+    }));
+    // New client/project means no prior mission or shipped-state context may survive.
+    writeStored(STUDIO_GUIDE_BRIEF_KEY,"");
+    writeStored(STUDIO_GUIDE_SHIP_KEY,"");
+    setPreparedProposal(null);
+    setCandidateExperience(null);
+    setCandidateAssetManifest(null);
+    setCandidateInteractionGraph(null);
+    setCandidateCinematicSystems(null);
+    setPreviewMode("current");
+    setAnimateOpen(false);
+    setAnimateTarget(undefined);
     setActiveScene(0);
     setSelection({ kind: "scene", index: 0 });
     setSurface("Build");
     setWorkspace("Motion");
     setAdvanced(false);
+    setLoopOpen(false);
+    setVaultOpen(false);
     setNewProjectOpen(false);
-    setNotice(`${name} created from zero with a valid Forge runtime and starter scene.`);
+    setNotice(`${name} created from zero with isolated assets, interactions and visual effects.`);
   };
   const createProject = () => startProject(newName, newKind);
 
@@ -445,6 +506,19 @@ export function ProductionStudioWorkbench() {
           draft.setProject(parseStudioProject(payload.project));
           draft.setAssetManifest(parseAssetManifest(payload.assetManifest));
           draft.setInteractionGraph(parseInteractionGraph(payload.interactionGraph));
+          draft.setCinematicSystems(parseCinematicSystems(payload.cinematicSystems));
+          if(payload.project.id!==draft.project.id) {
+            writeStored(STUDIO_GUIDE_BRIEF_KEY,"");
+            writeStored(STUDIO_GUIDE_SHIP_KEY,"");
+          }
+          setPreparedProposal(null);
+          setCandidateExperience(null);
+          setCandidateAssetManifest(null);
+          setCandidateInteractionGraph(null);
+          setCandidateCinematicSystems(null);
+          setPreviewMode("current");
+          setAnimateOpen(false);
+          setAnimateTarget(undefined);
           setActiveScene(0);
           setSelection({ kind: "scene", index: 0 });
           setSurface("Build");
@@ -485,7 +559,7 @@ export function ProductionStudioWorkbench() {
       draft.setExperience(next);
       setActiveScene(0);
       setSelection({ kind: "scene", index: 0 });
-      setNotice(`${file.name} imported and validated.`);
+      setNotice(`${file.name} imported as experience state only. Existing assets, interactions and visual effects were intentionally left unchanged.`);
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "Import failed validation.");
     } finally {
@@ -568,8 +642,8 @@ export function ProductionStudioWorkbench() {
           <button type="button" className="production-status" data-valid={projectHealth.status==="ready"} data-health={projectHealth.status} onClick={() => { setSurface("Review"); setAdvanced(false); }}><i />{projectHealth.status==="ready" ? "Ready" : projectHealth.status==="blocked" ? `${projectHealth.issues.filter((issue)=>issue.severity==="blocker").length} blocker` : `${projectHealth.issues.filter((issue)=>issue.severity==="warning").length} issue`}</button>
           <details className="production-assist"><summary>Assist</summary><div><Link href="/studio/agent"><strong>Creative Agent</strong><span>Turn the idea into a production strategy.</span></Link><Link href="/director"><strong>Director</strong><span>Critique and strengthen the creative direction.</span></Link><Link href="/studio/assets/create"><strong>Asset Creator</strong><span>Create a missing image, video or 3D asset.</span></Link></div></details>
           <details className="production-advanced-menu"><summary>Advanced</summary><div><button type="button" onClick={() => openAdvanced("Motion")}><strong>Sequencer</strong><span>Tracks, curves and camera timing.</span></button><button type="button" onClick={() => openAdvanced("Interact")}><strong>Interactions</strong><span>Triggers, state and behavior graph.</span></button><button type="button" onClick={() => openAdvanced("Assets")}><strong>Asset tools</strong><span>Manifest, bank and GLB inspection.</span></button><button type="button" onClick={() => openAdvanced("Visuals")}><strong>Visual effects</strong><span>Cinematic systems, masks and cursor reveals.</span></button><button type="button" onClick={() => openAdvanced("Telemetry")}><strong>Telemetry</strong><span>Real-device performance evidence.</span></button></div></details>
-          <details><summary>Project</summary><div><button type="button" onClick={() => { setRequestedLoop(undefined); setLoopOpen(true); }}>Improvement evidence</button><button type="button" onClick={() => setVaultOpen(true)}>Project Vault</button><button type="button" disabled={!draft.canUndoProjectBundle} onClick={() => { if(draft.undoProjectBundle()) { setPreparedProposal(null); setNotice("Last accepted proposal reverted atomically."); } }}>Undo accepted proposal</button><button type="button" disabled={!draft.canRedoProjectBundle} onClick={() => { if(draft.redoProjectBundle()) { setPreparedProposal(null); setNotice("Last reverted proposal restored atomically."); } }}>Redo accepted proposal</button><button type="button" onClick={() => setNewProjectOpen(true)}>New project</button><button type="button" onClick={() => importRef.current?.click()}>Import</button><button type="button" onClick={draft.reset}>Reset local draft</button></div></details>
-          <details><summary>Export</summary><div className="align-right"><button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Experience</button><button type="button" onClick={() => downloadJson("interaction-graph.json", draft.interactionGraph)}>Interactions</button><button type="button" onClick={() => downloadJson("studio-project.json", draft.project)}>Project</button><button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Assets</button></div></details><StudioIdentityBadge />
+          <details><summary>Project</summary><div><button type="button" onClick={() => { setRequestedLoop(undefined); setLoopOpen(true); }}>Improvement evidence</button><button type="button" onClick={() => setVaultOpen(true)}>Project Vault</button><button type="button" disabled={!draft.canUndoProjectBundle} onClick={() => { if(draft.undoProjectBundle()) { setPreparedProposal(null); setNotice("Last accepted proposal reverted atomically."); } }}>Undo accepted proposal</button><button type="button" disabled={!draft.canRedoProjectBundle} onClick={() => { if(draft.redoProjectBundle()) { setPreparedProposal(null); setNotice("Last reverted proposal restored atomically."); } }}>Redo accepted proposal</button><button type="button" onClick={() => setNewProjectOpen(true)}>New project</button><button type="button" onClick={() => importRef.current?.click()}>Import experience only</button><button type="button" onClick={draft.reset}>Reset local draft</button></div></details>
+          <details><summary>Export</summary><div className="align-right"><button type="button" onClick={() => downloadJson("experience.json", draft.experience)}>Experience</button><button type="button" onClick={() => downloadJson("interaction-graph.json", draft.interactionGraph)}>Interactions</button><button type="button" onClick={() => downloadJson("studio-project.json", draft.project)}>Project</button><button type="button" onClick={() => downloadJson("asset-manifest.json", draft.assetManifest)}>Assets</button><button type="button" onClick={() => downloadJson("cinematic-systems.json", draft.cinematicSystems)}>Visual effects</button></div></details><StudioIdentityBadge />
           <input ref={importRef} hidden type="file" accept="application/json,.json" onChange={(event) => void importExperience(event.target.files?.[0])} />
         </div>
       </header>
@@ -611,7 +685,7 @@ export function ProductionStudioWorkbench() {
           <section className={`production-stage${animateOpen ? " production-stage--animate" : ""}`}>
             <div className="production-stage-head">
               <div><span>{scene.copy.eyebrow}</span><strong>{scene.label}</strong></div>
-              <div className="production-stage-actions"><button type="button" onClick={() => setSelection({ kind: "camera", index: sceneIndex })}>Camera</button><button type="button" className={animateOpen ? "accent" : undefined} aria-pressed={animateOpen} onClick={() => { setPreviewMode("current"); setAnimateOpen((value) => !value); }}>Animate</button><button type="button" onClick={() => openAdvanced("Motion")}>Advanced</button></div>
+              <div className="production-stage-actions"><button type="button" onClick={() => setSelection({ kind: "camera", index: sceneIndex })}>Camera</button><button type="button" className={animateOpen ? "accent" : undefined} aria-pressed={animateOpen} onClick={() => { if(animateOpen){setAnimateOpen(false);setAnimateTarget(undefined);}else openSimpleAnimate(); }}>Animate</button><button type="button" onClick={() => openAdvanced("Motion")}>Advanced</button></div>
             </div>
             {workflow.unconfigured && <section className="production-first-run" aria-labelledby="studio-first-run-title"><div><span>START HERE</span><h2 id="studio-first-run-title">What do you want to create?</h2><p>Start with the outcome. Forge will guide assets, scenes, motion, review and publishing without asking you to learn the machinery first.</p></div><div><button type="button" className="primary" onClick={() => setGuidedOpen(true)}>Start Guided Build</button><button type="button" onClick={() => importRef.current?.click()}>Import an existing project</button><button type="button" onClick={() => { setGuideDismissed(true); try { window.localStorage.setItem("forge-studio-guided-first-run-v1", "seen"); } catch { /* storage can be blocked */ } }}>Open Studio anyway</button></div></section>}
             {!workflow.unconfigured && mission && missionPlan && <OperatorMissionControl
@@ -627,9 +701,10 @@ export function ProductionStudioWorkbench() {
               <div><button type="button" className="primary" onClick={() => runCapability(nextActions[0].capability,nextActions[0].capability.label,"next-action")}>Do it</button><button type="button" onClick={() => setGuidedOpen(true)}>Guided path · {workflow.completed}/6</button></div>
             </section>}
             <div className="production-runtime">
-              <StudioLivePreview experience={animateOpen ? draft.experience : previewMode==="candidate" && candidateExperience ? candidateExperience : draft.experience} active={sceneIndex} setActive={selectScene} progress={animateOpen ? animateGlobalProgress : undefined} />
+              <StudioLivePreview experience={animateOpen ? draft.experience : previewMode==="candidate" && candidateExperience ? candidateExperience : draft.experience} cinematicSystems={previewMode==="candidate" && candidateCinematicSystems ? candidateCinematicSystems : draft.cinematicSystems} active={sceneIndex} setActive={selectScene} progress={animateOpen ? animateGlobalProgress : undefined} />
             </div>
             {animateOpen && <AnimatePanel
+              key={animateTarget ?? "scene-motion"}
               experience={draft.experience}
               setExperience={draft.setExperience}
               active={sceneIndex}
@@ -642,7 +717,8 @@ export function ProductionStudioWorkbench() {
               canUndo={draft.canUndoExperience}
               canRedo={draft.canRedoExperience}
               onOpenSequencer={() => openAdvanced("Motion")}
-              onClose={() => setAnimateOpen(false)}
+              onClose={() => { setAnimateOpen(false); setAnimateTarget(undefined); }}
+              initialTarget={animateTarget}
             />}
             <ControlPlaneReview
               proposal={preparedProposal}
@@ -669,7 +745,7 @@ export function ProductionStudioWorkbench() {
               nextActions={nextActions}
               onCapability={(capability)=>runCapability(capability)}
             />
-            <RefinePanel context={selectionContext} experience={draft.experience} setExperience={draft.setExperience} openAdvanced={openAdvanced} />
+            <RefinePanel context={selectionContext} experience={draft.experience} setExperience={draft.setExperience} openAdvanced={openAdvanced} openAnimate={openSimpleAnimate} />
           </aside>
 
           <section className="production-bottom">
@@ -694,8 +770,20 @@ export function ProductionStudioWorkbench() {
           </div>
         </section>
       </div>}
-      {loopOpen && <LoopEnginePanel projectId={draft.project.id} projectName={draft.project.name} workingBundle={{experience:draft.experience,assetManifest:draft.assetManifest,interactionGraph:draft.interactionGraph}} initialLoopId={requestedLoop} proposal={preparedProposal} onCandidateReady={loadVerifiedLoopCandidate} onClose={() => setLoopOpen(false)} onOpenVault={() => { setLoopOpen(false); setVaultOpen(true); }} />}
-      {vaultOpen && <StudioVaultPanel draft={draft} onClose={() => setVaultOpen(false)} />}
+      {loopOpen && <LoopEnginePanel projectId={draft.project.id} projectName={draft.project.name} workingBundle={{experience:draft.experience,assetManifest:draft.assetManifest,interactionGraph:draft.interactionGraph,cinematicSystems:draft.cinematicSystems}} initialLoopId={requestedLoop} proposal={preparedProposal} onCandidateReady={loadVerifiedLoopCandidate} onClose={() => setLoopOpen(false)} onOpenVault={() => { setLoopOpen(false); setVaultOpen(true); }} />}
+      {vaultOpen && <StudioVaultPanel draft={draft} onClose={() => setVaultOpen(false)} onProjectChange={() => {
+        writeStored(STUDIO_GUIDE_BRIEF_KEY,"");
+        writeStored(STUDIO_GUIDE_SHIP_KEY,"");
+        setPreparedProposal(null);
+        setCandidateExperience(null);
+        setCandidateAssetManifest(null);
+        setCandidateInteractionGraph(null);
+        setCandidateCinematicSystems(null);
+        setPreviewMode("current");
+        setAnimateOpen(false);
+        setAnimateTarget(undefined);
+        setLoopOpen(false);
+      }} />}
       {newProjectOpen && <NewProjectDialog name={newName} setName={setNewName} kind={newKind} setKind={setNewKind} onCreate={createProject} onClose={() => setNewProjectOpen(false)} />}
     </main>
   );
@@ -723,7 +811,7 @@ function AdvancedWorkspace({ workspace, draft, activeScene, setActiveScene, onCl
     {workspace === "Motion" ? <SequencerEditor experience={draft.experience} setExperience={draft.setExperience} active={activeScene} setActive={setActiveScene} beginGroup={draft.beginExperienceGroup} endGroup={draft.endExperienceGroup} undo={draft.undoExperience} redo={draft.redoExperience} canUndo={draft.canUndoExperience} canRedo={draft.canRedoExperience} /> : null}
     {workspace === "Interact" ? <InteractionGraphEditor graph={draft.interactionGraph} setGraph={draft.setInteractionGraph} /> : null}
     {workspace === "Assets" ? <div className="production-advanced-stack"><AssetManager setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} active={activeScene} /><AssetBankPanel experience={draft.experience} setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} interactionGraph={draft.interactionGraph} undo={draft.undoExperience} canUndo={draft.canUndoExperience} /><GlbInspectorPanel experience={draft.experience} setExperience={draft.setExperience} /></div> : null}
-    {workspace === "Visuals" ? <CinematicSystemsPanel /> : null}
+    {workspace === "Visuals" ? <CinematicSystemsPanel manifest={draft.cinematicSystems} setManifest={draft.setCinematicSystems} experience={draft.experience} activeScene={activeScene} onSelectScene={setActiveScene} /> : null}
     {workspace === "Telemetry" ? <TelemetryPanel project={draft.project} setProject={draft.setProject} /> : null}
   </div>;
 }

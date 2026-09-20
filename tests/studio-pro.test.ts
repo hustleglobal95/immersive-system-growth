@@ -6,12 +6,15 @@ import test from "node:test";
 import rawExperience from "../config/experience.json";
 import rawManifest from "../config/asset-manifest.json";
 import rawProject from "../config/studio-project.json";
+import rawCinematic from "../config/cinematic-systems.json";
+import rawGraph from "../config/interaction-graph.json";
 import { parseExperience, sceneMediaSchema } from "../src/lib/configSchema";
 import { sampleExperience } from "../src/lib/sampleExperience";
 import { sampleTransitionLayer } from "../src/lib/transitionLayers";
 import { assetManifestSchema } from "../src/platform/assetManifestSchema";
 import type { AssetManifest } from "../src/types/assets";
-import { publishStudioDraft } from "../src/platform/studioPublish";
+import { publishStudioDraft, studioPublishPaths } from "../src/platform/studioPublish";
+import { parseStudioProject } from "../src/platform/studioSchema";
 // @ts-expect-error The optimizer is shared with the JavaScript CLI.
 import { optimizeTexture } from "../scripts/asset-optimize-lib.mjs";
 
@@ -81,6 +84,32 @@ test("image optimizer preserves the source and records a verified output", async
   }
 });
 
+test("Studio publishing resolves files inside the owning project bundle", () => {
+  const active=parseStudioProject(rawProject);
+  assert.deepEqual(studioPublishPaths(active),{
+    project:"config/studio-project.json",
+    assetManifest:"config/asset-manifest.json",
+    interactionGraph:"config/interaction-graph.json",
+    cinematicSystems:"config/cinematic-systems.json",
+  });
+
+  const nocterra=parseStudioProject(JSON.parse(fs.readFileSync("clients/nocterra-residences/studio-project.json","utf8")));
+  assert.deepEqual(studioPublishPaths(nocterra),{
+    project:"clients/nocterra-residences/studio-project.json",
+    assetManifest:"clients/nocterra-residences/asset-manifest.json",
+    interactionGraph:"clients/nocterra-residences/interaction-graph.json",
+    cinematicSystems:"clients/nocterra-residences/cinematic-systems.json",
+  });
+
+  const heliot=parseStudioProject(JSON.parse(fs.readFileSync("clients/heliot/studio-project.json","utf8")));
+  assert.deepEqual(studioPublishPaths(heliot),{
+    project:"clients/heliot/studio-project.json",
+    assetManifest:"src/experiences/heliot/asset-manifest.json",
+    interactionGraph:"clients/heliot/interaction-graph.json",
+    cinematicSystems:"clients/heliot/cinematic-systems.json",
+  });
+});
+
 test("Studio publishing opens a review PR without exposing its token", async () => {
   const calls: Array<{ url: string; init: RequestInit }> = [];
   const fetcher = (async (input: string | URL | Request, init: RequestInit = {}) => {
@@ -92,13 +121,13 @@ test("Studio publishing opens a review PR without exposing its token", async () 
     return Response.json({});
   }) as typeof fetch;
   const result = await publishStudioDraft(
-    { experience: rawExperience, project: rawProject, assetManifest: rawManifest, title: "Studio direction", summary: "Review camera, layers and assets." },
+    { experience: rawExperience, project: rawProject, assetManifest: rawManifest, interactionGraph: rawGraph, title: "Studio direction", summary: "Review camera, layers and assets." },
     { repository: "example/repo", token: "server-only-token" },
     fetcher,
   );
   assert.equal(result.number, 42);
   assert.match(result.branch, new RegExp(`^forge/studio-${rawProject.id}-`));
-  assert.equal(calls.length, 9);
+  assert.equal(calls.length, 11);
   assert.ok(calls.every((call) => new Headers(call.init.headers).get("authorization") === "Bearer server-only-token"));
   assert.ok(calls.every((call) => !String(call.init.body ?? "").includes("server-only-token")));
   const pullBody = JSON.parse(String(calls.at(-1)?.init.body));
@@ -106,6 +135,86 @@ test("Studio publishing opens a review PR without exposing its token", async () 
   assert.equal(pullBody.head, result.branch);
 });
 
+test("Studio publishing carries authored interactions into the review branch", async () => {
+  const calls:Array<{url:string;init:RequestInit}>=[];
+  const fetcher=(async(input:string|URL|Request,init:RequestInit={})=>{
+    const url=String(input);
+    calls.push({url,init});
+    if(url.includes("/git/ref/heads/")) return Response.json({object:{sha:"base-sha"}});
+    if(url.endsWith("/pulls")) return Response.json({number:44,html_url:"https://github.com/example/repo/pull/44"});
+    if(init.method==="GET"||!init.method) return Response.json({sha:"old-file-sha"});
+    return Response.json({});
+  }) as typeof fetch;
+  await publishStudioDraft(
+    {experience:rawExperience,project:rawProject,assetManifest:rawManifest,interactionGraph:rawGraph},
+    {repository:"example/repo",token:"server-only-token"},
+    fetcher,
+  );
+  const graphPut=calls.find((call)=>call.url.includes("/contents/config/interaction-graph.json") && call.init.method==="PUT");
+  assert.ok(graphPut);
+  const payload=JSON.parse(String(graphPut?.init.body));
+  const decoded=JSON.parse(Buffer.from(payload.content,"base64").toString("utf8"));
+  assert.deepEqual(decoded,rawGraph);
+});
+
+test("Studio publishing creates missing client config files without borrowing global config", async () => {
+  const project=parseStudioProject({
+    ...rawProject,
+    id:"fresh-client",
+    name:"Fresh Client",
+    experiencePath:"clients/fresh-client/experience.json",
+    visualSystemsPath:"clients/fresh-client/visual-systems.json",
+    creativeDirectionPath:"clients/fresh-client/creative-direction.json",
+    experienceModesPath:"clients/fresh-client/experience-modes.json",
+    deployment:{...rawProject.deployment,projectName:"fresh-client"},
+  });
+  const calls:Array<{url:string;init:RequestInit}>=[];
+  const fetcher=(async(input:string|URL|Request,init:RequestInit={})=>{
+    const url=String(input);
+    calls.push({url,init});
+    if(url.includes("/git/ref/heads/")) return Response.json({object:{sha:"base-sha"}});
+    if(url.endsWith("/pulls")) return Response.json({number:45,html_url:"https://github.com/example/repo/pull/45"});
+    if(url.includes("/contents/clients/fresh-client/") && (!init.method || init.method==="GET")) return Response.json({message:"Not Found"},{status:404});
+    if(!init.method || init.method==="GET") return Response.json({sha:"old-file-sha"});
+    return Response.json({});
+  }) as typeof fetch;
+  await publishStudioDraft(
+    {experience:rawExperience,project,assetManifest:rawManifest,interactionGraph:rawGraph,cinematicSystems:rawCinematic},
+    {repository:"example/repo",token:"server-only-token"},
+    fetcher,
+  );
+  const puts=calls.filter((call)=>call.init.method==="PUT" && call.url.includes("/contents/clients/fresh-client/"));
+  assert.equal(puts.length,5);
+  for(const call of puts) {
+    const payload=JSON.parse(String(call.init.body));
+    assert.equal("sha" in payload,false);
+  }
+  assert.equal(calls.some((call)=>call.url.includes("/contents/config/interaction-graph.json")),false);
+  assert.equal(calls.some((call)=>call.url.includes("/contents/config/cinematic-systems.json")),false);
+});
+
+test("Studio publishing carries live cinematic systems into the review branch", async () => {
+  const calls:Array<{url:string;init:RequestInit}>=[];
+  const fetcher=(async(input:string|URL|Request,init:RequestInit={})=>{
+    const url=String(input);
+    calls.push({url,init});
+    if(url.includes("/git/ref/heads/")) return Response.json({object:{sha:"base-sha"}});
+    if(url.endsWith("/pulls")) return Response.json({number:43,html_url:"https://github.com/example/repo/pull/43"});
+    if(init.method==="GET"||!init.method) return Response.json({sha:"old-file-sha"});
+    return Response.json({});
+  }) as typeof fetch;
+  await publishStudioDraft(
+    {experience:rawExperience,project:rawProject,assetManifest:rawManifest,interactionGraph:rawGraph,cinematicSystems:rawCinematic},
+    {repository:"example/repo",token:"server-only-token"},
+    fetcher,
+  );
+  const cinematicPut=calls.find((call)=>call.url.includes("/contents/config/cinematic-systems.json") && call.init.method==="PUT");
+  assert.ok(cinematicPut);
+  const payload=JSON.parse(String(cinematicPut?.init.body));
+  const decoded=JSON.parse(Buffer.from(payload.content,"base64").toString("utf8"));
+  assert.deepEqual(decoded,rawCinematic);
+});
+
 test("Studio publishing fails closed on invalid repository settings", async () => {
-  await assert.rejects(() => publishStudioDraft({ experience: rawExperience, project: rawProject, assetManifest: rawManifest }, { repository: "not-a-repository", token: "token" }), /owner\/name/);
+  await assert.rejects(() => publishStudioDraft({ experience: rawExperience, project: rawProject, assetManifest: rawManifest, interactionGraph: rawGraph }, { repository: "not-a-repository", token: "token" }), /owner\/name/);
 });

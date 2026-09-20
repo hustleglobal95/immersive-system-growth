@@ -6,10 +6,12 @@ import { loopDefinition as getLoopDefinition } from "../src/platform/loops/loopR
 import { loopDefinitionSchema, loopRunReportSchema } from "../src/platform/loops/loopSchema.ts";
 import { compactLoopContext, evaluateLoopStop, learningCandidate, selectTournamentWinner } from "../src/platform/loops/loopRunner.ts";
 import { createLoopRunReport, repairPlanSignature } from "../src/platform/loops/loopEvidence.ts";
-import { appendVaultJournal, readVaultProject } from "../src/platform/studioVault.ts";
+import { appendVaultJournal, readVaultProject, saveVaultLoopCandidate } from "../src/platform/studioVault.ts";
 import { parseExperience } from "../src/lib/configSchema.ts";
 import { parseAssetManifest } from "../src/platform/assetManifestSchema.ts";
 import { parseInteractionGraph } from "../src/lib/interactionGraph.ts";
+import { parseCinematicSystems } from "../src/lib/cinematic/schema.ts";
+import { cinematicSystems as productionCinematicSystems } from "../src/lib/cinematic/config.ts";
 import { projectStateFingerprint } from "../src/platform/control-plane/projectState.ts";
 
 const options=args(process.argv.slice(2));
@@ -70,6 +72,7 @@ const source=await resolveSource({
   experiencePath:options.experience ? String(options.experience) : undefined,
   manifestPath:options.manifest ? String(options.manifest) : undefined,
   graphPath:options.graph ? String(options.graph) : undefined,
+  cinematicPath:options.cinematic ? String(options.cinematic) : undefined,
   workRoot,
 });
 await fs.writeFile(currentIncumbentPath,JSON.stringify(source.experience,null,2)+"\n");
@@ -82,6 +85,7 @@ const sourceState={
   experience:source.experience,
   assetManifest:source.assetManifest,
   interactionGraph:source.interactionGraph,
+  cinematicSystems:source.cinematicSystems,
 };
 if(controlPlane) {
   const actualControlPlaneBaseline=projectStateFingerprint(sourceState);
@@ -473,6 +477,9 @@ try {
   report.learningCandidate=learningCandidate(report);
   report.endedAt=new Date().toISOString();
   await writeReport();
+  if(report.acceptedImprovements>0 && controlPlane) {
+    await persistVerifiedCandidate().catch((error)=>console.warn("Vault verified-candidate persistence failed: "+(error instanceof Error ? error.message : String(error))));
+  }
   await recordVaultSummary().catch((error)=>console.warn("Vault loop journal skipped: "+(error instanceof Error ? error.message : String(error))));
 
   console.log("\nFORGE LOOP "+report.status.toUpperCase());
@@ -511,17 +518,19 @@ async function writeReportWithCyclePreview(cycle) {
   const preview={...report,cycles:[...report.cycles,{...cycle,endedAt:cycle.endedAt ?? new Date().toISOString()}]};
   await fs.writeFile(reportPath,JSON.stringify(loopRunReportSchema.parse(preview),null,2)+"\n");
 }
-async function resolveSource({ projectId,experiencePath,manifestPath,graphPath,workRoot }) {
+async function resolveSource({ projectId,experiencePath,manifestPath,graphPath,cinematicPath,workRoot }) {
   if(projectId) {
     const snapshot=await readVaultProject(projectId);
     if(!snapshot) fail("Project Vault does not contain project "+projectId+". Save a checkpoint before running a project loop.");
     await fs.writeFile(path.join(workRoot,"vault-source-experience.json"),JSON.stringify(snapshot.experience,null,2)+"\n");
     await fs.writeFile(path.join(workRoot,"vault-source-asset-manifest.json"),JSON.stringify(snapshot.assetManifest,null,2)+"\n");
     await fs.writeFile(path.join(workRoot,"vault-source-interaction-graph.json"),JSON.stringify(snapshot.interactionGraph,null,2)+"\n");
+    await fs.writeFile(path.join(workRoot,"vault-source-cinematic-systems.json"),JSON.stringify(snapshot.cinematicSystems,null,2)+"\n");
     return {
       experience:snapshot.experience,
       assetManifest:snapshot.assetManifest,
       interactionGraph:snapshot.interactionGraph,
+      cinematicSystems:snapshot.cinematicSystems,
       label:"Project Vault "+projectId+" @ "+snapshot.versionId,
       versionId:snapshot.versionId,
       context:snapshot.project.name+". "+snapshot.experience.meta.description,
@@ -530,13 +539,16 @@ async function resolveSource({ projectId,experiencePath,manifestPath,graphPath,w
   const file=path.resolve(experiencePath || "config/experience.json");
   const manifestFile=path.resolve(manifestPath || "config/asset-manifest.json");
   const graphFile=path.resolve(graphPath || "config/interaction-graph.json");
+  const cinematicFile=path.resolve(cinematicPath || "config/cinematic-systems.json");
   const experience=parseExperience(JSON.parse(await fs.readFile(file,"utf8")));
   const assetManifest=parseAssetManifest(JSON.parse(await fs.readFile(manifestFile,"utf8")));
   const interactionGraph=parseInteractionGraph(JSON.parse(await fs.readFile(graphFile,"utf8")));
+  const cinematicSystems=parseCinematicSystems(await readJson(cinematicFile,productionCinematicSystems));
   return {
     experience,
     assetManifest,
     interactionGraph,
+    cinematicSystems,
     label:file,
     context:(experience.meta?.name || "Forge experience")+". "+(experience.meta?.description || ""),
   };
@@ -546,6 +558,30 @@ async function recordVaultStart() {
   const snapshot=await readVaultProject(projectId);
   if(!snapshot) return;
   await appendVaultJournal(projectId,{ id:"forge-loop",name:"Forge Loop Engine",role:"automation" },"loop-run",definition.label+" started · run "+report.runId);
+}
+async function persistVerifiedCandidate() {
+  if(!projectId || !controlPlane || report.acceptedImprovements<1) return;
+  const experience=parseExperience(JSON.parse(await fs.readFile(currentIncumbentPath,"utf8")));
+  const assetManifest=parseAssetManifest(JSON.parse(await fs.readFile(currentIncumbentManifestPath,"utf8")));
+  const interactionGraph=parseInteractionGraph(JSON.parse(await fs.readFile(currentIncumbentGraphPath,"utf8")));
+  const acceptedCycle=[...report.cycles].reverse().find((cycle)=>cycle.acceptedCandidateId);
+  const evidence=acceptedCycle?.candidates.find((candidate)=>candidate.id===acceptedCycle.acceptedCandidateId);
+  const candidateState={experience,assetManifest,interactionGraph,cinematicSystems:source.cinematicSystems};
+  await saveVaultLoopCandidate({
+    version:1,
+    runId:report.runId,
+    loopId:report.loopId,
+    projectId,
+    sourceVersionId:report.sourceVersionId,
+    proposalId:controlPlane.proposalId,
+    selectionKey:controlPlane.selectionKey,
+    baselineFingerprint:controlPlane.baselineFingerprint,
+    fingerprint:projectStateFingerprint(candidateState),
+    repairSummary:(evidence?.repairSummary ?? []).slice(0,8),
+    preferenceAgreement:typeof evidence?.preferenceAgreement==="number" ? evidence.preferenceAgreement : null,
+    ...candidateState,
+    savedAt:new Date().toISOString(),
+  });
 }
 async function recordVaultSummary() {
   if(!projectId) return;

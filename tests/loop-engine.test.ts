@@ -253,6 +253,8 @@ test("Loop Engine scripts preserve human approval and legacy repair compatibilit
   assert.match(runner,/selection-key/);
   assert.match(runner,/baseline-fingerprint/);
   assert.match(runner,/parseExperience/);
+  assert.match(runner,/saveVaultLoopCandidate/);
+  assert.match(runner,/cinematicSystems/);
   assert.match(runner,/boundedFailures/);
   assert.doesNotMatch(runner,/writeFile\([^\n]*config\/experience\.json/);
   assert.match(accept,/Human approval is required/);

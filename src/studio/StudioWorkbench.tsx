@@ -140,10 +140,10 @@ export function StudioWorkbench() {
 
       {tab === "project" && <ProjectPanel {...draft} />}
       {tab === "creative" && <CreativeDirectionPanel direction={creative} setDirection={setCreative} />}
-      {tab === "visuals" && <VisualSystemsPanel />}
+      {tab === "visuals" && <VisualSystemsPanel experience={draft.experience} cinematicSystems={draft.cinematicSystems} setCinematicSystems={draft.setCinematicSystems} />}
       {tab === "recipe" && <RecipeEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "templates" && <TemplateGallery experience={draft.experience} setExperience={draft.setExperience} />}
-      {tab === "preview" && <StudioLivePreview experience={draft.experience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
+      {tab === "preview" && <StudioLivePreview experience={draft.experience} cinematicSystems={draft.cinematicSystems} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "director" && <SceneDirector experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "timeline" && <TimelineEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "sequence" && <MotionComposer experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} beginGroup={draft.beginExperienceGroup} endGroup={draft.endExperienceGroup} undo={draft.undoExperience} redo={draft.redoExperience} canUndo={draft.canUndoExperience} canRedo={draft.canRedoExperience} />}
@@ -154,7 +154,7 @@ export function StudioWorkbench() {
       {tab === "bank" && <AssetBankPanel experience={draft.experience} setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} interactionGraph={draft.interactionGraph} undo={draft.undoExperience} canUndo={draft.canUndoExperience} />}
       {tab === "model" && <GlbInspectorPanel experience={draft.experience} setExperience={draft.setExperience} />}
       {tab === "integrations" && <IntegrationsPanel project={draft.project} setProject={draft.setProject} />}
-      {tab === "publish" && <PublishPanel project={draft.project} setProject={draft.setProject} experience={draft.experience} assetManifest={draft.assetManifest} />}
+      {tab === "publish" && <PublishPanel project={draft.project} setProject={draft.setProject} experience={draft.experience} assetManifest={draft.assetManifest} interactionGraph={draft.interactionGraph} cinematicSystems={draft.cinematicSystems} />}
       {tab === "telemetry" && <TelemetryPanel project={draft.project} setProject={draft.setProject} />}
 
       <footer className="studio-footer">

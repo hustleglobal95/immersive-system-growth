@@ -325,6 +325,12 @@ function createTexture(gl:WebGL2RenderingContext){
   return value;
 }
 function loadImage(url:string){return new Promise<HTMLImageElement>((resolve,reject)=>{const image=new Image();image.crossOrigin="anonymous";image.decoding="async";image.onload=()=>resolve(image);image.onerror=()=>reject(new Error(`Unable to load cinematic texture ${url}`));image.src=url;});}
+function canvasCssSize(element:HTMLCanvasElement){
+  const rect=element.parentElement?.getBoundingClientRect();
+  const width=rect && rect.width>1 ? rect.width : window.innerWidth;
+  const height=rect && rect.height>1 ? rect.height : window.innerHeight;
+  return {width:Math.max(1,width),height:Math.max(1,height)};
+}
 const effectCode=(effect:RevealConfig["effect"]|undefined)=>effect==="directional"?1:effect==="radial"?2:effect==="liquid"?3:effect==="burn"?4:effect==="particle"?5:effect==="wireframe"?6:effect==="contour"?7:0;
 const directionCode=(direction:RevealConfig["direction"]|SceneTransitionConfig["direction"]|undefined)=>direction==="left"?1:direction==="up"?2:direction==="down"?3:0;
 const warpCode=(mode:WarpConfig["mode"]|undefined)=>mode==="elastic"?1:mode==="cloth"?2:mode==="water"?3:mode==="heat"?4:mode==="shockwave"?5:0;
@@ -344,7 +350,7 @@ export function CinematicShaderCanvas(props:Props){
     let rt:Runtime|null=null;
     const render=()=>{
       const current=runtime.current;if(!current)return;
-      const {gl,program:p,vao,uniforms,imageSize,targetSize}=current,v=values.current,dpr=Math.min(window.devicePixelRatio||1,2),w=Math.max(1,window.innerWidth),h=Math.max(1,window.innerHeight),dw=Math.round(w*dpr),dh=Math.round(h*dpr);
+      const size=canvasCssSize(element),{gl,program:p,vao,uniforms,imageSize,targetSize}=current,v=values.current,dpr=Math.min(window.devicePixelRatio||1,2),w=size.width,h=size.height,dw=Math.round(w*dpr),dh=Math.round(h*dpr);
       if(element.width!==dw||element.height!==dh){element.width=dw;element.height=dh;element.style.width=`${w}px`;element.style.height=`${h}px`;}
       gl.viewport(0,0,dw,dh);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.useProgram(p);gl.bindVertexArray(vao);
       gl.uniform1i(uniforms.uBase,0);gl.uniform1i(uniforms.uTarget,1);gl.uniform1i(uniforms.uDepth,2);gl.uniform1i(uniforms.uNormal,3);

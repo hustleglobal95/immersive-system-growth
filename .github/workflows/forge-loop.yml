@@ -1,0 +1,82 @@
+name: Forge Loop
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_id:
+        description: Vault project id
+        required: true
+        type: string
+      loop_id:
+        description: Forge loop id
+        required: true
+        type: string
+      proposal_id:
+        description: Control Plane proposal id
+        required: true
+        type: string
+      selection_key:
+        description: Selected Forge target
+        required: true
+        type: string
+      baseline_fingerprint:
+        description: Working project fingerprint
+        required: true
+        type: string
+      context:
+        description: Bounded operator intent
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: forge-loop-${{ inputs.project_id }}-${{ inputs.loop_id }}
+  cancel-in-progress: false
+
+jobs:
+  run-loop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      FORGE_GITHUB_REPOSITORY: ${{ github.repository }}
+      FORGE_GITHUB_TOKEN: ${{ github.token }}
+      FORGE_VAULT_BRANCH: forge-vault
+      FORGE_VISUAL_CRITIC_URL: ${{ secrets.FORGE_VISUAL_CRITIC_URL }}
+      FORGE_VISUAL_CRITIC_TOKEN: ${{ secrets.FORGE_VISUAL_CRITIC_TOKEN }}
+      PROJECT_ID: ${{ inputs.project_id }}
+      LOOP_ID: ${{ inputs.loop_id }}
+      PROPOSAL_ID: ${{ inputs.proposal_id }}
+      SELECTION_KEY: ${{ inputs.selection_key }}
+      BASELINE_FINGERPRINT: ${{ inputs.baseline_fingerprint }}
+      LOOP_CONTEXT: ${{ inputs.context }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Verify Loop prerequisites
+        run: |
+          test -n "$FORGE_VISUAL_CRITIC_URL" || { echo "FORGE_VISUAL_CRITIC_URL repository secret is required"; exit 2; }
+          npm run loop:list
+      - name: Run bounded Forge Loop
+        run: |
+          npm run loop:run -- \
+            --loop "$LOOP_ID" \
+            --project "$PROJECT_ID" \
+            --proposal-id "$PROPOSAL_ID" \
+            --selection-key "$SELECTION_KEY" \
+            --baseline-fingerprint "$BASELINE_FINGERPRINT" \
+            --context "$LOOP_CONTEXT"
+      - name: Upload Loop evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: forge-loop-${{ inputs.project_id }}-${{ inputs.loop_id }}-${{ github.run_id }}
+          path: test-results/forge-loops/
+          if-no-files-found: warn
+          retention-days: 14

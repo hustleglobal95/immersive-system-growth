@@ -28,6 +28,7 @@ export function AnimatePanel({
   canRedo,
   onOpenSequencer,
   onClose,
+  initialTarget,
 }: {
   experience: ExperienceConfig;
   setExperience: Dispatch<SetStateAction<ExperienceConfig>>;
@@ -42,13 +43,14 @@ export function AnimatePanel({
   canRedo: boolean;
   onOpenSequencer: () => void;
   onClose: () => void;
+  initialTarget?: string;
 }) {
   const scene = experience.scenes[active];
   const options = useMemo(() => motionTargetOptions(experience, scene), [experience, scene]);
   const [archetype, setArchetype] = useState<MotionArchetypeName>("editorial-reveal");
-  const [target, setTarget] = useState<string>("camera.position");
+  const [target, setTarget] = useState<string>(initialTarget ?? "camera.position");
   const [viewport, setViewport] = useState<MotionViewport>("all");
-  const [selectedTrackId, setSelectedTrackId] = useState(scene.motionTracks[0]?.id ?? "");
+  const [selectedTrackId, setSelectedTrackId] = useState(scene.motionTracks.find((track)=>track.target===initialTarget)?.id ?? scene.motionTracks[0]?.id ?? "");
   const [notice, setNotice] = useState("");
 
   const selectedTrack = scene.motionTracks.find((track) => track.id === selectedTrackId) ?? scene.motionTracks[0] ?? null;
