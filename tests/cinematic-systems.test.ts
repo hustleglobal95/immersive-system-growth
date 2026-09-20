@@ -10,7 +10,6 @@ import experience from "../config/experience.json" with { type: "json" };
 import { cursorRevealIdleDecay, resolveCursorRevealBackend, shouldInjectCursorReveal } from "../src/lib/cinematic/cursorReveal";
 import { resolveVisualPhysicsBackend, sampleSceneTransition, visualPhysicsCost } from "../src/lib/cinematic/visualPhysics";
 import { cinematicPresets } from "../src/lib/cinematic/presets";
-import { resolveVisualPhysicsBackend, sampleSceneTransition, visualPhysicsCost } from "../src/lib/cinematic/visualPhysics";
 
 test("cinematic manifest covers exactly the experience's scenes",()=>{
   const parsed=parseCinematicSystems(raw);
