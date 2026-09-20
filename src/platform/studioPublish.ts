@@ -3,11 +3,13 @@ import { parseExperience } from "@/src/lib/configSchema";
 import { parseAssetManifest } from "@/src/platform/assetManifestSchema";
 import { parseStudioProject } from "@/src/platform/studioSchema";
 import { parseCinematicSystems } from "@/src/lib/cinematic/schema";
+import { parseInteractionGraph } from "@/src/lib/interactionGraph";
 
 export interface StudioPublishInput {
   experience: unknown;
   project: unknown;
   assetManifest: unknown;
+  interactionGraph: unknown;
   cinematicSystems?: unknown;
   title?: string;
   summary?: string;
@@ -24,6 +26,7 @@ export async function publishStudioDraft(input: StudioPublishInput, environment:
   const experience = parseExperience(input.experience);
   const project = parseStudioProject(input.project);
   const assetManifest = parseAssetManifest(input.assetManifest);
+  const interactionGraph = parseInteractionGraph(input.interactionGraph);
   const cinematicSystems = input.cinematicSystems ? parseCinematicSystems(input.cinematicSystems) : null;
   const base = project.deployment.productionBranch;
   if (!/^[A-Za-z0-9._/-]+$/.test(base) || base.includes("..")) throw new Error("Invalid production branch");
@@ -46,6 +49,7 @@ export async function publishStudioDraft(input: StudioPublishInput, environment:
     { path: project.experiencePath, value: experience },
     { path: projectPath, value: project },
     { path: "config/asset-manifest.json", value: assetManifest },
+    { path: "config/interaction-graph.json", value: interactionGraph },
     ...(cinematicSystems ? [{ path: "config/cinematic-systems.json", value: cinematicSystems }] : []),
   ];
   for (const file of files) {
