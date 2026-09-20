@@ -64,7 +64,7 @@ for(const file of [
 ]) {
   const source=read(file);
   if(!source.includes("requireStudioPageAccess")) failures.push(`${file}: Studio page must enforce signed session access`);
-  if(!source.includes('dynamic = "force-dynamic"')) failures.push(`${file}: authenticated Studio pages must be request-time rendered`);
+  if(!/export const dynamic\s*=\s*["\']force-dynamic["\']/.test(source)) failures.push(`${file}: authenticated Studio pages must be request-time rendered`);
 }
 
 const engine=read("src/lib/interactionGraphEngine.ts");
