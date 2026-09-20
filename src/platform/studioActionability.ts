@@ -132,6 +132,14 @@ export const studioActionabilityContracts:readonly StudioActionabilityContract[]
     browserEvidence:"Advanced Telemetry mutates policy without permanent navigation",
   },
   {
+    id:"advanced.discoverability",
+    label:"Search and AI",
+    mode:"author",
+    source:"src/studio/DiscoverabilityPanel.tsx",
+    evidence:["Discoverability contract","setProject","Allow AI search crawlers"],
+    browserEvidence:"Advanced Search and AI mutates discoverability policy and Project Health",
+  },
+  {
     id:"mission-control",
     label:"Mission Control",
     mode:"execute",
