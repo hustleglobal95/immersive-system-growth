@@ -21,6 +21,7 @@ import { AssetBankPanel } from "@/src/studio/AssetBankPanel";
 import { GlbInspectorPanel } from "@/src/studio/GlbInspectorPanel";
 import { TelemetryPanel } from "@/src/studio/ProjectPanels";
 import { CinematicSystemsPanel } from "@/src/studio/CinematicSystemsPanel";
+import { AnimatePanel } from "@/src/studio/AnimatePanel";
 import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
 import { STUDIO_GUIDE_BRIEF_KEY, STUDIO_GUIDE_SHIP_KEY, StudioWorkflowGuide } from "@/src/studio/StudioWorkflowGuide";
 import { StudioVaultPanel } from "@/src/studio/StudioVaultPanel";
@@ -65,6 +66,8 @@ export function ProductionStudioWorkbench() {
   const [activeScene, setActiveScene] = useState(0);
   const [selection, setSelection] = useState<Selection>({ kind: "scene", index: 0 });
   const [advanced, setAdvanced] = useState(false);
+  const [animateOpen, setAnimateOpen] = useState(false);
+  const [animatePreview, setAnimatePreview] = useState(0);
   const [notice, setNotice] = useState("");
   const [command, setCommand] = useState("");
   const [newProjectOpen, setNewProjectOpen] = useState(false);
@@ -85,6 +88,7 @@ export function ProductionStudioWorkbench() {
 
   const sceneIndex = Math.min(activeScene, draft.experience.scenes.length - 1);
   const scene = draft.experience.scenes[sceneIndex];
+  const animateGlobalProgress = scene.range[0] + (scene.range[1] - scene.range[0]) * animatePreview;
   const selectionContext = useMemo(() => resolveSelectionContext({
     experience:draft.experience,
     manifest:draft.assetManifest,
@@ -170,6 +174,7 @@ export function ProductionStudioWorkbench() {
     setActiveScene(index);
     setSelection({ kind: "scene", index });
     setAdvanced(false);
+    setAnimatePreview(0);
   };
 
   // Scene changes inside a full workspace (sequencer scrubbing, playback) keep that workspace open.
@@ -180,6 +185,7 @@ export function ProductionStudioWorkbench() {
 
   // Build is the default product surface; specialist editors are summoned under Advanced.
   const openAdvanced = (target:Workspace="Motion") => {
+    setAnimateOpen(false);
     setWorkspace(target);
     setAdvanced(true);
   };
@@ -555,7 +561,7 @@ export function ProductionStudioWorkbench() {
       <header className="production-topbar">
         <div className="production-brand"><Link href="/forge">FORGE</Link><span>STUDIO</span></div>
         <nav aria-label="Primary Studio surfaces">
-          {primarySurfaces.map((item) => <button key={item} type="button" aria-current={!advanced && surface === item ? "page" : undefined} onClick={() => { setSurface(item); setAdvanced(false); }}>{item}</button>)}
+          {primarySurfaces.map((item) => <button key={item} type="button" aria-current={!advanced && surface === item ? "page" : undefined} onClick={() => { setSurface(item); setAdvanced(false); setAnimateOpen(false); }}>{item}</button>)}
         </nav>
         <div className="production-top-actions">
           <button id="studio-guided-build-button" type="button" className="production-guided-button" onClick={() => setGuidedOpen(true)}><span>Guided Build</span><strong>{workflow.completed}/6</strong></button>
@@ -605,7 +611,7 @@ export function ProductionStudioWorkbench() {
           <section className="production-stage">
             <div className="production-stage-head">
               <div><span>{scene.copy.eyebrow}</span><strong>{scene.label}</strong></div>
-              <div className="production-stage-actions"><button type="button" onClick={() => setSelection({ kind: "camera", index: sceneIndex })}>Camera</button><button type="button" onClick={() => openAdvanced("Motion")}>Advanced</button></div>
+              <div className="production-stage-actions"><button type="button" onClick={() => setSelection({ kind: "camera", index: sceneIndex })}>Camera</button><button type="button" className={animateOpen ? "accent" : undefined} aria-pressed={animateOpen} onClick={() => { setPreviewMode("current"); setAnimateOpen((value) => !value); }}>Animate</button><button type="button" onClick={() => openAdvanced("Motion")}>Advanced</button></div>
             </div>
             {workflow.unconfigured && <section className="production-first-run" aria-labelledby="studio-first-run-title"><div><span>START HERE</span><h2 id="studio-first-run-title">What do you want to create?</h2><p>Start with the outcome. Forge will guide assets, scenes, motion, review and publishing without asking you to learn the machinery first.</p></div><div><button type="button" className="primary" onClick={() => setGuidedOpen(true)}>Start Guided Build</button><button type="button" onClick={() => importRef.current?.click()}>Import an existing project</button><button type="button" onClick={() => { setGuideDismissed(true); try { window.localStorage.setItem("forge-studio-guided-first-run-v1", "seen"); } catch { /* storage can be blocked */ } }}>Open Studio anyway</button></div></section>}
             {!workflow.unconfigured && mission && missionPlan && <OperatorMissionControl
@@ -621,8 +627,23 @@ export function ProductionStudioWorkbench() {
               <div><button type="button" className="primary" onClick={() => runCapability(nextActions[0].capability,nextActions[0].capability.label,"next-action")}>Do it</button><button type="button" onClick={() => setGuidedOpen(true)}>Guided path · {workflow.completed}/6</button></div>
             </section>}
             <div className="production-runtime">
-              <StudioLivePreview experience={previewMode==="candidate" && candidateExperience ? candidateExperience : draft.experience} active={sceneIndex} setActive={selectScene} />
+              <StudioLivePreview experience={animateOpen ? draft.experience : previewMode==="candidate" && candidateExperience ? candidateExperience : draft.experience} active={sceneIndex} setActive={selectScene} progress={animateOpen ? animateGlobalProgress : undefined} />
             </div>
+            {animateOpen && <AnimatePanel
+              experience={draft.experience}
+              setExperience={draft.setExperience}
+              active={sceneIndex}
+              previewProgress={animatePreview}
+              onPreviewProgress={setAnimatePreview}
+              beginGroup={draft.beginExperienceGroup}
+              endGroup={draft.endExperienceGroup}
+              undo={draft.undoExperience}
+              redo={draft.redoExperience}
+              canUndo={draft.canUndoExperience}
+              canRedo={draft.canRedoExperience}
+              onOpenSequencer={() => openAdvanced("Motion")}
+              onClose={() => setAnimateOpen(false)}
+            />}
             <ControlPlaneReview
               proposal={preparedProposal}
               hasCandidate={Boolean(candidateExperience)}
