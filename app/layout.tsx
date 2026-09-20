@@ -20,7 +20,7 @@ const discoverability=project.discoverability;
 export const metadata: Metadata = {
   // metadataBase is what makes Open Graph and canonical URLs absolute. Without it a social
   // scraper resolves them against the request and sees localhost.
-  metadataBase: new URL(siteUrl()),
+  metadataBase: new URL(discoverability.canonicalBaseUrl || siteUrl()),
   title: discoverability.defaultTitle || experience.meta.name,
   description: discoverability.defaultDescription || experience.meta.description,
   openGraph: {
