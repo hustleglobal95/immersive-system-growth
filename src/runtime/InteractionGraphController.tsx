@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 import { interactionGraph } from "@/src/lib/interactionGraphConfig";
-import { interactionEventTypeSchema } from "@/src/lib/interactionGraph";
 import {
   expandInteractionEventForDevice,
   runInteractionEvent,
@@ -14,7 +13,7 @@ import { useExperienceStore } from "@/src/store/experienceStore";
 import { useInteractionStore } from "@/src/store/interactionStore";
 import {
   FORGE_INTERACTION_EVENT,
-  sanitizeInteractionPayload,
+  parseRuntimeInteractionEvent,
 } from "@/src/runtime/interactionEvents";
 
 interface ForgeInteractionDetail {
@@ -55,8 +54,10 @@ export function InteractionGraphController() {
   }, []);
 
   const dispatch = useCallback((event: InteractionEvent) => {
+    const safeEvent = parseRuntimeInteractionEvent(event);
+    if (!safeEvent) return;
     const coarse = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
-    for (const candidate of expandInteractionEventForDevice(interactionGraph, event, coarse)) {
+    for (const candidate of expandInteractionEventForDevice(interactionGraph, safeEvent, coarse)) {
       if (candidate.type === "drag") {
         const dx = numericPayload(candidate, "dx");
         const dy = numericPayload(candidate, "dy");
@@ -146,18 +147,12 @@ export function InteractionGraphController() {
     const custom = (event: Event) => {
       const detail = (event as CustomEvent<ForgeInteractionDetail>).detail ?? {};
       if (!detail.name) return;
-      dispatch({ type: "custom", name: detail.name, target: detail.target, payload: sanitizeInteractionPayload(detail.payload) });
+      const safe = parseRuntimeInteractionEvent({ type: "custom", name: detail.name, target: detail.target, payload: detail.payload });
+      if (safe) dispatch(safe);
     };
     const typed = (event: Event) => {
-      const detail = (event as CustomEvent<InteractionEvent>).detail;
-      if (!detail || !interactionEventTypeSchema.safeParse(detail.type).success) return;
-      dispatch({
-        type: detail.type,
-        target: cleanToken(detail.target),
-        sceneId: cleanSceneId(detail.sceneId),
-        name: cleanToken(detail.name),
-        payload: sanitizeInteractionPayload(detail.payload),
-      });
+      const safe = parseRuntimeInteractionEvent((event as CustomEvent<unknown>).detail);
+      if (safe) dispatch(safe);
     };
     const key = (event: KeyboardEvent) => {
       armIdle();
@@ -360,14 +355,3 @@ function finiteOrNull(value: number | null) {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
-function cleanToken(value: string | undefined) {
-  if (!value) return undefined;
-  const clean = value.replace(/[^a-zA-Z0-9_.:-]+/g, "-").replace(/^-|-$/g, "").slice(0, 120);
-  return clean || undefined;
-}
-
-function cleanSceneId(value: string | undefined) {
-  if (!value) return undefined;
-  const clean = value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-  return clean || undefined;
-}
