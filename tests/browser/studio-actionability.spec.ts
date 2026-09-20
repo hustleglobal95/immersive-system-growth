@@ -29,19 +29,23 @@ function minimalGlb(name="Rotor") {
 
 test("Build rig inspector targets the selected part in simple Animate",async({page})=>{
   await page.goto("/studio");
-  await expect(page.getByRole("button",{name:"Build",exact:true})).toBeVisible();
-  await page.evaluate(()=>{
+  await openAdvanced(page,/Asset tools/);
+  const inspector=page.locator("section.studio-card").filter({has:page.getByRole("heading",{name:"GLB node mapper",level:2})});
+  await inspector.locator('input[type="file"]').setInputFiles({name:"actionability-rig.glb",mimeType:"model/gltf-binary",buffer:minimalGlb()});
+  await expect(page.getByText("Rotor",{exact:true}).first()).toBeVisible();
+  await page.getByLabel("Public model path").fill("/models/client/actionability-rig.glb");
+  await page.getByRole("button",{name:"Select recommended",exact:true}).click();
+  const create=page.getByRole("button",{name:"Create deterministic rig tracks",exact:true});
+  await expect(create).toBeEnabled();
+  await create.click();
+  await expect.poll(()=>page.evaluate(()=>{
     const raw=localStorage.getItem("forge-studio-v2");
-    if(!raw) throw new Error("Studio draft was not persisted");
-    const draft=JSON.parse(raw);
-    draft.experience.productRig={
-      nodes:["Rotor"],
-      mapping:[],
-      tracks:[{node:"Rotor",property:"position",mode:"offset",keyframes:[{at:0,value:[0,0,0]},{at:1,value:[0,0,0]}]}],
-    };
-    localStorage.setItem("forge-studio-v2",JSON.stringify(draft));
-  });
-  await page.reload();
+    if(!raw) return false;
+    const rig=JSON.parse(raw).experience?.productRig;
+    return rig?.nodes?.includes("Rotor") && rig?.tracks?.some((track:{node?:string})=>track.node==="Rotor");
+  })).toBe(true);
+
+  await page.locator(".production-advanced-head").getByRole("button",{name:/Back to Studio/}).click();
   await page.getByRole("button",{name:"Structure",exact:true}).click();
   await page.locator(".production-tree").getByRole("button",{name:/Rotor/}).click();
   await page.locator(".production-right").getByRole("button",{name:"Position",exact:true}).click();
