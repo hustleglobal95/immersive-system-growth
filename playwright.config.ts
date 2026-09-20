@@ -14,7 +14,7 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   webServer: {
-    command: "npm run start -- --hostname 127.0.0.1 --port 3000",
+    command: "STUDIO_AUTH_ENABLED=false ENABLE_STUDIO_IN_PROD=true npm run start -- --hostname 127.0.0.1 --port 3000",
     url: "http://127.0.0.1:3000/api/health",
     reuseExistingServer: !process.env.CI,
     timeout: 30000,
