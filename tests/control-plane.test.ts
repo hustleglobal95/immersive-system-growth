@@ -4,8 +4,10 @@ import fs from "node:fs";
 import rawExperience from "../config/experience.json";
 import rawManifest from "../config/asset-manifest.json";
 import rawGraph from "../config/interaction-graph.json";
+import rawCinematic from "../config/cinematic-systems.json";
 import { parseExperience } from "../src/lib/configSchema";
 import { parseInteractionGraph } from "../src/lib/interactionGraph";
+import { parseCinematicSystems } from "../src/lib/cinematic/schema";
 import { parseAssetManifest } from "../src/platform/assetManifestSchema";
 import { capabilitiesForContext, forgeCapabilityRegistry, matchCapabilityIntent, validateCapabilityRegistry } from "../src/platform/control-plane/capabilityRegistry";
 import { createProposalDraft, forgeProposalSchema, proposalCanMutateAuthoritativeState, proposalRequiresPreview } from "../src/platform/control-plane/proposal";
@@ -20,6 +22,7 @@ import { projectStateFingerprint } from "../src/platform/control-plane/projectSt
 const experience=parseExperience(rawExperience);
 const manifest=parseAssetManifest(rawManifest);
 const graph=parseInteractionGraph(rawGraph);
+const cinematic=parseCinematicSystems(rawCinematic);
 
 test("Selection Context centralizes scene state and production signals",()=>{
   const context=resolveSelectionContext({
@@ -315,13 +318,18 @@ test("Verified Loop candidates attach only to matching deep proposals",()=>{
   }));
 });
 
-test("Project-state fingerprint is deterministic and changes with project state",()=>{
-  const first=projectStateFingerprint({experience,assetManifest:manifest,interactionGraph:graph});
-  const second=projectStateFingerprint({experience:structuredClone(experience),assetManifest:structuredClone(manifest),interactionGraph:structuredClone(graph)});
+test("Project-state fingerprint is deterministic and includes visual-effects state",()=>{
+  const first=projectStateFingerprint({experience,assetManifest:manifest,interactionGraph:graph,cinematicSystems:cinematic});
+  const second=projectStateFingerprint({experience:structuredClone(experience),assetManifest:structuredClone(manifest),interactionGraph:structuredClone(graph),cinematicSystems:structuredClone(cinematic)});
   assert.equal(first,second);
   const changed=parseExperience(rawExperience);
   changed.scenes[0].copy={...changed.scenes[0].copy,headline:changed.scenes[0].copy.headline+"!"};
-  assert.notEqual(projectStateFingerprint({experience:changed,assetManifest:manifest,interactionGraph:graph}),first);
+  assert.notEqual(projectStateFingerprint({experience:changed,assetManifest:manifest,interactionGraph:graph,cinematicSystems:cinematic}),first);
+  const visual=structuredClone(cinematic);
+  const configured=visual.scenes[0];
+  if(configured) configured.warp={mode:"elastic",strength:.5,radius:.3,falloff:2,pointerInfluence:1,velocityInfluence:.6,scrollInfluence:.2,frequency:8};
+  else visual.scenes.push({id:experience.scenes[0].id,warp:{mode:"elastic",strength:.5,radius:.3,falloff:2,pointerInfluence:1,velocityInfluence:.6,scrollInfluence:.2,frequency:8},procedural:[],occlusion:[]});
+  assert.notEqual(projectStateFingerprint({experience,assetManifest:manifest,interactionGraph:graph,cinematicSystems:visual}),first);
 });
 
 test("Studio exposes Build Review Ship and keeps specialist tools under Advanced",()=>{
