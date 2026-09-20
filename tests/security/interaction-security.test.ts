@@ -36,7 +36,7 @@ test("malicious XSS interaction input is rejected before graph actions execute",
   assert.equal(result.effects.length,0);
   assert.equal(result.matchedTriggers.length,0);
   assert.equal(result.halted,true);
-  assert.match(result.trace[0]?.detail ?? "","Rejected invalid interaction event");
+  assert.match(result.trace[0]?.detail ?? "",/Rejected invalid interaction event/);
 });
 
 test("raycast targets and payloads are strictly bounded",()=>{
