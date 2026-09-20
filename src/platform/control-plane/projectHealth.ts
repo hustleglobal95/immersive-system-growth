@@ -2,10 +2,12 @@ import { analyzeAssetManifest } from "@/src/platform/assetIntelligence";
 import type { InteractionGraph } from "@/src/lib/interactionGraph";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig } from "@/src/types/experience";
+import type { StudioProject } from "@/src/platform/studioSchema";
+import { evaluateDiscoverability } from "@/src/platform/discoverability";
 
 export type ProjectHealthStatus="ready"|"attention"|"blocked";
 export type ProjectHealthSeverity="info"|"warning"|"blocker";
-export type ProjectHealthDomain="structure"|"assets"|"motion"|"mobile"|"interaction"|"validation";
+export type ProjectHealthDomain="structure"|"assets"|"motion"|"mobile"|"interaction"|"validation"|"discoverability";
 
 export interface ProjectHealthIssue {
   id:string;
@@ -30,6 +32,8 @@ export interface ProjectHealthReport {
     manifestHealth:number;
     interactionNodes:number;
     validationIssues:number;
+    discoverabilityScore:number;
+    discoverabilityIssues:number;
   };
 }
 
@@ -38,6 +42,7 @@ export function evaluateProjectHealth(input:{
   manifest:AssetManifest;
   graph:InteractionGraph;
   validationIssues?:string[];
+  project?:StudioProject;
 }):ProjectHealthReport {
   const intelligence=analyzeAssetManifest(input.manifest);
   const issues:ProjectHealthIssue[]=[];
@@ -69,6 +74,20 @@ export function evaluateProjectHealth(input:{
     });
   });
 
+  const discoverability=input.project ? evaluateDiscoverability({discoverability:input.project.discoverability,experience:input.experience}) : null;
+  if(discoverability) {
+    for(const finding of discoverability.issues) {
+      issues.push({
+        id:"discoverability-"+finding.id,
+        domain:"discoverability",
+        severity:finding.severity,
+        title:finding.title,
+        detail:finding.detail,
+        recommendedAction:finding.recommendedAction,
+      });
+    }
+  }
+
   if(input.graph.nodes.length<=1) issues.push({
     id:"interaction-thin",domain:"interaction",severity:"info",title:"Interaction layer is minimal",
     detail:"The project has little or no authored stateful behavior.",
@@ -93,6 +112,8 @@ export function evaluateProjectHealth(input:{
       manifestHealth:intelligence.score,
       interactionNodes:input.graph.nodes.length,
       validationIssues:(input.validationIssues ?? []).length,
+      discoverabilityScore:discoverability?.score ?? 100,
+      discoverabilityIssues:discoverability?.issues.length ?? 0,
     },
   };
 }
