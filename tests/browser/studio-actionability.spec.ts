@@ -70,12 +70,13 @@ test("Advanced Asset tools can stage a file and mutate project asset state",asyn
   const intake=page.locator("section.studio-card").filter({has:page.getByRole("heading",{name:"Inspect before repository upload",level:2})});
   const png=Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZfKkAAAAASUVORK5CYII=","base64");
   await intake.locator('input[type="file"]').setInputFiles({name:"actionability.png",mimeType:"image/png",buffer:png});
-  await expect(page.getByRole("status")).toContainText("1 asset inspected locally");
+  const intakeStatus=intake.locator('p[role="status"]');
+  await expect(intakeStatus).toContainText("1 asset inspected locally");
   const record=page.locator(".asset-intake-list article").filter({hasText:"actionability.png"});
   await record.getByRole("button",{name:"Register",exact:true}).click();
-  await expect(page.getByRole("status")).toContainText("added to the draft manifest");
+  await expect(intakeStatus).toContainText("added to the draft manifest");
   await record.getByRole("button",{name:"Use in draft",exact:true}).click();
-  await expect(page.getByRole("status")).toContainText("Active scene media updated");
+  await expect(intakeStatus).toContainText("Active scene media updated");
   await expect.poll(()=>page.evaluate(()=>{
     const raw=localStorage.getItem("forge-studio-v2");
     if(!raw) return false;
