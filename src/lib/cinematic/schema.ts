@@ -55,6 +55,8 @@ export const cursorRevealSchema = z.object({
   fadeSeconds: finite.min(0.05).max(20).default(1.2),
   trailPersistence: finite.min(0).max(1).default(0.82),
   touch: z.enum(["disabled", "drag", "always"]).default("drag"),
+  fit: z.enum(["cover", "contain"]).default("cover"),
+  position: z.tuple([finite.min(0).max(100), finite.min(0).max(100)]).default([50, 50]),
   fluidResolution: z.number().int().min(64).max(512).default(192),
   velocityDissipation: finite.min(0.8).max(1).default(0.985),
   dyeDissipation: finite.min(0.8).max(1).default(0.992),
