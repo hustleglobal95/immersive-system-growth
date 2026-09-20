@@ -125,8 +125,8 @@ export function RefinePanel({ context, experience, setExperience, openAdvanced, 
   if(context.kind==="copy") return <div className="production-inspector">
     <Section title="Copy">
       <label>Eyebrow<input value={scene.copy.eyebrow} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,copy:{...current.copy,eyebrow:event.target.value}}))} /></label>
-      <label>Headline<textarea rows={3} value={scene.copy.headline} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,copy:{...current.copy,headline:event.target.value}}))} /></label>
-      <label>Body<textarea rows={4} value={scene.copy.body} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,copy:{...current.copy,body:event.target.value}}))} /></label>
+      <label>Headline<textarea required minLength={1} rows={3} value={scene.copy.headline} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,copy:{...current.copy,headline:event.target.value}}))} /></label>
+      <label>Body<textarea required minLength={1} rows={4} value={scene.copy.body} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,copy:{...current.copy,body:event.target.value}}))} /></label>
     </Section>
     <Section title="Motion"><button type="button" onClick={()=>openAnimate("copy.opacity")}>Animate typography</button><button type="button" onClick={()=>openAdvanced("Motion")}>Advanced timing</button></Section>
   </div>;
@@ -163,10 +163,10 @@ export function RefinePanel({ context, experience, setExperience, openAdvanced, 
 
   return <div className="production-inspector">
     <Section title="Content">
-      <label>Name<input value={scene.label} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,label:event.target.value}))} /></label>
+      <label>Name<input required minLength={1} value={scene.label} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,label:event.target.value}))} /></label>
       <label>Eyebrow<input value={scene.copy.eyebrow} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,copy:{...current.copy,eyebrow:event.target.value}}))} /></label>
-      <label>Headline<textarea rows={3} value={scene.copy.headline} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,copy:{...current.copy,headline:event.target.value}}))} /></label>
-      <label>Body<textarea rows={4} value={scene.copy.body} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,copy:{...current.copy,body:event.target.value}}))} /></label>
+      <label>Headline<textarea required minLength={1} rows={3} value={scene.copy.headline} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,copy:{...current.copy,headline:event.target.value}}))} /></label>
+      <label>Body<textarea required minLength={1} rows={4} value={scene.copy.body} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,copy:{...current.copy,body:event.target.value}}))} /></label>
     </Section>
     <Section title="Motion"><button type="button" onClick={()=>openAnimate()}>Animate scene</button><button type="button" onClick={()=>openAdvanced("Motion")}>Advanced keyframes</button></Section>
   </div>;
@@ -275,8 +275,16 @@ function updateScene(
   index:number,
   change:(scene:SceneDefinition)=>SceneDefinition,
 ) {
-  setExperience((current)=>parseExperience({
-    ...current,
-    scenes:current.scenes.map((scene,sceneIndex)=>sceneIndex===index ? change(scene) : scene),
-  }));
+  setExperience((current)=>{
+    try {
+      return parseExperience({
+        ...current,
+        scenes:current.scenes.map((scene,sceneIndex)=>sceneIndex===index ? change(scene) : scene),
+      });
+    } catch {
+      // Direct Build controls must never throw on a temporary invalid keystroke.
+      // Keep the last valid project state; field constraints communicate the bounded input.
+      return current;
+    }
+  });
 }
