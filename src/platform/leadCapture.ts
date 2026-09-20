@@ -123,7 +123,11 @@ export function verifyBrochureToken(token: string, secret: string, now = Date.no
   const cut = token.lastIndexOf(".");
   if (cut <= 0) return null;
   const body = token.slice(0, cut);
-  const received = Buffer.from(token.slice(cut + 1), "base64url");
+  const signature = token.slice(cut + 1);
+  const received = Buffer.from(signature, "base64url");
+  // Base64url has unused trailing bits for a 32-byte HMAC. Some decoders accept multiple
+  // textual spellings for the same bytes, so require the canonical spelling before comparing.
+  if (received.toString("base64url") !== signature) return null;
   const expected = createHmac("sha256", secret).update(body).digest();
   if (received.length !== expected.length || !timingSafeEqual(received, expected)) return null;
   try {
