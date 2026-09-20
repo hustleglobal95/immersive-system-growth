@@ -5,8 +5,11 @@ const id = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 const token = z.string().regex(/^[a-zA-Z0-9_.:-]{1,160}$/);
 const eventName = z.string().regex(/^[a-zA-Z0-9_.:-]{1,120}$/);
 const className = z.string().regex(/^[a-zA-Z_][a-zA-Z0-9_-]{0,79}$/);
-const primitive = z.union([z.string().max(500), finite, z.boolean(), z.null()]);
-const primitiveRecord = z.record(z.string().min(1).max(80), primitive);
+const unsafeRuntimeString=/<[^>]*>|javascript\s*:|vbscript\s*:|data\s*:\s*text\/html|on(?:error|load|click)\s*=/i;
+const safeRuntimeString=z.string().max(500).refine((value)=>!unsafeRuntimeString.test(value),"Unsafe runtime string");
+const safeShaderString=z.string().max(120).refine((value)=>!unsafeRuntimeString.test(value),"Unsafe shader string");
+const primitive = z.union([safeRuntimeString, finite, z.boolean(), z.null()]);
+const primitiveRecord = z.record(z.string().regex(/^[a-zA-Z][a-zA-Z0-9_.:-]{0,79}$/), primitive);
 const position = z.object({ x: finite.min(-5000).max(5000), y: finite.min(-5000).max(5000) }).strict();
 const durationMs = finite.int().min(0).max(120000);
 const audioUrl = z.string().refine(
@@ -72,7 +75,7 @@ const shaderAction = z.object({
   type: z.literal("shader"),
   target: token,
   parameter: token,
-  value: z.union([finite, z.string().max(120), z.boolean()]),
+  value: z.union([finite, safeShaderString, z.boolean()]),
   durationMs: durationMs.max(30000).optional(),
   easing: runtimeEasing.default("smooth"),
 }).strict();
