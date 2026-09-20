@@ -34,8 +34,11 @@ export function LoopEnginePanel({
   const [vaultSnapshot,setVaultSnapshot]=useState<ControlPlaneProjectState|null|undefined>(undefined);
   const [vaultConfigured,setVaultConfigured]=useState<boolean|null>(null);
   const [criticConnected,setCriticConnected]=useState<boolean|null>(null);
+  const [remoteRunnerEnabled,setRemoteRunnerEnabled]=useState<boolean|null>(null);
   const [message,setMessage]=useState("");
   const [loadingResult,setLoadingResult]=useState(false);
+  const [queueing,setQueueing]=useState(false);
+  const [workflowUrl,setWorkflowUrl]=useState("");
   const dialogRef=useRef<HTMLElement>(null);
   const selected=useMemo(()=>loopDefinitions.find((item)=>item.id===selectedId) ?? loopDefinitions[0],[selectedId]);
 
@@ -58,13 +61,14 @@ export function LoopEnginePanel({
       fetch("/api/studio/loops/status",{cache:"no-store"}).then((response)=>response.json()),
     ]).then(([vault,status]:[
       { ok?:boolean;configuration?:{ configured?:boolean };projects?:VaultSummary[] },
-      { ok?:boolean;visualCriticConnected?:boolean }
+      { ok?:boolean;visualCriticConnected?:boolean;remoteRunnerEnabled?:boolean }
     ])=>{
       if(cancelled) return;
       setVaultConfigured(Boolean(vault.configuration?.configured));
       setVaultProject((vault.projects ?? []).find((project)=>project.id===projectId) ?? null);
       setCriticConnected(Boolean(status.visualCriticConnected));
-    }).catch(()=>{ if(!cancelled) { setVaultConfigured(false); setCriticConnected(false); } });
+      setRemoteRunnerEnabled(Boolean(status.remoteRunnerEnabled));
+    }).catch(()=>{ if(!cancelled) { setVaultConfigured(false); setCriticConnected(false); setRemoteRunnerEnabled(false); } });
     return ()=>{ cancelled=true; };
   },[projectId]);
   useEffect(()=>{
@@ -108,14 +112,14 @@ export function LoopEnginePanel({
       ? ` --proposal-id ${shellQuote(proposal.id)} --selection-key ${shellQuote(proposal.selectionKey)} --baseline-fingerprint ${shellQuote(proposal.baselineFingerprint)} --context ${shellQuote(proposalContext)}`
       : "");
   const sourceReady=!proposalBound || (proposalBaselineMatches && vaultMatchesWorking);
-  const ready=selected.executable && vaultConfigured===true && vaultProject?.status==="active" && criticConnected===true && sourceReady;
+  const ready=selected.executable && vaultConfigured===true && vaultProject?.status==="active" && remoteRunnerEnabled===true && sourceReady;
   const runLabel=proposalBound && !proposalBaselineMatches ? "Proposal is stale — direct again"
     : proposalBound && vaultProject && vaultSnapshot===undefined ? "Checking current checkpoint…"
       : proposalBound && vaultProject && !vaultMatchesWorking ? "Save current checkpoint first"
-        : criticConnected===false ? "Connect visual critic"
+        : remoteRunnerEnabled===false ? "Remote runner not configured"
           : vaultProject?.status==="archived" ? "Unarchive project first"
             : !vaultProject ? "Save checkpoint first"
-              : ready ? "Copy run command" : "Checking readiness…";
+              : ready ? "Run improvement" : "Checking readiness…";
 
   const copy=async()=>{
     try {
@@ -123,6 +127,34 @@ export function LoopEnginePanel({
       setMessage("Run command copied.");
     } catch {
       setMessage(command);
+    }
+  };
+
+  const runRemote=async()=>{
+    if(!ready || !proposalBound || !proposal?.baselineFingerprint) return;
+    setQueueing(true);
+    setMessage("Queueing bounded Forge Loop…");
+    try {
+      const response=await fetch("/api/studio/loops/run",{
+        method:"POST",
+        headers:{"content-type":"application/json"},
+        body:JSON.stringify({
+          projectId,
+          loopId:selected.id,
+          proposalId:proposal.id,
+          selectionKey:proposal.selectionKey,
+          baselineFingerprint:proposal.baselineFingerprint,
+          context:proposalContext,
+        }),
+      });
+      const body=await response.json() as {ok?:boolean;error?:string;message?:string;workflowUrl?:string};
+      if(!response.ok || !body.ok) throw new Error(body.error ?? "Could not queue Forge Loop.");
+      setWorkflowUrl(body.workflowUrl ?? "");
+      setMessage(body.message ?? "Forge Loop queued. Check for a verified result after the workflow completes.");
+    } catch(error) {
+      setMessage(error instanceof Error ? error.message : "Could not queue Forge Loop.");
+    } finally {
+      setQueueing(false);
     }
   };
 
@@ -213,12 +245,13 @@ export function LoopEnginePanel({
           {selected.executable ? <section className="production-loop-run">
             <div>
               <span>PROJECT SOURCE</span>
-              <strong>{proposalBound && !proposalBaselineMatches ? "Working draft changed after this proposal was prepared" : proposalBound && vaultProject && !vaultMatchesWorking ? "Current Vault checkpoint does not match this working draft" : criticConnected===false ? "Visual critic connection is required" : vaultProject?.status==="archived" ? "Project is archived in Vault" : vaultProject ? `Vault checkpoint · ${vaultProject.versionCount} version${vaultProject.versionCount===1?"":"s"}` : vaultConfigured===false ? "Project Vault is not configured" : "Save this project to Vault first"}</strong>
+              <strong>{proposalBound && !proposalBaselineMatches ? "Working draft changed after this proposal was prepared" : proposalBound && vaultProject && !vaultMatchesWorking ? "Current Vault checkpoint does not match this working draft" : remoteRunnerEnabled===false ? "Remote Loop runner is not configured" : criticConnected===false ? "Server-side critic is not connected for local fallback" : vaultProject?.status==="archived" ? "Project is archived in Vault" : vaultProject ? `Vault checkpoint · ${vaultProject.versionCount} version${vaultProject.versionCount===1?"":"s"}` : vaultConfigured===false ? "Project Vault is not configured" : "Save this project to Vault first"}</strong>
               <p>{proposalBound && !proposalBaselineMatches ? "Dismiss and direct the intent again from the current working state." : proposalBound && vaultProject && !vaultMatchesWorking ? "Save the current working project to Vault before running this proposal so the Loop and Current preview share the same incumbent." : "The runner takes a durable Project Vault snapshot as the incumbent, writes all evidence under test-results/forge-loops, and returns a human-review artifact only if a candidate proves improvement."}</p>
             </div>
-            <div className="production-loop-command"><code>{command}</code><button type="button" disabled={!ready} onClick={()=>void copy()}>{runLabel}</button></div>
+            <div className="production-loop-command production-loop-command--remote"><button type="button" className="primary" disabled={!ready || queueing || !proposalBound} onClick={()=>void runRemote()}>{queueing ? "Queueing…" : proposalBound ? runLabel : "Start from a proposal"}</button>{workflowUrl&&<a href={workflowUrl} target="_blank" rel="noreferrer">View Loop runs</a>}</div>
+            <details className="production-loop-local"><summary>Local/manual runner fallback</summary><p>Use this only when remote Loop execution is intentionally disabled.</p><code>{command}</code><button type="button" onClick={()=>void copy()}>Copy local command</button></details>
             <div className="production-loop-result-actions">
-              <button type="button" disabled={!ready || loadingResult || !proposalBound} onClick={()=>void loadVerifiedCandidate()}>{loadingResult ? "Checking evidence…" : proposalBound ? "Load verified candidate" : "Start from a proposal to compare"}</button>
+              <button type="button" disabled={loadingResult || !proposalBound || !sourceReady} onClick={()=>void loadVerifiedCandidate()}>{loadingResult ? "Checking evidence…" : workflowUrl ? "Check verified result" : proposalBound ? "Load verified candidate" : "Start from a proposal to compare"}</button>
               <small>{proposalBound ? "After the bound Loop finishes, load its exact winning bundle into the same Current / Candidate review surface used by fast actions. This does not promote Vault or production state." : "Generic Loop runs remain available for expert evidence work, but Studio only attaches a winner to Current / Candidate when the run is bound to the active proposal and selected target."}</small>
             </div>
             {(!vaultProject || (proposalBound && !vaultMatchesWorking)) && <button type="button" className="production-loop-vault" onClick={onOpenVault}>{vaultProject ? "Save current checkpoint" : "Open Project Vault"}</button>}
