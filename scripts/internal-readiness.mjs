@@ -44,7 +44,8 @@ function assetVaultReady() {
   } catch { return false; }
 }
 function internalAccessReady() {
-  if (process.env.FORGE_INTERNAL_ACCESS_ENABLED !== "true" || (process.env.FORGE_INTERNAL_SESSION_SECRET?.length ?? 0) < 32) return false;
+  if (process.env.STUDIO_AUTH_ENABLED === "false" || (process.env.FORGE_INTERNAL_SESSION_SECRET?.length ?? 0) < 32) return false;
+  if (process.env.NODE_ENV === "production" && process.env.ENABLE_STUDIO_IN_PROD !== "true") return false;
   try {
     const users = JSON.parse(process.env.FORGE_INTERNAL_USERS_JSON ?? "[]");
     return Array.isArray(users) && users.length > 0 && users.every((user) => user && typeof user.id === "string" && typeof user.name === "string" && typeof user.role === "string" && /^pbkdf2\$\d+\$[A-Za-z0-9_-]+\$[A-Za-z0-9_-]+$/.test(user.secretHash ?? ""));
