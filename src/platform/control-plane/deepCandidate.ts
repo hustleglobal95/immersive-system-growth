@@ -3,6 +3,7 @@ import type { ForgeProposal } from "@/src/platform/control-plane/proposal";
 import type { InteractionGraph } from "@/src/lib/interactionGraph";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig } from "@/src/types/experience";
+import type { CinematicSystemsManifest } from "@/src/lib/cinematic/schema";
 
 export interface VerifiedLoopCandidate {
   runId:string;
@@ -18,6 +19,7 @@ export interface VerifiedLoopCandidate {
   experience:ExperienceConfig;
   assetManifest:AssetManifest;
   interactionGraph:InteractionGraph;
+  cinematicSystems?:CinematicSystemsManifest;
 }
 
 export function attachVerifiedLoopCandidate(proposal:ForgeProposal,candidate:VerifiedLoopCandidate):ForgeProposal {
