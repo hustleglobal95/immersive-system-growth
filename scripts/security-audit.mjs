@@ -62,7 +62,9 @@ for(const file of [
   "app/studio/autonomy-preview/page.tsx",
   "app/studio/autonomy-runtime/page.tsx",
 ]) {
-  if(!read(file).includes("requireStudioPageAccess")) failures.push(`${file}: Studio page must enforce signed session access`);
+  const source=read(file);
+  if(!source.includes("requireStudioPageAccess")) failures.push(`${file}: Studio page must enforce signed session access`);
+  if(!source.includes('dynamic = "force-dynamic"')) failures.push(`${file}: authenticated Studio pages must be request-time rendered`);
 }
 
 const engine=read("src/lib/interactionGraphEngine.ts");
