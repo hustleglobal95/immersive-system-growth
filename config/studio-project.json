@@ -18,5 +18,58 @@
     "respectDnt": true
   },
   "creativeDirectionPath": "config/creative-direction.json",
-  "experienceModesPath": "config/experience-modes.json"
+  "experienceModesPath": "config/experience-modes.json",
+  "discoverability": {
+    "version": 1,
+    "siteName": "Atelier Maris",
+    "canonicalBaseUrl": "https://immersive-system-growth.vercel.app",
+    "defaultTitle": "Atelier Maris — Coastal Architecture on the Costa Brava",
+    "defaultDescription": "Atelier Maris is a coastal architecture practice in Begur creating restrained houses shaped by section, light, material discipline and direct studio oversight.",
+    "primaryEntity": {
+      "type": "ProfessionalService",
+      "name": "Atelier Maris",
+      "description": "A coastal architecture practice in Begur, Costa Brava, working from site and section through technical design and construction oversight.",
+      "url": "https://immersive-system-growth.vercel.app/site",
+      "sameAs": [],
+      "areaServed": [
+        "Begur",
+        "Costa Brava",
+        "Catalonia"
+      ]
+    },
+    "searchIntents": [
+      "coastal architect Costa Brava",
+      "architect Begur Spain",
+      "luxury residential architecture Costa Brava",
+      "custom house architect Costa Brava"
+    ],
+    "authorityTopics": [
+      "coastal residential architecture",
+      "site and feasibility",
+      "section-led design",
+      "daylight and material restraint",
+      "construction oversight"
+    ],
+    "publicPaths": [
+      "/site",
+      "/work",
+      "/about"
+    ],
+    "privatePaths": [
+      "/design",
+      "/director",
+      "/forge",
+      "/heliot",
+      "/lab",
+      "/structure",
+      "/studio",
+      "/type-vault",
+      "/api/"
+    ],
+    "ai": {
+      "allowSearchCrawlers": true,
+      "allowTrainingCrawlers": false,
+      "publishLlmsTxt": true
+    }
+  }
 }
