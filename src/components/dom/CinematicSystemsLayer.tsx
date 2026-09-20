@@ -14,7 +14,7 @@ import { sampleSceneTransition } from "@/src/lib/cinematic/visualPhysics";
 
 const clamp01=(value:number)=>Math.max(0,Math.min(1,value));
 
-export function CinematicSystemsLayer(){
+export function CinematicSystemsLayer({contained=false}:{contained?:boolean}={}){
   const experience=useExperienceConfig();
   const cinematicSystems=useCinematicSystemsConfig();
   const activeScene=useExperienceStore(s=>s.activeScene),quality=useExperienceStore(s=>s.quality),reduced=useExperienceStore(s=>s.reducedMotion);
@@ -36,7 +36,8 @@ export function CinematicSystemsLayer(){
 
   useEffect(()=>{
     if(!config||!composed)return;
-    const panel=document.querySelector<HTMLElement>(`[data-media-panel="${activeScene}"]`),media=panel?.querySelector<HTMLElement>("img,video");
+    const root=contained ? canvas.current?.parentElement : document;
+    const panel=root?.querySelector<HTMLElement>(`[data-media-panel="${activeScene}"]`),media=panel?.querySelector<HTMLElement>("img,video");
     if(!media)return;
     const previous={transform:media.style.transform,maskImage:media.style.maskImage,webkitMaskImage:media.style.webkitMaskImage,filter:media.style.filter,opacity:media.style.opacity};
     if(shaderReady&&gpuEligible){media.style.opacity="0";}
@@ -46,11 +47,11 @@ export function CinematicSystemsLayer(){
       if(!reduced&&composed.reveal){media.style.maskImage=composed.reveal.cssMask;media.style.webkitMaskImage=composed.reveal.cssMask;}
     }
     return()=>{media.style.transform=previous.transform;media.style.maskImage=previous.maskImage;media.style.webkitMaskImage=previous.webkitMaskImage;media.style.filter=previous.filter;media.style.opacity=previous.opacity;};
-  },[activeScene,composed,config,gpuEligible,reduced,shaderReady]);
+  },[activeScene,composed,config,contained,gpuEligible,reduced,shaderReady]);
 
   useEffect(()=>{
     const element=canvas.current;if(!element||!config||reduced)return;
-    const dpr=Math.min(window.devicePixelRatio||1,quality==="low"?1:2),width=window.innerWidth,height=window.innerHeight;
+    const rect=element.parentElement?.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,quality==="low"?1:2),width=contained&&rect&&rect.width>1?rect.width:window.innerWidth,height=contained&&rect&&rect.height>1?rect.height:window.innerHeight;
     element.width=Math.round(width*dpr);element.height=Math.round(height*dpr);element.style.width=`${width}px`;element.style.height=`${height}px`;
     const ctx=element.getContext("2d");if(!ctx)return;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,height);
     for(const item of composed?.procedural??[]){
@@ -72,11 +73,11 @@ export function CinematicSystemsLayer(){
       ctx.restore();
     }
     if(trail.length){ctx.save();ctx.globalCompositeOperation="screen";for(const point of trail){ctx.globalAlpha=(1-point.age)*.28;ctx.fillStyle="#ffffff";ctx.beginPath();ctx.arc((point.x*.5+.5)*width,(-point.y*.5+.5)*height,Math.max(1,5*(1-point.age)),0,Math.PI*2);ctx.fill();}ctx.restore();}
-  },[config,composed,quality,reduced,trail,pointer.x,pointer.y,local]);
+  },[config,composed,contained,quality,reduced,trail,pointer.x,pointer.y,local]);
 
   if(!config||base?.media?.kind==="color")return null;
   const stackScale=composed?.stack?.scale??1;
-  return <div className="forge-cinematic-systems" aria-hidden="true" style={{position:"fixed",inset:0,zIndex:6,pointerEvents:"none",overflow:"hidden"}}>
+  return <div className="forge-cinematic-systems" data-contained={contained ? "true" : undefined} aria-hidden="true" style={{position:contained?"absolute":"fixed",inset:0,zIndex:6,pointerEvents:"none",overflow:"hidden"}}>
     {gpuEligible&&base.media?.kind==="image"&&base.media.src&&<div style={{position:"absolute",inset:0,transform:`scale(${stackScale})`,transformOrigin:"50% 50%",willChange:"transform"}}>
       <CinematicShaderCanvas src={base.media.src} targetSrc={targetSrc} depthMap={config.spatial?.depthMap} normalMap={config.spatial?.normalMap} spatial={config.spatial} reveal={config.reveal} warp={config.warp} refraction={config.refraction} sceneTransition={config.sceneTransition} transitionProgress={transition?.progress??0} progress={composed?.reveal?.progress??local} pointerX={pointer.x} pointerY={pointer.y} pointerVelocity={pointer.speed} scrollProgress={local} onReady={()=>setShaderReady(true)} onError={()=>{setShaderReady(false);setShaderFailed(true);}} />
     </div>}
