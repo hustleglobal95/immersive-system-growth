@@ -8,6 +8,7 @@ import { generateHalftonePoints } from "../src/lib/cinematic/procedural";
 import { sampleDiagram } from "../src/lib/cinematic/diagrams";
 import experience from "../config/experience.json" with { type: "json" };
 import { cursorRevealIdleDecay, resolveCursorRevealBackend, shouldInjectCursorReveal } from "../src/lib/cinematic/cursorReveal";
+import { resolveVisualPhysicsBackend, sampleSceneTransition, visualPhysicsCost } from "../src/lib/cinematic/visualPhysics";
 
 test("cinematic manifest covers exactly the experience's scenes",()=>{
   const parsed=parseCinematicSystems(raw);
@@ -42,4 +43,25 @@ test("cursor reveal supports lens, persistent trail and GPU fluid policy",()=>{
   assert.equal(shouldInjectCursorReveal(config,{pointerType:"touch",down:true,active:true}),true);
   assert.equal(cursorRevealIdleDecay(config,config.lingerMs,1/60),1);
   assert.ok(cursorRevealIdleDecay(config,config.lingerMs+1000,1/60)<1);
+});
+
+
+test("visual physics parses warp, refraction and shader transitions with deterministic fallback",()=>{
+  const parsed=parseCinematicSystems({
+    version:1,
+    defaults:{spring:{mass:1,stiffness:180,damping:24,precision:.001,maxStep:1/30},pointer:{trailLength:24,smoothing:.18,velocityClamp:4,dwellMs:350},reducedMotion:"minimal"},
+    scenes:[{id:"hero",warp:{mode:"water"},refraction:{mode:"liquid"},sceneTransition:{effect:"pixel",range:[.7,1]},procedural:[],occlusion:[]}],
+  });
+  const scene=parsed.scenes[0];
+  assert.equal(scene.warp?.mode,"water");
+  assert.equal(scene.warp?.strength,.38);
+  assert.equal(scene.refraction?.dispersion,.008);
+  assert.equal(scene.sceneTransition?.blockSize,24);
+  assert.equal(resolveVisualPhysicsBackend({quality:"high",webgl2:true,reducedMotion:false}),"webgl");
+  assert.equal(resolveVisualPhysicsBackend({quality:"low",webgl2:true,reducedMotion:false}),"fallback");
+  assert.equal(resolveVisualPhysicsBackend({quality:"high",webgl2:true,reducedMotion:true}),"fallback");
+  assert.deepEqual(sampleSceneTransition(scene.sceneTransition!,0.5),{progress:0,active:false,complete:false});
+  assert.equal(sampleSceneTransition(scene.sceneTransition!,0.85).progress,.5);
+  assert.deepEqual(sampleSceneTransition(scene.sceneTransition!,1),{progress:1,active:false,complete:true});
+  assert.equal(visualPhysicsCost(scene),"heavy");
 });
