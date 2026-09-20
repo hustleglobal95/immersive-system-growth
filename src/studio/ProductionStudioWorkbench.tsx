@@ -493,6 +493,10 @@ export function ProductionStudioWorkbench() {
           draft.setAssetManifest(parseAssetManifest(payload.assetManifest));
           draft.setInteractionGraph(parseInteractionGraph(payload.interactionGraph));
           draft.setCinematicSystems(parseCinematicSystems(payload.cinematicSystems));
+          if(payload.project.id!==draft.project.id) {
+            writeStored(STUDIO_GUIDE_BRIEF_KEY,"");
+            writeStored(STUDIO_GUIDE_SHIP_KEY,"");
+          }
           setPreparedProposal(null);
           setCandidateExperience(null);
           setCandidateAssetManifest(null);
@@ -753,7 +757,19 @@ export function ProductionStudioWorkbench() {
         </section>
       </div>}
       {loopOpen && <LoopEnginePanel projectId={draft.project.id} projectName={draft.project.name} workingBundle={{experience:draft.experience,assetManifest:draft.assetManifest,interactionGraph:draft.interactionGraph,cinematicSystems:draft.cinematicSystems}} initialLoopId={requestedLoop} proposal={preparedProposal} onCandidateReady={loadVerifiedLoopCandidate} onClose={() => setLoopOpen(false)} onOpenVault={() => { setLoopOpen(false); setVaultOpen(true); }} />}
-      {vaultOpen && <StudioVaultPanel draft={draft} onClose={() => setVaultOpen(false)} />}
+      {vaultOpen && <StudioVaultPanel draft={draft} onClose={() => setVaultOpen(false)} onProjectChange={() => {
+        writeStored(STUDIO_GUIDE_BRIEF_KEY,"");
+        writeStored(STUDIO_GUIDE_SHIP_KEY,"");
+        setPreparedProposal(null);
+        setCandidateExperience(null);
+        setCandidateAssetManifest(null);
+        setCandidateInteractionGraph(null);
+        setCandidateCinematicSystems(null);
+        setPreviewMode("current");
+        setAnimateOpen(false);
+        setAnimateTarget(undefined);
+        setLoopOpen(false);
+      }} />}
       {newProjectOpen && <NewProjectDialog name={newName} setName={setNewName} kind={newKind} setKind={setNewKind} onCreate={createProject} onClose={() => setNewProjectOpen(false)} />}
     </main>
   );
