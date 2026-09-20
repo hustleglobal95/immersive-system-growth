@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import { createMotionArchetype, motionArchetypeCatalog, type MotionArchetypeName } from "@/src/platform/motionArchetypes";
 import { createTrackForTarget, motionTargetOptions, type MotionTargetOption } from "@/src/platform/motionPresets";
 import type { ExperienceConfig, MotionEasing, MotionTrack, MotionViewport, Vec3 } from "@/src/types/experience";
@@ -28,6 +28,7 @@ export function AnimatePanel({
   canRedo,
   onOpenSequencer,
   onClose,
+  initialTarget,
 }: {
   experience: ExperienceConfig;
   setExperience: Dispatch<SetStateAction<ExperienceConfig>>;
@@ -42,14 +43,22 @@ export function AnimatePanel({
   canRedo: boolean;
   onOpenSequencer: () => void;
   onClose: () => void;
+  initialTarget?: string;
 }) {
   const scene = experience.scenes[active];
   const options = useMemo(() => motionTargetOptions(experience, scene), [experience, scene]);
   const [archetype, setArchetype] = useState<MotionArchetypeName>("editorial-reveal");
-  const [target, setTarget] = useState<string>("camera.position");
+  const [target, setTarget] = useState<string>(initialTarget ?? "camera.position");
   const [viewport, setViewport] = useState<MotionViewport>("all");
   const [selectedTrackId, setSelectedTrackId] = useState(scene.motionTracks[0]?.id ?? "");
   const [notice, setNotice] = useState("");
+
+  useEffect(() => {
+    if (!initialTarget || !options.some((item) => item.target === initialTarget)) return;
+    setTarget(initialTarget);
+    const existing = scene.motionTracks.find((track) => track.target === initialTarget);
+    if (existing) setSelectedTrackId(existing.id);
+  }, [initialTarget, options, scene.motionTracks]);
 
   const selectedTrack = scene.motionTracks.find((track) => track.id === selectedTrackId) ?? scene.motionTracks[0] ?? null;
   const selectedKeys = selectedTrack ? keysOf(selectedTrack) : [];
