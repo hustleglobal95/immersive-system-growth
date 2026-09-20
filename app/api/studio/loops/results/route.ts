@@ -5,6 +5,8 @@ import { parseExperience } from "@/src/lib/configSchema";
 import { parseAssetManifest } from "@/src/platform/assetManifestSchema";
 import { parseInteractionGraph } from "@/src/lib/interactionGraph";
 import { requireStudioRole, studioAccessErrorResponse } from "@/src/platform/studioAccess";
+import { readVaultLoopCandidate, readVaultProject } from "@/src/platform/studioVault";
+import { cinematicSystems as productionCinematicSystems } from "@/src/lib/cinematic/config";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -20,6 +22,32 @@ export async function GET(request:Request) {
     const proposalId=url.searchParams.get("proposal") ?? "";
     if(!slug.test(projectId) || !slug.test(loopId) || !slug.test(proposalId)) {
       return Response.json({ok:false,error:"Valid project, loop and proposal IDs are required."},{status:400});
+    }
+
+    const durable=await readVaultLoopCandidate(projectId,loopId,proposalId).catch(()=>null);
+    if(durable) {
+      const response=Response.json({
+        ok:true,
+        found:true,
+        candidate:{
+          runId:durable.runId,
+          loopId:durable.loopId,
+          projectId:durable.projectId,
+          sourceVersionId:durable.sourceVersionId,
+          proposalId:durable.proposalId,
+          selectionKey:durable.selectionKey,
+          baselineFingerprint:durable.baselineFingerprint,
+          fingerprint:durable.fingerprint,
+          repairSummary:durable.repairSummary,
+          preferenceAgreement:durable.preferenceAgreement,
+          experience:durable.experience,
+          assetManifest:durable.assetManifest,
+          interactionGraph:durable.interactionGraph,
+          cinematicSystems:durable.cinematicSystems,
+        },
+      });
+      response.headers.set("cache-control","no-store");
+      return response;
     }
 
     const root=path.resolve(process.cwd(),"test-results","forge-loops");
@@ -55,6 +83,8 @@ export async function GET(request:Request) {
       const experience=parseExperience(JSON.parse(experienceRaw));
       const assetManifest=parseAssetManifest(JSON.parse(manifestRaw));
       const interactionGraph=parseInteractionGraph(JSON.parse(graphRaw));
+      const vaultSnapshot=await readVaultProject(projectId).catch(()=>null);
+      const cinematicSystems=vaultSnapshot?.cinematicSystems ?? productionCinematicSystems;
       const acceptedCycle=[...report.cycles].reverse().find((cycle)=>cycle.acceptedCandidateId);
       const evidence=acceptedCycle?.candidates.find((candidate)=>candidate.id===acceptedCycle.acceptedCandidateId);
 
@@ -75,6 +105,7 @@ export async function GET(request:Request) {
           experience,
           assetManifest,
           interactionGraph,
+          cinematicSystems,
         },
       });
       response.headers.set("cache-control","no-store");
