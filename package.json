@@ -107,7 +107,7 @@
     "loop:run": "node --import tsx scripts/loop-run.mjs",
     "loop:accept": "node --import tsx scripts/loop-accept.mjs",
     "operator:intelligence:audit": "node scripts/operator-intelligence-audit.mjs",
-    "studio:actionability:audit": "node scripts/studio-actionability-audit.mjs"
+    "studio:actionability:audit": "node --import tsx scripts/studio-actionability-audit.mjs"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "5.3.0",
