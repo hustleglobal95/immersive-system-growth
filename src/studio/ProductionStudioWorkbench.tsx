@@ -44,6 +44,7 @@ import { ContextualDirection, RefinePanel, ReviewSurface, ShipSurface, type Adva
 import { OperatorMissionControl } from "@/src/studio/OperatorMissionControl";
 import type { AssetManifest } from "@/src/types/assets";
 import { parseCinematicSystems, type CinematicSystemsManifest } from "@/src/lib/cinematic/schema";
+import { cinematicSystems as initialCinematicSystems } from "@/src/lib/cinematic/config";
 import type { ExperienceConfig, SceneDefinition } from "@/src/types/experience";
 
 const initialExperience = parseExperience(rawExperience);
@@ -426,9 +427,14 @@ export function ProductionStudioWorkbench() {
 
   const startProject = (name: string, kind: ProjectKind) => {
     const id = slug(name) || "untitled-experience";
-    const starter = makeStarterExperience(draft.experience, name, kind);
+    const starter = makeStarterExperience(initialExperience, name, kind);
     draft.setExperience(starter);
-    draft.setProject((current) => ({ ...current, id, name, deployment: { ...current.deployment, projectName: id } }));
+    draft.setProject(parseStudioProject({
+      ...structuredClone(initialProject),
+      id,
+      name,
+      deployment:{...initialProject.deployment,projectName:id},
+    }));
     draft.setAssetManifest(parseAssetManifest({
       models:[],
       textures:[],
@@ -439,7 +445,7 @@ export function ProductionStudioWorkbench() {
     draft.setInteractionGraph(emptyInteractionGraph(id));
     draft.setCinematicSystems(parseCinematicSystems({
       version:1,
-      defaults:draft.cinematicSystems.defaults,
+      defaults:initialCinematicSystems.defaults,
       scenes:[],
     }));
     setPreparedProposal(null);
