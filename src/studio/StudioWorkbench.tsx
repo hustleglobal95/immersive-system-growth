@@ -140,10 +140,10 @@ export function StudioWorkbench() {
 
       {tab === "project" && <ProjectPanel {...draft} />}
       {tab === "creative" && <CreativeDirectionPanel direction={creative} setDirection={setCreative} />}
-      {tab === "visuals" && <VisualSystemsPanel />}
+      {tab === "visuals" && <VisualSystemsPanel experience={draft.experience} cinematicSystems={draft.cinematicSystems} setCinematicSystems={draft.setCinematicSystems} />}
       {tab === "recipe" && <RecipeEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "templates" && <TemplateGallery experience={draft.experience} setExperience={draft.setExperience} />}
-      {tab === "preview" && <StudioLivePreview experience={draft.experience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
+      {tab === "preview" && <StudioLivePreview experience={draft.experience} cinematicSystems={draft.cinematicSystems} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "director" && <SceneDirector experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "timeline" && <TimelineEditor experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} />}
       {tab === "sequence" && <MotionComposer experience={draft.experience} setExperience={draft.setExperience} active={Math.min(activeScene, draft.experience.scenes.length - 1)} setActive={setActiveScene} beginGroup={draft.beginExperienceGroup} endGroup={draft.endExperienceGroup} undo={draft.undoExperience} redo={draft.redoExperience} canUndo={draft.canUndoExperience} canRedo={draft.canRedoExperience} />}
