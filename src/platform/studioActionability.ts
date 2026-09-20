@@ -105,7 +105,7 @@ export const studioActionabilityContracts:readonly StudioActionabilityContract[]
     mode:"author",
     source:"src/studio/AssetBankPanel.tsx",
     evidence:["setExperience","setAssetManifest","applyKit"],
-    browserEvidence:"Asset bank kit replacement requires review, blocks incompatible interactions and supports undo",
+    browserEvidence:"asset bank kit replacement requires review, blocks incompatible interactions and supports undo",
   },
   {
     id:"advanced.glb-inspector",
@@ -136,7 +136,7 @@ export const studioActionabilityContracts:readonly StudioActionabilityContract[]
     label:"Mission Control",
     mode:"execute",
     source:"src/studio/OperatorMissionControl.tsx",
-    evidence:["onRunStep","onApproveDecision","Autopilot"],
+    evidence:["onExecuteStep","onApproveDecision","Autopilot"],
     browserEvidence:"Mission Control promotes project-wide outcomes without adding navigation",
   },
   {
@@ -144,7 +144,7 @@ export const studioActionabilityContracts:readonly StudioActionabilityContract[]
     label:"Guided Build",
     mode:"author",
     source:"src/studio/StudioWorkflowGuide.tsx",
-    evidence:["STUDIO_GUIDE_BRIEF_KEY","onClose","writeStored"],
+    evidence:["STUDIO_GUIDE_BRIEF_KEY","onClose","localStorage.setItem"],
     browserEvidence:"Guided Build persists a project brief and returns to production",
   },
   {
@@ -177,7 +177,7 @@ export const studioActionabilityContracts:readonly StudioActionabilityContract[]
     label:"Project Vault",
     mode:"execute",
     source:"src/studio/StudioVaultPanel.tsx",
-    evidence:["method: \"POST\"","Save checkpoint","restore"],
+    evidence:["method: \"POST\"","Save to Project Vault","restore"],
     browserEvidence:"Project Vault exposes durable save actions and explicit configuration state",
     guarded:true,
   },
