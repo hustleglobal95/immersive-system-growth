@@ -1,6 +1,6 @@
-# Immersive Site Forge 6.0
+# Immersive Site Forge 6.1
 
-A production platform for designing, validating, generating and deploying cinematic, stateful 3D web experiences. Forge Studio combines an ACES-managed adaptive renderer, frame-accurate motion sequencer, deterministic interaction graph, real-time camera direction, R3F raycast interaction, drag/orbit inspection, persistent material and shader overrides, audio cues, lifecycle orchestration, layered media transitions, an eight-preset DOM/WebGL mask laboratory, geometry-aware local asset inspection, six industry templates, CMS and commerce adapters, secure review-PR publishing, client generation, protected deployment automation and consent-aware real-device telemetry.
+A production platform for designing, validating, generating and deploying cinematic, stateful 3D web experiences. Forge Studio combines an ACES-managed adaptive renderer, frame-accurate motion sequencer, deterministic interaction graph, real-time camera direction, R3F raycast interaction, drag/orbit inspection, persistent material and shader overrides, audio cues, lifecycle orchestration, layered media transitions, an eight-preset DOM/WebGL mask laboratory, pointer-driven lens/trail/fluid cursor reveals with GPU pressure projection and Canvas fallback, geometry-aware local asset inspection, six industry templates, CMS and commerce adapters, secure review-PR publishing, client generation, protected deployment automation and consent-aware real-device telemetry.
 
 The production runtime keeps one Canvas alive across `/` and `/lab`. Accessible HTML remains usable without JavaScript or WebGL. `/studio` is an independent authoring surface, so editing tools never compete with the client experience for rendering resources. This repository includes six distinct reference recipes and original GLB fixtures, not photorealistic client artwork or a blanket hardware-performance guarantee.
 
@@ -21,7 +21,7 @@ For development use `npm run dev`. Dev/build prepares locally served Draco and B
 
 ## Forge Studio
 
-Open `/studio` to direct the production runtime without editing source code. The default product surface is intentionally small: **Build / Review / Ship**. Forge resolves the current selection, ranks relevant capabilities, accepts outcome-level commands, prepares reversible proposals and uses Project Health as the release-readiness abstraction. Creative-direction intents can route the selected scene, copy, media or environment into **Creative Intelligence 2**, which develops project-specific Creative DNA, Art Direction, divergent visual languages, specialist discipline direction and concept mutations without exposing those subsystems as permanent navigation. Sequencer, Interactions, Asset tools and Telemetry remain available under **Advanced**.
+Open `/studio` to direct the production runtime without editing source code. The default product surface is intentionally small: **Build / Review / Ship**. Forge resolves the current selection, ranks relevant capabilities, accepts outcome-level commands, prepares reversible proposals and uses Project Health as the release-readiness abstraction. Creative-direction intents can route the selected scene, copy, media or environment into **Creative Intelligence 2**, which develops project-specific Creative DNA, Art Direction, divergent visual languages, specialist discipline direction and concept mutations without exposing those subsystems as permanent navigation. Sequencer, Interactions, Asset tools, Visual effects and Telemetry remain available under **Advanced**.
 
 The Sequence workspace provides a dope sheet, loopable real-time playback, in/out ranges, rate and duration controls, track filtering, snapping, zoom, multi-key selection, timing reversal and distribution, copy/paste, undo/redo, reusable motion presets, desktop/mobile override tracks, cubic Bezier handles and Three.js transform gizmos for vector recording.
 
@@ -38,7 +38,7 @@ npm run interaction:validate
 npm run content:sync -- config/studio-project.json
 ```
 
-Read [Studio](docs/STUDIO.md), [PRO+ Control Plane](docs/CONTROL_PLANE.md), [Creative Intelligence 2](docs/CREATIVE_INTELLIGENCE_2.md), [internal product operations](docs/INTERNAL_PRODUCT.md), [Loop Engine](docs/LOOP_ENGINE.md), [motion sequencer](docs/MOTION_SEQUENCER.md), [interaction graph](docs/INTERACTION_GRAPH.md), [mask reveals](docs/MASK_REVEALS.md), [integrations](docs/INTEGRATIONS.md), [telemetry](docs/TELEMETRY.md) and [deployment](docs/DEPLOYMENT.md) before configuring external systems.
+Read [Studio](docs/STUDIO.md), [PRO+ Control Plane](docs/CONTROL_PLANE.md), [Creative Intelligence 2](docs/CREATIVE_INTELLIGENCE_2.md), [internal product operations](docs/INTERNAL_PRODUCT.md), [Loop Engine](docs/LOOP_ENGINE.md), [motion sequencer](docs/MOTION_SEQUENCER.md), [interaction graph](docs/INTERACTION_GRAPH.md), [mask reveals](docs/MASK_REVEALS.md), [cursor reveals](docs/CURSOR_REVEALS.md), [integrations](docs/INTEGRATIONS.md), [telemetry](docs/TELEMETRY.md) and [deployment](docs/DEPLOYMENT.md) before configuring external systems.
 
 ## Runtime interaction targets
 
