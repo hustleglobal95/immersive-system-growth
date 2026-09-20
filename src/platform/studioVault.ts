@@ -4,6 +4,8 @@ import { parseExperience } from "@/src/lib/configSchema";
 import { parseInteractionGraph } from "@/src/lib/interactionGraph";
 import { parseAssetManifest } from "@/src/platform/assetManifestSchema";
 import { parseStudioProject } from "@/src/platform/studioSchema";
+import { parseCinematicSystems } from "@/src/lib/cinematic/schema";
+import { cinematicSystems as productionCinematicSystems } from "@/src/lib/cinematic/config";
 
 const vaultSummarySchema = z.object({
   id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
@@ -37,7 +39,7 @@ const vaultJournalSchema = z.object({ version: z.literal(1), events: z.array(vau
 type VaultConfigurationEnvironment={ [key:string]:string|undefined };
 
 export interface VaultActor { id: string; name: string; role: string; }
-export interface VaultDraftInput { experience: unknown; project: unknown; assetManifest: unknown; interactionGraph: unknown; }
+export interface VaultDraftInput { experience: unknown; project: unknown; assetManifest: unknown; interactionGraph: unknown; cinematicSystems?: unknown; }
 export type VaultProjectSummary = z.infer<typeof vaultSummarySchema>;
 export type VaultHistoryEntry = z.infer<typeof vaultHistoryEntrySchema>;
 export type VaultJournalEvent = z.infer<typeof vaultJournalEventSchema>;
@@ -53,6 +55,7 @@ export interface VaultSnapshot {
   project: ReturnType<typeof parseStudioProject>;
   assetManifest: ReturnType<typeof parseAssetManifest>;
   interactionGraph: ReturnType<typeof parseInteractionGraph>;
+  cinematicSystems: ReturnType<typeof parseCinematicSystems>;
 }
 
 export function vaultConfiguration(environment: VaultConfigurationEnvironment = process.env) {
@@ -189,6 +192,7 @@ function makeSnapshot(input: VaultDraftInput, actor: VaultActor, label: string, 
     project: parseStudioProject(input.project),
     assetManifest: parseAssetManifest(input.assetManifest),
     interactionGraph: parseInteractionGraph(input.interactionGraph),
+    cinematicSystems: parseCinematicSystems(input.cinematicSystems ?? productionCinematicSystems),
   };
 }
 
@@ -207,6 +211,7 @@ function parseSnapshot(input: unknown): VaultSnapshot {
     project: parseStudioProject(value.project),
     assetManifest: parseAssetManifest(value.assetManifest),
     interactionGraph: parseInteractionGraph(value.interactionGraph),
+    cinematicSystems: parseCinematicSystems(value.cinematicSystems ?? productionCinematicSystems),
   };
 }
 
