@@ -6,6 +6,7 @@ import test from "node:test";
 import rawExperience from "../config/experience.json";
 import rawManifest from "../config/asset-manifest.json";
 import rawProject from "../config/studio-project.json";
+import rawCinematic from "../config/cinematic-systems.json";
 import { parseExperience, sceneMediaSchema } from "../src/lib/configSchema";
 import { sampleExperience } from "../src/lib/sampleExperience";
 import { sampleTransitionLayer } from "../src/lib/transitionLayers";
@@ -104,6 +105,28 @@ test("Studio publishing opens a review PR without exposing its token", async () 
   const pullBody = JSON.parse(String(calls.at(-1)?.init.body));
   assert.equal(pullBody.base, "main");
   assert.equal(pullBody.head, result.branch);
+});
+
+test("Studio publishing carries live cinematic systems into the review branch", async () => {
+  const calls:Array<{url:string;init:RequestInit}>=[];
+  const fetcher=(async(input:string|URL|Request,init:RequestInit={})=>{
+    const url=String(input);
+    calls.push({url,init});
+    if(url.includes("/git/ref/heads/")) return Response.json({object:{sha:"base-sha"}});
+    if(url.endsWith("/pulls")) return Response.json({number:43,html_url:"https://github.com/example/repo/pull/43"});
+    if(init.method==="GET"||!init.method) return Response.json({sha:"old-file-sha"});
+    return Response.json({});
+  }) as typeof fetch;
+  await publishStudioDraft(
+    {experience:rawExperience,project:rawProject,assetManifest:rawManifest,cinematicSystems:rawCinematic},
+    {repository:"example/repo",token:"server-only-token"},
+    fetcher,
+  );
+  const cinematicPut=calls.find((call)=>call.url.includes("/contents/config/cinematic-systems.json") && call.init.method==="PUT");
+  assert.ok(cinematicPut);
+  const payload=JSON.parse(String(cinematicPut?.init.body));
+  const decoded=JSON.parse(Buffer.from(payload.content,"base64").toString("utf8"));
+  assert.deepEqual(decoded,rawCinematic);
 });
 
 test("Studio publishing fails closed on invalid repository settings", async () => {
