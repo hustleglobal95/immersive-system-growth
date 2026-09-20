@@ -702,7 +702,7 @@ export function ProductionStudioWorkbench() {
           </div>
         </section>
       </div>}
-      {loopOpen && <LoopEnginePanel projectId={draft.project.id} projectName={draft.project.name} workingBundle={{experience:draft.experience,assetManifest:draft.assetManifest,interactionGraph:draft.interactionGraph}} initialLoopId={requestedLoop} proposal={preparedProposal} onCandidateReady={loadVerifiedLoopCandidate} onClose={() => setLoopOpen(false)} onOpenVault={() => { setLoopOpen(false); setVaultOpen(true); }} />}
+      {loopOpen && <LoopEnginePanel projectId={draft.project.id} projectName={draft.project.name} workingBundle={{experience:draft.experience,assetManifest:draft.assetManifest,interactionGraph:draft.interactionGraph,cinematicSystems:draft.cinematicSystems}} initialLoopId={requestedLoop} proposal={preparedProposal} onCandidateReady={loadVerifiedLoopCandidate} onClose={() => setLoopOpen(false)} onOpenVault={() => { setLoopOpen(false); setVaultOpen(true); }} />}
       {vaultOpen && <StudioVaultPanel draft={draft} onClose={() => setVaultOpen(false)} />}
       {newProjectOpen && <NewProjectDialog name={newName} setName={setNewName} kind={newKind} setKind={setNewKind} onCreate={createProject} onClose={() => setNewProjectOpen(false)} />}
     </main>
