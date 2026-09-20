@@ -39,6 +39,30 @@ test("Build prepares a reversible fast proposal before applying motion", async (
   await expect(page.getByText(/reverted/i)).toBeVisible();
 });
 
+test("Build Animate provides direct motion authoring before the expert sequencer", async ({ page }) => {
+  await page.goto("/studio");
+  await page.getByRole("button", { name: "＋ Scene" }).click();
+  await page.getByRole("button", { name: "Animate", exact: true }).click();
+
+  await expect(page.getByRole("heading", { name: "Make something move.", level: 2 })).toBeVisible();
+  await expect(page.getByLabel("Animate motion recipe")).toBeVisible();
+  await page.getByLabel("Animate motion recipe").selectOption("editorial-reveal");
+  await page.getByRole("button", { name: "Apply to scene" }).click();
+  await expect(page.getByText(/Editorial reveal applied/)).toBeVisible();
+
+  await page.getByLabel("Animate target").selectOption("hero.scale");
+  await page.getByRole("button", { name: "Add property track" }).click();
+  await expect(page.getByText(/Hero scale added/)).toBeVisible();
+  await page.getByLabel("Animate Start value").fill("0.8");
+  await expect(page.getByLabel("Animate Start value")).toHaveValue("0.8");
+
+  await page.getByLabel("Animate preview progress").fill("0.5");
+  await expect(page.getByText("50%")).toBeVisible();
+
+  await page.getByRole("button", { name: "Open full Sequencer" }).click();
+  await expect(page.getByRole("heading", { name: "Motion sequencer", level: 2 })).toBeVisible();
+});
+
 test("Advanced Sequencer preserves expert motion control", async ({ page }) => {
   await page.goto("/studio");
   await openAdvanced(page,/Sequencer/);
