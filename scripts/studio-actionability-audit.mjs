@@ -14,7 +14,7 @@ const forbidText=(path,text,message)=>{
 requireText("src/studio/ProductionStudioWorkbench.tsx",'const primarySurfaces = ["Build", "Review", "Ship"] as const',"Studio primary navigation changed");
 requireText("src/studio/ProductionStudioWorkbench.tsx","openSimpleAnimate","Build must expose simple targeted Animate");
 requireText("src/studio/ControlPlaneSurfaces.tsx",'aria-label="Camera path"',"Camera inspector must author camera state directly");
-requireText("src/studio/ControlPlaneSurfaces.tsx",'aria-label="Environment exposure"',"Environment inspector must author environment state directly");
+requireText("src/studio/ControlPlaneSurfaces.tsx",'ariaLabel="Environment exposure"',"Environment inspector must author environment state directly");
 requireText("src/studio/ControlPlaneSurfaces.tsx",'aria-label="Media transition"',"Media inspector must author presentation directly");
 requireText("src/studio/ControlPlaneSurfaces.tsx",'openAnimate(`rig:${node}:position`)',"Rig inspector must target simple Animate");
 requireText("src/studio/CinematicSystemsPanel.tsx","LIVE DRAFT","Visual Effects must identify itself as live draft authoring");
