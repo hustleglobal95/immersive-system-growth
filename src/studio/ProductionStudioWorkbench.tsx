@@ -429,10 +429,21 @@ export function ProductionStudioWorkbench() {
     const id = slug(name) || "untitled-experience";
     const starter = makeStarterExperience(initialExperience, name, kind);
     draft.setExperience(starter);
+    const projectRoot=`clients/${id}`;
     draft.setProject(parseStudioProject({
       ...structuredClone(initialProject),
       id,
       name,
+      experiencePath:`${projectRoot}/experience.json`,
+      directorTreatmentPath:`${projectRoot}/director-treatment.json`,
+      directorEvidencePath:`${projectRoot}/director/evidence.json`,
+      directorDecisionsPath:`${projectRoot}/director/decisions.json`,
+      directorFingerprintPath:`${projectRoot}/director/fingerprint.json`,
+      directorCritiquePath:`${projectRoot}/director/critique.json`,
+      directorReviewHistoryPath:`${projectRoot}/director/review-history.json`,
+      creativeDirectionPath:`${projectRoot}/creative-direction.json`,
+      visualSystemsPath:`${projectRoot}/visual-systems.json`,
+      experienceModesPath:`${projectRoot}/experience-modes.json`,
       deployment:{...initialProject.deployment,projectName:id},
     }));
     draft.setAssetManifest(parseAssetManifest({
