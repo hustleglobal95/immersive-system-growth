@@ -1,17 +1,35 @@
 "use client";
-import { useMemo, useState } from "react";
-import rawCinematic from "@/config/cinematic-systems.json";
-import rawExperience from "@/config/experience.json";
-import { parseCinematicSystems, type CinematicSceneConfig } from "@/src/lib/cinematic/schema";
+import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
+import { parseCinematicSystems, type CinematicSceneConfig, type CinematicSystemsManifest } from "@/src/lib/cinematic/schema";
 import { cinematicPresets } from "@/src/lib/cinematic/presets";
-import { parseExperience } from "@/src/lib/configSchema";
+import { cinematicSystems as productionCinematicSystems } from "@/src/lib/cinematic/config";
 import { downloadJson } from "@/src/studio/useStudioDraft";
+import type { ExperienceConfig } from "@/src/types/experience";
 
-const defaults=parseCinematicSystems(rawCinematic),sceneIds=parseExperience(rawExperience).scenes.map(scene=>scene.id);
-export function CinematicSystemsPanel(){
-  const [manifest,setManifest]=useState(defaults),[selected,setSelected]=useState(sceneIds[0]??"");
+export function CinematicSystemsPanel({
+  manifest,
+  setManifest,
+  experience,
+  activeScene=0,
+  onSelectScene,
+}:{
+  manifest:CinematicSystemsManifest;
+  setManifest:Dispatch<SetStateAction<CinematicSystemsManifest>>;
+  experience:ExperienceConfig;
+  activeScene?:number;
+  onSelectScene?:(index:number)=>void;
+}){
+  const sceneIds=experience.scenes.map((scene)=>scene.id);
+  const [selected,setSelected]=useState(experience.scenes[activeScene]?.id??sceneIds[0]??"");
+  useEffect(()=>{
+    const activeId=experience.scenes[activeScene]?.id;
+    if(activeId && activeId!==selected) setSelected(activeId);
+  },[activeScene,experience.scenes,selected]);
+  useEffect(()=>{
+    if(selected && !sceneIds.includes(selected)) setSelected(sceneIds[0]??"");
+  },[sceneIds,selected]);
   const scene=useMemo(()=>manifest.scenes.find(item=>item.id===selected)??null,[manifest,selected]);
-  const update=(next:CinematicSceneConfig)=>setManifest(current=>({...current,scenes:[...current.scenes.filter(item=>item.id!==selected),next]}));
+  const update=(next:CinematicSceneConfig)=>setManifest(current=>parseCinematicSystems({...current,scenes:[...current.scenes.filter(item=>item.id!==selected),next]}));
   const ensure=()=>scene??({id:selected,procedural:[],occlusion:[]} as CinematicSceneConfig);
   const apply=(name:"threshold"|"technical"|"editorial"|"material"|"cursor"|"warp"|"refract"|"transition"|"physics")=>{
     if(name==="threshold")return update(cinematicPresets.architecturalThreshold(selected));
@@ -25,10 +43,10 @@ export function CinematicSystemsPanel(){
     return update(cinematicPresets.luxuryMaterial(selected));
   };
   return <section className="studio-card visual-system-editor" aria-labelledby="cinematic-systems-heading">
-    <header className="studio-card__head"><div><span>CINEMATIC AUTHORING</span><h2 id="cinematic-systems-heading">Cinematic systems</h2></div><div className="visual-system-editor__actions"><button type="button" onClick={()=>downloadJson("cinematic-systems.json",manifest)}>Export cinematic systems</button><button type="button" onClick={()=>setManifest(defaults)}>Reset defaults</button></div></header>
-    <p>Author reusable stack depth, physical motion, reveal fields, spatial imagery, procedural graphics, foreground occlusion and technical diagrams without scene-specific runtime code.</p>
+    <header className="studio-card__head"><div><span>CINEMATIC AUTHORING · LIVE DRAFT</span><h2 id="cinematic-systems-heading">Visual Effects</h2></div><div className="visual-system-editor__actions"><output data-status="live">LIVE</output><button type="button" onClick={()=>downloadJson("cinematic-systems.json",manifest)}>Download backup</button><button type="button" onClick={()=>{const base=productionCinematicSystems.scenes.find((item)=>item.id===selected);setManifest((current)=>parseCinematicSystems({...current,scenes:[...current.scenes.filter((item)=>item.id!==selected),...(base?[base]:[])]}));}}>Reset scene</button></div></header>
+    <p>Every change below writes directly to the current Studio draft and the live production compositor. Download is only an optional backup.</p>
     <div className="visual-system-editor__fields">
-      <label>Scene<select value={selected} onChange={event=>setSelected(event.target.value)}>{sceneIds.map(id=><option key={id}>{id}</option>)}</select></label>
+      <label>Scene<select aria-label="Visual Effects scene" value={selected} onChange={event=>{const id=event.target.value;setSelected(id);const index=experience.scenes.findIndex((item)=>item.id===id);if(index>=0)onSelectScene?.(index);}}>{experience.scenes.map((item)=><option key={item.id} value={item.id}>{item.label}</option>)}</select></label>
       <label>Preset<select defaultValue="" onChange={event=>{const value=event.target.value as "threshold"|"technical"|"editorial"|"material"|"cursor"|"warp"|"refract"|"transition"|"physics"|"";if(value)apply(value);event.currentTarget.value="";}}><option value="">Apply preset…</option><option value="threshold">Architectural Threshold</option><option value="technical">Technical Reveal</option><option value="editorial">Editorial Transition</option><option value="material">Luxury Material</option><option value="cursor">Cursor Reveal</option><option value="warp">Warp Surface</option><option value="refract">Refractive Surface</option><option value="transition">Shader Transition</option><option value="physics">Visual Physics Stack</option></select></label>
       <label className="studio-check"><input type="checkbox" checked={!!scene?.stack} onChange={event=>{const next=ensure();update({...next,stack:event.target.checked?(next.stack??{enabled:true,scaleTo:.9,darkenTo:.55,depth:80,overlap:.22,pin:true}):undefined});}}/> Stack engine</label>
       <label className="studio-check"><input type="checkbox" checked={!!scene?.reveal} onChange={event=>{const next=ensure();update({...next,reveal:event.target.checked?(next.reveal??{effect:"liquid",direction:"right",softness:.14,intensity:1,pointerInfluence:.5,trailInfluence:.5,edgeColor:"#f97316",edgeWidth:.01,seed:47,range:[0,1]}):undefined});}}/> Reveal engine</label>
