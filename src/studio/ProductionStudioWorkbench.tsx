@@ -459,6 +459,9 @@ export function ProductionStudioWorkbench() {
       defaults:initialCinematicSystems.defaults,
       scenes:[],
     }));
+    // New client/project means no prior mission or shipped-state context may survive.
+    writeStored(STUDIO_GUIDE_BRIEF_KEY,"");
+    writeStored(STUDIO_GUIDE_SHIP_KEY,"");
     setPreparedProposal(null);
     setCandidateExperience(null);
     setCandidateAssetManifest(null);
