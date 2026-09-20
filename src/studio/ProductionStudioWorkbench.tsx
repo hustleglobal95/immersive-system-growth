@@ -69,6 +69,7 @@ export function ProductionStudioWorkbench() {
   const [advanced, setAdvanced] = useState(false);
   const [animateOpen, setAnimateOpen] = useState(false);
   const [animatePreview, setAnimatePreview] = useState(0);
+  const [animateTarget, setAnimateTarget] = useState<string | undefined>();
   const [notice, setNotice] = useState("");
   const [command, setCommand] = useState("");
   const [newProjectOpen, setNewProjectOpen] = useState(false);
@@ -178,12 +179,20 @@ export function ProductionStudioWorkbench() {
     setSelection({ kind: "scene", index });
     setAdvanced(false);
     setAnimatePreview(0);
+    setAnimateTarget(undefined);
   };
 
   // Scene changes inside a full workspace (sequencer scrubbing, playback) keep that workspace open.
   const selectSceneInWorkspace = (index: number) => {
     setActiveScene(index);
     setSelection({ kind: "scene", index });
+  };
+
+  const openSimpleAnimate = (target?:string) => {
+    setPreviewMode("current");
+    setAnimateTarget(target);
+    setAnimateOpen(true);
+    setAdvanced(false);
   };
 
   // Build is the default product surface; specialist editors are summoned under Advanced.
@@ -619,7 +628,7 @@ export function ProductionStudioWorkbench() {
           <section className={`production-stage${animateOpen ? " production-stage--animate" : ""}`}>
             <div className="production-stage-head">
               <div><span>{scene.copy.eyebrow}</span><strong>{scene.label}</strong></div>
-              <div className="production-stage-actions"><button type="button" onClick={() => setSelection({ kind: "camera", index: sceneIndex })}>Camera</button><button type="button" className={animateOpen ? "accent" : undefined} aria-pressed={animateOpen} onClick={() => { setPreviewMode("current"); setAnimateOpen((value) => !value); }}>Animate</button><button type="button" onClick={() => openAdvanced("Motion")}>Advanced</button></div>
+              <div className="production-stage-actions"><button type="button" onClick={() => setSelection({ kind: "camera", index: sceneIndex })}>Camera</button><button type="button" className={animateOpen ? "accent" : undefined} aria-pressed={animateOpen} onClick={() => { if(animateOpen){setAnimateOpen(false);setAnimateTarget(undefined);}else openSimpleAnimate(); }}>Animate</button><button type="button" onClick={() => openAdvanced("Motion")}>Advanced</button></div>
             </div>
             {workflow.unconfigured && <section className="production-first-run" aria-labelledby="studio-first-run-title"><div><span>START HERE</span><h2 id="studio-first-run-title">What do you want to create?</h2><p>Start with the outcome. Forge will guide assets, scenes, motion, review and publishing without asking you to learn the machinery first.</p></div><div><button type="button" className="primary" onClick={() => setGuidedOpen(true)}>Start Guided Build</button><button type="button" onClick={() => importRef.current?.click()}>Import an existing project</button><button type="button" onClick={() => { setGuideDismissed(true); try { window.localStorage.setItem("forge-studio-guided-first-run-v1", "seen"); } catch { /* storage can be blocked */ } }}>Open Studio anyway</button></div></section>}
             {!workflow.unconfigured && mission && missionPlan && <OperatorMissionControl
@@ -650,7 +659,8 @@ export function ProductionStudioWorkbench() {
               canUndo={draft.canUndoExperience}
               canRedo={draft.canRedoExperience}
               onOpenSequencer={() => openAdvanced("Motion")}
-              onClose={() => setAnimateOpen(false)}
+              onClose={() => { setAnimateOpen(false); setAnimateTarget(undefined); }}
+              initialTarget={animateTarget}
             />}
             <ControlPlaneReview
               proposal={preparedProposal}
@@ -677,7 +687,7 @@ export function ProductionStudioWorkbench() {
               nextActions={nextActions}
               onCapability={(capability)=>runCapability(capability)}
             />
-            <RefinePanel context={selectionContext} experience={draft.experience} setExperience={draft.setExperience} openAdvanced={openAdvanced} />
+            <RefinePanel context={selectionContext} experience={draft.experience} setExperience={draft.setExperience} openAdvanced={openAdvanced} openAnimate={openSimpleAnimate} />
           </aside>
 
           <section className="production-bottom">
