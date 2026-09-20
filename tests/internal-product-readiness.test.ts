@@ -5,9 +5,10 @@ import { createStudioSessionToken, hasStudioRole, parseStudioUsers, studioAccess
 import { vaultConfiguration } from "../src/platform/studioVault";
 import { assetVaultConfiguration } from "../src/platform/assetVault";
 
-test("internal access is opt-in and role ordering is explicit", () => {
-  assert.equal(studioAccessEnabled({ FORGE_INTERNAL_ACCESS_ENABLED: "false" }), false);
-  assert.equal(studioAccessEnabled({ FORGE_INTERNAL_ACCESS_ENABLED: "true" }), true);
+test("Studio authentication is fail-closed by default and role ordering is explicit", () => {
+  assert.equal(studioAccessEnabled({}), true);
+  assert.equal(studioAccessEnabled({ STUDIO_AUTH_ENABLED: "false" }), false);
+  assert.equal(studioAccessEnabled({ STUDIO_AUTH_ENABLED: "true" }), true);
   assert.equal(hasStudioRole({ id: "d", name: "Designer", role: "designer" }, "reviewer"), true);
   assert.equal(hasStudioRole({ id: "d", name: "Designer", role: "designer" }, "developer"), false);
   assert.equal(hasStudioRole({ id: "o", name: "Owner", role: "owner" }, "developer"), true);
@@ -54,7 +55,8 @@ test("internal product surfaces are wired into Studio and shipping blocks tempor
   assert.match(publish, /Asset durability/);
   assert.match(creator, /assets\/vault\/promote/);
   assert.match(proxy, /api\/forge/);
-  assert.match(proxy, /FORGE_INTERNAL_ACCESS_ENABLED/);
+  assert.match(proxy, /studioAuthEnabled/);
+  assert.doesNotMatch(proxy, /"\/lab\/:path\*"/);
 });
 
 
