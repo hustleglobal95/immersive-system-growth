@@ -22,6 +22,10 @@ requireText("src/studio/CinematicSystemsPanel.tsx","manifest:CinematicSystemsMan
 forbidText("src/studio/CinematicSystemsPanel.tsx",'rawCinematic from "@/config/cinematic-systems.json"',"Visual Effects must not maintain a private production manifest");
 forbidText("src/studio/CinematicSystemsPanel.tsx",'rawExperience from "@/config/experience.json"',"Visual Effects must not use a static scene list");
 requireText("src/studio/useStudioDraft.ts","cinematicSystems","Studio draft must persist cinematic systems");
+requireText("src/studio/ProductionStudioWorkbench.tsx","draft.setAssetManifest(parseAssetManifest({","New Project must clear prior asset state");
+requireText("src/studio/ProductionStudioWorkbench.tsx","draft.setCinematicSystems(parseCinematicSystems({","New Project must clear prior cinematic state");
+requireText("src/platform/forgeProjects.ts","cinematicCandidates","Project loading must resolve project-specific cinematic systems");
+requireText("src/platform/forgeProjects.ts","scenes:[]","Projects without cinematic config must not inherit active-project effects");
 requireText("src/studio/StudioLivePreview.tsx","CinematicSystemsLayer contained","Studio preview must render the production cinematic compositor");
 requireText("src/platform/studioPublish.ts",'path: "config/cinematic-systems.json"',"Publishing must carry cinematic systems");
 requireText("src/platform/studioPublish.ts",'path: "config/interaction-graph.json"',"Publishing must carry authored interactions");
