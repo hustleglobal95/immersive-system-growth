@@ -296,5 +296,5 @@ interface StudioPanelProps {
   project: StudioProject;
   setProject: Dispatch<SetStateAction<StudioProject>>;
   assetManifest: AssetManifest;
-  cinematicSystems: CinematicSystemsManifest;
+  cinematicSystems?: CinematicSystemsManifest;
 }
