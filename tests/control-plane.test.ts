@@ -335,24 +335,36 @@ test("Studio exposes Build Review Ship and keeps specialist tools under Advanced
   assert.doesNotMatch(studio,/const workspaces = \["Create", "Motion", "Interact", "Assets", "Ship"\]/);
 });
 
-test("Deep proposal evidence returns through the verified local Loop result bridge",()=>{
+test("Deep proposal evidence has protected remote execution and durable result bridges",()=>{
   const loopPanel=fs.readFileSync("src/studio/LoopEnginePanel.tsx","utf8");
-  const route=fs.readFileSync("app/api/studio/loops/results/route.ts","utf8");
-  assert.match(loopPanel,/Load verified candidate/);
+  const resultRoute=fs.readFileSync("app/api/studio/loops/results/route.ts","utf8");
+  const runRoute=fs.readFileSync("app/api/studio/loops/run/route.ts","utf8");
+  const workflow=fs.readFileSync(".github/workflows/forge-loop.yml","utf8");
+  assert.match(loopPanel,/Run improvement/);
+  assert.match(loopPanel,/\/api\/studio\/loops\/run/);
   assert.match(loopPanel,/onCandidateReady/);
-  assert.match(route,/requireStudioRole\(request,"reviewer"\)/);
-  assert.match(route,/acceptedExperiencePath/);
-  assert.match(route,/safeArtifactPath/);
+  assert.match(resultRoute,/requireStudioRole\(request,"reviewer"\)/);
+  assert.match(resultRoute,/readVaultLoopCandidate/);
+  assert.match(resultRoute,/safeArtifactPath/);
+  assert.match(runRoute,/requireStudioRole\(request,"director"\)/);
+  assert.match(runRoute,/projectStateFingerprint/);
+  assert.match(runRoute,/FORGE_LOOP_REMOTE_ENABLED/);
+  assert.match(workflow,/workflow_dispatch/);
+  assert.match(workflow,/FORGE_VISUAL_CRITIC_URL/);
 });
 
 
-test("Build no longer exposes raw camera/environment mutation controls",()=>{
+test("Build exposes bounded direct authoring without leaking legacy machinery",()=>{
   const studio=fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx","utf8");
-  assert.doesNotMatch(studio,/Start FOV/);
+  const surfaces=fs.readFileSync("src/studio/ControlPlaneSurfaces.tsx","utf8");
   assert.doesNotMatch(studio,/Apply motion/);
   assert.doesNotMatch(studio,/createMotionArchetype/);
   assert.doesNotMatch(studio,/buildSelectedNode/);
-  assert.match(studio,/RefinePanel/);
+  assert.match(studio,/openSimpleAnimate/);
+  assert.match(surfaces,/Camera start FOV/);
+  assert.match(surfaces,/Environment exposure/);
+  assert.match(surfaces,/Media transition/);
+  assert.match(surfaces,/openAnimate\(\`rig:\$\{node\}:position\`\)/);
 });
 
 test("Accepted proposal bundles have atomic undo and redo history",()=>{
@@ -363,4 +375,5 @@ test("Accepted proposal bundles have atomic undo and redo history",()=>{
   assert.match(draft,/clearProjectBundleHistory/);
   assert.match(draft,/setAssetManifestState/);
   assert.match(draft,/setInteractionGraphState/);
+  assert.match(draft,/setCinematicSystemsState/);
 });
