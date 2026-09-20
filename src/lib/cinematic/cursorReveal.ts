@@ -1,4 +1,5 @@
-import type { CursorRevealConfig, QualityTier } from "@/src/lib/cinematic/schema";
+import type { CursorRevealConfig } from "@/src/lib/cinematic/schema";
+import type { QualityTier } from "@/src/types/experience";
 
 export type CursorRevealBackend = "canvas" | "webgl-trail" | "webgl-fluid";
 
