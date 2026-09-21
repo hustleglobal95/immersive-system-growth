@@ -16,6 +16,7 @@ import { reviewCreativeMemory } from "../src/platform/director-intelligence/crea
 import { createEmptyMemoryGraph, ingestCreativeIntelligenceMemory, ingestProjectMemory } from "../src/platform/director-intelligence/memory";
 import { deconstructReference } from "../src/platform/director-intelligence/precedents";
 import { parseDirectorJudgment } from "../src/platform/director-intelligence/judgment";
+import { stateFingerprint } from "../src/core/journal/stateFingerprint";
 
 const brief = {
   projectName: "Aurelia Tower",
@@ -229,6 +230,7 @@ test("Director requires calibrated rendered judgment before creative LOCK", () =
       calibrated:true,
       captureIds:["desktop-arrival","desktop-signature"],
       evidenceHash:"a".repeat(64),
+      scopeFingerprint:stateFingerprint({brief:first.report.brief,treatment:first.report.treatment,planningDisposition:first.report.planningDisposition}),
     },
   });
   const second=runDirectorIntelligence({
@@ -278,6 +280,7 @@ test("Director LOCK cannot hide material repair findings",()=>{
       calibrated:true,
       captureIds:["desktop-arrival","desktop-signature"],
       evidenceHash:"e".repeat(64),
+      scopeFingerprint:"forge1:1234567890abcdef",
     },
   }));
 });
@@ -300,6 +303,37 @@ test("Director production LOCK rejects low calibrated preference confidence",()=
       calibrated:true,
       captureIds:["desktop-arrival","desktop-signature"],
       evidenceHash:"f".repeat(64),
+      scopeFingerprint:"forge1:1234567890abcdef",
     },
   }));
+});
+
+
+test("Director rejects a verified judgment replayed against a different planning scope",()=>{
+  const first=runDirectorIntelligence({brief});
+  const judgment=parseDirectorJudgment({
+    status:"verified",
+    verdict:"LOCK",
+    confidence:.86,
+    confidenceSemantics:"calibrated-preference",
+    reasons:["Rendered direction meets the benchmark."],
+    blockers:[],
+    dimensions:{composition:8.8,coherence:8.7},
+    findings:[],
+    evidence:{
+      source:"rendered-external-judge",
+      judgeId:"fixture",
+      calibrationId:"benchmark-v1",
+      calibrated:true,
+      captureIds:["desktop-arrival","desktop-signature"],
+      evidenceHash:"1".repeat(64),
+      scopeFingerprint:"forge1:1234567890abcdef",
+    },
+  });
+  const replayed=runDirectorIntelligence({brief,judgment});
+  assert.equal(replayed.report.verdict,"UNVERIFIED");
+  assert.equal(replayed.report.judgment.status,"unverified");
+  assert.match(replayed.report.judgment.reasons[0],/does not match the current brief, treatment and planning disposition/i);
+  assert.equal(replayed.productionPlan.readiness.readyForProduction,false);
+  assert.notEqual(first.report.generatedAt,"");
 });
