@@ -114,9 +114,6 @@ export function TypeVaultWorkbench() {
       .catch(() => setRemoteStatus("Curated library online"));
   }, []);
 
-  useEffect(() => {
-    setVisibleCount(120);
-  }, [query, category, mood, role, source, coverage, variableOnly, sort]);
 
   const pairings = useMemo(() => [...fontPairings, ...additionalPairings], []);
 
@@ -231,7 +228,7 @@ export function TypeVaultWorkbench() {
           </div>
           <div className="tv-territory-grid">
             {territories.map((territory, index) => (
-              <button key={territory.label} type="button" className="tv-territory-card" onClick={() => setQuery(territory.query)}>
+              <button key={territory.label} type="button" className="tv-territory-card" onClick={() => { setQuery(territory.query); setVisibleCount(120); }}>
                 <span className="tv-index">{String(index + 1).padStart(2, "0")}</span>
                 <strong>{territory.label}</strong>
                 <p>{territory.note}</p>
@@ -303,18 +300,18 @@ export function TypeVaultWorkbench() {
           <div className="tv-filter-panel">
             <label className="tv-search-field">
               <span>Search intent, family, industry, language or use</span>
-              <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="luxury architecture, automotive, multilingual, editorial…" />
+              <input type="search" value={query} onChange={(event) => { setQuery(event.target.value); setVisibleCount(120); }} placeholder="luxury architecture, automotive, multilingual, editorial…" />
             </label>
             <div className="tv-filter-grid">
-              <label><span>Category</span><select value={category} onChange={(event) => setCategory(event.target.value as FontCategory | "All")}>{categories.map((value) => <option key={value}>{value}</option>)}</select></label>
-              <label><span>Mood</span><select value={mood} onChange={(event) => setMood(event.target.value as FontMood | "All")}>{fontMoods.map((value) => <option key={value}>{value}</option>)}</select></label>
-              <label><span>Role</span><select value={role} onChange={(event) => setRole(event.target.value as FontRole | "All")}>{roles.map((value) => <option key={value}>{value}</option>)}</select></label>
-              <label><span>Coverage</span><select value={coverage} onChange={(event) => setCoverage(event.target.value as Coverage)}>{coverageOptions.map((value) => <option key={value} value={value}>{coverageLabel(value)}</option>)}</select></label>
-              <label><span>Source</span><select value={source} onChange={(event) => setSource(event.target.value as SourceKind)}><option>All</option><option>Curated</option><option>Fontsource</option></select></label>
-              <label><span>Sort</span><select value={sort} onChange={(event) => setSort(event.target.value as SortMode)}><option>Featured</option><option>A-Z</option><option>Variable first</option></select></label>
+              <label><span>Category</span><select value={category} onChange={(event) => { setCategory(event.target.value as FontCategory | "All"); setVisibleCount(120); }}>{categories.map((value) => <option key={value}>{value}</option>)}</select></label>
+              <label><span>Mood</span><select value={mood} onChange={(event) => { setMood(event.target.value as FontMood | "All"); setVisibleCount(120); }}>{fontMoods.map((value) => <option key={value}>{value}</option>)}</select></label>
+              <label><span>Role</span><select value={role} onChange={(event) => { setRole(event.target.value as FontRole | "All"); setVisibleCount(120); }}>{roles.map((value) => <option key={value}>{value}</option>)}</select></label>
+              <label><span>Coverage</span><select value={coverage} onChange={(event) => { setCoverage(event.target.value as Coverage); setVisibleCount(120); }}>{coverageOptions.map((value) => <option key={value} value={value}>{coverageLabel(value)}</option>)}</select></label>
+              <label><span>Source</span><select value={source} onChange={(event) => { setSource(event.target.value as SourceKind); setVisibleCount(120); }}><option>All</option><option>Curated</option><option>Fontsource</option></select></label>
+              <label><span>Sort</span><select value={sort} onChange={(event) => { setSort(event.target.value as SortMode); setVisibleCount(120); }}><option>Featured</option><option>A-Z</option><option>Variable first</option></select></label>
             </div>
             <div className="tv-filter-actions">
-              <label className="tv-toggle"><input type="checkbox" checked={variableOnly} onChange={(event) => setVariableOnly(event.target.checked)} /><span>Variable families only</span></label>
+              <label className="tv-toggle"><input type="checkbox" checked={variableOnly} onChange={(event) => { setVariableOnly(event.target.checked); setVisibleCount(120); }} /><span>Variable families only</span></label>
               <button type="button" onClick={clearFilters} disabled={!activeFilters}>Reset {activeFilters ? "(" + activeFilters + ")" : ""}</button>
             </div>
           </div>
