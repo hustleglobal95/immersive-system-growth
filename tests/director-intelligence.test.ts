@@ -281,3 +281,25 @@ test("Director LOCK cannot hide material repair findings",()=>{
     },
   }));
 });
+
+
+test("Director production LOCK rejects low calibrated preference confidence",()=>{
+  assert.throws(()=>parseDirectorJudgment({
+    status:"verified",
+    verdict:"LOCK",
+    confidence:.51,
+    confidenceSemantics:"calibrated-preference",
+    reasons:["Direction is promising but preference evidence is weak."],
+    blockers:[],
+    dimensions:{composition:8.1},
+    findings:[],
+    evidence:{
+      source:"rendered-external-judge",
+      judgeId:"fixture",
+      calibrationId:"benchmark-v1",
+      calibrated:true,
+      captureIds:["desktop-arrival","desktop-signature"],
+      evidenceHash:"f".repeat(64),
+    },
+  }));
+});
