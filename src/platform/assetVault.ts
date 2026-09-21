@@ -76,15 +76,14 @@ export async function promoteGeneratedAsset(input: PromoteGeneratedAssetInput, e
       const assetPath = new URL(key, publicBase!).toString();
       return { path: assetPath, bytes: bytes.byteLength, sha256, key, sourceProvider: input.provider, storageProvider:"remote-object-storage" as const };
     }
-    const localRoot=path.resolve(environment.FORGE_LOCAL_ASSET_DIR?.trim() || "public/generated/vault");
-    const publicRoot=path.resolve("public");
-    if(!localRoot.startsWith(publicRoot+path.sep)) throw new Error("FORGE_LOCAL_ASSET_DIR must stay inside public/");
-    const target=path.resolve(localRoot,key);
+    const publicRoot=path.join(process.cwd(),"public");
+    const localRoot=path.join(publicRoot,"generated","vault");
+    const target=path.join(localRoot,key);
     if(!target.startsWith(localRoot+path.sep)) throw new Error("Local Asset Vault path escapes storage root");
-    await fs.mkdir(path.dirname(target),{recursive:true});
+    await fs.mkdir(/* turbopackIgnore: true */ path.dirname(target),{recursive:true});
     const temporary=target+".tmp-"+crypto.randomUUID();
-    await fs.writeFile(temporary,bytes);
-    await fs.rename(temporary,target);
+    await fs.writeFile(/* turbopackIgnore: true */ temporary,bytes);
+    await fs.rename(/* turbopackIgnore: true */ temporary,/* turbopackIgnore: true */ target);
     const assetPath="/"+path.relative(publicRoot,target).split(path.sep).join("/");
     return { path: assetPath, bytes: bytes.byteLength, sha256, key, sourceProvider: input.provider, storageProvider:"local-filesystem" as const };
   } finally {
