@@ -30,6 +30,16 @@ const verifiedSchema=z.object({
     emotionalEffect:dimension.optional(),
     usability:dimension.optional(),
   }).strict(),
+  findings:z.array(z.object({
+    critic:z.enum(["composition","typography","camera","motion","continuity","brand","art-direction","color","lighting","material","image-direction","sound","originality","craft","interaction","mobile","performance"]),
+    captureId:z.string().min(1).max(240),
+    severity:z.enum(["blocker","major","minor","advisory"]),
+    finding:z.string().min(8).max(1200),
+    evidence:z.array(z.string().min(1).max(600)).max(12).default([]),
+    affectedSystems:z.array(z.string().min(1).max(120)).max(12).default([]),
+    repair:z.string().min(8).max(1200),
+    confidence:z.number().finite().min(0).max(1),
+  }).strict()).max(48).default([]),
   evidence:evidenceSchema,
 }).strict().superRefine((value,ctx)=>{
   if(value.evidence.source==="rendered-external-judge" && value.evidence.captureIds.length<2) {
@@ -41,6 +51,12 @@ const verifiedSchema=z.object({
   if(value.verdict==="LOCK" && value.blockers.length) {
     ctx.addIssue({code:"custom",path:["blockers"],message:"A LOCK judgment cannot contain unresolved blockers."});
   }
+  const captureIds=new Set(value.evidence.captureIds);
+  value.findings.forEach((finding,index)=>{
+    if(!captureIds.has(finding.captureId)) {
+      ctx.addIssue({code:"custom",path:["findings",index,"captureId"],message:"Director finding must reference one of the rendered captures used as judgment evidence."});
+    }
+  });
 });
 
 const unverifiedSchema=z.object({
@@ -51,6 +67,7 @@ const unverifiedSchema=z.object({
   reasons:z.array(z.string().min(1).max(800)).min(1).max(16),
   blockers:z.array(z.string().min(1).max(800)).max(16).default([]),
   dimensions:z.object({}).strict().default({}),
+  findings:z.array(z.never()).max(0).default([]),
   evidence:z.null(),
 }).strict();
 
@@ -69,6 +86,7 @@ export function unverifiedDirectorJudgment(reason="No rendered, calibrated creat
     reasons:[reason],
     blockers:[],
     dimensions:{},
+    findings:[],
     evidence:null,
   };
 }
