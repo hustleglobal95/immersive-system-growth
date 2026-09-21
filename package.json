@@ -121,7 +121,8 @@
     "forge:context": "node --import tsx scripts/forge-context-capsule.mjs",
     "agentic:consistency:audit": "node scripts/agentic-consistency-audit.mjs",
     "learning:eval": "node --import tsx scripts/project-learning-eval.mjs",
-    "repair:learning:audit": "node scripts/repair-learning-audit.mjs"
+    "repair:learning:audit": "node scripts/repair-learning-audit.mjs",
+    "learning:promote": "node --import tsx scripts/project-learning-promote.mjs"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "5.3.0",
