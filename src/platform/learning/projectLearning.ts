@@ -1,6 +1,8 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
 import { loopRunReportSchema, type LoopRunReport } from "@/src/platform/loops/loopSchema";
+import type { CreativeMemoryGraph } from "@/src/platform/director-intelligence/types";
+import { addLesson } from "@/src/platform/director-intelligence/memory";
 
 const fingerprint=z.string().regex(/^[a-f0-9]{16,128}$/);
 const optionalFingerprint=fingerprint.optional();
@@ -254,6 +256,48 @@ export function evaluateProjectLearning(recordsInput:ProjectLearningRecord[]):Pr
     patterns,
     promotionPolicy:"No project-learning pattern becomes global Forge doctrine automatically. Review-ready requires support from at least three independent projects and >=0.75 average preference agreement, then explicit human promotion.",
   };
+}
+
+export function promoteProjectLearningPattern(input:{
+  graph:CreativeMemoryGraph;
+  pattern:ProjectLearningPattern;
+  approvedBy:string;
+}):CreativeMemoryGraph {
+  if(input.pattern.status!=="review-ready") {
+    throw new Error("Only review-ready cross-project learning may be promoted into Forge Creative Memory.");
+  }
+  const approver=input.approvedBy.trim();
+  if(!approver) throw new Error("Learning promotion requires an identified human approver.");
+  const projectId="forge-learning";
+  const graph:CreativeMemoryGraph={
+    version:1,
+    nodes:input.graph.nodes.some((node)=>node.id===projectId+":project")
+      ? [...input.graph.nodes]
+      : [...input.graph.nodes,{
+          id:projectId+":project",
+          type:"Project",
+          label:"Forge cross-project learning",
+          text:"Human-promoted lessons backed by independent Project Learning evidence.",
+          tags:["learning","cross-project","human-approved"],
+          projectId,
+          confidence:1,
+        }],
+    edges:[...input.graph.edges],
+  };
+  const agreement=input.pattern.averagePreferenceAgreement;
+  const confidence=Math.max(.7,Math.min(.95,.7+Math.min(5,input.pattern.projects)*.03+(agreement ?? 0)*.08));
+  const evidence=[
+    input.pattern.projects+" independent projects",
+    input.pattern.samples+" accepted winner samples",
+    agreement===null ? "preference agreement unavailable" : Math.round(agreement*100)+"% average preference agreement",
+  ].join(", ");
+  const lesson=[
+    "Cross-project evidence pattern "+input.pattern.key+".",
+    evidence+".",
+    "Approved by "+approver+".",
+    "Use as contextual evidence, not a mandatory design prescription.",
+  ].join(" ");
+  return addLesson(graph,projectId,lesson,confidence);
 }
 
 function delta(before:number|null,after:number|null) {
