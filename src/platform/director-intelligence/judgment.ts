@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { DirectorJudgmentReport, PlanningDisposition } from "@/src/platform/director-intelligence/types";
 
 const dimension=z.number().finite().min(0).max(10);
+export const MIN_PRODUCTION_LOCK_CONFIDENCE=0.75;
 const evidenceSchema=z.object({
   source:z.enum(["rendered-external-judge","human-review"]),
   judgeId:z.string().min(1).max(160),
@@ -55,6 +56,9 @@ const verifiedSchema=z.object({
   if(value.verdict==="LOCK" && materialFindings.length) {
     ctx.addIssue({code:"custom",path:["findings"],message:"A LOCK judgment cannot contain blocker or major repair findings."});
   }
+  if(value.verdict==="LOCK" && value.confidence<MIN_PRODUCTION_LOCK_CONFIDENCE) {
+    ctx.addIssue({code:"custom",path:["confidence"],message:"A production LOCK requires calibrated preference confidence of at least "+MIN_PRODUCTION_LOCK_CONFIDENCE.toFixed(2)+"."});
+  }
   if(value.verdict==="REVISE" && !value.blockers.length && !materialFindings.length) {
     ctx.addIssue({code:"custom",path:["findings"],message:"A REVISE judgment must identify at least one material blocker or repair finding."});
   }
@@ -103,5 +107,6 @@ export function judgmentPermitsProduction(planningDisposition:PlanningDispositio
     judgment.status==="verified" &&
     judgment.verdict==="LOCK" &&
     judgment.evidence?.calibrated===true &&
-    judgment.confidence!==null;
+    judgment.confidence!==null &&
+    judgment.confidence>=MIN_PRODUCTION_LOCK_CONFIDENCE;
 }
