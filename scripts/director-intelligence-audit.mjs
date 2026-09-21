@@ -68,6 +68,8 @@ const semanticSources={
   references:fs.readFileSync("src/platform/director-intelligence/referenceCorpus.ts","utf8"),
   broaderReferences:fs.readFileSync("src/platform/director-intelligence/broaderReferenceCorpus.ts","utf8"),
   judge:fs.readFileSync("src/platform/director-intelligence/judgeClient.ts","utf8"),
+  visualRepair:fs.readFileSync("scripts/autonomy-visual-director.mjs","utf8"),
+  loopRunner:fs.readFileSync("scripts/loop-run.mjs","utf8"),
 };
 const semanticFailures=[];
 if(semanticSources.council.includes('return "lock"')) semanticFailures.push("Deterministic planning lenses may not issue LOCK.");
@@ -80,6 +82,10 @@ if(/\bconfidence\b/.test(semanticSources.references) || /\bconfidence\b/.test(se
 for(const token of ["FORGE_DIRECTOR_JUDGE_CALIBRATION_JSON","captureIds","evidenceHash","scopeFingerprint","parseDirectorJudgeCalibration"]) {
   if(!semanticSources.judge.includes(token)) semanticFailures.push(`Director judge is missing evidence/calibration contract: ${token}`);
 }
+for(const token of ["director-judgment","parseDirectorJudgment","judgment.findings"]) {
+  if(!semanticSources.visualRepair.includes(token)) semanticFailures.push(`Visual repair worker is missing Director evidence bridge: ${token}`);
+}
+if(!semanticSources.loopRunner.includes("director-judgment")) semanticFailures.push("Loop runner must preserve the Director judgment repair bridge.");
 if(semanticFailures.length) {
   console.error("Director truthfulness audit failed:");
   semanticFailures.forEach((failure)=>console.error("- "+failure));
