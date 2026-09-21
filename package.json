@@ -52,7 +52,7 @@
     "recipe:list": "node scripts/recipe-list.mjs",
     "recipe:apply": "node --import tsx scripts/apply-recipe.mjs",
     "test": "STUDIO_AUTH_ENABLED=false ENABLE_STUDIO_IN_PROD=true node --import tsx --test tests/*.test.ts tests/security/*.test.ts",
-    "check": "node scripts/prepare-decoders.mjs && npm run sri:generate && npm run forge:registry:generate && npm run security:audit && npm run project:integrity && npm run doctor && npm run architecture:audit && npm run command:catalog:audit && npm run control-plane:audit && npm run studio:actionability:audit && npm run discoverability:audit && npm run operator:intelligence:audit && npm run director:audit && npm run director:intelligence:audit && npm run reference:corpus:audit && npm run autonomy:benchmark && npm run project:validate && npm run release:report && npm run creative:audit && npm run creative:recipes && npm run experience:validate && npm run experience:modes:audit && npm run interaction:validate && npm run cinematic:systems:audit && npm run motion:systems:audit && npm run cinematic:audit && npm run camera:audit && npm run camera:spatial:audit && npm run rig:audit && npm run visual:audit && npm run assets:audit && npm run performance:audit && npm run test && npm run typecheck && npm run lint",
+    "check": "node scripts/prepare-decoders.mjs && npm run sri:generate && npm run forge:registry:generate && npm run security:audit && npm run project:integrity && npm run doctor && npm run architecture:audit && npm run command:catalog:audit && npm run control-plane:audit && npm run studio:actionability:audit && npm run discoverability:audit && npm run operator:intelligence:audit && npm run director:audit && npm run director:intelligence:audit && npm run agentic:consistency:audit && npm run reference:corpus:audit && npm run autonomy:benchmark && npm run project:validate && npm run release:report && npm run creative:audit && npm run creative:recipes && npm run experience:validate && npm run experience:modes:audit && npm run interaction:validate && npm run cinematic:systems:audit && npm run motion:systems:audit && npm run cinematic:audit && npm run camera:audit && npm run camera:spatial:audit && npm run rig:audit && npm run visual:audit && npm run assets:audit && npm run performance:audit && npm run test && npm run typecheck && npm run lint",
     "cinematic:audit": "node --import tsx scripts/cinematic-audit.mjs",
     "camera:audit": "node --import tsx scripts/camera-audit.mjs",
     "camera:spatial:audit": "node --import tsx scripts/spatial-camera-audit.mjs",
@@ -117,7 +117,9 @@
     "forge:registry:generate": "node scripts/generate-forge-project-registry.mjs",
     "studio:local": "node scripts/studio-local.mjs",
     "forge:readiness": "node scripts/forge-readiness.mjs",
-    "forge:build-packet": "node --import tsx scripts/forge-build-packet.mjs"
+    "forge:build-packet": "node --import tsx scripts/forge-build-packet.mjs",
+    "forge:context": "node --import tsx scripts/forge-context-capsule.mjs",
+    "agentic:consistency:audit": "node scripts/agentic-consistency-audit.mjs"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "5.3.0",

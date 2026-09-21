@@ -58,10 +58,16 @@ For any request to show, preview, open, capture, share, or deploy an existing pr
 34. Substantial build, redesign and immersive-reference implementation requests must use the `forge-build` skill and compile a Forge Build Packet before production code changes. The packet is the execution contract; do not silently replace its thesis, signature moment, hierarchy or scene plan with an easier generic implementation.
 35. A custom visual critic endpoint and Forge's built-in AI Gateway critic are equivalent transport options only when they return the same validated evidence contract. Neither may promote a candidate without the existing hard gates.
 36. A rendered Director LOCK is only valid when the exact judge identity is backed by the configured calibration record. Changing model identity invalidates prior calibration until re-measured.
+37. The Creative State Graph is the canonical shared creative truth for substantial builds. Implementation workers may execute bounded scene changes but may not rewrite Director-locked truth, thesis, signature moment, memory promise or discipline rules.
+38. Specialist work must use task-scoped Context Capsules where available. Do not repeatedly load unrelated project state, references or tools when the task can be solved from the scene, creative truth and registered capability owner.
+39. Every autonomous finding must route through the Capability Router before mutation. Reasoning ability does not grant write authority; unowned or strategic findings escalate rather than improvising cross-domain edits.
+40. Full-site construction must not expand past the Signature Slice Gate while the protected signature slice has blockers or loses comparative rendered review.
 
 ## Before implementation
 
-For substantial build/redesign work, run the `forge-build` skill first. Compile the user request into a Forge Build Packet with `npm run forge:build-packet`, read it completely, and treat its current-state, asset, hierarchy, mobile and acceptance contracts as required production context.
+For substantial build/redesign work, run the `forge-build` skill first. Compile the user request into a Forge Build Packet with `npm run forge:build-packet`, read it completely, and treat its Creative State Graph, Signature Slice Gate, current-state, asset, hierarchy, mobile and acceptance contracts as required production context.
+
+Before a specialist camera, motion, composition, typography, interaction, asset, mobile, performance or engineering task, compile a task-scoped Context Capsule with `npm run forge:context`. Use the capsule's allowed systems/capabilities and denied actions as the mutation boundary.
 
 If a reference site, recording or screenshot set is supplied, deconstruct it first using `docs/IMMERSIVE_REFERENCE_DECONSTRUCTION_TEMPLATE.md`. Transfer construction principles, not proprietary surface styling.
 

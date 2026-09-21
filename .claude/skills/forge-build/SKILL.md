@@ -74,6 +74,14 @@ Before editing, state the production mapping for every major scene/chapter:
 
 If a behavior has no existing Forge owner, identify the genuinely missing primitive before creating new architecture.
 
+Before a specialist task, compile a task-scoped Context Capsule instead of reloading the entire project:
+
+```bash
+npm run forge:context -- --domain="<camera|motion|composition|typography|interaction|asset|mobile|performance|engineering|director>" --scene="<scene-id>" --objective="<specific task>" --prompt="<original user request>" --name="<project name>" --output=test-results/forge-context.json
+```
+
+Read the capsule before making the specialist change. Respect its allowed systems, registered capabilities, denied actions and verification requirements. A worker may reason about anything, but it may mutate only what its capability route permits.
+
 ## 4. Build with existing Forge systems first
 
 Prefer, in order:
@@ -103,7 +111,7 @@ Implement enough of the experience to prove:
 
 Render it before spreading the language across the rest of the site.
 
-If the signature slice is weak, fix it first. More sections do not rescue a weak core idea.
+The Build Packet's Signature Slice Gate is mandatory. If the signature slice has a blocker or loses a pairwise comparison, do not expand full-site production. Fix or replace the slice first. More sections do not rescue a weak core idea.
 
 ## 6. Complete the experience
 

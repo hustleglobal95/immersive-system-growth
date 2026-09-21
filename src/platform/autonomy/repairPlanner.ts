@@ -4,6 +4,7 @@ import type { MotionArchetypeName } from "@/src/platform/motionArchetypes";
 import type { ScenePresentationAdjustment } from "@/src/platform/commands/presentationCommands";
 import type { RenderReviewPlan, VisualCriticFinding } from "@/src/platform/autonomy/visualReview";
 import type { ExperienceConfig } from "@/src/types/experience";
+import { routeVisualFinding } from "@/src/platform/agentic/capabilityRouter";
 
 export interface VisualRepairCommand {
   type: "scene.adjustPresentation" | "motion.applyArchetype" | "camera.applyChoreography";
@@ -59,15 +60,15 @@ export function planVisualRepairs(input:{
       return;
     }
 
+    const route=routeVisualFinding(finding);
     const text=[finding.finding,finding.repair,...finding.evidence,...finding.affectedSystems].join(" ").toLowerCase();
-    const diagnosticOnly=new Set<VisualCriticFinding["critic"]>(["originality","sound","material"]);
-    if(diagnosticOnly.has(finding.critic)) {
+    if(route.disposition==="human-review" || route.disposition==="engineering-escalation" || route.allowedRepairCommands.length===0) {
       unresolved.push(finding);
       return;
     }
     let handled=false;
 
-    if(finding.critic==="camera" || finding.affectedSystems.some((item)=>/camera|lens|framing/i.test(item))) {
+    if(route.allowedRepairCommands.includes("camera.applyChoreography") && (finding.critic==="camera" || finding.affectedSystems.some((item)=>/camera|lens|framing/i.test(item)))) {
       camera.set(sceneId,{
         choreography:chooseCamera(text),
         finding:findingId,
@@ -77,10 +78,12 @@ export function planVisualRepairs(input:{
     }
 
     if(
+      route.allowedRepairCommands.includes("motion.applyArchetype") && (
       finding.critic==="motion" ||
       finding.critic==="continuity" ||
       (finding.critic==="typography" && /timing|arriv|settle|reveal|copy/i.test(text)) ||
       finding.affectedSystems.some((item)=>/motion|transition|copy timing/i.test(item))
+      )
     ) {
       motion.set(sceneId,{
         archetype:chooseMotion(text),
@@ -91,7 +94,7 @@ export function planVisualRepairs(input:{
     }
 
     const patch=presentationPatch(sceneId,text,finding.severity);
-    if(Object.keys(patch).length > 1) {
+    if(route.allowedRepairCommands.includes("scene.adjustPresentation") && Object.keys(patch).length > 1) {
       const existing=presentation.get(sceneId) ?? { patch:{ sceneId },findings:[],rationale:[] };
       existing.patch=mergePresentation(existing.patch,patch);
       existing.findings.push(findingId);

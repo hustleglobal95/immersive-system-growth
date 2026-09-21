@@ -1,4 +1,5 @@
 import type { runDirectorIntelligence } from "@/src/platform/director-intelligence/orchestrator";
+import { buildCreativeStateGraph, buildSignatureSliceGate } from "@/src/platform/agentic/creativeStateGraph";
 
 type DirectorRun=ReturnType<typeof runDirectorIntelligence>;
 
@@ -18,6 +19,8 @@ export function buildForgeBuildPacket(input:ForgeBuildPacketInput) {
   const report=director.report;
   const treatment=report.treatment;
   const selected=treatment.territories.find((item)=>item.id===treatment.selectedTerritoryId) ?? treatment.territories[0];
+  const creativeState=buildCreativeStateGraph(director);
+  const signatureSlice=buildSignatureSliceGate(creativeState);
   const sections=[
     "# FORGE BUILD PACKET — CLAUDE EXECUTION CONTRACT",
     "",
@@ -48,6 +51,14 @@ export function buildForgeBuildPacket(input:ForgeBuildPacketInput) {
     "",
     "## SELECTED VISUAL LANGUAGE",
     json(director.visualLanguages.find((item)=>item.territoryId===treatment.selectedTerritoryId) ?? director.visualLanguages[0]),
+    "",
+    "## CREATIVE STATE GRAPH",
+    "This is the canonical creative truth. Director-locked fields may not be rewritten by implementation workers.",
+    json(creativeState),
+    "",
+    "## SIGNATURE SLICE GATE",
+    "Prove this slice before scaling production to the entire experience.",
+    json(signatureSlice),
     "",
     "## CREATIVE DNA",
     json(director.creativeDNA),
@@ -96,6 +107,13 @@ export function buildForgeBuildPacket(input:ForgeBuildPacketInput) {
     "",
     "## REPOSITORY OPERATING CONTRACT",
     trimContract(input.repoContract),
+    "",
+    "## AGENTIC EXECUTION MODEL",
+    "- Creative State Graph is the shared source of truth; implementation workers do not renegotiate it.",
+    "- Compile task-scoped Context Capsules for specialist work instead of repeatedly loading the entire project.",
+    "- Route findings through the Capability Router before mutation; no agent gets permissions merely because it can reason about a problem.",
+    "- Build and pass the Signature Slice Gate before expanding the full experience.",
+    "- Rendered evidence and pairwise comparison decide promotion; new candidates never replace the incumbent by existence alone.",
     "",
     "## IMPLEMENTATION ORDER",
     "1. Inspect the existing project and identify which Forge-native systems already own each requirement.",
