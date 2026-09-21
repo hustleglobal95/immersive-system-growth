@@ -12,6 +12,7 @@ const captureSchema=z.object({
 
 const inputSchema=z.object({
   projectContext:z.string().min(1).max(4000),
+  scopeFingerprint:z.string().regex(/^forge1:[a-f0-9]{16}$/),
   planningDisposition:z.enum(["ADVANCE","REVISE","RESEARCH REQUIRED","ASSET BLOCKED","REJECT"]),
   treatment:z.object({
     thesis:z.string().min(1).max(1600),
@@ -80,6 +81,7 @@ export async function runDirectorJudge(rawInput:unknown,environment:DirectorJudg
         findings:"For every material REVISE concern, return a capture-scoped finding with concrete evidence and a bounded repair instruction. Do not invent unseen states.",
       },
       projectContext:input.projectContext,
+      scopeFingerprint:input.scopeFingerprint,
       planningDisposition:input.planningDisposition,
       treatment:input.treatment,
       captures:input.captures.map((capture)=>({id:capture.id,mimeType:capture.mimeType,data:capture.data})),
@@ -107,6 +109,7 @@ export async function runDirectorJudge(rawInput:unknown,environment:DirectorJudg
       calibrated:true,
       captureIds:input.captures.map((capture)=>capture.id),
       evidenceHash,
+      scopeFingerprint:input.scopeFingerprint,
     },
   });
 }
