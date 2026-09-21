@@ -98,9 +98,11 @@ Local imported binaries still follow the existing asset preparation path. Promot
 
 ## Internal access
 
-Internal access is optional so solo local development stays frictionless.
+Internal access is optional so solo local development stays frictionless. In development, auth is OFF by default unless `STUDIO_AUTH_ENABLED=true` is explicitly set. `npm run studio:local` always starts the current process as **Local owner**, with no passphrase required.
 
-Enable it with:
+Production behaves differently: auth defaults ON whenever Studio is enabled in production. If the session secret or an owner user is missing, Forge shows **SETUP REQUIRED** instead of presenting a login form that cannot succeed.
+
+Enable shared/authenticated access with:
 
 ```text
 STUDIO_AUTH_ENABLED=true
