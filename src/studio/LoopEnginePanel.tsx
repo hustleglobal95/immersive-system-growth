@@ -113,12 +113,13 @@ export function LoopEnginePanel({
       ? ` --proposal-id ${shellQuote(proposal.id)} --selection-key ${shellQuote(proposal.selectionKey)} --baseline-fingerprint ${shellQuote(proposal.baselineFingerprint)} --context ${shellQuote(proposalContext)}`
       : "");
   const sourceReady=!proposalBound || (proposalBaselineMatches && vaultMatchesWorking);
-  const ready=selected.executable && proposalBound && vaultConfigured===true && vaultProject?.status==="active" && remoteRunnerEnabled===true && sourceReady;
+  const ready=selected.executable && proposalBound && vaultConfigured===true && vaultProject?.status==="active" && remoteRunnerEnabled===true && criticConnected===true && sourceReady;
   const runLabel=!proposalBound ? "Start from a proposal"
     : proposalBound && !proposalBaselineMatches ? "Proposal is stale — direct again"
     : proposalBound && vaultProject && vaultSnapshot===undefined ? "Checking current checkpoint…"
       : proposalBound && vaultProject && !vaultMatchesWorking ? "Save current checkpoint first"
-        : remoteRunnerEnabled===false ? "Remote runner not configured"
+        : criticConnected===false ? "Visual critic not configured"
+          : remoteRunnerEnabled===false ? "Remote runner not configured"
           : vaultProject?.status==="archived" ? "Unarchive project first"
             : !vaultProject ? "Save checkpoint first"
               : ready ? "Run improvement" : "Checking readiness…";
