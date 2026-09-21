@@ -266,6 +266,9 @@ test("Loop Engine scripts preserve human approval and legacy repair compatibilit
   assert.match(accept,/bundle fingerprint does not match the run report/);
   assert.match(accept,/assetManifest/);
   assert.match(accept,/interactionGraph/);
+  assert.match(accept,/createProjectLearningRecord/);
+  assert.match(accept,/saveVaultProjectWithLearning/);
+  assert.match(accept,/Project learning:/);
   assert.match(legacy,/scripts\/loop-run\.mjs/);
 });
 
