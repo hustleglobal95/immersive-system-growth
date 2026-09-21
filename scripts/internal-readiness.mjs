@@ -32,9 +32,12 @@ function env(...names) { return names.every((name) => Boolean(process.env[name]?
 
 
 function projectVaultReady() {
-  return /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(process.env.FORGE_GITHUB_REPOSITORY ?? "") && Boolean(process.env.FORGE_GITHUB_TOKEN?.trim());
+  const remote=/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(process.env.FORGE_GITHUB_REPOSITORY ?? "") && Boolean(process.env.FORGE_GITHUB_TOKEN?.trim());
+  const local=process.env.NODE_ENV!=="production" && process.env.FORGE_LOCAL_STORAGE_ENABLED==="true";
+  return remote || local;
 }
 function assetVaultReady() {
+  if (process.env.NODE_ENV!=="production" && process.env.FORGE_LOCAL_STORAGE_ENABLED==="true") return true;
   if (!env("FORGE_ASSET_VAULT_ENDPOINT", "FORGE_ASSET_VAULT_PUBLIC_BASE_URL", "FORGE_ASSET_VAULT_TOKEN")) return false;
   try {
     return [process.env.FORGE_ASSET_VAULT_ENDPOINT, process.env.FORGE_ASSET_VAULT_PUBLIC_BASE_URL].every((value) => {

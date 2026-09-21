@@ -11,9 +11,9 @@ export async function GET(request:Request) {
     const response=Response.json({
       ok:true,
       role:identity.role,
-      visualCriticConnected:Boolean(process.env.FORGE_VISUAL_CRITIC_URL),
+      visualCriticConnected:Boolean(process.env.FORGE_VISUAL_CRITIC_URL || process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN),
       vaultConfigured:vault.configured,
-      remoteRunnerEnabled:process.env.FORGE_LOOP_REMOTE_ENABLED==="true" && Boolean(process.env.FORGE_GITHUB_REPOSITORY && process.env.FORGE_GITHUB_TOKEN && process.env.FORGE_VISUAL_CRITIC_URL),
+      remoteRunnerEnabled:process.env.FORGE_LOOP_REMOTE_ENABLED==="true" && Boolean(process.env.FORGE_GITHUB_REPOSITORY && process.env.FORGE_GITHUB_TOKEN && (process.env.FORGE_VISUAL_CRITIC_URL || process.env.AI_GATEWAY_API_KEY)),
       executableLoops:executableLoopDefinitions().map((loop)=>loop.id),
     });
     response.headers.set("cache-control","no-store");

@@ -58,6 +58,14 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - name: Prove local Forge readiness
+        env:
+          STUDIO_AUTH_ENABLED: "false"
+          FORGE_LOCAL_STORAGE_ENABLED: "true"
+          NODE_ENV: development
+        run: npm run forge:readiness -- --profile=local --strict
+      - name: Compile representative Claude Build Packet from one-line prompt
+        run: npm run forge:build-packet -- --name="CI Signature Product" --prompt="Create a premium cinematic interactive 3D product launch with one unforgettable assembly reveal, restrained typography, strong mobile translation and excellent first-use performance." --output=test-results/forge-build-packet.md
       - run: npm run check
       - run: npm run bank:validate
       - run: npm run build

@@ -55,8 +55,13 @@ For any request to show, preview, open, capture, share, or deploy an existing pr
 31. Autonomy Level 4 candidates must pass browser functional verification before visual A/B acceptance. A visually stronger candidate with broken traversal, CTA reachability, mobile behavior or reduced-motion semantics is invalid.
 32. Motion review must sample identical progress states forward and backward and inspect scene boundaries. Reverse-state drift, non-finite motion state or severe boundary discontinuity blocks autonomous promotion.
 33. Headless renderer frame time is advisory evidence, not a substitute for real-device performance validation.
+34. Substantial build, redesign and immersive-reference implementation requests must use the `forge-build` skill and compile a Forge Build Packet before production code changes. The packet is the execution contract; do not silently replace its thesis, signature moment, hierarchy or scene plan with an easier generic implementation.
+35. A custom visual critic endpoint and Forge's built-in AI Gateway critic are equivalent transport options only when they return the same validated evidence contract. Neither may promote a candidate without the existing hard gates.
+36. A rendered Director LOCK is only valid when the exact judge identity is backed by the configured calibration record. Changing model identity invalidates prior calibration until re-measured.
 
 ## Before implementation
+
+For substantial build/redesign work, run the `forge-build` skill first. Compile the user request into a Forge Build Packet with `npm run forge:build-packet`, read it completely, and treat its current-state, asset, hierarchy, mobile and acceptance contracts as required production context.
 
 If a reference site, recording or screenshot set is supplied, deconstruct it first using `docs/IMMERSIVE_REFERENCE_DECONSTRUCTION_TEMPLATE.md`. Transfer construction principles, not proprietary surface styling.
 

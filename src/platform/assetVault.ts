@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { readAssetGenerationStatus, type AssetGenerationProvider, type ForgeAssetType } from "@/src/platform/assetGeneration";
 
 type AssetVaultConfigurationEnvironment={ [key:string]:string|undefined };
@@ -13,8 +15,13 @@ export interface PromoteGeneratedAssetInput {
 }
 
 export function assetVaultConfiguration(environment: AssetVaultConfigurationEnvironment = process.env) {
+  const remoteConfigured=Boolean(environment.FORGE_ASSET_VAULT_ENDPOINT && environment.FORGE_ASSET_VAULT_PUBLIC_BASE_URL && environment.FORGE_ASSET_VAULT_TOKEN);
+  const localConfigured=environment.NODE_ENV!=="production" && environment.FORGE_LOCAL_STORAGE_ENABLED==="true";
   return {
-    configured: Boolean(environment.FORGE_ASSET_VAULT_ENDPOINT && environment.FORGE_ASSET_VAULT_PUBLIC_BASE_URL && environment.FORGE_ASSET_VAULT_TOKEN),
+    configured: remoteConfigured || localConfigured,
+    provider: remoteConfigured ? "remote-object-storage" as const : localConfigured ? "local-filesystem" as const : "unconfigured" as const,
+    remoteConfigured,
+    localConfigured,
     endpointConfigured: Boolean(environment.FORGE_ASSET_VAULT_ENDPOINT),
     publicBaseConfigured: Boolean(environment.FORGE_ASSET_VAULT_PUBLIC_BASE_URL),
     tokenConfigured: Boolean(environment.FORGE_ASSET_VAULT_TOKEN),
@@ -25,8 +32,9 @@ export async function promoteGeneratedAsset(input: PromoteGeneratedAssetInput, e
   validateInput(input);
   const configuration = assetVaultConfiguration(environment);
   if (!configuration.configured) throw new AssetVaultNotConfiguredError();
-  const endpointBase = requireHttpsBase(environment.FORGE_ASSET_VAULT_ENDPOINT!, "FORGE_ASSET_VAULT_ENDPOINT");
-  const publicBase = requireHttpsBase(environment.FORGE_ASSET_VAULT_PUBLIC_BASE_URL!, "FORGE_ASSET_VAULT_PUBLIC_BASE_URL");
+  const remote=configuration.remoteConfigured;
+  const endpointBase = remote ? requireHttpsBase(environment.FORGE_ASSET_VAULT_ENDPOINT!, "FORGE_ASSET_VAULT_ENDPOINT") : null;
+  const publicBase = remote ? requireHttpsBase(environment.FORGE_ASSET_VAULT_PUBLIC_BASE_URL!, "FORGE_ASSET_VAULT_PUBLIC_BASE_URL") : null;
 
   const status = await readAssetGenerationStatus(input.provider, input.taskId, input.phase, environment);
   if (status.status !== "succeeded") throw new Error("Generated asset is not ready for promotion");
@@ -49,23 +57,35 @@ export async function promoteGeneratedAsset(input: PromoteGeneratedAssetInput, e
     const extension = extensionFor(input.kind, sourceUrl.pathname);
     const baseName = cleanName(input.name).replace(/\.[A-Za-z0-9]+$/, "") || "asset";
     const key = [input.projectId, sha256.slice(0, 2), `${sha256}-${baseName}.${extension}`].map(encodeURIComponent).join("/");
-    const endpoint = new URL(key, endpointBase);
-    const upload = await fetch(endpoint, {
-      method: "PUT",
-      headers: {
-        authorization: `Bearer ${environment.FORGE_ASSET_VAULT_TOKEN}`,
-        "content-type": response.headers.get("content-type") ?? contentTypeFor(input.kind),
-        "content-length": String(bytes.byteLength),
-        "x-forge-sha256": sha256,
-        "x-forge-project": input.projectId,
-      },
-      body: bytes,
-      cache: "no-store",
-      redirect: "error",
-    });
-    if (!upload.ok) throw new Error(`Asset Vault upload failed (${upload.status}): ${(await upload.text()).slice(0, 220)}`);
-    const path = new URL(key, publicBase).toString();
-    return { path, bytes: bytes.byteLength, sha256, key, sourceProvider: input.provider };
+    if(remote) {
+      const endpoint = new URL(key, endpointBase!);
+      const upload = await fetch(endpoint, {
+        method: "PUT",
+        headers: {
+          authorization: `Bearer ${environment.FORGE_ASSET_VAULT_TOKEN}`,
+          "content-type": response.headers.get("content-type") ?? contentTypeFor(input.kind),
+          "content-length": String(bytes.byteLength),
+          "x-forge-sha256": sha256,
+          "x-forge-project": input.projectId,
+        },
+        body: bytes,
+        cache: "no-store",
+        redirect: "error",
+      });
+      if (!upload.ok) throw new Error(`Asset Vault upload failed (${upload.status}): ${(await upload.text()).slice(0, 220)}`);
+      const assetPath = new URL(key, publicBase!).toString();
+      return { path: assetPath, bytes: bytes.byteLength, sha256, key, sourceProvider: input.provider, storageProvider:"remote-object-storage" as const };
+    }
+    const publicRoot=path.join(process.cwd(),"public");
+    const localRoot=path.join(publicRoot,"generated","vault");
+    const target=path.join(localRoot,key);
+    if(!target.startsWith(localRoot+path.sep)) throw new Error("Local Asset Vault path escapes storage root");
+    await fs.mkdir(/* turbopackIgnore: true */ path.dirname(target),{recursive:true});
+    const temporary=target+".tmp-"+crypto.randomUUID();
+    await fs.writeFile(/* turbopackIgnore: true */ temporary,bytes);
+    await fs.rename(/* turbopackIgnore: true */ temporary,/* turbopackIgnore: true */ target);
+    const assetPath="/"+path.relative(publicRoot,target).split(path.sep).join("/");
+    return { path: assetPath, bytes: bytes.byteLength, sha256, key, sourceProvider: input.provider, storageProvider:"local-filesystem" as const };
   } finally {
     clearTimeout(timer);
   }

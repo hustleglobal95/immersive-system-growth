@@ -2,8 +2,12 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { createStudioSessionToken, hasStudioRole, parseStudioUsers, studioAccessEnabled, verifyStudioSessionToken, verifyStudioUserSecret } from "../src/platform/studioAccess";
-import { vaultConfiguration } from "../src/platform/studioVault";
+import { listVaultProjects, listVaultVersions, readVaultProject, restoreVaultVersion, saveVaultProject, vaultConfiguration } from "../src/platform/studioVault";
 import { assetVaultConfiguration } from "../src/platform/assetVault";
+import rawExperience from "../config/experience.json";
+import rawProject from "../config/studio-project.json";
+import rawManifest from "../config/asset-manifest.json";
+import rawGraph from "../config/interaction-graph.json";
 
 test("Studio authentication is fail-closed by default and role ordering is explicit", () => {
   assert.equal(studioAccessEnabled({}), true);
@@ -39,7 +43,11 @@ test("internal sessions are signed, role-bearing and expire server-side", async 
 test("Project Vault and Asset Vault expose deployment readiness independently", () => {
   assert.equal(vaultConfiguration({}).configured, false);
   assert.equal(vaultConfiguration({ FORGE_GITHUB_REPOSITORY: "owner/repo", FORGE_GITHUB_TOKEN: "token" }).configured, true);
+  assert.equal(vaultConfiguration({ NODE_ENV:"development", FORGE_LOCAL_STORAGE_ENABLED:"true" }).provider, "local-filesystem");
+  assert.equal(vaultConfiguration({ NODE_ENV:"production", FORGE_LOCAL_STORAGE_ENABLED:"true" }).configured, false);
   assert.equal(assetVaultConfiguration({}).configured, false);
+  assert.equal(assetVaultConfiguration({ NODE_ENV:"development", FORGE_LOCAL_STORAGE_ENABLED:"true" }).provider, "local-filesystem");
+  assert.equal(assetVaultConfiguration({ NODE_ENV:"production", FORGE_LOCAL_STORAGE_ENABLED:"true" }).configured, false);
   assert.equal(assetVaultConfiguration({ FORGE_ASSET_VAULT_ENDPOINT: "https://upload.example.com", FORGE_ASSET_VAULT_PUBLIC_BASE_URL: "https://cdn.example.com", FORGE_ASSET_VAULT_TOKEN: "token" }).configured, true);
 });
 
@@ -72,4 +80,43 @@ test("internal product release boundaries preserve automation and gate human act
   assert.match(publishStatus, /canPublish: hasStudioRole\(identity, "developer"\)/);
   assert.match(vault, /900 KB durable snapshot limit/);
   assert.match(proxy, /export const config/);
+});
+
+
+test("local Project Vault performs durable save, version and restore without GitHub credentials", async () => {
+  const localDir=".forge/local-vault";
+  const environment={ NODE_ENV:"development", FORGE_LOCAL_STORAGE_ENABLED:"true" } as NodeJS.ProcessEnv;
+  const actor={id:"local-owner",name:"Local owner",role:"owner"};
+  try {
+    fs.rmSync(localDir,{recursive:true,force:true});
+    const first=await saveVaultProject({
+      experience:rawExperience,
+      project:rawProject,
+      assetManifest:rawManifest,
+      interactionGraph:rawGraph,
+    },actor,"First checkpoint","Local provider test",environment);
+    assert.equal(first.summary.id,rawProject.id);
+    assert.equal((await listVaultProjects(environment)).length,1);
+    assert.equal((await listVaultVersions(rawProject.id,environment)).length,1);
+    const current=await readVaultProject(rawProject.id,environment);
+    assert.equal(current?.versionId,first.snapshot.versionId);
+
+    const secondExperience=structuredClone(rawExperience);
+    secondExperience.meta.description=rawExperience.meta.description+" Revised for local Vault restore proof.";
+    const second=await saveVaultProject({
+      experience:secondExperience,
+      project:rawProject,
+      assetManifest:rawManifest,
+      interactionGraph:rawGraph,
+    },actor,"Second checkpoint","Mutation for restore proof",environment);
+    assert.notEqual(second.snapshot.versionId,first.snapshot.versionId);
+    assert.equal((await listVaultVersions(rawProject.id,environment)).length,2);
+
+    await restoreVaultVersion(rawProject.id,first.snapshot.versionId,actor,environment);
+    const restored=await readVaultProject(rawProject.id,environment);
+    assert.equal(restored?.versionId,first.snapshot.versionId);
+    assert.equal(restored?.experience.meta.description,rawExperience.meta.description);
+  } finally {
+    fs.rmSync(localDir,{recursive:true,force:true});
+  }
 });
