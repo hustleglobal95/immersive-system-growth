@@ -8,7 +8,8 @@ import { planVisualRepairs } from "../src/platform/autonomy/repairPlanner";
 import { loopDefinition } from "../src/platform/loops/loopRegistry";
 import { createLoopRunReport } from "../src/platform/loops/loopEvidence";
 import type { LoopRunReport } from "../src/platform/loops/loopSchema";
-import { createProjectLearningRecord, evaluateProjectLearning } from "../src/platform/learning/projectLearning";
+import { createProjectLearningRecord, evaluateProjectLearning, promoteProjectLearningPattern } from "../src/platform/learning/projectLearning";
+import { createEmptyMemoryGraph } from "../src/platform/director-intelligence/memory";
 
 const base=parseExperience(rawExperience);
 
@@ -238,6 +239,32 @@ test("Project Learning accepts only proven human-promoted winners",()=>{
     acceptedVersionId:"v-20260921150000002-deadbeef",
     approvedBy:{id:"owner",name:"Owner",role:"loop-approver"},
   }),/hard-gate failures/i);
+});
+
+test("only review-ready cross-project learning can enter Creative Memory and promotion is idempotent",()=>{
+  const records=["alpha","bravo","charlie"].map((projectId,index)=>createProjectLearningRecord({
+    report:provenReport(projectId,"hierarchy-first",[.84,.8,.79][index]),
+    projectId,
+    acceptedVersionId:`v-20260921151${index}00000-deadbeef`,
+    approvedBy:{id:"owner",name:"Owner",role:"loop-approver"},
+    approvedAt:`2026-09-21T15:1${index}:00.000Z`,
+  }));
+  const early=evaluateProjectLearning(records.slice(0,2)).patterns[0];
+  assert.throws(()=>promoteProjectLearningPattern({
+    graph:createEmptyMemoryGraph(),
+    pattern:early,
+    approvedBy:"Kevin",
+  }),/Only review-ready/i);
+
+  const mature=evaluateProjectLearning(records).patterns[0];
+  const graph=promoteProjectLearningPattern({
+    graph:createEmptyMemoryGraph(),
+    pattern:mature,
+    approvedBy:"Kevin",
+  });
+  assert.ok(graph.nodes.some((node)=>node.type==="Lesson" && node.projectId==="forge-learning" && node.text.includes(mature.key)));
+  const repeated=promoteProjectLearningPattern({graph,pattern:mature,approvedBy:"Kevin"});
+  assert.equal(repeated.nodes.length,graph.nodes.length);
 });
 
 test("cross-project learning stays a hypothesis until independent evidence clears the review threshold",()=>{
