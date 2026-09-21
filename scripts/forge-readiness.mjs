@@ -24,7 +24,7 @@ function internalAccessReady(){
   }catch{return false;}
 }
 function directorCalibrationReady(){
-  if(!has("FORGE_DIRECTOR_JUDGE_URL")||!has("FORGE_DIRECTOR_JUDGE_CALIBRATION_JSON")) return false;
+  if(!(has("FORGE_DIRECTOR_JUDGE_URL")||has("AI_GATEWAY_API_KEY")||has("VERCEL_OIDC_TOKEN"))||!has("FORGE_DIRECTOR_JUDGE_CALIBRATION_JSON")) return false;
   try{
     const c=JSON.parse(env.FORGE_DIRECTOR_JUDGE_CALIBRATION_JSON);
     return c&&c.sampleSize>=20&&c.pairwiseAgreement>=0.75&&c.lockPrecision>=0.8&&c.falseLockRate<=0.1&&typeof c.judgeId==="string";
@@ -84,7 +84,7 @@ all("FORGE_ASSET_VAULT_ENDPOINT","FORGE_ASSET_VAULT_PUBLIC_BASE_URL","FORGE_ASSE
 
 directorCalibrationReady()
   ? yes("Calibrated Director judge","Rendered creative LOCK/REVISE judgment is configured and calibration clears minimum thresholds.")
-  : hold("Calibrated Director judge","Director stays UNVERIFIED without a configured judge and valid calibration record.");
+  : hold("Calibrated Director judge","Director stays UNVERIFIED without a custom judge or AI Gateway backend plus a valid calibration record.");
 
 (env.FORGE_LOOP_REMOTE_ENABLED==="true"&&all("FORGE_GITHUB_REPOSITORY","FORGE_GITHUB_TOKEN")&&(has("FORGE_VISUAL_CRITIC_URL")||has("AI_GATEWAY_API_KEY")))
   ? yes("Remote Loop Engine","Studio can dispatch evidence-gated remote loops.")
