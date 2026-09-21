@@ -58,6 +58,14 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - name: Prove local Forge readiness
+        env:
+          STUDIO_AUTH_ENABLED: "false"
+          FORGE_LOCAL_STORAGE_ENABLED: "true"
+          NODE_ENV: development
+        run: npm run forge:readiness -- --profile=local --strict
+      - name: Compile representative Claude Build Packet
+        run: npm run forge:build-packet -- --output=test-results/forge-build-packet.md
       - run: npm run check
       - run: npm run bank:validate
       - run: npm run build
