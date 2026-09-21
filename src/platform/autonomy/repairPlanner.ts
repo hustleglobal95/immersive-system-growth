@@ -102,7 +102,7 @@ export function planVisualRepairs(input:{
     if(route.allowedRepairCommands.includes("scene.adjustLighting")) {
       const patch=lightingPatch(sceneId,text,finding.severity);
       if(hasRepairFields(patch)) {
-        mergeBucket(lighting,sceneId,patch,findingId,rationale,mergeAdditive);
+        mergeBucket(lighting,sceneId,patch,findingId,rationale,(a,b)=>mergeBounded(a,b,lightingMergeBounds));
         handled=true;
       }
     }
@@ -118,7 +118,7 @@ export function planVisualRepairs(input:{
     if(route.allowedRepairCommands.includes("scene.adjustMediaFraming")) {
       const patch=mediaPatch(sceneId,text,finding.severity);
       if(scene.media && hasRepairFields(patch)) {
-        mergeBucket(media,sceneId,patch,findingId,rationale,mergeAdditive);
+        mergeBucket(media,sceneId,patch,findingId,rationale,(a,b)=>mergeBounded(a,b,mediaMergeBounds));
         handled=true;
       }
     }
@@ -126,7 +126,7 @@ export function planVisualRepairs(input:{
     if(route.allowedRepairCommands.includes("scene.adjustMaterialSurface")) {
       const patch=materialPatch(sceneId,scene,text,finding.severity);
       if(hasRepairFields(patch)) {
-        mergeBucket(material,sceneId,patch,findingId,rationale,mergeAdditive);
+        mergeBucket(material,sceneId,patch,findingId,rationale,(a,b)=>mergeBounded(a,b,materialMergeBounds));
         handled=true;
       }
     }
@@ -342,13 +342,38 @@ function pushBuckets<T extends {sceneId:string}>(
   }
 }
 
-function mergeAdditive<T extends {sceneId:string}>(a:T,b:T):T {
+const lightingMergeBounds:Record<string,[number,number]>={
+  exposureDelta:[-0.4,0.4],
+  ambientDelta:[-2,2],
+  keyDelta:[-5,5],
+  rimDelta:[-5,5],
+  bloomDelta:[-0.5,0.5],
+  vignetteDelta:[-0.3,0.3],
+};
+const mediaMergeBounds:Record<string,[number,number]>={
+  xDelta:[-16,16],
+  yDelta:[-16,16],
+  mobileXDelta:[-16,16],
+  mobileYDelta:[-16,16],
+  zoomDelta:[-0.08,0.08],
+};
+const materialMergeBounds:Record<string,[number,number]>={
+  roughnessDelta:[-0.18,0.18],
+  metalnessDelta:[-0.18,0.18],
+  clearcoatDelta:[-0.18,0.18],
+  tintStrengthDelta:[-0.15,0.15],
+};
+
+function mergeBounded<T extends {sceneId:string}>(a:T,b:T,bounds:Record<string,[number,number]>):T {
   const result:{[key:string]:unknown}={sceneId:a.sceneId};
   for(const key of new Set([...Object.keys(a),...Object.keys(b)])) {
     if(key==="sceneId") continue;
     const left=(a as unknown as Record<string,unknown>)[key];
     const right=(b as unknown as Record<string,unknown>)[key];
-    if(typeof left==="number" || typeof right==="number") result[key]=Number(left ?? 0)+Number(right ?? 0);
+    if(typeof left==="number" || typeof right==="number") {
+      const [min,max]=bounds[key] ?? [-Infinity,Infinity];
+      result[key]=Math.max(min,Math.min(max,Number(left ?? 0)+Number(right ?? 0)));
+    }
   }
   return result as T;
 }
