@@ -209,8 +209,8 @@ export async function saveVaultLoopCandidate(input:VaultLoopCandidate, environme
   assertLoopToken(input.loopId,"loop");
   assertLoopToken(input.proposalId,"proposal");
   const candidate=parseLoopCandidate(input);
-  const github=vaultGithub(environment);
-  await github.commitFiles({
+  const store=vaultStore(environment);
+  await store.commitFiles({
     [`.forge/vault/projects/${input.projectId}/loops/${input.loopId}/${input.proposalId}.json`]:candidate,
   },`Forge Loop: verified ${input.loopId} candidate for ${input.projectId}`);
   return candidate;
@@ -220,8 +220,8 @@ export async function readVaultLoopCandidate(projectId:string,loopId:string,prop
   assertProjectId(projectId);
   assertLoopToken(loopId,"loop");
   assertLoopToken(proposalId,"proposal");
-  const github=vaultGithub(environment);
-  const raw=await github.readJson<unknown|null>(`.forge/vault/projects/${projectId}/loops/${loopId}/${proposalId}.json`,null);
+  const store=vaultStore(environment);
+  const raw=await store.readJson<unknown|null>(`.forge/vault/projects/${projectId}/loops/${loopId}/${proposalId}.json`,null);
   return raw ? parseLoopCandidate(raw) : null;
 }
 
