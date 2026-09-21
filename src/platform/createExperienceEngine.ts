@@ -129,7 +129,7 @@ export function createExperienceEngine(initialState: ExperienceConfig, options: 
   }, {
     label: "Adjust material surface",
     description: "Tune only already-authored material overrides with bounded reversible deltas. It cannot introduce a new override.",
-    category: "visual", impact: "local", approval: "review", reversible: true, agentVisible: true,
+    category: "visual", impact: "local", approval: "auto", reversible: true, agentVisible: true,
     inputSchema: {
       type: "object", required: ["sceneId"],
       properties: {
