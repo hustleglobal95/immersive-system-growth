@@ -72,7 +72,7 @@ test("Director judge can use AI Gateway directly while preserving calibrated ide
   assert.equal(result.verdict,"LOCK");
   assert.equal(result.evidence?.judgeId,"ai-gateway:openai/gpt-5.4");
   assert.equal(result.evidence?.calibrationId,"gateway-cal-v1");
-  assert.equal((requestBody as {response_format?:{type?:string}}).response_format?.type,"json_schema");
+  assert.equal((requestBody as unknown as {response_format?:{type?:string}}).response_format?.type,"json_schema");
 });
 
 test("AI Gateway Director judge refuses calibration for a different judge identity",async()=>{
