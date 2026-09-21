@@ -3,6 +3,7 @@ import path from "node:path";
 import { parseExperience } from "../src/lib/configSchema.ts";
 import { buildCaptureCriticRequest, parseVisualDirectorResponse } from "../src/platform/autonomy/visualDirector.ts";
 import { planVisualRepairs, applyVisualRepairPlan } from "../src/platform/autonomy/repairPlanner.ts";
+import { parseDirectorJudgment } from "../src/platform/director-intelligence/judgment.ts";
 
 const options=args(process.argv.slice(2));
 const reportPath=String(options.report || "test-results/autonomy/review-report.json");
@@ -10,10 +11,21 @@ const experiencePath=String(options.experience || "config/experience.json");
 const outputRoot=String(options.output || "test-results/autonomy-review");
 const criticUrl=process.env.FORGE_VISUAL_CRITIC_URL;
 const criticToken=process.env.FORGE_VISUAL_CRITIC_TOKEN;
+const directorJudgmentPath=options["director-judgment"] ? String(options["director-judgment"]) : "";
 const report=JSON.parse(await fs.readFile(reportPath,"utf8"));
 const experience=parseExperience(JSON.parse(await fs.readFile(experiencePath,"utf8")));
 const projectContext=String(options.context || process.env.FORGE_AUTONOMY_CONTEXT || (experience.meta.name + ". " + experience.meta.description));
 const findings=[...deterministicFindings(report)];
+if(directorJudgmentPath) {
+  const judgment=parseDirectorJudgment(JSON.parse(await fs.readFile(directorJudgmentPath,"utf8")));
+  if(judgment.status!=="verified") {
+    throw new Error("Director judgment file is not verified; refusing to treat it as repair evidence.");
+  }
+  findings.push(...judgment.findings.map((finding)=>({
+    ...finding,
+    id:"director-"+finding.captureId+"-"+finding.critic,
+  })));
+}
 
 if(criticUrl) {
   for(const capture of report.captures ?? []) {
@@ -55,7 +67,7 @@ const plan=allowed ? {
   ],
 } : rawPlan;
 const result=applyVisualRepairPlan(experience,plan);
-await fs.writeFile(path.join(outputRoot,"visual-findings.json"),JSON.stringify({ version:1,projectContext,criticConnected:Boolean(criticUrl),findings:normalized },null,2)+"\n");
+await fs.writeFile(path.join(outputRoot,"visual-findings.json"),JSON.stringify({ version:1,projectContext,criticConnected:Boolean(criticUrl),directorJudgmentConnected:Boolean(directorJudgmentPath),findings:normalized },null,2)+"\n");
 await fs.writeFile(path.join(outputRoot,"repair-plan.json"),JSON.stringify(plan,null,2)+"\n");
 await fs.writeFile(path.join(outputRoot,"repair-result.json"),JSON.stringify({ ...result,candidate:undefined },null,2)+"\n");
 if(result.ok) await fs.writeFile(path.join(outputRoot,"candidate-experience.json"),JSON.stringify(result.candidate,null,2)+"\n");
