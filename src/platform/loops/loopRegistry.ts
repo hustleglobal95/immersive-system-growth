@@ -30,7 +30,7 @@ const definitions:LoopDefinition[]=[
     worker:"visual-repair",
     executable:true,
     verifiers:["schema","functional","motion","mobile","visual"],
-    allowedRepairCommands:["scene.adjustPresentation","motion.applyArchetype","camera.applyChoreography"],
+    allowedRepairCommands:["scene.adjustLighting","scene.adjustSubjectFraming","scene.adjustMediaFraming","scene.adjustMaterialSurface","motion.applyArchetype","camera.applyChoreography"],
     strategies:[
       { id:"hierarchy-first",label:"Hierarchy first",instruction:"Prioritize focal hierarchy, negative space, crop, copy/subject separation and restrained presentation. Preserve the defining visual idea." },
       { id:"camera-first",label:"Camera first",instruction:"Prioritize lens character, framing, motivated camera travel and subject presence. Avoid gratuitous movement or changing narrative meaning." },
@@ -97,7 +97,7 @@ const definitions:LoopDefinition[]=[
     worker:"asset-repair",
     executable:true,
     verifiers:["schema","assets","performance","visual"],
-    allowedRepairCommands:["scene.adjustPresentation"],
+    allowedRepairCommands:["scene.adjustMaterialSurface"],
     strategies:[
       { id:"registered-derivative",label:"Registered derivative",instruction:"Prefer an already-registered lower-byte derivative only when lineage is explicit, the source remains available for rollback and measured savings are material." },
       { id:"canonical-reuse",label:"Canonical reuse",instruction:"Consolidate exact SHA-256 duplicate asset identities and remove redundant manifest aliases without changing the underlying binary or project meaning." },
