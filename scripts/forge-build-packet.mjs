@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import path from "node:path";
 import { parseDirectorBrief } from "../src/platform/directorSchema.ts";
 import { runDirectorIntelligence } from "../src/platform/director-intelligence/orchestrator.ts";
 import { buildForgeBuildPacket } from "../src/platform/buildPacket.ts";
@@ -27,8 +28,9 @@ const packet=buildForgeBuildPacket({
   repoContract,
 });
 if(output) {
-  await fs.mkdir(new URL(".",new URL("file://"+process.cwd()+"/"+output)).pathname,{recursive:true}).catch(()=>{});
-  await fs.writeFile(output,packet+"\n","utf8");
+  const target=path.resolve(output);
+  await fs.mkdir(path.dirname(target),{recursive:true});
+  await fs.writeFile(target,packet+"\n","utf8");
   console.log("Forge Build Packet written to "+output);
 } else {
   console.log(packet);
