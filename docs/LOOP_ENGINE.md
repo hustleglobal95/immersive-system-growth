@@ -26,7 +26,7 @@ Forge already had the worker pieces:
 
 - deterministic incumbent/candidate rendering;
 - Visual Director findings;
-- bounded presentation/camera/motion repairs;
+- bounded lighting, subject framing, media framing, authored-material, camera and motion repairs;
 - functional verification;
 - motion-quality verification;
 - reversed-order pairwise visual comparison;
@@ -283,7 +283,9 @@ Acceptance:
 - verifies the accepted experience/manifest/interaction bundle against the tournament fingerprint;
 - writes a new validated Project Vault version atomically;
 - preserves the Studio project configuration while promoting the verified experience, asset manifest and interaction graph together;
-- records the acceptance in project history.
+- records the acceptance, exact winning strategies and verifier evidence as a human-approved Project Learning record in the same Vault operation.
+
+Material repair is intentionally fail-closed. A Loop may tune an already-authored roughness, metalness, clearcoat or tint override, but it cannot create a new material override from critic language alone.
 
 Loop Engine never changes `config/experience.json` itself.
 
@@ -296,6 +298,8 @@ Loop Engine never changes `config/experience.json` itself.
 It exists to prevent repeated repairs, detect saturation/oscillation, and explain the decision.
 
 ### Project memory
+
+Human-approved Loop promotion creates a typed Project Learning record under the project Vault. It preserves the accepted version ID, baseline/final fingerprints, winning strategy, repair signature/summary, visual preference agreement, functional/motion evidence and any measured performance, accessibility or asset deltas.
 
 Project Vault journal records:
 
@@ -398,3 +402,22 @@ A human-approved loop candidate still requires the normal Forge release contract
 - accessibility/reduced-motion behavior;
 - real-device checks where required;
 - review PR before production.
+
+
+### Cross-project learning
+
+Project Learning is deliberately evidence-gated.
+
+```bash
+npm run learning:eval
+```
+
+The evaluator groups human-approved winning strategies across independent projects. A pattern remains a **hypothesis** until it has at least three accepted samples from three independent projects and at least 0.75 average visual-preference agreement.
+
+Even then Forge does not silently rewrite global doctrine. The pattern becomes **review-ready** only. Promote it explicitly after review:
+
+```bash
+npm run learning:promote -- --pattern visual-polish:hierarchy-first --approved-by "Kevin" --approve
+```
+
+Promotion writes a human-approved lesson into `forge-intelligence/projects/forge-learning.memory.json`, which the existing Director Creative Memory loader can use on future projects. Promotion is idempotent and remains contextual evidence, not a mandatory design prescription.
