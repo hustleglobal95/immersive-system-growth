@@ -114,7 +114,9 @@
     "director:judge": "node --import tsx scripts/director-judge.mjs",
     "verify:mechanical": "bash scripts/verify.sh",
     "release:gate": "npm run verify",
-    "forge:registry:generate": "node scripts/generate-forge-project-registry.mjs"
+    "forge:registry:generate": "node scripts/generate-forge-project-registry.mjs",
+    "studio:local": "node scripts/studio-local.mjs",
+    "forge:readiness": "node scripts/forge-readiness.mjs"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "5.3.0",

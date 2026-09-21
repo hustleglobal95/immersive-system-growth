@@ -65,7 +65,10 @@ if(controlPlane && (
   fail("Control Plane Loop runs require valid --proposal-id, --selection-key, --baseline-fingerprint and --context values.");
 }
 
-if(!process.env.FORGE_VISUAL_CRITIC_URL) fail("FORGE_VISUAL_CRITIC_URL is required. Loop Engine fails closed without pairwise visual evidence.");
+const reviewOnly=!process.env.FORGE_VISUAL_CRITIC_URL;
+if(reviewOnly) {
+  console.warn("FORGE_VISUAL_CRITIC_URL is not configured. Forge will generate and verify candidates for human review, but it will not select or promote a visual winner.");
+}
 
 await fs.mkdir(workRoot,{recursive:true});
 const source=await resolveSource({
@@ -312,21 +315,23 @@ try {
           "--import","tsx","scripts/autonomy-motion-review.mjs",
           "--url",baseURL,"--experience",currentCandidatePath,"--variant","candidate","--output",motionPath,
         ]);
-        const comparison=await run(process.execPath,[
-          "--import","tsx","scripts/autonomy-compare.mjs",
-          "--incumbent",path.join(incumbentRoot,"review-report.json"),
-          "--candidate",path.join(candidateCaptureRoot,"review-report.json"),
-          "--output",comparisonPath,
-          "--functional",functionalPath,
-          "--incumbent-motion",incumbentMotionPath,
-          "--candidate-motion",motionPath,
-          "--max-motion-regression",String(definition.acceptance.maxMotionRegression),
-          "--context",context,
-        ]);
+        const comparison=reviewOnly
+          ? { code:0,stdout:"",stderr:"" }
+          : await run(process.execPath,[
+              "--import","tsx","scripts/autonomy-compare.mjs",
+              "--incumbent",path.join(incumbentRoot,"review-report.json"),
+              "--candidate",path.join(candidateCaptureRoot,"review-report.json"),
+              "--output",comparisonPath,
+              "--functional",functionalPath,
+              "--incumbent-motion",incumbentMotionPath,
+              "--candidate-motion",motionPath,
+              "--max-motion-regression",String(definition.acceptance.maxMotionRegression),
+              "--context",context,
+            ]);
 
         const functionalReport=await readJson(functionalPath,{});
         const motionReport=await readJson(motionPath,{});
-        const comparisonReport=await readJson(comparisonPath,{});
+        const comparisonReport=reviewOnly ? {} : await readJson(comparisonPath,{});
         evidence.functionalPassed=functionalReport.passed ?? functional.code===0;
         if(definition.verifiers.includes("performance")) {
           const perf=await run(process.execPath,[
@@ -414,7 +419,11 @@ try {
         evidence.comparisonAccepted=Boolean(comparisonReport.decision?.accepted);
         evidence.comparisonWinner=comparisonReport.decision?.winner ?? null;
         evidence.preferenceAgreement=typeof comparisonReport.decision?.agreement==="number" ? comparisonReport.decision.agreement : null;
-        evidence.reason=boundedReason(comparisonReport.decision?.reason || (comparison.code===0 ? "Comparison completed." : "Candidate did not beat the incumbent."));
+        evidence.reason=boundedReason(
+          reviewOnly
+            ? "Candidate completed deterministic verification and awaits human visual review; automatic visual comparison is unavailable."
+            : comparisonReport.decision?.reason || (comparison.code===0 ? "Comparison completed." : "Candidate did not beat the incumbent.")
+        );
         if(definition.worker==="asset-repair" && !evidence.hardGateFailures.length) {
           const healthGain=(evidence.assetScoreAfter ?? -Infinity)-(evidence.assetScoreBefore ?? -Infinity);
           const byteGain=(evidence.referencedAssetBytesBefore ?? 0)-(evidence.referencedAssetBytesAfter ?? 0);
@@ -458,6 +467,13 @@ try {
     }
     cycle.endedAt=new Date().toISOString();
     report.cycles.push(cycle);
+
+    if(reviewOnly) {
+      cycle.stopReason="Human-review mode completed one candidate tournament. No candidate was auto-selected because comparative visual judgment is not configured.";
+      finish("completed",cycle.stopReason);
+      await writeReport();
+      break;
+    }
 
     const stop=evaluateLoopStop(report);
     if(stop) {
