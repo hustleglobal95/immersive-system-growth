@@ -1,4 +1,6 @@
 import { Buffer } from "node:buffer";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { z } from "zod";
 import { parseExperience } from "@/src/lib/configSchema";
 import { parseInteractionGraph } from "@/src/lib/interactionGraph";
@@ -59,8 +61,13 @@ export interface VaultSnapshot {
 }
 
 export function vaultConfiguration(environment: VaultConfigurationEnvironment = process.env) {
+  const remoteConfigured=Boolean(environment.FORGE_GITHUB_REPOSITORY && environment.FORGE_GITHUB_TOKEN);
+  const localConfigured=localVaultEnabled(environment);
   return {
-    configured: Boolean(environment.FORGE_GITHUB_REPOSITORY && environment.FORGE_GITHUB_TOKEN),
+    configured: remoteConfigured || localConfigured,
+    provider: remoteConfigured ? "github" as const : localConfigured ? "local-filesystem" as const : "unconfigured" as const,
+    remoteConfigured,
+    localConfigured,
     repositoryConfigured: Boolean(environment.FORGE_GITHUB_REPOSITORY),
     tokenConfigured: Boolean(environment.FORGE_GITHUB_TOKEN),
     branch: environment.FORGE_VAULT_BRANCH || "forge-vault",
@@ -68,28 +75,28 @@ export function vaultConfiguration(environment: VaultConfigurationEnvironment = 
 }
 
 export async function listVaultProjects(environment: NodeJS.ProcessEnv = process.env) {
-  const github = vaultGithub(environment);
+  const github = vaultStore(environment);
   const index = await github.readJson(".forge/vault/index.json", { version: 1, projects: [] });
   return vaultIndexSchema.parse(index).projects.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 
 export async function readVaultProject(projectId: string, environment: NodeJS.ProcessEnv = process.env): Promise<VaultSnapshot | null> {
   assertProjectId(projectId);
-  const github = vaultGithub(environment);
+  const github = vaultStore(environment);
   const value = await github.readJson<unknown | null>(`.forge/vault/projects/${projectId}/current.json`, null);
   return value ? parseSnapshot(value) : null;
 }
 
 export async function listVaultVersions(projectId: string, environment: NodeJS.ProcessEnv = process.env) {
   assertProjectId(projectId);
-  const github = vaultGithub(environment);
+  const github = vaultStore(environment);
   const value = await github.readJson(`.forge/vault/projects/${projectId}/history.json`, { version: 1, entries: [] });
   return vaultHistorySchema.parse(value).entries.slice().reverse();
 }
 
 export async function readVaultVersion(projectId: string, versionId: string, environment: NodeJS.ProcessEnv = process.env): Promise<VaultSnapshot | null> {
   assertProjectId(projectId); assertVersionId(versionId);
-  const github = vaultGithub(environment);
+  const github = vaultStore(environment);
   const value = await github.readJson<unknown | null>(`.forge/vault/projects/${projectId}/versions/${versionId}.json`, null);
   return value ? parseSnapshot(value) : null;
 }
@@ -97,7 +104,7 @@ export async function readVaultVersion(projectId: string, versionId: string, env
 export async function saveVaultProject(input: VaultDraftInput, actor: VaultActor, label = "Saved from Studio", note = "", environment: NodeJS.ProcessEnv = process.env) {
   const snapshot = makeSnapshot(input, actor, label, note);
   const projectId = snapshot.project.id;
-  const github = vaultGithub(environment);
+  const github = vaultStore(environment);
   const index = vaultIndexSchema.parse(await github.readJson(".forge/vault/index.json", { version: 1, projects: [] }));
   const history = vaultHistorySchema.parse(await github.readJson(`.forge/vault/projects/${projectId}/history.json`, { version: 1, entries: [] }));
   const journal = vaultJournalSchema.parse(await github.readJson(`.forge/vault/projects/${projectId}/journal.json`, { version: 1, events: [] }));
@@ -131,7 +138,7 @@ export async function saveVaultProject(input: VaultDraftInput, actor: VaultActor
 export async function restoreVaultVersion(projectId: string, versionId: string, actor: VaultActor, environment: NodeJS.ProcessEnv = process.env) {
   const snapshot = await readVaultVersion(projectId, versionId, environment);
   if (!snapshot) throw new Error("Vault version not found");
-  const github = vaultGithub(environment);
+  const github = vaultStore(environment);
   const index = vaultIndexSchema.parse(await github.readJson(".forge/vault/index.json", { version: 1, projects: [] }));
   const journal = vaultJournalSchema.parse(await github.readJson(`.forge/vault/projects/${projectId}/journal.json`, { version: 1, events: [] }));
   const now = new Date().toISOString();
@@ -150,7 +157,7 @@ export async function restoreVaultVersion(projectId: string, versionId: string, 
 
 export async function setVaultProjectArchived(projectId: string, archived: boolean, actor: VaultActor, environment: NodeJS.ProcessEnv = process.env) {
   assertProjectId(projectId);
-  const github = vaultGithub(environment);
+  const github = vaultStore(environment);
   const index = vaultIndexSchema.parse(await github.readJson(".forge/vault/index.json", { version: 1, projects: [] }));
   const prior = index.projects.find((project) => project.id === projectId);
   if (!prior) throw new Error("Vault project not found");
@@ -165,14 +172,14 @@ export async function setVaultProjectArchived(projectId: string, archived: boole
 
 export async function readVaultJournal(projectId: string, environment: NodeJS.ProcessEnv = process.env) {
   assertProjectId(projectId);
-  const github = vaultGithub(environment);
+  const github = vaultStore(environment);
   const value = await github.readJson(`.forge/vault/projects/${projectId}/journal.json`, { version: 1, events: [] });
   return vaultJournalSchema.parse(value).events.slice().reverse();
 }
 
 export async function appendVaultJournal(projectId: string, actor: VaultActor, action: VaultJournalEvent["action"], detail: string, environment: NodeJS.ProcessEnv = process.env) {
   assertProjectId(projectId);
-  const github = vaultGithub(environment);
+  const github = vaultStore(environment);
   const journal = vaultJournalSchema.parse(await github.readJson(`.forge/vault/projects/${projectId}/journal.json`, { version: 1, events: [] }));
   const nextJournal = { version: 1 as const, events: [...journal.events, journalEvent(actor, action, detail)].slice(-1000) };
   await github.commitFiles({ [`.forge/vault/projects/${projectId}/journal.json`]: nextJournal }, `Forge Vault: ${action} ${projectId}`);
@@ -291,7 +298,57 @@ function assertProjectId(value: string) { if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test
 function assertVersionId(value: string) { if (!/^v-[a-zA-Z0-9-]+$/.test(value)) throw new Error("Invalid Forge Vault version id"); }
 function assertLoopToken(value:string,label:string) { if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) throw new Error(`Invalid Forge ${label} id`); }
 
-function vaultGithub(environment: NodeJS.ProcessEnv) {
+
+function localVaultEnabled(environment:VaultConfigurationEnvironment) {
+  return environment.NODE_ENV!=="production" && environment.FORGE_LOCAL_STORAGE_ENABLED==="true";
+}
+
+function vaultStore(environment:NodeJS.ProcessEnv) {
+  if(environment.FORGE_GITHUB_REPOSITORY && environment.FORGE_GITHUB_TOKEN) return githubVaultStore(environment);
+  if(localVaultEnabled(environment)) return localVaultStore(environment);
+  throw new Error("Forge Vault requires GitHub credentials or FORGE_LOCAL_STORAGE_ENABLED=true in local development");
+}
+
+function localVaultStore(environment:NodeJS.ProcessEnv) {
+  const configuredRoot=environment.FORGE_LOCAL_VAULT_DIR?.trim();
+  const root=path.resolve(configuredRoot || ".forge/local-vault");
+  const repoRoot=path.resolve(process.cwd());
+  if(!root.startsWith(repoRoot+path.sep) && root!==repoRoot) throw new Error("FORGE_LOCAL_VAULT_DIR must stay inside the Forge repository");
+  const resolveFile=(filePath:string)=>{
+    if(filePath.startsWith("/") || filePath.includes("..")) throw new Error("Forge local Vault path is invalid");
+    const resolved=path.resolve(root,filePath);
+    if(!resolved.startsWith(root+path.sep)) throw new Error("Forge local Vault path escapes storage root");
+    return resolved;
+  };
+  return {
+    async readJson<T>(filePath:string,fallback:T):Promise<T> {
+      try {
+        return JSON.parse(await fs.readFile(resolveFile(filePath),"utf8")) as T;
+      } catch(error) {
+        if((error as NodeJS.ErrnoException).code==="ENOENT") return fallback;
+        throw error;
+      }
+    },
+    async commitFiles(files:Record<string,unknown>,message:string) {
+      const journalEntries:string[]=[];
+      for(const [filePath,value] of Object.entries(files)) {
+        const target=resolveFile(filePath);
+        await fs.mkdir(path.dirname(target),{recursive:true});
+        const content=JSON.stringify(value,null,2)+"\n";
+        if(Buffer.byteLength(content)>900_000) throw new Error(`Forge Vault file exceeds the 900 KB durable snapshot limit: ${filePath}`);
+        const temporary=target+".tmp-"+crypto.randomUUID();
+        await fs.writeFile(temporary,content,"utf8");
+        await fs.rename(temporary,target);
+        journalEntries.push(filePath);
+      }
+      await fs.mkdir(root,{recursive:true});
+      await fs.appendFile(path.join(root,"operations.ndjson"),JSON.stringify({at:new Date().toISOString(),message:clean(message,180),files:journalEntries})+"\n","utf8");
+      return "local-"+Date.now().toString(36);
+    },
+  };
+}
+
+function githubVaultStore(environment: NodeJS.ProcessEnv) {
   const repository = environment.FORGE_GITHUB_REPOSITORY ?? "";
   const token = environment.FORGE_GITHUB_TOKEN ?? "";
   const branch = environment.FORGE_VAULT_BRANCH || "forge-vault";
