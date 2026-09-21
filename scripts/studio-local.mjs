@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 
-console.log("Starting Forge Studio in local-owner mode with local durable Vault storage (local process only).");
+console.log("Starting Forge Studio as Local owner. No password is required for this local process.");
+console.log("Open Forge at http://localhost:3000/studio (or the alternate port Next.js prints if 3000 is busy).");
 const child=spawn(process.platform==="win32"?"npm.cmd":"npm",["run","dev"],{
   stdio:"inherit",
   env:{...process.env,STUDIO_AUTH_ENABLED:"false",FORGE_LOCAL_STORAGE_ENABLED:"true"},
