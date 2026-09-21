@@ -2,7 +2,14 @@ import { capabilityById, type CapabilityRiskClass, type CapabilityVerifier } fro
 import type { VisualCriticFinding } from "@/src/platform/autonomy/visualReview";
 import type { AgentTaskDomain } from "@/src/platform/agentic/contextCompiler";
 
-export type RepairCommandType="scene.adjustPresentation"|"motion.applyArchetype"|"camera.applyChoreography";
+export type RepairCommandType=
+  | "scene.adjustPresentation"
+  | "scene.adjustLighting"
+  | "scene.adjustSubjectFraming"
+  | "scene.adjustMediaFraming"
+  | "scene.adjustMaterialSurface"
+  | "motion.applyArchetype"
+  | "camera.applyChoreography";
 export type RouteDisposition="bounded-repair"|"preview-required"|"engineering-escalation"|"human-review";
 
 export interface AgenticRoute {
@@ -76,7 +83,7 @@ function routeForDomain(domain:AgentTaskDomain,finding:VisualCriticFinding):Agen
   const base={version:1 as const,domain};
   if(domain==="camera") return {
     ...base,owner:"camera-worker",disposition:"bounded-repair",capabilityId:"scene.direct-camera",riskClass:null,
-    allowedSystems:["camera"],allowedRepairCommands:["camera.applyChoreography","scene.adjustPresentation"],
+    allowedSystems:["camera"],allowedRepairCommands:["camera.applyChoreography"],
     requiredVerifiers:[],reason:"Camera/framing findings route to the camera worker; presentation may move only to preserve framing hierarchy.",
   };
   if(domain==="motion") return {
@@ -86,17 +93,17 @@ function routeForDomain(domain:AgentTaskDomain,finding:VisualCriticFinding):Agen
   };
   if(domain==="typography") return {
     ...base,owner:"typography-presentation-worker",disposition:"preview-required",capabilityId:"scene.polish",riskClass:null,
-    allowedSystems:["studio","motion"],allowedRepairCommands:["scene.adjustPresentation","motion.applyArchetype"],
+    allowedSystems:["studio","motion"],allowedRepairCommands:["scene.adjustSubjectFraming","scene.adjustMediaFraming","motion.applyArchetype"],
     requiredVerifiers:[],reason:"Typography may adjust presentation/timing but cannot rewrite semantic copy or the creative thesis.",
   };
   if(domain==="composition") return {
     ...base,owner:"composition-worker",disposition:"preview-required",capabilityId:"scene.polish",riskClass:null,
-    allowedSystems:["studio"],allowedRepairCommands:["scene.adjustPresentation"],
+    allowedSystems:["studio"],allowedRepairCommands:["scene.adjustLighting","scene.adjustSubjectFraming","scene.adjustMediaFraming"],
     requiredVerifiers:[],reason:"Composition/art-direction findings receive bounded presentation changes and require rendered comparison.",
   };
   if(domain==="mobile") return {
     ...base,owner:"mobile-translation-worker",disposition:"preview-required",capabilityId:"scene.fix-mobile",riskClass:null,
-    allowedSystems:["camera","motion","studio"],allowedRepairCommands:["scene.adjustPresentation","camera.applyChoreography","motion.applyArchetype"],
+    allowedSystems:["camera","motion","studio"],allowedRepairCommands:["scene.adjustSubjectFraming","scene.adjustMediaFraming","camera.applyChoreography","motion.applyArchetype"],
     requiredVerifiers:[],reason:"Mobile findings may recompose travel, framing and timing while preserving the signature idea.",
   };
   if(domain==="performance") return {
@@ -107,8 +114,10 @@ function routeForDomain(domain:AgentTaskDomain,finding:VisualCriticFinding):Agen
   };
   if(domain==="asset") return {
     ...base,owner:"asset-worker",disposition:"preview-required",capabilityId:"asset.improve",riskClass:null,
-    allowedSystems:["assets"],allowedRepairCommands:[],requiredVerifiers:[],
-    reason:"Asset/material/image-direction findings route to Asset Intelligence and remain outside presentation-only repair.",
+    allowedSystems:["assets"],allowedRepairCommands:finding.critic==="material" ? ["scene.adjustMaterialSurface"] : [],requiredVerifiers:[],
+    reason:finding.critic==="material"
+      ? "Material findings may tune only existing authored surface overrides; source assets and unowned material fields remain protected."
+      : "Image-direction and asset findings route to Asset Intelligence and remain outside automatic presentation repair.",
   };
   if(domain==="interaction") return {
     ...base,owner:"interaction-worker",disposition:"preview-required",capabilityId:"scene.add-behavior",riskClass:null,
