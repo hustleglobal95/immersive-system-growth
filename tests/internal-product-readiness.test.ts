@@ -101,7 +101,7 @@ test("local Project Vault performs durable save, version and restore without Git
     assert.equal(current?.versionId,first.snapshot.versionId);
 
     const secondExperience=structuredClone(rawExperience);
-    secondExperience.title=rawExperience.title+" revised";
+    secondExperience.meta.description=rawExperience.meta.description+" Revised for local Vault restore proof.";
     const second=await saveVaultProject({
       experience:secondExperience,
       project:rawProject,
@@ -114,7 +114,7 @@ test("local Project Vault performs durable save, version and restore without Git
     await restoreVaultVersion(rawProject.id,first.snapshot.versionId,actor,environment);
     const restored=await readVaultProject(rawProject.id,environment);
     assert.equal(restored?.versionId,first.snapshot.versionId);
-    assert.equal(restored?.experience.title,rawExperience.title);
+    assert.equal(restored?.experience.meta.description,rawExperience.meta.description);
   } finally {
     fs.rmSync(localDir,{recursive:true,force:true});
   }
