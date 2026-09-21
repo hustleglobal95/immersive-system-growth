@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { loopRunReportSchema } from "../src/platform/loops/loopSchema.ts";
-import { appendVaultJournal, readVaultProject, saveVaultLearningRecord, saveVaultProject } from "../src/platform/studioVault.ts";
+import { readVaultProject, saveVaultProjectWithLearning } from "../src/platform/studioVault.ts";
 import { createProjectLearningRecord } from "../src/platform/learning/projectLearning.ts";
 
 const options=args(process.argv.slice(2));
@@ -33,39 +33,31 @@ if(stateFingerprint!==report.currentFingerprint && legacyExperienceFingerprint!=
   fail("Accepted loop artifact bundle fingerprint does not match the run report. Evidence or artifact changed after evaluation.");
 }
 
-const result=await saveVaultProject({
+const actor={id:slug(actorName),name:actorName,role:"loop-approver"};
+const note=[
+  `Run ${report.runId}`,
+  `${report.acceptedImprovements} accepted improvement(s)`,
+  report.stopReason || "",
+].filter(Boolean).join(" · ");
+const acceptanceDetail=`${report.definition.label} accepted · ${report.runId}`;
+const result=await saveVaultProjectWithLearning({
   experience,
   project:snapshot.project,
   assetManifest,
   interactionGraph,
-},{
-  id:slug(actorName),
-  name:actorName,
-  role:"loop-approver",
-},`Loop accepted · ${report.definition.label}`,[
-  `Run ${report.runId}`,
-  `${report.acceptedImprovements} accepted improvement(s)`,
-  report.stopReason || "",
-].filter(Boolean).join(" · "));
-
-const actor={id:slug(actorName),name:actorName,role:"loop-approver"};
-await appendVaultJournal(report.projectId,actor,"loop-accept",`${report.definition.label} accepted · ${report.runId} · ${result.entry.versionId}`);
-
-const learning=createProjectLearningRecord({
+},actor,`Loop accepted · ${report.definition.label}`,note,(acceptedVersionId)=>createProjectLearningRecord({
   report,
   projectId:report.projectId,
-  acceptedVersionId:result.entry.versionId,
+  acceptedVersionId,
   approvedBy:actor,
   creativeStateFingerprint:typeof options["creative-state-fingerprint"]==="string" ? options["creative-state-fingerprint"] : undefined,
   buildPacketFingerprint:typeof options["build-packet-fingerprint"]==="string" ? options["build-packet-fingerprint"] : undefined,
-});
-await saveVaultLearningRecord(report.projectId,learning);
-await appendVaultJournal(report.projectId,actor,"lesson",`Evidence-bound learning ${learning.id} recorded from accepted Loop ${report.runId}`);
+}),acceptanceDetail);
 
 console.log("Loop artifact promoted to Project Vault.");
 console.log("Project: "+result.summary.name);
 console.log("Version: "+result.entry.versionId);
-console.log("Approved by: "+actorName);\nconsole.log("Project learning: "+learning.id);
+console.log("Approved by: "+actorName);\nconsole.log("Project learning: "+result.learning.id);
 
 function args(argv) {
   const out={};
