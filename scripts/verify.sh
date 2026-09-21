@@ -115,9 +115,9 @@ report WARN "TODO or FIXME marker" "Resolve it, or move it to an issue." \
 echo "──────────────────────────────────────────────────────────────"
 if [ "$fails" -gt 0 ]; then
   printf '%s\n' "${RED}${fails} FAIL${OFF} / ${YEL}${warns} WARN${OFF} — every FAIL must be fixed."
-  echo "Also required: npm run check, npm test, npm run lint, npm run build."
+  echo "RELEASE STATUS: FAILED mechanical source rules."
   exit 1
 fi
-printf '%s\n' "${GRN}0 FAIL${OFF} / ${YEL}${warns} WARN${OFF} — mechanical rules pass."
-echo "Also required: npm run check, npm test, npm run lint, npm run build."
+printf '%s\n' "${GRN}0 FAIL${OFF} / ${YEL}${warns} WARN${OFF} — mechanical source rules pass."
+echo "RELEASE STATUS: NOT EVALUATED by this script. Run npm run verify for the canonical release gate."
 exit 0
