@@ -101,6 +101,7 @@ Before declaring completion:
 
 ```bash
 npm run verify
+# canonical full release gate: mechanical source rules + check + production build + Playwright
 npm run project:integrity
 npm run doctor
 npm run experience:validate
@@ -112,7 +113,7 @@ npm run lint
 npm run build
 ```
 
-`npm run verify` is the mechanical floor for the rules above: the ones a machine can decide are
+`npm run verify:mechanical` is the mechanical floor for the rules above: the ones a machine can decide are
 checked against the source, every FAIL must be fixed, and WARNs are judgement. It does not
 replace the audits, which validate configuration rather than code.
 
