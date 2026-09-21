@@ -20,12 +20,26 @@ export interface ForgeProjectSummary {
 }
 
 const root = process.cwd();
-const read = (file: string) => JSON.parse(fs.readFileSync(path.join(root, file), "utf8"));
-const exists = (file: string) => fs.existsSync(path.join(root, file));
+const roots = {
+  config:path.join(root,"config"),
+  clients:path.join(root,"clients"),
+  app:path.join(root,"app"),
+} as const;
+function resolveProjectFile(file:string) {
+  const normalized=file.replace(/\\/g,"/");
+  if(normalized.startsWith("config/")) return path.join(roots.config,normalized.slice("config/".length));
+  if(normalized.startsWith("clients/")) return path.join(roots.clients,normalized.slice("clients/".length));
+  if(normalized.startsWith("app/")) return path.join(roots.app,normalized.slice("app/".length));
+  throw new Error("Forge project file is outside allowed project roots: "+file);
+}
+const read = (file:string) => JSON.parse(fs.readFileSync(resolveProjectFile(file),"utf8"));
+const exists = (file:string) => {
+  try { return fs.existsSync(resolveProjectFile(file)); } catch { return false; }
+};
 
 function projectFiles(): { slug: string; file: string; active: boolean; graph?: string }[] {
   const clients = exists("clients")
-    ? fs.readdirSync(path.join(root, "clients"), { withFileTypes: true })
+    ? fs.readdirSync(roots.clients, { withFileTypes: true })
         .filter((entry) => entry.isDirectory() && exists(`clients/${entry.name}/studio-project.json`))
         .map((entry) => ({ slug: entry.name, file: `clients/${entry.name}/studio-project.json`, active: false, graph: `clients/${entry.name}/interaction-graph.json` }))
     : [];
