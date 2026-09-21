@@ -74,9 +74,10 @@ if(semanticSources.council.includes('return "lock"')) semanticFailures.push("Det
 if(semanticSources.council.includes("confidence:")) semanticFailures.push("Planning lenses may not publish fake confidence.");
 if(!semanticSources.evaluation.includes('scoreSemantics:"deterministic-planning-proxy"')) semanticFailures.push("Evaluation scores must declare planning-proxy semantics.");
 if(!semanticSources.orchestrator.includes("judgmentPermitsProduction")) semanticFailures.push("Production authorization must require verified judgment.");
+if(!semanticSources.orchestrator.includes("expectedJudgmentScope")) semanticFailures.push("Director judgment must be bound to the current planning scope.");
 if(semanticSources.workbench.includes("DIRECTOR VERDICT") || semanticSources.agent.includes("DIRECTOR VERDICT")) semanticFailures.push("Studio may not present heuristic planning as a Director verdict.");
 if(/\bconfidence\b/.test(semanticSources.references) || /\bconfidence\b/.test(semanticSources.broaderReferences)) semanticFailures.push("Reference corpus must use evidence strength, not confidence.");
-for(const token of ["FORGE_DIRECTOR_JUDGE_CALIBRATION_JSON","captureIds","evidenceHash","parseDirectorJudgeCalibration"]) {
+for(const token of ["FORGE_DIRECTOR_JUDGE_CALIBRATION_JSON","captureIds","evidenceHash","scopeFingerprint","parseDirectorJudgeCalibration"]) {
   if(!semanticSources.judge.includes(token)) semanticFailures.push(`Director judge is missing evidence/calibration contract: ${token}`);
 }
 if(semanticFailures.length) {
