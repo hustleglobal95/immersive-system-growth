@@ -3,6 +3,7 @@ import path from "node:path";
 import { buildPairwiseCriticRequests, pairwiseJudgmentFromResponse } from "../src/platform/autonomy/visualDirector.ts";
 import { forcedOptimizationDecision } from "../src/platform/autonomy/forcedOptimization.ts";
 import { evaluateCandidateGates } from "../src/platform/autonomy/candidateGates.ts";
+import { aiGatewayVisualCriticConfigured, callAiGatewayPairwiseVisualCritic } from "../src/platform/autonomy/aiGatewayVisualCritic.ts";
 
 const options=args(process.argv.slice(2));
 const incumbentReportPath=String(options.incumbent || "test-results/autonomy/review-report.json");
@@ -13,8 +14,9 @@ const incumbentMotionPath=options["incumbent-motion"] ? String(options["incumben
 const candidateMotionPath=options["candidate-motion"] ? String(options["candidate-motion"]) : null;
 const criticUrl=process.env.FORGE_VISUAL_CRITIC_URL;
 const criticToken=process.env.FORGE_VISUAL_CRITIC_TOKEN;
-if(!criticUrl) {
-  console.error("FORGE_VISUAL_CRITIC_URL is required for pairwise visual acceptance. Forge fails closed without a comparative judge.");
+const gatewayCritic=aiGatewayVisualCriticConfigured(process.env);
+if(!criticUrl && !gatewayCritic) {
+  console.error("Pairwise visual acceptance requires FORGE_VISUAL_CRITIC_URL or AI_GATEWAY_API_KEY/VERCEL_OIDC_TOKEN. Forge fails closed without a comparative judge.");
   process.exit(2);
 }
 const incumbent=JSON.parse(await fs.readFile(incumbentReportPath,"utf8"));
@@ -45,20 +47,25 @@ for(const captureId of common) {
       fs.readFile(path.resolve(String(firstCapture.path))).then((buffer)=>buffer.toString("base64")),
       fs.readFile(path.resolve(String(secondCapture.path))).then((buffer)=>buffer.toString("base64")),
     ]);
-    const response=await fetch(criticUrl,{
-      method:"POST",
-      headers:{
-        "content-type":"application/json",
-        ...(criticToken ? { authorization:"Bearer " + criticToken } : {}),
-      },
-      body:JSON.stringify({
-        ...request,
-        firstImage:{ mimeType:"image/png",data:firstImage },
-        secondImage:{ mimeType:"image/png",data:secondImage },
-      }),
-    });
-    if(!response.ok) throw new Error("Pairwise critic failed for " + captureId + " round " + (round+1) + ": HTTP " + response.status);
-    const payload=await response.json();
+    let payload;
+    if(criticUrl) {
+      const response=await fetch(criticUrl,{
+        method:"POST",
+        headers:{
+          "content-type":"application/json",
+          ...(criticToken ? { authorization:"Bearer " + criticToken } : {}),
+        },
+        body:JSON.stringify({
+          ...request,
+          firstImage:{ mimeType:"image/png",data:firstImage },
+          secondImage:{ mimeType:"image/png",data:secondImage },
+        }),
+      });
+      if(!response.ok) throw new Error("Pairwise critic failed for " + captureId + " round " + (round+1) + ": HTTP " + response.status);
+      payload=await response.json();
+    } else {
+      payload=await callAiGatewayPairwiseVisualCritic({request,firstImage,secondImage,environment:process.env});
+    }
     judgments.push(pairwiseJudgmentFromResponse({ judgeId:captureId+"-round-"+(round+1),request,response:payload,candidateId }));
   }
 }
