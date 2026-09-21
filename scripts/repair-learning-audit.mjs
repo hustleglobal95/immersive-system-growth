@@ -5,7 +5,7 @@ const checks=[
   ["src/platform/autonomy/repairPlanner.ts",["scene.adjustLighting","scene.adjustSubjectFraming","scene.adjustMediaFraming","scene.adjustMaterialSurface"]],
   ["src/platform/learning/projectLearning.ts",["human-approved","evaluateProjectLearning","at least three independent projects","forge-loop-human-promotion"]],
   ["src/platform/studioVault.ts",["saveVaultLearningRecord","listVaultLearningRecords","learning/records"]],
-  ["scripts/loop-accept.mjs",["createProjectLearningRecord","saveVaultLearningRecord","Project learning:"]],
+  ["scripts/loop-accept.mjs",["createProjectLearningRecord","saveVaultProjectWithLearning","Project learning:"]],
 ];
 const failures=[];
 for(const [file,needles] of checks) {
