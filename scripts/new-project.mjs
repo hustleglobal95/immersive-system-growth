@@ -50,7 +50,7 @@ fs.writeFileSync(path.join(directory, "experience.json"), JSON.stringify(experie
 fs.writeFileSync(path.join(directory, "studio-project.json"), JSON.stringify(project, null, 2) + "\n");
 fs.writeFileSync(path.join(directory, "visual-systems.json"), JSON.stringify(visualSystems, null, 2) + "\n");
 fs.writeFileSync(path.join(directory, "experience-modes.json"), JSON.stringify(experienceModes, null, 2) + "\n");
-fs.writeFileSync(path.join(directorDirectory, "evidence.json"), JSON.stringify({ version: 1, evidence: [], unknowns: [], assumptions: [], unsupportedClaims: [], confidence: 0 }, null, 2) + "\n");
+fs.writeFileSync(path.join(directorDirectory, "evidence.json"), JSON.stringify({ version: 1, evidence: [], unknowns: [], assumptions: [], unsupportedClaims: [], coverage: 0 }, null, 2) + "\n");
 fs.writeFileSync(path.join(directorDirectory, "decisions.json"), JSON.stringify({ version: 1, decisions: [] }, null, 2) + "\n");
 fs.writeFileSync(path.join(directorDirectory, "fingerprint.json"), JSON.stringify({ version: 1, projectId: slug, status: "pending" }, null, 2) + "\n");
 fs.writeFileSync(path.join(directorDirectory, "critique.json"), JSON.stringify({ version: 1, status: "pending", evaluations: [] }, null, 2) + "\n");
