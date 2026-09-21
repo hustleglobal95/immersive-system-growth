@@ -51,6 +51,13 @@ const verifiedSchema=z.object({
   if(value.verdict==="LOCK" && value.blockers.length) {
     ctx.addIssue({code:"custom",path:["blockers"],message:"A LOCK judgment cannot contain unresolved blockers."});
   }
+  const materialFindings=value.findings.filter((finding)=>finding.severity==="blocker" || finding.severity==="major");
+  if(value.verdict==="LOCK" && materialFindings.length) {
+    ctx.addIssue({code:"custom",path:["findings"],message:"A LOCK judgment cannot contain blocker or major repair findings."});
+  }
+  if(value.verdict==="REVISE" && !value.blockers.length && !materialFindings.length) {
+    ctx.addIssue({code:"custom",path:["findings"],message:"A REVISE judgment must identify at least one material blocker or repair finding."});
+  }
   const captureIds=new Set(value.evidence.captureIds);
   value.findings.forEach((finding,index)=>{
     if(!captureIds.has(finding.captureId)) {
