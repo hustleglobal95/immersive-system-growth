@@ -63,6 +63,7 @@ export const loopCandidateEvidenceSchema=z.object({
   fingerprint:z.string().min(1).max(128).optional(),
   repairSignature:z.string().min(1).max(128).optional(),
   repairSummary:z.array(z.string().max(400)).max(8).default([]),
+  repairCommandTypes:z.array(loopRepairCommandSchema).max(7).optional(),
   candidatePath:z.string().max(1000).optional(),
   candidateAssetManifestPath:z.string().max(1000).optional(),
   candidateInteractionGraphPath:z.string().max(1000).optional(),
