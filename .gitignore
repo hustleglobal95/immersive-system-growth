@@ -17,3 +17,5 @@ config/backups/
 public/decoders/draco/
 public/decoders/basis/
 generated/
+
+.forge/local-vault/
