@@ -116,7 +116,8 @@
     "release:gate": "npm run verify",
     "forge:registry:generate": "node scripts/generate-forge-project-registry.mjs",
     "studio:local": "node scripts/studio-local.mjs",
-    "forge:readiness": "node scripts/forge-readiness.mjs"
+    "forge:readiness": "node scripts/forge-readiness.mjs",
+    "forge:build-packet": "node --import tsx scripts/forge-build-packet.mjs"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "5.3.0",
