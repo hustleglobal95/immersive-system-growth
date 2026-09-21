@@ -97,4 +97,8 @@ With strong client assets and deliberate art direction, Forge is technically cap
 
 The realistic bottleneck is no longer "does the runtime have the primitive?" for most common premium immersive patterns. The bottleneck is increasingly **direction and finishing quality**: deciding the right idea, composing it well, and iterating against rendered evidence.
 
+There is also an important autonomy boundary: the current Construction Loop primarily rewrites and orchestrates validated Forge project state. It does not autonomously invent arbitrary new React page architecture, completely novel shader systems, bespoke WebGL engines or every unusual interaction primitive. Those are still normal engineering tasks for Claude/human implementation when a project needs something outside Forge's registered systems.
+
+Likewise, a detailed Forge prompt can reduce iteration dramatically, but no repo-level test can honestly guarantee that Claude reproduces a high-end reference in one to three attempts. The production contract should assume rendered review and correction.
+
 That distinction should remain explicit in every project review.
