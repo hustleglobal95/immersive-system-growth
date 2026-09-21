@@ -1,5 +1,7 @@
 # Repository Manifest
 
+> **Capability status:** this file inventories implemented Forge systems. Some systems require external credentials or explicit production flags before they are operational. Run `npm run forge:readiness` before starting a client project and read `docs/FORGE_OPERATIONAL_READINESS.md` for the exact setup/verification boundary.
+
 Immersive Site Forge 6.1 is organized as a multi-project production platform rather than a one-off demo.
 
 ## Runtime
