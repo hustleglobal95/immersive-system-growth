@@ -24,7 +24,7 @@ for (const projectType of projectTypes) {
       const result = runDirectorIntelligence({ brief });
       runs++;
       if (result.report.evaluations.length !== 3) failures.push(`${projectType}/${tier}: expected three evaluations`);
-      if (result.report.selectedEvaluation.critiques.length !== 12) failures.push(`${projectType}/${tier}: expected 12 Council critics`);
+      if (result.report.selectedEvaluation.critiques.length !== 12) failures.push(`${projectType}/${tier}: expected 12 deterministic planning lenses`);
       if (result.report.stress.results.length < 12) failures.push(`${projectType}/${tier}: stress lab incomplete`);
       if (result.report.whyLadders.some((ladder) => !ladder.valid)) failures.push(`${projectType}/${tier}: invalid why ladder`);
       if (result.report.precedents.length < 2) failures.push(`${projectType}/${tier}: precedent retrieval too thin`);
@@ -40,6 +40,11 @@ for (const projectType of projectTypes) {
       if (Object.keys(result.creativeCeiling?.dimensions ?? {}).length !== 13) failures.push(`${projectType}/${tier}: Creative Ceiling V2 dimension coverage incomplete`);
       if (result.creativeCeiling && result.creativeCeiling.projected < result.creativeCeiling.current) failures.push(`${projectType}/${tier}: projected creative ceiling regressed`);
       if (!result.productionPlan.creativeIntelligence?.dna?.northStar) failures.push(`${projectType}/${tier}: production plan dropped Creative DNA`);
+      if (result.report.verdict !== "UNVERIFIED") failures.push(`${projectType}/${tier}: heuristic-only run issued a creative verdict`);
+      if (result.report.judgment.status !== "unverified") failures.push(`${projectType}/${tier}: heuristic-only run fabricated judgment evidence`);
+      if (result.productionPlan.readiness.readyForProduction) failures.push(`${projectType}/${tier}: production authorized without rendered judgment`);
+      if (result.report.selectedEvaluation.scoreSemantics !== "deterministic-planning-proxy") failures.push(`${projectType}/${tier}: evaluation semantics are not explicit`);
+      if (result.report.selectedEvaluation.critiques.some((critique)=>critique.basis !== "deterministic-lens")) failures.push(`${projectType}/${tier}: planning lens misrepresented as independent judgment`);
     } catch (error) {
       failures.push(`${projectType}/${tier}: ${error instanceof Error ? error.message : String(error)}`);
     }
