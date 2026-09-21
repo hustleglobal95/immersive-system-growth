@@ -309,10 +309,8 @@ function vaultStore(environment:NodeJS.ProcessEnv) {
   throw new Error("Forge Vault requires GitHub credentials or FORGE_LOCAL_STORAGE_ENABLED=true in local development");
 }
 
-function localVaultStore(environment:NodeJS.ProcessEnv) {
-  const namespace=(environment.FORGE_LOCAL_VAULT_NAMESPACE ?? "default").trim();
-  if(!/^[A-Za-z0-9._-]+$/.test(namespace)) throw new Error("FORGE_LOCAL_VAULT_NAMESPACE is invalid");
-  const root=path.join(process.cwd(),".forge","local-vault",namespace);
+function localVaultStore(_environment:NodeJS.ProcessEnv) {
+  const root=path.join(process.cwd(),".forge","local-vault");
   const resolveFile=(filePath:string)=>{
     if(filePath.startsWith("/") || filePath.includes("..")) throw new Error("Forge local Vault path is invalid");
     const resolved=path.join(root,filePath);
