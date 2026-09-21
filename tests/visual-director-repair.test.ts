@@ -8,6 +8,8 @@ import { planVisualRepairs, applyVisualRepairPlan } from "../src/platform/autono
 import { buildPairwiseCriticRequests, pairwiseJudgmentFromResponse, parseVisualDirectorResponse } from "../src/platform/autonomy/visualDirector";
 import { forcedOptimizationDecision } from "../src/platform/autonomy/forcedOptimization";
 import { parseDirectorJudgment } from "../src/platform/director-intelligence/judgment";
+import { aiGatewayVisualCriticConfigured, callAiGatewayPairwiseVisualCritic } from "../src/platform/autonomy/aiGatewayVisualCritic";
+import { buildPairwiseCriticRequests } from "../src/platform/autonomy/visualDirector";
 
 const initial=parseExperience(raw);
 
@@ -318,4 +320,58 @@ test("Director judgment rejects repair findings that cite unseen captures",()=>{
       scopeFingerprint:"forge1:1234567890abcdef",
     },
   }));
+});
+
+
+test("AI Gateway visual critic uses structured multimodal comparison and validates the result",async()=>{
+  assert.equal(aiGatewayVisualCriticConfigured({}),false);
+  assert.equal(aiGatewayVisualCriticConfigured({AI_GATEWAY_API_KEY:"test-key"}),true);
+  const request=buildPairwiseCriticRequests({
+    captureId:"desktop-arrival",
+    incumbentId:"incumbent",
+    candidateId:"candidate",
+    projectContext:"Premium product launch with restrained hierarchy.",
+  })[0];
+  let captured:RequestInit|undefined;
+  const result=await callAiGatewayPairwiseVisualCritic({
+    request,
+    firstImage:"Zmlyc3Q=",
+    secondImage:"c2Vjb25k",
+    environment:{AI_GATEWAY_API_KEY:"test-key",FORGE_AI_GATEWAY_VISUAL_MODEL:"openai/gpt-5.6-sol"},
+    fetchImpl:async(_url,init)=>{
+      captured=init;
+      return new Response(JSON.stringify({
+        choices:[{message:{content:JSON.stringify({
+          winner:"second",
+          confidence:.88,
+          reasons:["The second frame has stronger hierarchy and cleaner copy separation."],
+          firstHardGateFailures:[],
+          secondHardGateFailures:[],
+        })}}],
+      }),{status:200,headers:{"content-type":"application/json"}});
+    },
+  });
+  assert.equal(result.winner,"second");
+  assert.equal(result.confidence,.88);
+  const body=JSON.parse(String(captured?.body));
+  assert.equal(body.model,"openai/gpt-5.6-sol");
+  assert.equal(body.response_format.type,"json_schema");
+  assert.equal(body.messages[0].content.filter((part:{type:string})=>part.type==="image_url").length,2);
+  assert.match(String((captured?.headers as Record<string,string>).authorization),/Bearer test-key/);
+});
+
+test("AI Gateway visual critic fails closed without credentials",async()=>{
+  const request=buildPairwiseCriticRequests({
+    captureId:"desktop-arrival",
+    incumbentId:"incumbent",
+    candidateId:"candidate",
+    projectContext:"Test",
+  })[0];
+  await assert.rejects(()=>callAiGatewayPairwiseVisualCritic({
+    request,
+    firstImage:"a",
+    secondImage:"b",
+    environment:{},
+    fetchImpl:async()=>new Response("{}",{status:200}),
+  }),/AI Gateway visual critic requires/);
 });
