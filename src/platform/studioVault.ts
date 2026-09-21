@@ -310,20 +310,19 @@ function vaultStore(environment:NodeJS.ProcessEnv) {
 }
 
 function localVaultStore(environment:NodeJS.ProcessEnv) {
-  const configuredRoot=environment.FORGE_LOCAL_VAULT_DIR?.trim();
-  const root=path.resolve(configuredRoot || ".forge/local-vault");
-  const repoRoot=path.resolve(process.cwd());
-  if(!root.startsWith(repoRoot+path.sep) && root!==repoRoot) throw new Error("FORGE_LOCAL_VAULT_DIR must stay inside the Forge repository");
+  const namespace=(environment.FORGE_LOCAL_VAULT_NAMESPACE ?? "default").trim();
+  if(!/^[A-Za-z0-9._-]+$/.test(namespace)) throw new Error("FORGE_LOCAL_VAULT_NAMESPACE is invalid");
+  const root=path.join(process.cwd(),".forge","local-vault",namespace);
   const resolveFile=(filePath:string)=>{
     if(filePath.startsWith("/") || filePath.includes("..")) throw new Error("Forge local Vault path is invalid");
-    const resolved=path.resolve(root,filePath);
+    const resolved=path.join(root,filePath);
     if(!resolved.startsWith(root+path.sep)) throw new Error("Forge local Vault path escapes storage root");
     return resolved;
   };
   return {
     async readJson<T>(filePath:string,fallback:T):Promise<T> {
       try {
-        return JSON.parse(await fs.readFile(resolveFile(filePath),"utf8")) as T;
+        return JSON.parse(await fs.readFile(/* turbopackIgnore: true */ resolveFile(filePath),"utf8")) as T;
       } catch(error) {
         if((error as NodeJS.ErrnoException).code==="ENOENT") return fallback;
         throw error;
@@ -333,16 +332,16 @@ function localVaultStore(environment:NodeJS.ProcessEnv) {
       const journalEntries:string[]=[];
       for(const [filePath,value] of Object.entries(files)) {
         const target=resolveFile(filePath);
-        await fs.mkdir(path.dirname(target),{recursive:true});
+        await fs.mkdir(/* turbopackIgnore: true */ path.dirname(target),{recursive:true});
         const content=JSON.stringify(value,null,2)+"\n";
         if(Buffer.byteLength(content)>900_000) throw new Error(`Forge Vault file exceeds the 900 KB durable snapshot limit: ${filePath}`);
         const temporary=target+".tmp-"+crypto.randomUUID();
-        await fs.writeFile(temporary,content,"utf8");
-        await fs.rename(temporary,target);
+        await fs.writeFile(/* turbopackIgnore: true */ temporary,content,"utf8");
+        await fs.rename(/* turbopackIgnore: true */ temporary,/* turbopackIgnore: true */ target);
         journalEntries.push(filePath);
       }
-      await fs.mkdir(root,{recursive:true});
-      await fs.appendFile(path.join(root,"operations.ndjson"),JSON.stringify({at:new Date().toISOString(),message:clean(message,180),files:journalEntries})+"\n","utf8");
+      await fs.mkdir(/* turbopackIgnore: true */ root,{recursive:true});
+      await fs.appendFile(/* turbopackIgnore: true */ path.join(root,"operations.ndjson"),JSON.stringify({at:new Date().toISOString(),message:clean(message,180),files:journalEntries})+"\n","utf8");
       return "local-"+Date.now().toString(36);
     },
   };
