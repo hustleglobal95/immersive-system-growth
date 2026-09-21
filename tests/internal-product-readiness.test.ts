@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { createStudioSessionToken, hasStudioRole, parseStudioUsers, studioAccessEnabled, verifyStudioSessionToken, verifyStudioUserSecret } from "../src/platform/studioAccess";
+import { createStudioSessionToken, hasStudioRole, parseStudioUsers, studioAccessEnabled, studioAuthConfiguration, verifyStudioSessionToken, verifyStudioUserSecret } from "../src/platform/studioAccess";
 import { listVaultProjects, listVaultVersions, readVaultProject, restoreVaultVersion, saveVaultProject, vaultConfiguration } from "../src/platform/studioVault";
 import { assetVaultConfiguration } from "../src/platform/assetVault";
 import rawExperience from "../config/experience.json";
@@ -9,13 +9,23 @@ import rawProject from "../config/studio-project.json";
 import rawManifest from "../config/asset-manifest.json";
 import rawGraph from "../config/interaction-graph.json";
 
-test("Studio authentication is fail-closed by default and role ordering is explicit", () => {
-  assert.equal(studioAccessEnabled({}), true);
-  assert.equal(studioAccessEnabled({ STUDIO_AUTH_ENABLED: "false" }), false);
-  assert.equal(studioAccessEnabled({ STUDIO_AUTH_ENABLED: "true" }), true);
+test("Studio authentication is frictionless locally, fail-closed in production, and role ordering is explicit", () => {
+  assert.equal(studioAccessEnabled({ NODE_ENV:"development" }), false);
+  assert.equal(studioAccessEnabled({ NODE_ENV:"production" }), true);
+  assert.equal(studioAccessEnabled({ NODE_ENV:"production",STUDIO_AUTH_ENABLED: "false" }), false);
+  assert.equal(studioAccessEnabled({ NODE_ENV:"development",STUDIO_AUTH_ENABLED: "true" }), true);
   assert.equal(hasStudioRole({ id: "d", name: "Designer", role: "designer" }, "reviewer"), true);
   assert.equal(hasStudioRole({ id: "d", name: "Designer", role: "designer" }, "developer"), false);
   assert.equal(hasStudioRole({ id: "o", name: "Owner", role: "owner" }, "developer"), true);
+
+  const missing=studioAuthConfiguration({NODE_ENV:"production",FORGE_INTERNAL_SESSION_SECRET:"x".repeat(40),FORGE_INTERNAL_USERS_JSON:"[]"});
+  assert.equal(missing.setupRequired,true);
+  assert.match(missing.issue ?? "",/No Forge Studio users are configured/i);
+
+  const local=studioAuthConfiguration({NODE_ENV:"development"});
+  assert.equal(local.enabled,false);
+  assert.equal(local.configured,true);
+  assert.equal(local.setupRequired,false);
 });
 
 test("internal user passphrases verify from PBKDF2 hashes", async () => {
