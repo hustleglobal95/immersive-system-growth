@@ -11,6 +11,7 @@ const evidenceSchema=z.object({
   calibrated:z.boolean(),
   captureIds:z.array(z.string().min(1).max(240)).min(1).max(24),
   evidenceHash:z.string().regex(/^[a-f0-9]{64}$/),
+  scopeFingerprint:z.string().regex(/^forge1:[a-f0-9]{16}$/),
 }).strict();
 
 const verifiedSchema=z.object({
