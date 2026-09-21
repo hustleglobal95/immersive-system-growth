@@ -89,7 +89,7 @@ test("Capability Router assigns owners and refuses strategic findings as automat
   });
   assert.equal(material.domain,"asset");
   assert.equal(material.capabilityId,"asset.improve");
-  assert.deepEqual(material.allowedRepairCommands,[]);
+  assert.deepEqual(material.allowedRepairCommands,["scene.adjustMaterialSurface"]);
 });
 
 test("Visual repair planner obeys capability routing instead of guessing across domains",()=>{
