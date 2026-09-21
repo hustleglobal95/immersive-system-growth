@@ -10,6 +10,14 @@ import {
   type FontMood,
   type FontRole,
 } from "./catalog";
+import {
+  premiumLibraries,
+  premiumFoundries,
+  premiumSignatureFamilyCount,
+  premiumTypeSources,
+  type PremiumAccess,
+  type PremiumSourceKind,
+} from "./premiumTypeNetwork";
 
 type RemoteFont = {
   id: string;
@@ -103,6 +111,10 @@ export function TypeVaultWorkbench() {
   const [variableOnly, setVariableOnly] = useState(false);
   const [sort, setSort] = useState<SortMode>("Featured");
   const [visibleCount, setVisibleCount] = useState(120);
+  const [premiumQuery, setPremiumQuery] = useState("");
+  const [premiumKind, setPremiumKind] = useState<PremiumSourceKind | "All">("All");
+  const [premiumAccess, setPremiumAccess] = useState<PremiumAccess | "All">("All");
+  const [premiumVisible, setPremiumVisible] = useState(18);
 
   useEffect(() => {
     fetch("/api/type-vault")
@@ -182,6 +194,27 @@ export function TypeVaultWorkbench() {
     });
   }, [remote, query, category, mood, role, source, coverage, variableOnly, sort]);
 
+  const premiumRows = useMemo(() => {
+    const terms = premiumQuery.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    return premiumTypeSources
+      .filter((item) => premiumKind === "All" || item.kind === premiumKind)
+      .filter((item) => premiumAccess === "All" || item.access === premiumAccess)
+      .filter((item) => {
+        if (!terms.length) return true;
+        const haystack = [
+          item.name,
+          item.kind,
+          item.access,
+          item.scale,
+          item.note,
+          ...item.tags,
+          ...item.signatureFamilies,
+        ].join(" ").toLowerCase();
+        return terms.every((term) => haystack.includes(term));
+      })
+      .sort((a, b) => b.signatureFamilies.length - a.signatureFamilies.length || a.name.localeCompare(b.name));
+  }, [premiumQuery, premiumKind, premiumAccess]);
+
   const activeFilters = [category, mood, role, source, coverage].filter((value) => value !== "All").length + (variableOnly ? 1 : 0) + (query ? 1 : 0);
   const clearFilters = () => {
     setQuery("");
@@ -211,13 +244,17 @@ export function TypeVaultWorkbench() {
           <div className="tv-hero-copy">
             <p className="tv-eyebrow">Typography intelligence / 01</p>
             <h1 id="type-vault-title">The typography universe, made usable.</h1>
-            <p className="tv-lede">Forge combines a tightly directed creative layer with a live open-font index. Search thousands of families by intent, role, language coverage, format and production need—then reduce the field to a disciplined system.</p>
+            <p className="tv-lede">Forge now spans two different worlds: a production-safe open-font atlas and a premium research network of elite commercial libraries and foundries. Search broadly, art-direct aggressively, then license and ship only what the project actually needs.</p>
+            <div className="tv-hero-actions">
+              <a href="#premium-network" className="tv-primary-action">Explore premium network <span>↓</span></a>
+              <a href="#library-atlas" className="tv-secondary-action">Open production atlas</a>
+            </div>
           </div>
           <div className="tv-metrics" aria-label="Type Vault summary">
             <div><strong>{fontCatalog.length}</strong><span>Forge curated</span></div>
             <div><strong>{pairings.length}</strong><span>Pairing systems</span></div>
             <div><strong>{remote.length ? remote.length.toLocaleString() : "—"}</strong><span>Live families</span></div>
-            <div><strong>{specialCollections.reduce((total, item) => total + item.fonts.length, 0)}</strong><span>Indie references</span></div>
+            <div><strong>{premiumTypeSources.length}</strong><span>Premium sources</span></div>
           </div>
         </section>
 
@@ -255,9 +292,84 @@ export function TypeVaultWorkbench() {
           </div>
         </section>
 
+        <section className="tv-section tv-premium" id="premium-network" aria-labelledby="premium-title">
+          <div className="tv-section-head tv-premium-head">
+            <div>
+              <p className="tv-eyebrow">Premium network / 04</p>
+              <h2 id="premium-title">The serious type world, indexed.</h2>
+            </div>
+            <p>{premiumLibraries.length} major libraries + {premiumFoundries.length} premium foundries, with {premiumSignatureFamilyCount}+ named signature-family references already mapped.</p>
+          </div>
+
+          <div className="tv-premium-banner">
+            <div>
+              <span className="tv-premium-kicker">Research layer ≠ bundled license</span>
+              <strong>Premium fonts stay references until a project owns the rights.</strong>
+            </div>
+            <p>Forge can recommend, compare and route you to the source. It does not copy paid binaries into the repository or imply commercial rights you have not purchased.</p>
+          </div>
+
+          <div className="tv-premium-toolbar">
+            <label className="tv-premium-search">
+              <span>Search foundry, family, style or specialty</span>
+              <input
+                type="search"
+                value={premiumQuery}
+                onChange={(event) => { setPremiumQuery(event.target.value); setPremiumVisible(18); }}
+                placeholder="Graphik, Swiss grotesk, Arabic, fashion, editorial, variable…"
+              />
+            </label>
+            <div className="tv-premium-selects">
+              <label><span>Source type</span><select value={premiumKind} onChange={(event) => { setPremiumKind(event.target.value as PremiumSourceKind | "All"); setPremiumVisible(18); }}><option>All</option><option>Library</option><option>Foundry</option></select></label>
+              <label><span>Access</span><select value={premiumAccess} onChange={(event) => { setPremiumAccess(event.target.value as PremiumAccess | "All"); setPremiumVisible(18); }}><option>All</option><option>Subscription</option><option>Retail</option><option>Trial + retail</option><option>Mixed</option></select></label>
+            </div>
+          </div>
+
+          <div className="tv-premium-stats" aria-label="Premium network summary">
+            <div><span>Mapped sources</span><strong>{premiumTypeSources.length}</strong></div>
+            <div><span>Signature families</span><strong>{premiumSignatureFamilyCount}+</strong></div>
+            <div><span>Libraries</span><strong>{premiumLibraries.length}</strong></div>
+            <div><span>Foundries</span><strong>{premiumFoundries.length}</strong></div>
+          </div>
+
+          <div className="tv-premium-grid">
+            {premiumRows.slice(0, premiumVisible).map((item, index) => (
+              <article className="tv-premium-card" key={item.id}>
+                <header>
+                  <span className="tv-index">{String(index + 1).padStart(2, "0")}</span>
+                  <span className={"tv-access-badge tv-access-badge--" + item.access.toLowerCase().replaceAll(" ", "-").replace("+", "plus")}>{item.access}</span>
+                </header>
+                <div className="tv-premium-card-title">
+                  <p>{item.kind}</p>
+                  <h3>{item.name}</h3>
+                  <span>{item.scale}</span>
+                </div>
+                <p className="tv-premium-note">{item.note}</p>
+                <div className="tv-premium-tags">{item.tags.slice(0, 5).map((tag) => <span key={tag}>{tag}</span>)}</div>
+                {item.signatureFamilies.length ? (
+                  <div className="tv-premium-families">
+                    <span>Signature references</span>
+                    <p>{item.signatureFamilies.slice(0, 8).join(" · ")}{item.signatureFamilies.length > 8 ? " · +" + (item.signatureFamilies.length - 8) : ""}</p>
+                  </div>
+                ) : null}
+                <footer>
+                  <small>Verified {item.verified}</small>
+                  <a href={item.url} target="_blank" rel="noreferrer">Open source ↗</a>
+                </footer>
+              </article>
+            ))}
+          </div>
+
+          {premiumRows.length > premiumVisible ? (
+            <button className="tv-load-more tv-load-more--premium" type="button" onClick={() => setPremiumVisible((count) => Math.min(count + 18, premiumRows.length))}>
+              Show more premium sources <span>{premiumVisible} / {premiumRows.length}</span>
+            </button>
+          ) : null}
+        </section>
+
         <section className="tv-section tv-pairings" aria-labelledby="pairings-title">
           <div className="tv-section-head">
-            <div><p className="tv-eyebrow">Curated systems / 04</p><h2 id="pairings-title">Pairings with a job to do.</h2></div>
+            <div><p className="tv-eyebrow">Curated systems / 05</p><h2 id="pairings-title">Pairings with a job to do.</h2></div>
             <p>{pairings.length} starting systems spanning luxury, editorial, culture, product, automotive, hospitality and technology.</p>
           </div>
           <div className="tv-pairing-grid">
@@ -277,7 +389,7 @@ export function TypeVaultWorkbench() {
 
         <section className="tv-section tv-collections" aria-labelledby="collections-title">
           <div className="tv-section-head">
-            <div><p className="tv-eyebrow">Independent references / 05</p><h2 id="collections-title">Do not let the algorithm narrow your taste.</h2></div>
+            <div><p className="tv-eyebrow">Independent references / 06</p><h2 id="collections-title">Do not let the algorithm narrow your taste.</h2></div>
             <p>Named collections sit beside the live index to preserve less-obvious directions.</p>
           </div>
           <div className="tv-collection-grid">
@@ -291,9 +403,9 @@ export function TypeVaultWorkbench() {
           </div>
         </section>
 
-        <section className="tv-section tv-browser" aria-labelledby="browser-title">
+        <section className="tv-section tv-browser" id="library-atlas" aria-labelledby="browser-title">
           <div className="tv-section-head tv-browser-head">
-            <div><p className="tv-eyebrow">Library atlas / 06</p><h2 id="browser-title">Search the full field.</h2></div>
+            <div><p className="tv-eyebrow">Production atlas / 07</p><h2 id="browser-title">Search the full field.</h2></div>
             <div className="tv-result-summary"><strong>{rows.length.toLocaleString()}</strong><span>matching families</span></div>
           </div>
 

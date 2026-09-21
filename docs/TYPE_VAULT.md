@@ -78,3 +78,50 @@ A third family is reserved for a genuine accent or technical role. The final sys
 Type Vault is a discovery and direction system, not a license clearinghouse or DCC font manager.
 
 Forge must not imply that an upstream family is cleared for every form of commercial redistribution merely because it appears in Fontsource, Google Fonts or another reference collection. Final production usage still requires license and glyph verification for the specific family and distribution model.
+
+
+## Premium research network
+
+Type Vault now keeps a separate premium-commercial research layer alongside the production-safe open catalog.
+
+The distinction is intentional:
+
+- **Open/production atlas** — Fontsource plus Forge-curated open references that can be evaluated for direct project installation after license verification.
+- **Premium research network** — commercial libraries and independent foundries that Forge may recommend and route to, but does not bundle or imply ownership of.
+
+The premium network currently indexes 60+ commercial sources and a growing set of named signature families. It is designed to be searchable by foundry, family, access model and specialty.
+
+Verified research sources used for the September 2026 expansion include:
+
+- Fontstand — participating foundry network with family/font counts, trials, rentals and subscriptions.
+- Type Network — 87 represented foundries with strong multilingual and enterprise coverage.
+- Adobe Fonts — 5,000+ fonts through Creative Cloud plans.
+- Monotype Fonts — enterprise font discovery, licensing and governance platform.
+- Dinamo — contemporary retail and trial catalog.
+- Grilli Type — 21 major retail families.
+- Commercial Type — premium editorial and identity catalog.
+- Klim Type Foundry — premium retail family catalog.
+- Pangram Pangram — 62 retail families with trial licensing.
+- Displaay — 33 retail families with full trials.
+- Swiss Typefaces — premium Swiss family systems.
+- Production Type — 80+ typefaces / 800+ styles.
+- Typotheque — large multiscript retail library.
+- OH no Type Co. — 25+ expressive retail families.
+- Black[Foundry], Process Type Foundry, Newlyn, Sharp Type, Fort Foundry, Fontfabric and TypeTogether.
+- Fontstand-represented foundries including Typofonderie, Indian Type Foundry, Playtype, CAST, TypeMates, Zetafonts, Storm Type Foundry, Suitcase Type Foundry, PampaType, Signal Type Foundry, CSTM Fonts, Bold Monday, DJR, Alias, Ek Type, and many others.
+
+Premium references are metadata only. No commercial font binary should be checked into Forge unless the project has a license that permits that storage and usage.
+
+## Premium UI behavior
+
+The standalone `/type-vault` experience exposes the premium network as a dedicated research surface with:
+
+- free-text search across foundry names, tags and signature families;
+- source-type filtering between libraries and foundries;
+- access filtering for subscription, retail and trial-enabled sources;
+- source-scale metadata;
+- specialty tags such as editorial, fashion, multilingual, Arabic, Thai, Indic, CJK, variable and UI;
+- representative family references;
+- direct links to the source for licensing and acquisition.
+
+This keeps premium exploration useful without collapsing paid and open typography into one misleading result set.
