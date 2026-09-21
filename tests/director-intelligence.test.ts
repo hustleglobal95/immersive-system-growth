@@ -250,3 +250,34 @@ test("verified judgment rejects fake calibration and insufficient rendered evide
     evidence:{source:"rendered-external-judge",judgeId:"x",calibrated:false,captureIds:["only-one"],evidenceHash:"b".repeat(64)},
   }));
 });
+
+
+test("Director LOCK cannot hide material repair findings",()=>{
+  assert.throws(()=>parseDirectorJudgment({
+    status:"verified",
+    verdict:"LOCK",
+    confidence:.9,
+    confidenceSemantics:"calibrated-preference",
+    reasons:["Strong overall frame."],
+    blockers:[],
+    dimensions:{composition:8.8},
+    findings:[{
+      critic:"composition",
+      captureId:"desktop-arrival",
+      severity:"major",
+      finding:"The hero still collides with the primary copy.",
+      evidence:["The subject overlaps the text block in the reviewed frame."],
+      affectedSystems:["composition"],
+      repair:"Move the hero right and restore negative space before lock.",
+      confidence:.91,
+    }],
+    evidence:{
+      source:"rendered-external-judge",
+      judgeId:"fixture",
+      calibrationId:"benchmark-v1",
+      calibrated:true,
+      captureIds:["desktop-arrival","desktop-signature"],
+      evidenceHash:"e".repeat(64),
+    },
+  }));
+});
