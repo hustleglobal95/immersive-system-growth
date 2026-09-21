@@ -78,17 +78,17 @@ all("FORGE_ASSET_VAULT_ENDPOINT","FORGE_ASSET_VAULT_PUBLIC_BASE_URL","FORGE_ASSE
     ? yes("Generated-asset storage","Local durable asset storage is active under public/generated/vault for development.")
     : hold("Permanent generated-asset storage","Use npm run studio:local for local asset durability, or configure the remote Asset Vault before release.");
 
-has("FORGE_VISUAL_CRITIC_URL")
-  ? yes("Multimodal visual critic","Comparative rendered review can call the configured critic.")
-  : hold("Multimodal visual critic","Visual loops can collect deterministic findings, but cannot self-approve visual improvement without FORGE_VISUAL_CRITIC_URL.");
+(has("FORGE_VISUAL_CRITIC_URL")||has("AI_GATEWAY_API_KEY")||has("VERCEL_OIDC_TOKEN"))
+  ? yes("Multimodal visual critic",has("FORGE_VISUAL_CRITIC_URL") ? "Comparative rendered review can call the configured custom critic." : "Comparative rendered review can use Forge's built-in AI Gateway critic.")
+  : hold("Multimodal visual critic","Visual loops can collect deterministic findings, but automatic visual comparison requires FORGE_VISUAL_CRITIC_URL or AI Gateway credentials.");
 
 directorCalibrationReady()
   ? yes("Calibrated Director judge","Rendered creative LOCK/REVISE judgment is configured and calibration clears minimum thresholds.")
   : hold("Calibrated Director judge","Director stays UNVERIFIED without a configured judge and valid calibration record.");
 
-(env.FORGE_LOOP_REMOTE_ENABLED==="true"&&all("FORGE_GITHUB_REPOSITORY","FORGE_GITHUB_TOKEN")&&has("FORGE_VISUAL_CRITIC_URL"))
+(env.FORGE_LOOP_REMOTE_ENABLED==="true"&&all("FORGE_GITHUB_REPOSITORY","FORGE_GITHUB_TOKEN")&&(has("FORGE_VISUAL_CRITIC_URL")||has("AI_GATEWAY_API_KEY")))
   ? yes("Remote Loop Engine","Studio can dispatch evidence-gated remote loops.")
-  : hold("Remote Loop Engine","Requires FORGE_LOOP_REMOTE_ENABLED=true, GitHub repository/token, and a visual critic.");
+  : hold("Remote Loop Engine","Requires FORGE_LOOP_REMOTE_ENABLED=true, GitHub repository/token, and either the custom critic or an AI Gateway key.");
 
 (env.FORGE_STUDIO_PUBLISH_ENABLED==="true"&&(env.FORGE_STUDIO_PUBLISH_SECRET?.length ?? 0)>=24&&all("FORGE_GITHUB_REPOSITORY","FORGE_GITHUB_TOKEN"))
   ? yes("Studio review publishing","Review-PR publishing is configured.")
