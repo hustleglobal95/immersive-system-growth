@@ -53,7 +53,10 @@ test("Context Compiler returns task-scoped context and hides unrelated heavy sta
     currentState:{experience,assetManifest,interactionGraph},
   });
   assert.equal(capsule.scene?.id,sceneId);
-  assert.equal(capsule.runtime.scene?.id,sceneId);
+  assert.ok(capsule.runtime.scene);
+  assert.ok(["exact-id","ordinal"].includes(capsule.sceneLink.mapping));
+  assert.equal(capsule.sceneLink.strategicSceneId,sceneId);
+  assert.equal(capsule.sceneLink.runtimeSceneId,capsule.runtime.scene?.id ?? null);
   assert.equal(capsule.runtime.assets,null);
   assert.equal(capsule.runtime.interactionGraph,null);
   assert.ok(capsule.allowedSystems.includes("camera"));
