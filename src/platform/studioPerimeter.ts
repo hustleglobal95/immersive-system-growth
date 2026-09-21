@@ -25,10 +25,11 @@ export function isStudioAuthBootstrapPath(pathname:string) {
 }
 
 export function studioAuthEnabled(environment:StudioPerimeterEnvironment=process.env) {
+  if(environment.NODE_ENV==="production") return true;
   const configured=environment.STUDIO_AUTH_ENABLED?.trim().toLowerCase();
   if(configured==="true") return true;
   if(configured==="false") return false;
-  return environment.NODE_ENV==="production";
+  return false;
 }
 
 export function studioAvailableInProduction(environment:StudioPerimeterEnvironment=process.env) {
