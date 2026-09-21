@@ -262,7 +262,9 @@ test("only review-ready cross-project learning can enter Creative Memory and pro
     pattern:mature,
     approvedBy:"Kevin",
   });
-  assert.ok(graph.nodes.some((node)=>node.type==="Lesson" && node.projectId==="forge-learning" && node.text.includes(mature.key)));
+  assert.deepEqual(mature.commonRepairCommands,["scene.adjustSubjectFraming"]);
+  assert.ok(mature.evidenceExamples.some((item)=>/focal hierarchy/i.test(item)));
+  assert.ok(graph.nodes.some((node)=>node.type==="Lesson" && node.projectId==="forge-learning" && node.text.includes("scene.adjustSubjectFraming")));
   const repeated=promoteProjectLearningPattern({graph,pattern:mature,approvedBy:"Kevin"});
   assert.equal(repeated.nodes.length,graph.nodes.length);
 });
@@ -320,6 +322,7 @@ function provenReport(projectId:string,strategyId:string,agreement:number):LoopR
       fingerprint:"b".repeat(64),
       repairSignature:"e".repeat(64),
       repairSummary:["Improved focal hierarchy while preserving copy and interaction."],
+      repairCommandTypes:["scene.adjustSubjectFraming"],
       functionalPassed:true,
       motionScore:92,
       performanceScoreBefore:86,
