@@ -51,7 +51,9 @@ function internalAccessReady() {
   if (process.env.NODE_ENV === "production" && process.env.ENABLE_STUDIO_IN_PROD !== "true") return false;
   try {
     const users = JSON.parse(process.env.FORGE_INTERNAL_USERS_JSON ?? "[]");
-    return Array.isArray(users) && users.length > 0 && users.every((user) => user && typeof user.id === "string" && typeof user.name === "string" && typeof user.role === "string" && /^pbkdf2\$\d+\$[A-Za-z0-9_-]+\$[A-Za-z0-9_-]+$/.test(user.secretHash ?? ""));
+    return Array.isArray(users) && users.length > 0
+      && users.some((user) => user?.role === "owner")
+      && users.every((user) => user && typeof user.id === "string" && typeof user.name === "string" && typeof user.role === "string" && /^pbkdf2\$\d+\$[A-Za-z0-9_-]+\$[A-Za-z0-9_-]+$/.test(user.secretHash ?? ""));
   } catch { return false; }
 }
 function publishReady() {

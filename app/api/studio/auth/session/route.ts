@@ -1,17 +1,25 @@
-import { clearStudioSessionCookie, createStudioSessionToken, parseStudioUsers, studioAccessEnabled, studioAccessErrorResponse, studioIdentityFromRequest, studioSessionCookie, verifyStudioUserSecret } from "@/src/platform/studioAccess";
+import { clearStudioSessionCookie, createStudioSessionToken, parseStudioUsers, studioAccessEnabled, studioAccessErrorResponse, studioAuthConfiguration, studioIdentityFromRequest, studioSessionCookie, verifyStudioUserSecret } from "@/src/platform/studioAccess";
 import { studioAvailableInProduction } from "@/src/platform/studioPerimeter";
 
 export const runtime = "nodejs";
 
 export async function GET(request: Request) {
   if (!studioAvailableInProduction(process.env)) return Response.json({ ok: false, error: "Not found" }, { status: 404 });
-  const identity = await studioIdentityFromRequest(request);
-  return Response.json({ ok: true, accessEnabled: studioAccessEnabled(), identity });
+  const auth=studioAuthConfiguration();
+  const identity = auth.configured ? await studioIdentityFromRequest(request) : null;
+  return Response.json({ ok: true, accessEnabled: studioAccessEnabled(), auth, identity });
 }
 
 export async function POST(request: Request) {
   if (!studioAvailableInProduction(process.env)) return Response.json({ ok: false, error: "Not found" }, { status: 404 });
   if (!studioAccessEnabled()) return Response.json({ ok: true, accessEnabled: false, identity: { id: "local-owner", name: "Local owner", role: "owner" } });
+  const auth=studioAuthConfiguration();
+  if(!auth.configured) return Response.json({
+    ok:false,
+    error:auth.issue ?? "Forge Studio authentication setup is incomplete.",
+    setupRequired:true,
+    auth,
+  },{status:503});
   const size = Number(request.headers.get("content-length") ?? 0);
   if (!Number.isFinite(size) || size > 8_000) return Response.json({ ok: false, error: "Sign-in request is too large" }, { status: 413 });
   const origin = request.headers.get("origin");
