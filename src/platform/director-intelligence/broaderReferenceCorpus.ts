@@ -18,7 +18,7 @@ function caseStudy(
   transferableLessons: string[],
   constructionPatternIds: string[],
   evidenceNotes: string[],
-  confidence = 0.92,
+  evidenceStrength = 0.92,
   evidenceLevel: ImmersiveReference["evidenceLevel"] = "public-case-study",
 ): ImmersiveReference {
   return {
@@ -29,7 +29,7 @@ function caseStudy(
     access: "free",
     evidenceLevel,
     reviewedAt: REVIEWED_AT,
-    confidence,
+    evidenceStrength,
     observedTraits,
     transferableLessons,
     constructionPatternIds,
