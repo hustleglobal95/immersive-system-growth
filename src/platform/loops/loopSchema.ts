@@ -22,6 +22,10 @@ export const loopAcceptanceSchema=z.object({
 
 export const loopRepairCommandSchema=z.enum([
   "scene.adjustPresentation",
+  "scene.adjustLighting",
+  "scene.adjustSubjectFraming",
+  "scene.adjustMediaFraming",
+  "scene.adjustMaterialSurface",
   "motion.applyArchetype",
   "camera.applyChoreography",
 ]);
@@ -42,7 +46,7 @@ export const loopDefinitionSchema=z.object({
   executable:z.boolean(),
   verifiers:z.array(loopVerifierSchema).min(1),
   strategies:z.array(loopStrategySchema).min(1).max(5),
-  allowedRepairCommands:z.array(loopRepairCommandSchema).min(1).max(3),
+  allowedRepairCommands:z.array(loopRepairCommandSchema).min(1).max(7),
   budgets:loopBudgetSchema,
   acceptance:loopAcceptanceSchema,
   humanGates:z.array(z.string().min(4).max(240)).max(12),
@@ -66,6 +70,11 @@ export const loopCandidateEvidenceSchema=z.object({
   assetScoreAfter:z.number().min(0).max(100).nullable().optional(),
   referencedAssetBytesBefore:z.number().int().nonnegative().nullable().optional(),
   referencedAssetBytesAfter:z.number().int().nonnegative().nullable().optional(),
+  performanceScoreBefore:z.number().min(0).max(100).nullable().optional(),
+  performanceScoreAfter:z.number().min(0).max(100).nullable().optional(),
+  rafP95Before:z.number().nonnegative().nullable().optional(),
+  rafP95After:z.number().nonnegative().nullable().optional(),
+  accessibilityPassed:z.boolean().nullable().optional(),
   duplicateOf:z.string().max(120).optional(),
   functionalPassed:z.boolean().nullable().default(null),
   motionScore:z.number().nullable().default(null),
