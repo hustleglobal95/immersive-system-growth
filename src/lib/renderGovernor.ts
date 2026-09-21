@@ -111,7 +111,7 @@ export function governedParticleCount(count:number,quality:QualityTier,tier:Rend
 
 export function governedShadowMapSize(base:number,quality:QualityTier,tier:RenderGovernorTier) {
   const profile=renderGovernorProfile(quality,tier);
-  if(!profile.shadows) return 0;
+  if(!profile.shadows) return 512;
   const scaled=base*profile.shadowScale;
   if(scaled>=1536) return 2048;
   if(scaled>=768) return 1024;
