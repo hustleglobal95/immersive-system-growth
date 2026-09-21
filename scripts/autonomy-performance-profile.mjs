@@ -86,6 +86,9 @@ function summarize(states) {
   const maxTriangles=Math.max(0,...measured.map((item)=>item.renderer.triangles));
   const maxPrograms=Math.max(0,...measured.map((item)=>item.renderer.programs));
   const maxDrawingBufferPixels=Math.max(0,...measured.map((item)=>item.renderer.drawingBufferPixels));
+  const governorRank={native:0,balanced:1,performance:2,survival:3};
+  const maxGovernorSeverity=Math.max(0,...measured.map((item)=>governorRank[item.renderer.governorTier] ?? 0));
+  const minPixelRatio=Math.min(...measured.map((item)=>Number(item.renderer.pixelRatio || Infinity)));
   const framePenalty=Math.max(0,worstRafP95-16.7)*1.8;
   const callPenalty=Math.max(0,maxCalls-120)*.05;
   const trianglePenalty=Math.max(0,maxTriangles-750000)/90000;
@@ -100,6 +103,9 @@ function summarize(states) {
     maxTriangles,
     maxPrograms,
     maxDrawingBufferPixels,
+    maxGovernorSeverity,
+    minPixelRatio:Number.isFinite(minPixelRatio) ? minPixelRatio : null,
+    governorTiers:[...new Set(measured.map((item)=>item.renderer.governorTier).filter(Boolean))],
     score,
     evidenceClass:"relative-headless",
     note:"Headless high-density renderer evidence is suitable for incumbent/candidate comparison, not a substitute for physical-device GPU profiling.",
