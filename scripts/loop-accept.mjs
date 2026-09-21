@@ -57,7 +57,8 @@ const result=await saveVaultProjectWithLearning({
 console.log("Loop artifact promoted to Project Vault.");
 console.log("Project: "+result.summary.name);
 console.log("Version: "+result.entry.versionId);
-console.log("Approved by: "+actorName);\nconsole.log("Project learning: "+result.learning.id);
+console.log("Approved by: "+actorName);
+console.log("Project learning: "+result.learning.id);
 
 function args(argv) {
   const out={};
