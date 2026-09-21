@@ -2,7 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { createStudioSessionToken, hasStudioRole, parseStudioUsers, studioAccessEnabled, studioAuthConfiguration, verifyStudioSessionToken, verifyStudioUserSecret } from "../src/platform/studioAccess";
-import { listVaultProjects, listVaultVersions, readVaultProject, restoreVaultVersion, saveVaultProject, vaultConfiguration } from "../src/platform/studioVault";
+import { listVaultLearningRecords, listVaultProjects, listVaultVersions, readVaultProject, restoreVaultVersion, saveVaultProject, saveVaultProjectWithLearning, vaultConfiguration } from "../src/platform/studioVault";
+import { projectLearningRecordSchema } from "../src/platform/learning/projectLearning";
 import { assetVaultConfiguration } from "../src/platform/assetVault";
 import rawExperience from "../config/experience.json";
 import rawProject from "../config/studio-project.json";
@@ -126,6 +127,69 @@ test("local Project Vault performs durable save, version and restore without Git
     const restored=await readVaultProject(rawProject.id,environment);
     assert.equal(restored?.versionId,first.snapshot.versionId);
     assert.equal(restored?.experience.meta.description,rawExperience.meta.description);
+
+    const promoted=await saveVaultProjectWithLearning({
+      experience:rawExperience,
+      project:rawProject,
+      assetManifest:rawManifest,
+      interactionGraph:rawGraph,
+    },actor,"Loop accepted · Visual Polish","Atomic local learning proof",(acceptedVersionId)=>projectLearningRecordSchema.parse({
+      version:1,
+      id:"learn-local-loop-proof",
+      status:"human-approved",
+      projectId:rawProject.id,
+      runId:"run-local-loop-proof",
+      loopId:"visual-polish",
+      acceptedVersionId,
+      approvedAt:"2026-09-21T15:00:00.000Z",
+      approvedBy:actor,
+      baselineFingerprint:"a".repeat(64),
+      acceptedFingerprint:"b".repeat(64),
+      acceptedImprovements:1,
+      winners:[{
+        cycle:1,
+        candidateId:"winner-local",
+        strategyId:"hierarchy-first",
+        fingerprint:"b".repeat(64),
+        repairSummary:["Improved focal hierarchy without changing project truth."],
+        repairCommandTypes:["scene.adjustSubjectFraming"],
+        preferenceAgreement:.9,
+        functionalPassed:true,
+        motionScore:92,
+        performanceScoreBefore:null,
+        performanceScoreAfter:null,
+        rafP95Before:null,
+        rafP95After:null,
+        accessibilityPassed:null,
+        assetScoreBefore:null,
+        assetScoreAfter:null,
+        referencedAssetBytesBefore:null,
+        referencedAssetBytesAfter:null,
+      }],
+      evidenceSummary:{
+        candidateWins:1,
+        averagePreferenceAgreement:.9,
+        allFunctionalPassed:true,
+        averageMotionScore:92,
+        averagePerformanceDelta:null,
+        averageRafP95Delta:null,
+        averageAssetScoreDelta:null,
+        referencedAssetByteDelta:null,
+        accessibilityPassRate:null,
+        hardGateFailures:0,
+      },
+      lesson:"Human-approved local Loop evidence.",
+      provenance:{
+        source:"forge-loop-human-promotion",
+        reportFingerprint:"c".repeat(64),
+        reportStartedAt:"2026-09-21T14:55:00.000Z",
+        reportEndedAt:"2026-09-21T15:00:00.000Z",
+      },
+    }),"Visual Polish accepted · run-local-loop-proof",environment);
+    const learning=await listVaultLearningRecords(rawProject.id,environment);
+    assert.equal(learning.length,1);
+    assert.equal(learning[0].acceptedVersionId,promoted.entry.versionId);
+    assert.equal(learning[0].status,"human-approved");
   } finally {
     fs.rmSync(localDir,{recursive:true,force:true});
   }

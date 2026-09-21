@@ -76,7 +76,7 @@ test("Visual Director turns high-confidence findings into a bounded candidate",(
     },
   ];
   const plan=planVisualRepairs({ findings,reviewPlan,experience:initial });
-  assert.ok(plan.commands.some((command)=>command.type==="scene.adjustPresentation"));
+  assert.ok(plan.commands.some((command)=>command.type==="scene.adjustSubjectFraming"));
   assert.ok(plan.commands.some((command)=>command.type==="camera.applyChoreography"));
   assert.equal(plan.blockers.length,0);
   const applied=applyVisualRepairPlan(initial,plan);
@@ -104,9 +104,9 @@ test("multiple Visual Director findings clamp combined repair deltas to command 
     confidence:0.9,
   }));
   const plan=planVisualRepairs({ findings,reviewPlan,experience:initial });
-  const presentation=plan.commands.find((command)=>command.type==="scene.adjustPresentation");
-  assert.ok(presentation);
-  const input=presentation!.input as { exposureDelta?:number; bloomDelta?:number };
+  const lighting=plan.commands.find((command)=>command.type==="scene.adjustLighting");
+  assert.ok(lighting);
+  const input=lighting!.input as { exposureDelta?:number; bloomDelta?:number };
   assert.ok((input.exposureDelta ?? 0) >= -0.4);
   assert.ok((input.bloomDelta ?? 0) >= -0.5);
   const applied=applyVisualRepairPlan(initial,plan);

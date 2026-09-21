@@ -62,6 +62,8 @@ For any request to show, preview, open, capture, share, or deploy an existing pr
 38. Specialist work must use task-scoped Context Capsules where available. Do not repeatedly load unrelated project state, references or tools when the task can be solved from the scene, creative truth and registered capability owner.
 39. Every autonomous finding must route through the Capability Router before mutation. Reasoning ability does not grant write authority; unowned or strategic findings escalate rather than improvising cross-domain edits.
 40. Full-site construction must not expand past the Signature Slice Gate while the protected signature slice has blockers or loses comparative rendered review.
+41. Autonomous visual repair must prefer domain-specific bounded commands (lighting, subject framing, media framing, authored-material, camera, motion). The legacy broad presentation repair remains compatibility-only; do not use it to bypass Capability Router ownership.
+42. Project Learning may be created only from a human-promoted Loop winner with hard gates clear and comparative candidate-win evidence. Cross-project patterns remain hypotheses until independently repeated; even review-ready patterns require explicit human promotion before entering Director Creative Memory.
 
 ## Before implementation
 

@@ -30,7 +30,7 @@ const definitions:LoopDefinition[]=[
     worker:"visual-repair",
     executable:true,
     verifiers:["schema","functional","motion","mobile","visual"],
-    allowedRepairCommands:["scene.adjustPresentation","motion.applyArchetype","camera.applyChoreography"],
+    allowedRepairCommands:["scene.adjustLighting","scene.adjustSubjectFraming","scene.adjustMediaFraming","scene.adjustMaterialSurface","motion.applyArchetype","camera.applyChoreography"],
     strategies:[
       { id:"hierarchy-first",label:"Hierarchy first",instruction:"Prioritize focal hierarchy, negative space, crop, copy/subject separation and restrained presentation. Preserve the defining visual idea." },
       { id:"camera-first",label:"Camera first",instruction:"Prioritize lens character, framing, motivated camera travel and subject presence. Avoid gratuitous movement or changing narrative meaning." },
@@ -47,7 +47,7 @@ const definitions:LoopDefinition[]=[
     worker:"visual-repair",
     executable:true,
     verifiers:["schema","functional","motion","mobile","visual"],
-    allowedRepairCommands:["scene.adjustPresentation","motion.applyArchetype","camera.applyChoreography"],
+    allowedRepairCommands:["scene.adjustSubjectFraming","scene.adjustMediaFraming","motion.applyArchetype","camera.applyChoreography"],
     strategies:[
       { id:"mobile-composition",label:"Mobile composition",instruction:"Judge mobile first. Repair crop, negative space, type/subject separation and visual hierarchy without flattening the concept into a generic stacked layout." },
       { id:"mobile-camera",label:"Mobile camera",instruction:"Judge mobile first. Reduce or redirect camera travel only when necessary to preserve subject readability, orientation and the intended cinematic beat." },
@@ -97,7 +97,7 @@ const definitions:LoopDefinition[]=[
     worker:"asset-repair",
     executable:true,
     verifiers:["schema","assets","performance","visual"],
-    allowedRepairCommands:["scene.adjustPresentation"],
+    allowedRepairCommands:["scene.adjustMaterialSurface"],
     strategies:[
       { id:"registered-derivative",label:"Registered derivative",instruction:"Prefer an already-registered lower-byte derivative only when lineage is explicit, the source remains available for rollback and measured savings are material." },
       { id:"canonical-reuse",label:"Canonical reuse",instruction:"Consolidate exact SHA-256 duplicate asset identities and remove redundant manifest aliases without changing the underlying binary or project meaning." },
@@ -113,7 +113,7 @@ const definitions:LoopDefinition[]=[
     worker:"construction",
     executable:true,
     verifiers:["schema","functional","assets","motion","mobile","performance","accessibility","visual"],
-    allowedRepairCommands:["scene.adjustPresentation","motion.applyArchetype","camera.applyChoreography"],
+    allowedRepairCommands:["scene.adjustLighting","scene.adjustSubjectFraming","scene.adjustMediaFraming","scene.adjustMaterialSurface","motion.applyArchetype","camera.applyChoreography"],
     strategies:[
       { id:"hierarchy-first",label:"Hierarchy first",instruction:"Use Director hierarchy and construction evidence to coordinate scene motion while protecting one signature peak and reducing decorative pressure in supporting chapters." },
       { id:"camera-structure",label:"Camera structure",instruction:"Re-author camera interpolation and coordinated motion while preserving every authored camera endpoint, client fact and semantic scene boundary." },

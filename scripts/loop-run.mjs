@@ -202,6 +202,11 @@ try {
         functionalPassed:null,
         motionScore:null,
         hardGateFailures:[],
+        performanceScoreBefore:null,
+        performanceScoreAfter:null,
+        rafP95Before:null,
+        rafP95After:null,
+        accessibilityPassed:null,
         comparisonAccepted:false,
         comparisonWinner:null,
         preferenceAgreement:null,
@@ -259,6 +264,9 @@ try {
         const repairPlan=await readJson(path.join(reviewRoot,"repair-plan.json"),null);
         evidence.repairSignature=repairPlanSignature(repairPlan);
         evidence.repairSummary=Array.isArray(repairPlan?.summary) ? repairPlan.summary.slice(0,8).map((item)=>String(item).slice(0,400)) : [];
+        evidence.repairCommandTypes=Array.isArray(repairPlan?.commands)
+          ? [...new Set(repairPlan.commands.map((command)=>String(command?.type || "")).filter(Boolean))].slice(0,7)
+          : [];
         if(worker.code!==0 || !(await exists(candidateExperiencePath))) {
           const repairResult=await readJson(path.join(reviewRoot,"repair-result.json"),{});
           evidence.reason=boundedReason(repairResult.errors?.join("; ") || definition.label+" repair worker did not produce a safe candidate.");
@@ -347,6 +355,10 @@ try {
             const candidateScore=Number(candidatePerformance.summary?.score ?? 0);
             const incumbentP95=Number(incumbentPerformance.summary?.worstRafP95 ?? Infinity);
             const candidateP95=Number(candidatePerformance.summary?.worstRafP95 ?? Infinity);
+            evidence.performanceScoreBefore=Number.isFinite(incumbentScore) ? incumbentScore : null;
+            evidence.performanceScoreAfter=Number.isFinite(candidateScore) ? candidateScore : null;
+            evidence.rafP95Before=Number.isFinite(incumbentP95) ? incumbentP95 : null;
+            evidence.rafP95After=Number.isFinite(candidateP95) ? candidateP95 : null;
             if(definition.worker==="performance-repair") {
               if(!(candidateScore>=incumbentScore+1 || candidateP95<=incumbentP95-0.75)) {
                 evidence.hardGateFailures=boundedFailures([...evidence.hardGateFailures,
@@ -370,6 +382,7 @@ try {
             "--url",baseURL,"--experience",currentCandidatePath,"--variant","candidate","--output",candidateAccessibilityPath,
           ]);
           const accessibilityReport=await readJson(candidateAccessibilityPath,{});
+          evidence.accessibilityPassed=accessibilityReport.passed===true;
           if(accessibility.code!==0 || accessibilityReport.passed!==true) {
             evidence.hardGateFailures=boundedFailures([
               ...evidence.hardGateFailures,

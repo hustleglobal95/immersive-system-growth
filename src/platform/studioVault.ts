@@ -8,6 +8,7 @@ import { parseAssetManifest } from "@/src/platform/assetManifestSchema";
 import { parseStudioProject } from "@/src/platform/studioSchema";
 import { parseCinematicSystems } from "@/src/lib/cinematic/schema";
 import { cinematicSystems as productionCinematicSystems } from "@/src/lib/cinematic/config";
+import { projectLearningRecordSchema, type ProjectLearningRecord } from "@/src/platform/learning/projectLearning";
 
 const vaultSummarySchema = z.object({
   id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
@@ -37,6 +38,18 @@ const vaultJournalEventSchema = z.object({
   detail: z.string().max(1000),
 }).strict();
 const vaultJournalSchema = z.object({ version: z.literal(1), events: z.array(vaultJournalEventSchema).max(1000) }).strict();
+const vaultLearningIndexEntrySchema=z.object({
+  id:z.string().regex(/^learn-[a-z0-9-]+$/),
+  runId:z.string().min(1).max(160),
+  loopId:z.string().min(1).max(100),
+  acceptedVersionId:z.string().regex(/^v-[a-zA-Z0-9-]+$/),
+  approvedAt:z.iso.datetime(),
+  approvedBy:z.string().min(1).max(100),
+}).strict();
+const vaultLearningIndexSchema=z.object({
+  version:z.literal(1),
+  records:z.array(vaultLearningIndexEntrySchema).max(500),
+}).strict();
 
 type VaultConfigurationEnvironment={ [key:string]:string|undefined };
 
@@ -135,6 +148,83 @@ export async function saveVaultProject(input: VaultDraftInput, actor: VaultActor
   return { summary, entry, snapshot };
 }
 
+export async function saveVaultProjectWithLearning(
+  input:VaultDraftInput,
+  actor:VaultActor,
+  label:string,
+  note:string,
+  learningFactory:(acceptedVersionId:string)=>ProjectLearningRecord,
+  acceptanceDetail:string,
+  environment:NodeJS.ProcessEnv=process.env,
+) {
+  const snapshot=makeSnapshot(input,actor,label,note);
+  const projectId=snapshot.project.id;
+  const learning=projectLearningRecordSchema.parse(learningFactory(snapshot.versionId));
+  if(learning.projectId!==projectId) throw new Error("Project learning record does not match the promoted Vault project.");
+
+  const store=vaultStore(environment);
+  const index=vaultIndexSchema.parse(await store.readJson(".forge/vault/index.json",{version:1,projects:[]}));
+  const history=vaultHistorySchema.parse(await store.readJson(`.forge/vault/projects/${projectId}/history.json`,{version:1,entries:[]}));
+  const journal=vaultJournalSchema.parse(await store.readJson(`.forge/vault/projects/${projectId}/journal.json`,{version:1,events:[]}));
+  const learningIndexPath=`.forge/vault/projects/${projectId}/learning/index.json`;
+  const learningIndex=vaultLearningIndexSchema.parse(await store.readJson(learningIndexPath,{version:1,records:[]}));
+
+  const entry=vaultHistoryEntrySchema.parse({
+    versionId:snapshot.versionId,
+    label:snapshot.label,
+    note:snapshot.note,
+    savedAt:snapshot.savedAt,
+    savedBy:actor.name,
+  });
+  const nextHistory={version:1 as const,entries:[...history.entries,entry].slice(-250)};
+  const prior=index.projects.find((project)=>project.id===projectId);
+  const summary=vaultSummarySchema.parse({
+    id:projectId,
+    name:snapshot.project.name,
+    status:prior?.status ?? "active",
+    updatedAt:snapshot.savedAt,
+    updatedBy:actor.name,
+    sceneCount:snapshot.experience.scenes.length,
+    versionCount:nextHistory.entries.length,
+  });
+  const nextIndex={version:1 as const,projects:[...index.projects.filter((project)=>project.id!==projectId),summary]};
+  const learningEntry=vaultLearningIndexEntrySchema.parse({
+    id:learning.id,
+    runId:learning.runId,
+    loopId:learning.loopId,
+    acceptedVersionId:learning.acceptedVersionId,
+    approvedAt:learning.approvedAt,
+    approvedBy:learning.approvedBy.name,
+  });
+  const nextLearningIndex={
+    version:1 as const,
+    records:[...learningIndex.records.filter((item)=>item.id!==learning.id),learningEntry]
+      .sort((a,b)=>a.approvedAt.localeCompare(b.approvedAt))
+      .slice(-500),
+  };
+  const nextJournal={
+    version:1 as const,
+    events:[
+      ...journal.events,
+      journalEvent(actor,"save",`${snapshot.label}${snapshot.note ? `: ${snapshot.note}` : ""}`),
+      journalEvent(actor,"loop-accept",acceptanceDetail),
+      journalEvent(actor,"lesson",`Evidence-bound learning ${learning.id} recorded from accepted Loop ${learning.runId}`),
+    ].slice(-1000),
+  };
+
+  await store.commitFiles({
+    ".forge/vault/index.json":nextIndex,
+    [`.forge/vault/projects/${projectId}/current.json`]:snapshot,
+    [`.forge/vault/projects/${projectId}/versions/${snapshot.versionId}.json`]:snapshot,
+    [`.forge/vault/projects/${projectId}/history.json`]:nextHistory,
+    [`.forge/vault/projects/${projectId}/journal.json`]:nextJournal,
+    [learningIndexPath]:nextLearningIndex,
+    [`.forge/vault/projects/${projectId}/learning/records/${learning.id}.json`]:learning,
+  },`Forge Loop: accept ${snapshot.project.name} · ${learning.loopId}`);
+
+  return {summary,entry,snapshot,learning};
+}
+
 export async function restoreVaultVersion(projectId: string, versionId: string, actor: VaultActor, environment: NodeJS.ProcessEnv = process.env) {
   const snapshot = await readVaultVersion(projectId, versionId, environment);
   if (!snapshot) throw new Error("Vault version not found");
@@ -183,6 +273,51 @@ export async function appendVaultJournal(projectId: string, actor: VaultActor, a
   const journal = vaultJournalSchema.parse(await github.readJson(`.forge/vault/projects/${projectId}/journal.json`, { version: 1, events: [] }));
   const nextJournal = { version: 1 as const, events: [...journal.events, journalEvent(actor, action, detail)].slice(-1000) };
   await github.commitFiles({ [`.forge/vault/projects/${projectId}/journal.json`]: nextJournal }, `Forge Vault: ${action} ${projectId}`);
+}
+
+export async function saveVaultLearningRecord(projectId:string,recordInput:ProjectLearningRecord,environment:NodeJS.ProcessEnv=process.env) {
+  assertProjectId(projectId);
+  const record=projectLearningRecordSchema.parse(recordInput);
+  if(record.projectId!==projectId) throw new Error("Project learning record does not match the Vault project.");
+  const store=vaultStore(environment);
+  const indexPath=`.forge/vault/projects/${projectId}/learning/index.json`;
+  const index=vaultLearningIndexSchema.parse(await store.readJson(indexPath,{version:1,records:[]}));
+  const entry=vaultLearningIndexEntrySchema.parse({
+    id:record.id,
+    runId:record.runId,
+    loopId:record.loopId,
+    acceptedVersionId:record.acceptedVersionId,
+    approvedAt:record.approvedAt,
+    approvedBy:record.approvedBy.name,
+  });
+  const nextIndex={
+    version:1 as const,
+    records:[...index.records.filter((item)=>item.id!==record.id),entry]
+      .sort((a,b)=>a.approvedAt.localeCompare(b.approvedAt))
+      .slice(-500),
+  };
+  await store.commitFiles({
+    [indexPath]:nextIndex,
+    [`.forge/vault/projects/${projectId}/learning/records/${record.id}.json`]:record,
+  },`Forge Learning: ${record.loopId} · ${projectId}`);
+  return record;
+}
+
+export async function listVaultLearningRecords(projectId:string,environment:NodeJS.ProcessEnv=process.env):Promise<ProjectLearningRecord[]> {
+  assertProjectId(projectId);
+  const store=vaultStore(environment);
+  const index=vaultLearningIndexSchema.parse(await store.readJson(
+    `.forge/vault/projects/${projectId}/learning/index.json`,
+    {version:1,records:[]},
+  ));
+  const rows=await Promise.all(index.records.map(async(entry)=>{
+    const raw=await store.readJson<unknown|null>(
+      `.forge/vault/projects/${projectId}/learning/records/${entry.id}.json`,
+      null,
+    );
+    return raw ? projectLearningRecordSchema.parse(raw) : null;
+  }));
+  return rows.filter((record):record is ProjectLearningRecord=>Boolean(record)).sort((a,b)=>b.approvedAt.localeCompare(a.approvedAt));
 }
 
 export interface VaultLoopCandidate {

@@ -2,7 +2,8 @@ import fs from "node:fs/promises";
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { loopRunReportSchema } from "../src/platform/loops/loopSchema.ts";
-import { appendVaultJournal, readVaultProject, saveVaultProject } from "../src/platform/studioVault.ts";
+import { readVaultProject, saveVaultProjectWithLearning } from "../src/platform/studioVault.ts";
+import { createProjectLearningRecord } from "../src/platform/learning/projectLearning.ts";
 
 const options=args(process.argv.slice(2));
 const reportFile=options.report ? path.resolve(String(options.report)) : "";
@@ -32,26 +33,32 @@ if(stateFingerprint!==report.currentFingerprint && legacyExperienceFingerprint!=
   fail("Accepted loop artifact bundle fingerprint does not match the run report. Evidence or artifact changed after evaluation.");
 }
 
-const result=await saveVaultProject({
+const actor={id:slug(actorName),name:actorName,role:"loop-approver"};
+const note=[
+  `Run ${report.runId}`,
+  `${report.acceptedImprovements} accepted improvement(s)`,
+  report.stopReason || "",
+].filter(Boolean).join(" · ");
+const acceptanceDetail=`${report.definition.label} accepted · ${report.runId}`;
+const result=await saveVaultProjectWithLearning({
   experience,
   project:snapshot.project,
   assetManifest,
   interactionGraph,
-},{
-  id:slug(actorName),
-  name:actorName,
-  role:"loop-approver",
-},`Loop accepted · ${report.definition.label}`,[
-  `Run ${report.runId}`,
-  `${report.acceptedImprovements} accepted improvement(s)`,
-  report.stopReason || "",
-].filter(Boolean).join(" · "));
+},actor,`Loop accepted · ${report.definition.label}`,note,(acceptedVersionId)=>createProjectLearningRecord({
+  report,
+  projectId:report.projectId,
+  acceptedVersionId,
+  approvedBy:actor,
+  creativeStateFingerprint:typeof options["creative-state-fingerprint"]==="string" ? options["creative-state-fingerprint"] : undefined,
+  buildPacketFingerprint:typeof options["build-packet-fingerprint"]==="string" ? options["build-packet-fingerprint"] : undefined,
+}),acceptanceDetail);
 
-await appendVaultJournal(report.projectId,{ id:slug(actorName),name:actorName,role:"loop-approver" },"loop-accept",`${report.definition.label} accepted · ${report.runId} · ${result.entry.versionId}`);
 console.log("Loop artifact promoted to Project Vault.");
 console.log("Project: "+result.summary.name);
 console.log("Version: "+result.entry.versionId);
 console.log("Approved by: "+actorName);
+console.log("Project learning: "+result.learning.id);
 
 function args(argv) {
   const out={};

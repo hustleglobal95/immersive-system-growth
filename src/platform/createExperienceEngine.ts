@@ -7,6 +7,16 @@ import { ReplaceExperienceCommand } from "@/src/domain/project/commands";
 import { ApplyMotionArchetypeCommand, ResetSceneMotionCommand } from "@/src/platform/commands/motionCommands";
 import { ApplyCameraChoreographyCommand } from "@/src/platform/commands/cameraCommands";
 import { AdjustScenePresentationCommand, type ScenePresentationAdjustment } from "@/src/platform/commands/presentationCommands";
+import {
+  AdjustSceneLightingCommand,
+  AdjustSceneSubjectFramingCommand,
+  AdjustSceneMediaFramingCommand,
+  AdjustSceneMaterialSurfaceCommand,
+  type SceneLightingRepair,
+  type SceneSubjectFramingRepair,
+  type SceneMediaFramingRepair,
+  type SceneMaterialSurfaceRepair,
+} from "@/src/platform/commands/repairCommands";
 import { motionArchetypeCatalog, type MotionArchetypeName } from "@/src/platform/motionArchetypes";
 import { cameraChoreographyCatalog, type CameraChoreographyName } from "@/src/platform/cameraChoreography";
 import { createDefaultCapabilityRegistry } from "@/src/platform/defaultCapabilities";
@@ -60,6 +70,76 @@ export function createExperienceEngine(initialState: ExperienceConfig, options: 
         mobileMediaYDelta: { type: "number", minimum: -20, maximum: 20 , description: "Shifts the mobile media focal point in percent, independent of desktop framing." }
       }
     }
+  });
+  commands.register("scene.adjustLighting", (input) => {
+    return new AdjustSceneLightingCommand(input as SceneLightingRepair);
+  }, {
+    label: "Adjust scene lighting",
+    description: "Apply a bounded reversible lighting/post repair without changing scene meaning, assets or copy.",
+    category: "visual", impact: "local", approval: "auto", reversible: true, agentVisible: true,
+    inputSchema: {
+      type: "object", required: ["sceneId"],
+      properties: {
+        sceneId: sceneIdField,
+        exposureDelta: { type: "number", minimum: -0.4, maximum: 0.4, description: "Offset scene exposure. Negative darkens; positive brightens." },
+        ambientDelta: { type: "number", minimum: -2, maximum: 2, description: "Offset ambient fill intensity without changing light color." },
+        keyDelta: { type: "number", minimum: -5, maximum: 5, description: "Offset dominant key-light intensity while preserving the authored direction." },
+        rimDelta: { type: "number", minimum: -5, maximum: 5, description: "Offset rim-light intensity to tune subject separation." },
+        bloomDelta: { type: "number", minimum: -0.5, maximum: 0.5, description: "Offset bloom strength while preserving the existing post stack." },
+        vignetteDelta: { type: "number", minimum: -0.3, maximum: 0.3, description: "Offset vignette strength; positive darkens frame edges." },
+      },
+    },
+  });
+  commands.register("scene.adjustSubjectFraming", (input) => {
+    return new AdjustSceneSubjectFramingCommand(input as SceneSubjectFramingRepair);
+  }, {
+    label: "Adjust subject framing",
+    description: "Apply bounded reversible hero scale/position repairs while preserving camera endpoints and scene semantics.",
+    category: "visual", impact: "local", approval: "auto", reversible: true, agentVisible: true,
+    inputSchema: {
+      type: "object", required: ["sceneId"],
+      properties: {
+        sceneId: sceneIdField,
+        scaleMultiplier: { type: "number", minimum: 0.8, maximum: 1.2, description: "Multiply the existing hero scale at both scene endpoints." },
+        xDelta: { type: "number", minimum: -1, maximum: 1, description: "Shift the hero horizontally in world units at both scene endpoints." },
+        yDelta: { type: "number", minimum: -1, maximum: 1, description: "Shift the hero vertically in world units at both scene endpoints." },
+      },
+    },
+  });
+  commands.register("scene.adjustMediaFraming", (input) => {
+    return new AdjustSceneMediaFramingCommand(input as SceneMediaFramingRepair);
+  }, {
+    label: "Adjust media framing",
+    description: "Reframe an existing media plate with bounded focal-point and zoom changes; never changes the source asset.",
+    category: "visual", impact: "local", approval: "auto", reversible: true, agentVisible: true,
+    inputSchema: {
+      type: "object", required: ["sceneId"],
+      properties: {
+        sceneId: sceneIdField,
+        xDelta: { type: "number", minimum: -16, maximum: 16, description: "Shift the desktop media focal point horizontally in percentage points." },
+        yDelta: { type: "number", minimum: -16, maximum: 16, description: "Shift the desktop media focal point vertically in percentage points." },
+        mobileXDelta: { type: "number", minimum: -16, maximum: 16, description: "Shift the mobile media focal point horizontally without changing desktop framing." },
+        mobileYDelta: { type: "number", minimum: -16, maximum: 16, description: "Shift the mobile media focal point vertically without changing desktop framing." },
+        zoomDelta: { type: "number", minimum: -0.08, maximum: 0.08, description: "Offset existing media zoom; negative pulls back and positive tightens the crop." },
+      },
+    },
+  });
+  commands.register("scene.adjustMaterialSurface", (input) => {
+    return new AdjustSceneMaterialSurfaceCommand(input as SceneMaterialSurfaceRepair);
+  }, {
+    label: "Adjust material surface",
+    description: "Tune only already-authored material overrides with bounded reversible deltas. It cannot introduce a new override.",
+    category: "visual", impact: "local", approval: "auto", reversible: true, agentVisible: true,
+    inputSchema: {
+      type: "object", required: ["sceneId"],
+      properties: {
+        sceneId: sceneIdField,
+        roughnessDelta: { type: "number", minimum: -0.18, maximum: 0.18, description: "Tune an already-authored roughness override; cannot create one when null." },
+        metalnessDelta: { type: "number", minimum: -0.18, maximum: 0.18, description: "Tune an already-authored metalness override; cannot create one when null." },
+        clearcoatDelta: { type: "number", minimum: -0.18, maximum: 0.18, description: "Tune an already-authored clearcoat override; cannot create one when null." },
+        tintStrengthDelta: { type: "number", minimum: -0.15, maximum: 0.15, description: "Tune existing non-zero material tint strength without changing the tint color." },
+      },
+    },
   });
   commands.register("motion.applyArchetype", (input) => {
     const value = input as { sceneId: string; archetype: MotionArchetypeName };
