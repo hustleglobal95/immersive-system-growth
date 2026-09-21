@@ -27,6 +27,16 @@ const responseSchema=z.object({
   confidence:z.number().finite().min(0).max(1),
   reasons:z.array(z.string().min(1).max(800)).min(1).max(16),
   blockers:z.array(z.string().min(1).max(800)).max(16).default([]),
+  findings:z.array(z.object({
+    critic:z.enum(["composition","typography","camera","motion","continuity","brand","art-direction","color","lighting","material","image-direction","sound","originality","craft","interaction","mobile","performance"]),
+    captureId:z.string().min(1).max(240),
+    severity:z.enum(["blocker","major","minor","advisory"]),
+    finding:z.string().min(8).max(1200),
+    evidence:z.array(z.string().min(1).max(600)).max(12).default([]),
+    affectedSystems:z.array(z.string().min(1).max(120)).max(12).default([]),
+    repair:z.string().min(8).max(1200),
+    confidence:z.number().finite().min(0).max(1),
+  }).strict()).max(48).default([]),
   dimensions:z.object({
     composition:z.number().min(0).max(10).optional(),
     hierarchy:z.number().min(0).max(10).optional(),
@@ -67,6 +77,7 @@ export async function runDirectorJudge(rawInput:unknown,environment:DirectorJudg
         rule:"Judge only what the supplied rendered evidence supports. Do not infer unseen states.",
         dimensions:["composition","hierarchy","typography","motion","camera","coherence","brandSpecificity","emotionalEffect","usability"],
         lock:"LOCK only when the rendered direction is production-worthy, specific to the brief, and has no material visual blocker.",
+        findings:"For every material REVISE concern, return a capture-scoped finding with concrete evidence and a bounded repair instruction. Do not invent unseen states.",
       },
       projectContext:input.projectContext,
       planningDisposition:input.planningDisposition,
@@ -87,6 +98,7 @@ export async function runDirectorJudge(rawInput:unknown,environment:DirectorJudg
     reasons:raw.reasons,
     blockers:raw.blockers,
     dimensions:raw.dimensions,
+    findings:raw.findings,
     evidence:{
       source:"rendered-external-judge",
       judgeId:raw.judgeId,
