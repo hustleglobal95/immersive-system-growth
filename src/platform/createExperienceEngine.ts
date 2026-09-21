@@ -81,12 +81,12 @@ export function createExperienceEngine(initialState: ExperienceConfig, options: 
       type: "object", required: ["sceneId"],
       properties: {
         sceneId: sceneIdField,
-        exposureDelta: { type: "number", minimum: -0.4, maximum: 0.4 },
-        ambientDelta: { type: "number", minimum: -2, maximum: 2 },
-        keyDelta: { type: "number", minimum: -5, maximum: 5 },
-        rimDelta: { type: "number", minimum: -5, maximum: 5 },
-        bloomDelta: { type: "number", minimum: -0.5, maximum: 0.5 },
-        vignetteDelta: { type: "number", minimum: -0.3, maximum: 0.3 },
+        exposureDelta: { type: "number", minimum: -0.4, maximum: 0.4, description: "Offset scene exposure. Negative darkens; positive brightens." },
+        ambientDelta: { type: "number", minimum: -2, maximum: 2, description: "Offset ambient fill intensity without changing light color." },
+        keyDelta: { type: "number", minimum: -5, maximum: 5, description: "Offset dominant key-light intensity while preserving the authored direction." },
+        rimDelta: { type: "number", minimum: -5, maximum: 5, description: "Offset rim-light intensity to tune subject separation." },
+        bloomDelta: { type: "number", minimum: -0.5, maximum: 0.5, description: "Offset bloom strength while preserving the existing post stack." },
+        vignetteDelta: { type: "number", minimum: -0.3, maximum: 0.3, description: "Offset vignette strength; positive darkens frame edges." },
       },
     },
   });
@@ -100,9 +100,9 @@ export function createExperienceEngine(initialState: ExperienceConfig, options: 
       type: "object", required: ["sceneId"],
       properties: {
         sceneId: sceneIdField,
-        scaleMultiplier: { type: "number", minimum: 0.8, maximum: 1.2 },
-        xDelta: { type: "number", minimum: -1, maximum: 1 },
-        yDelta: { type: "number", minimum: -1, maximum: 1 },
+        scaleMultiplier: { type: "number", minimum: 0.8, maximum: 1.2, description: "Multiply the existing hero scale at both scene endpoints." },
+        xDelta: { type: "number", minimum: -1, maximum: 1, description: "Shift the hero horizontally in world units at both scene endpoints." },
+        yDelta: { type: "number", minimum: -1, maximum: 1, description: "Shift the hero vertically in world units at both scene endpoints." },
       },
     },
   });
@@ -116,11 +116,11 @@ export function createExperienceEngine(initialState: ExperienceConfig, options: 
       type: "object", required: ["sceneId"],
       properties: {
         sceneId: sceneIdField,
-        xDelta: { type: "number", minimum: -16, maximum: 16 },
-        yDelta: { type: "number", minimum: -16, maximum: 16 },
-        mobileXDelta: { type: "number", minimum: -16, maximum: 16 },
-        mobileYDelta: { type: "number", minimum: -16, maximum: 16 },
-        zoomDelta: { type: "number", minimum: -0.08, maximum: 0.08 },
+        xDelta: { type: "number", minimum: -16, maximum: 16, description: "Shift the desktop media focal point horizontally in percentage points." },
+        yDelta: { type: "number", minimum: -16, maximum: 16, description: "Shift the desktop media focal point vertically in percentage points." },
+        mobileXDelta: { type: "number", minimum: -16, maximum: 16, description: "Shift the mobile media focal point horizontally without changing desktop framing." },
+        mobileYDelta: { type: "number", minimum: -16, maximum: 16, description: "Shift the mobile media focal point vertically without changing desktop framing." },
+        zoomDelta: { type: "number", minimum: -0.08, maximum: 0.08, description: "Offset existing media zoom; negative pulls back and positive tightens the crop." },
       },
     },
   });
@@ -134,10 +134,10 @@ export function createExperienceEngine(initialState: ExperienceConfig, options: 
       type: "object", required: ["sceneId"],
       properties: {
         sceneId: sceneIdField,
-        roughnessDelta: { type: "number", minimum: -0.18, maximum: 0.18 },
-        metalnessDelta: { type: "number", minimum: -0.18, maximum: 0.18 },
-        clearcoatDelta: { type: "number", minimum: -0.18, maximum: 0.18 },
-        tintStrengthDelta: { type: "number", minimum: -0.15, maximum: 0.15 },
+        roughnessDelta: { type: "number", minimum: -0.18, maximum: 0.18, description: "Tune an already-authored roughness override; cannot create one when null." },
+        metalnessDelta: { type: "number", minimum: -0.18, maximum: 0.18, description: "Tune an already-authored metalness override; cannot create one when null." },
+        clearcoatDelta: { type: "number", minimum: -0.18, maximum: 0.18, description: "Tune an already-authored clearcoat override; cannot create one when null." },
+        tintStrengthDelta: { type: "number", minimum: -0.15, maximum: 0.15, description: "Tune existing non-zero material tint strength without changing the tint color." },
       },
     },
   });
