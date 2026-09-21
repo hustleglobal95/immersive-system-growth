@@ -9,7 +9,6 @@ import { buildPairwiseCriticRequests, pairwiseJudgmentFromResponse, parseVisualD
 import { forcedOptimizationDecision } from "../src/platform/autonomy/forcedOptimization";
 import { parseDirectorJudgment } from "../src/platform/director-intelligence/judgment";
 import { aiGatewayVisualCriticConfigured, callAiGatewayPairwiseVisualCritic } from "../src/platform/autonomy/aiGatewayVisualCritic";
-import { buildPairwiseCriticRequests } from "../src/platform/autonomy/visualDirector";
 
 const initial=parseExperience(raw);
 
