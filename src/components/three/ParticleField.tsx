@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { qualityInstanceCount, sampleInstancedField, visualSystemMode } from "@/src/platform/visualSystems";
 import { useExperienceStore } from "@/src/store/experienceStore";
+import { governedParticleCount } from "@/src/lib/renderGovernor";
 
 const particleSamples = (system: Parameters<typeof sampleInstancedField>[0] | undefined, count: number) =>
   system ? sampleInstancedField(system, count) : [];
@@ -16,11 +17,13 @@ export function ParticleField({
 }) {
   const quality = useExperienceStore((state) => state.quality);
   const reducedMotion = useExperienceStore((state) => state.reducedMotion);
+  const governorTier = useExperienceStore((state) => state.renderGovernor.tier);
   const visualSystems = useExperienceStore((state) => state.visualSystems);
   const system = visualSystems.systems.find(
     (candidate) => candidate.id === systemId && candidate.kind === "particle-field",
   );
-  const count = system ? qualityInstanceCount(system, quality) : 0;
+  const authoredCount = system ? qualityInstanceCount(system, quality) : 0;
+  const count = governedParticleCount(authoredCount,quality,governorTier);
   const mode = system ? visualSystemMode(system, quality, reducedMotion) : "hidden";
   const samples = useMemo(() => particleSamples(system, count), [system, count]);
   const positions = useMemo(
@@ -69,7 +72,7 @@ export function ParticleField({
   if (!system || !geometry || !material || mode === "hidden" || count === 0) return null;
   return (
     <points
-      key={systemId + "-" + quality + "-" + count}
+      key={systemId + "-" + quality + "-" + governorTier + "-" + count}
       ref={points}
       geometry={geometry}
       material={material}
