@@ -2,7 +2,8 @@ import fs from "node:fs/promises";
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { loopRunReportSchema } from "../src/platform/loops/loopSchema.ts";
-import { appendVaultJournal, readVaultProject, saveVaultProject } from "../src/platform/studioVault.ts";
+import { appendVaultJournal, readVaultProject, saveVaultLearningRecord, saveVaultProject } from "../src/platform/studioVault.ts";
+import { createProjectLearningRecord } from "../src/platform/learning/projectLearning.ts";
 
 const options=args(process.argv.slice(2));
 const reportFile=options.report ? path.resolve(String(options.report)) : "";
@@ -47,11 +48,24 @@ const result=await saveVaultProject({
   report.stopReason || "",
 ].filter(Boolean).join(" · "));
 
-await appendVaultJournal(report.projectId,{ id:slug(actorName),name:actorName,role:"loop-approver" },"loop-accept",`${report.definition.label} accepted · ${report.runId} · ${result.entry.versionId}`);
+const actor={id:slug(actorName),name:actorName,role:"loop-approver"};
+await appendVaultJournal(report.projectId,actor,"loop-accept",`${report.definition.label} accepted · ${report.runId} · ${result.entry.versionId}`);
+
+const learning=createProjectLearningRecord({
+  report,
+  projectId:report.projectId,
+  acceptedVersionId:result.entry.versionId,
+  approvedBy:actor,
+  creativeStateFingerprint:typeof options["creative-state-fingerprint"]==="string" ? options["creative-state-fingerprint"] : undefined,
+  buildPacketFingerprint:typeof options["build-packet-fingerprint"]==="string" ? options["build-packet-fingerprint"] : undefined,
+});
+await saveVaultLearningRecord(report.projectId,learning);
+await appendVaultJournal(report.projectId,actor,"lesson",`Evidence-bound learning ${learning.id} recorded from accepted Loop ${report.runId}`);
+
 console.log("Loop artifact promoted to Project Vault.");
 console.log("Project: "+result.summary.name);
 console.log("Version: "+result.entry.versionId);
-console.log("Approved by: "+actorName);
+console.log("Approved by: "+actorName);\nconsole.log("Project learning: "+learning.id);
 
 function args(argv) {
   const out={};
