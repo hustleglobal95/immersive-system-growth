@@ -269,6 +269,10 @@ export function promoteProjectLearningPattern(input:{
   const approver=input.approvedBy.trim();
   if(!approver) throw new Error("Learning promotion requires an identified human approver.");
   const projectId="forge-learning";
+  const marker="Cross-project evidence pattern "+input.pattern.key+".";
+  if(input.graph.nodes.some((node)=>node.type==="Lesson" && node.projectId===projectId && node.text.includes(marker))) {
+    return input.graph;
+  }
   const graph:CreativeMemoryGraph={
     version:1,
     nodes:input.graph.nodes.some((node)=>node.id===projectId+":project")
@@ -292,7 +296,7 @@ export function promoteProjectLearningPattern(input:{
     agreement===null ? "preference agreement unavailable" : Math.round(agreement*100)+"% average preference agreement",
   ].join(", ");
   const lesson=[
-    "Cross-project evidence pattern "+input.pattern.key+".",
+    marker,
     evidence+".",
     "Approved by "+approver+".",
     "Use as contextual evidence, not a mandatory design prescription.",
