@@ -280,6 +280,7 @@ test("verified Director judgment findings become bounded Loop repair inputs",()=
       calibrated:true,
       captureIds:[capture.id,reviewPlan.captures[1].id],
       evidenceHash:"c".repeat(64),
+      scopeFingerprint:"forge1:1234567890abcdef",
     },
   });
   const plan=planVisualRepairs({findings:judgment.findings,reviewPlan,experience:initial});
@@ -314,6 +315,7 @@ test("Director judgment rejects repair findings that cite unseen captures",()=>{
       calibrated:true,
       captureIds:[reviewPlan.captures[0].id,reviewPlan.captures[1].id],
       evidenceHash:"d".repeat(64),
+      scopeFingerprint:"forge1:1234567890abcdef",
     },
   }));
 });
