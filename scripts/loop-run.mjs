@@ -65,9 +65,9 @@ if(controlPlane && (
   fail("Control Plane Loop runs require valid --proposal-id, --selection-key, --baseline-fingerprint and --context values.");
 }
 
-const reviewOnly=!process.env.FORGE_VISUAL_CRITIC_URL;
+const reviewOnly=!process.env.FORGE_VISUAL_CRITIC_URL && !process.env.AI_GATEWAY_API_KEY && !process.env.VERCEL_OIDC_TOKEN;
 if(reviewOnly) {
-  console.warn("FORGE_VISUAL_CRITIC_URL is not configured. Forge will generate and verify candidates for human review, but it will not select or promote a visual winner.");
+  console.warn("No comparative visual judge is configured. Forge will generate and verify candidates for human review, but it will not select or promote a visual winner. Configure FORGE_VISUAL_CRITIC_URL or AI Gateway credentials for automatic comparison.");
 }
 
 await fs.mkdir(workRoot,{recursive:true});
