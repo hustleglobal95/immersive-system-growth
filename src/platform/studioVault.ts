@@ -8,6 +8,7 @@ import { parseAssetManifest } from "@/src/platform/assetManifestSchema";
 import { parseStudioProject } from "@/src/platform/studioSchema";
 import { parseCinematicSystems } from "@/src/lib/cinematic/schema";
 import { cinematicSystems as productionCinematicSystems } from "@/src/lib/cinematic/config";
+import { projectLearningRecordSchema, type ProjectLearningRecord } from "@/src/platform/learning/projectLearning";
 
 const vaultSummarySchema = z.object({
   id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
@@ -37,6 +38,18 @@ const vaultJournalEventSchema = z.object({
   detail: z.string().max(1000),
 }).strict();
 const vaultJournalSchema = z.object({ version: z.literal(1), events: z.array(vaultJournalEventSchema).max(1000) }).strict();
+const vaultLearningIndexEntrySchema=z.object({
+  id:z.string().regex(/^learn-[a-z0-9-]+$/),
+  runId:z.string().min(1).max(160),
+  loopId:z.string().min(1).max(100),
+  acceptedVersionId:z.string().regex(/^v-[a-zA-Z0-9-]+$/),
+  approvedAt:z.iso.datetime(),
+  approvedBy:z.string().min(1).max(100),
+}).strict();
+const vaultLearningIndexSchema=z.object({
+  version:z.literal(1),
+  records:z.array(vaultLearningIndexEntrySchema).max(500),
+}).strict();
 
 type VaultConfigurationEnvironment={ [key:string]:string|undefined };
 
@@ -183,6 +196,51 @@ export async function appendVaultJournal(projectId: string, actor: VaultActor, a
   const journal = vaultJournalSchema.parse(await github.readJson(`.forge/vault/projects/${projectId}/journal.json`, { version: 1, events: [] }));
   const nextJournal = { version: 1 as const, events: [...journal.events, journalEvent(actor, action, detail)].slice(-1000) };
   await github.commitFiles({ [`.forge/vault/projects/${projectId}/journal.json`]: nextJournal }, `Forge Vault: ${action} ${projectId}`);
+}
+
+export async function saveVaultLearningRecord(projectId:string,recordInput:ProjectLearningRecord,environment:NodeJS.ProcessEnv=process.env) {
+  assertProjectId(projectId);
+  const record=projectLearningRecordSchema.parse(recordInput);
+  if(record.projectId!==projectId) throw new Error("Project learning record does not match the Vault project.");
+  const store=vaultStore(environment);
+  const indexPath=`.forge/vault/projects/${projectId}/learning/index.json`;
+  const index=vaultLearningIndexSchema.parse(await store.readJson(indexPath,{version:1,records:[]}));
+  const entry=vaultLearningIndexEntrySchema.parse({
+    id:record.id,
+    runId:record.runId,
+    loopId:record.loopId,
+    acceptedVersionId:record.acceptedVersionId,
+    approvedAt:record.approvedAt,
+    approvedBy:record.approvedBy.name,
+  });
+  const nextIndex={
+    version:1 as const,
+    records:[...index.records.filter((item)=>item.id!==record.id),entry]
+      .sort((a,b)=>a.approvedAt.localeCompare(b.approvedAt))
+      .slice(-500),
+  };
+  await store.commitFiles({
+    [indexPath]:nextIndex,
+    [`.forge/vault/projects/${projectId}/learning/records/${record.id}.json`]:record,
+  },`Forge Learning: ${record.loopId} · ${projectId}`);
+  return record;
+}
+
+export async function listVaultLearningRecords(projectId:string,environment:NodeJS.ProcessEnv=process.env):Promise<ProjectLearningRecord[]> {
+  assertProjectId(projectId);
+  const store=vaultStore(environment);
+  const index=vaultLearningIndexSchema.parse(await store.readJson(
+    `.forge/vault/projects/${projectId}/learning/index.json`,
+    {version:1,records:[]},
+  ));
+  const rows=await Promise.all(index.records.map(async(entry)=>{
+    const raw=await store.readJson<unknown|null>(
+      `.forge/vault/projects/${projectId}/learning/records/${entry.id}.json`,
+      null,
+    );
+    return raw ? projectLearningRecordSchema.parse(raw) : null;
+  }));
+  return rows.filter((record):record is ProjectLearningRecord=>Boolean(record)).sort((a,b)=>b.approvedAt.localeCompare(a.approvedAt));
 }
 
 export interface VaultLoopCandidate {
