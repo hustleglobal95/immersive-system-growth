@@ -67,6 +67,11 @@ export function classifyFinding(finding:VisualCriticFinding):AgentTaskDomain {
     case "motion":
     case "continuity": return "motion";
     case "typography": return "typography";
+    case "composition":
+    case "art-direction":
+    case "color":
+    case "lighting":
+    case "craft": return "composition";
   }
 
   const systems=finding.affectedSystems.join(" ").toLowerCase();
