@@ -36,6 +36,7 @@ import { estimateCreativeCeilingV2 } from "@/src/platform/director-intelligence/
 import { reviewCreativeMemory } from "@/src/platform/director-intelligence/creativeMemory";
 import { resolveCreativeTaste, type CreativeTasteLayers } from "@/src/platform/director-intelligence/creativeTaste";
 import { judgmentPermitsProduction, parseDirectorJudgment, unverifiedDirectorJudgment } from "@/src/platform/director-intelligence/judgment";
+import { stateFingerprint } from "@/src/core/journal/stateFingerprint";
 
 export function runDirectorIntelligence(input: DirectorIntelligenceInput & { approvals?: DirectorHumanApprovals; finalCutRequested?: boolean; tasteLayers?: CreativeTasteLayers }) {
   const brief = parseDirectorBrief(input.brief);
@@ -130,7 +131,15 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
   if (blockers.length && planningDisposition === "ADVANCE") {
     planningDisposition = evidenceBlockers.length ? "RESEARCH REQUIRED" : assetGap.blockers.length ? "ASSET BLOCKED" : "REVISE";
   }
-  const judgment = input.judgment ? parseDirectorJudgment(input.judgment) : unverifiedDirectorJudgment();
+  const expectedJudgmentScope=stateFingerprint({
+    brief,
+    treatment,
+    planningDisposition,
+  });
+  const suppliedJudgment=input.judgment ? parseDirectorJudgment(input.judgment) : unverifiedDirectorJudgment();
+  const judgment=suppliedJudgment.status==="verified" && suppliedJudgment.evidence?.scopeFingerprint!==expectedJudgmentScope
+    ? unverifiedDirectorJudgment("Rendered judgment evidence does not match the current brief, treatment and planning disposition.")
+    : suppliedJudgment;
   const verdict = judgment.verdict;
   const judgmentBlockers = judgment.status === "verified"
     ? judgment.blockers
