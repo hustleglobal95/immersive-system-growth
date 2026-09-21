@@ -50,9 +50,12 @@ if(env.STUDIO_AUTH_ENABLED==="false"){
   hold("Studio access","Auth defaults on. Use npm run studio:local for solo local work, or configure FORGE_INTERNAL_SESSION_SECRET + FORGE_INTERNAL_USERS_JSON.");
 }
 
+const localStorageReady=env.NODE_ENV!=="production" && env.FORGE_LOCAL_STORAGE_ENABLED==="true";
 all("FORGE_GITHUB_REPOSITORY","FORGE_GITHUB_TOKEN")
   ? yes("Project Vault","GitHub-backed durable project storage can authenticate.")
-  : hold("Project Vault","Set FORGE_GITHUB_REPOSITORY and FORGE_GITHUB_TOKEN for durable checkpoints.");
+  : localStorageReady
+    ? yes("Project Vault","Local durable project storage is active under .forge/local-vault.")
+    : hold("Project Vault","Use npm run studio:local for local durable storage, or set FORGE_GITHUB_REPOSITORY and FORGE_GITHUB_TOKEN.");
 
 has("MESHY_API_KEY")
   ? yes("Meshy 3D generation","Server credential is configured.")
@@ -63,8 +66,10 @@ all("HF_API_KEY_ID","HF_API_KEY_SECRET")
   : hold("Higgsfield image/video generation","HF_API_KEY_ID / HF_API_KEY_SECRET are not configured.");
 
 all("FORGE_ASSET_VAULT_ENDPOINT","FORGE_ASSET_VAULT_PUBLIC_BASE_URL","FORGE_ASSET_VAULT_TOKEN")
-  ? yes("Permanent generated-asset storage","Asset Vault upload + public delivery are configured.")
-  : hold("Permanent generated-asset storage","Generated provider output can remain temporary until Asset Vault is configured.");
+  ? yes("Permanent generated-asset storage","Remote Asset Vault upload + public delivery are configured.")
+  : localStorageReady
+    ? yes("Generated-asset storage","Local durable asset storage is active under public/generated/vault for development.")
+    : hold("Permanent generated-asset storage","Use npm run studio:local for local asset durability, or configure the remote Asset Vault before release.");
 
 has("FORGE_VISUAL_CRITIC_URL")
   ? yes("Multimodal visual critic","Comparative rendered review can call the configured critic.")
