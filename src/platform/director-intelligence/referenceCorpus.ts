@@ -16,7 +16,7 @@ export interface ImmersiveReference {
   access: "free" | "premium";
   evidenceLevel: ImmersiveReferenceEvidenceLevel;
   reviewedAt: string;
-  confidence: number;
+  evidenceStrength: number;
   observedTraits: string[];
   transferableLessons: string[];
   constructionPatternIds: string[];
@@ -89,7 +89,7 @@ const catalogSeeds: CatalogSeed[] = [
 type DeepEvidence = Pick<
   ImmersiveReference,
   | "evidenceLevel"
-  | "confidence"
+  | "evidenceStrength"
   | "observedTraits"
   | "transferableLessons"
   | "constructionPatternIds"
@@ -99,7 +99,7 @@ type DeepEvidence = Pick<
 const deepEvidence: Record<string, DeepEvidence> = {
   lumora: {
     evidenceLevel: "public-case-study",
-    confidence: 0.78,
+    evidenceStrength: 0.78,
     observedTraits: [
       "Large hero brand watermark establishes identity at display scale.",
       "Gallery shifts between dark and light tonal states instead of holding one visual density throughout.",
@@ -122,7 +122,7 @@ const deepEvidence: Record<string, DeepEvidence> = {
   },
   baseline: {
     evidenceLevel: "public-description",
-    confidence: 0.92,
+    evidenceStrength: 0.92,
     observedTraits: [
       "Premium sports/education landing page built around deep court-blue, confident typography and calm scroll pacing.",
       "Coaching, courts and pedigree are revealed one beat at a time.",
@@ -130,7 +130,7 @@ const deepEvidence: Record<string, DeepEvidence> = {
     ],
     transferableLessons: [
       "Immersion can come from art direction, pacing and information sequencing without a heavy WebGL scene.",
-      "Reveal evidence one beat at a time when the brand depends on pedigree and confidence rather than spectacle.",
+      "Reveal evidence one beat at a time when the brand depends on pedigree and evidenceStrength rather than spectacle.",
       "Category-specific color and type can carry more identity than generic visual effects.",
     ],
     constructionPatternIds: [
@@ -144,7 +144,7 @@ const deepEvidence: Record<string, DeepEvidence> = {
   },
   loopstack: {
     evidenceLevel: "public-description",
-    confidence: 0.94,
+    evidenceStrength: 0.94,
     observedTraits: [
       "Dark full-frame stage with an organic flower response behind typography.",
       "A glowing cursor is treated as a visible interaction character instead of generic pointer decoration.",
@@ -166,7 +166,7 @@ const deepEvidence: Record<string, DeepEvidence> = {
   },
   ascend: {
     evidenceLevel: "public-description",
-    confidence: 0.96,
+    evidenceStrength: 0.96,
     observedTraits: [
       "A living Earth persists behind a SaaS landing page rather than appearing as a disconnected 3D demo.",
       "City lights, clouds and radar pings layer detail onto one primary world.",
@@ -191,7 +191,7 @@ const deepEvidence: Record<string, DeepEvidence> = {
   },
   clarix: {
     evidenceLevel: "technical-reference",
-    confidence: 0.9,
+    evidenceStrength: 0.9,
     observedTraits: [
       "Logo-particle scroll transforms use per-particle attributes plus one progress uniform, moving interpolation onto the GPU.",
       "The documented original scene used raw devicePixelRatio, an unconditional render loop, always-on mouse handling and shipped GUI; the optimization guide treats these as costs to correct.",
@@ -212,7 +212,7 @@ const deepEvidence: Record<string, DeepEvidence> = {
   },
   helion: {
     evidenceLevel: "technical-reference",
-    confidence: 0.93,
+    evidenceStrength: 0.93,
     observedTraits: [
       "Documented as a canonical source for device tiering, clamped DPR and frame budgets.",
       "Uses one shared animation ticker for the page.",
@@ -236,7 +236,7 @@ const deepEvidence: Record<string, DeepEvidence> = {
   },
   stride: {
     evidenceLevel: "technical-reference",
-    confidence: 0.9,
+    evidenceStrength: 0.9,
     observedTraits: [
       "Documented plain/vanilla Three scene uses visibility-gated rendering.",
       "GLB completion is followed by renderer compilation in the documented optimization path.",
@@ -257,7 +257,7 @@ const deepEvidence: Record<string, DeepEvidence> = {
 };
 
 type VisualPreviewEvidence = {
-  confidence?: number;
+  evidenceStrength?: number;
   observedTraits: string[];
   transferableLessons: string[];
   constructionPatternIds: string[];
@@ -267,9 +267,9 @@ const visualPreview = (
   observedTraits: string[],
   transferableLessons: string[],
   constructionPatternIds: string[],
-  confidence = 0.8,
+  evidenceStrength = 0.8,
 ): VisualPreviewEvidence => ({
-  confidence,
+  evidenceStrength,
   observedTraits,
   transferableLessons,
   constructionPatternIds,
@@ -837,7 +837,7 @@ export const getLayersTemplateCorpus: ImmersiveReference[] = catalogSeeds.map(
       evidenceLevel:
         evidence?.evidenceLevel ?? (preview ? "visual-preview" : "catalog"),
       reviewedAt: REVIEWED_AT,
-      confidence: evidence?.confidence ?? preview?.confidence ?? 0.45,
+      evidenceStrength: evidence?.evidenceStrength ?? preview?.evidenceStrength ?? 0.45,
       observedTraits: mergeUnique(
         preview?.observedTraits ?? [],
         evidence?.observedTraits ?? [],
@@ -908,7 +908,7 @@ export function retrieveImmersiveReferences(
   const candidates = immersiveReferenceCorpus
     .filter((reference) => reference.transferableLessons.length > 0)
     .map((reference) => {
-      let score = reference.confidence * 0.35;
+      let score = reference.evidenceStrength * 0.35;
       const reasons: string[] = [];
 
       if (industryMatches(reference.industry, treatment.projectType)) {
@@ -942,7 +942,7 @@ export function retrieveImmersiveReferences(
         reasons.push("Cross-domain construction precedent.");
       }
       reasons.push(
-        `${reference.evidenceLevel} evidence, confidence ${reference.confidence.toFixed(2)}.`,
+        `${reference.evidenceLevel} evidence, evidenceStrength ${reference.evidenceStrength.toFixed(2)}.`,
       );
 
       return {

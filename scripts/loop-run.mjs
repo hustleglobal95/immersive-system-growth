@@ -49,6 +49,7 @@ const projectId=options.project ? String(options.project) : undefined;
 const proposalId=options["proposal-id"] ? String(options["proposal-id"]) : undefined;
 const selectionKey=options["selection-key"] ? String(options["selection-key"]) : undefined;
 const proposalBaseline=options["baseline-fingerprint"] ? String(options["baseline-fingerprint"]) : undefined;
+const directorJudgmentPath=options["director-judgment"] ? path.resolve(String(options["director-judgment"])) : "";
 const controlPlane=proposalId ? {
   proposalId,
   selectionKey:String(selectionKey || ""),
@@ -250,6 +251,7 @@ try {
                 "--output",reviewRoot,
                 "--context",context,
                 "--allowed-commands",definition.allowedRepairCommands.join(","),
+                ...(directorJudgmentPath ? ["--director-judgment",directorJudgmentPath] : []),
               ]);
         const repairPlan=await readJson(path.join(reviewRoot,"repair-plan.json"),null);
         evidence.repairSignature=repairPlanSignature(repairPlan);

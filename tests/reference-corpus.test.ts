@@ -71,7 +71,7 @@ test("deep references carry evidence-backed transferable construction lessons", 
         reference.observedTraits.length > 0 &&
         reference.transferableLessons.length > 0 &&
         reference.evidenceNotes.length > 0 &&
-        reference.confidence >= 0.72,
+        reference.evidenceStrength >= 0.72,
     ),
   );
 });

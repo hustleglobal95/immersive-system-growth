@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import { runDirectorIntelligence } from "../src/platform/director-intelligence/orchestrator.ts";
 
 const projectTypes = ["brand", "product", "property", "hospitality", "portfolio", "saas", "commerce", "campaign", "automotive", "fashion"];
@@ -24,7 +25,7 @@ for (const projectType of projectTypes) {
       const result = runDirectorIntelligence({ brief });
       runs++;
       if (result.report.evaluations.length !== 3) failures.push(`${projectType}/${tier}: expected three evaluations`);
-      if (result.report.selectedEvaluation.critiques.length !== 12) failures.push(`${projectType}/${tier}: expected 12 Council critics`);
+      if (result.report.selectedEvaluation.critiques.length !== 12) failures.push(`${projectType}/${tier}: expected 12 deterministic planning lenses`);
       if (result.report.stress.results.length < 12) failures.push(`${projectType}/${tier}: stress lab incomplete`);
       if (result.report.whyLadders.some((ladder) => !ladder.valid)) failures.push(`${projectType}/${tier}: invalid why ladder`);
       if (result.report.precedents.length < 2) failures.push(`${projectType}/${tier}: precedent retrieval too thin`);
@@ -40,6 +41,11 @@ for (const projectType of projectTypes) {
       if (Object.keys(result.creativeCeiling?.dimensions ?? {}).length !== 13) failures.push(`${projectType}/${tier}: Creative Ceiling V2 dimension coverage incomplete`);
       if (result.creativeCeiling && result.creativeCeiling.projected < result.creativeCeiling.current) failures.push(`${projectType}/${tier}: projected creative ceiling regressed`);
       if (!result.productionPlan.creativeIntelligence?.dna?.northStar) failures.push(`${projectType}/${tier}: production plan dropped Creative DNA`);
+      if (result.report.verdict !== "UNVERIFIED") failures.push(`${projectType}/${tier}: heuristic-only run issued a creative verdict`);
+      if (result.report.judgment.status !== "unverified") failures.push(`${projectType}/${tier}: heuristic-only run fabricated judgment evidence`);
+      if (result.productionPlan.readiness.readyForProduction) failures.push(`${projectType}/${tier}: production authorized without rendered judgment`);
+      if (result.report.selectedEvaluation.scoreSemantics !== "deterministic-planning-proxy") failures.push(`${projectType}/${tier}: evaluation semantics are not explicit`);
+      if (result.report.selectedEvaluation.critiques.some((critique)=>critique.basis !== "deterministic-lens")) failures.push(`${projectType}/${tier}: planning lens misrepresented as independent judgment`);
     } catch (error) {
       failures.push(`${projectType}/${tier}: ${error instanceof Error ? error.message : String(error)}`);
     }
@@ -51,3 +57,38 @@ if (failures.length) {
   process.exit(1);
 }
 console.log(`Director Intelligence audit passed: ${runs} full runs across ${projectTypes.length} project types × ${tiers.length} tiers.`);
+
+
+const semanticSources={
+  council:fs.readFileSync("src/platform/director-intelligence/council.ts","utf8"),
+  evaluation:fs.readFileSync("src/platform/director-intelligence/evaluation.ts","utf8"),
+  orchestrator:fs.readFileSync("src/platform/director-intelligence/orchestrator.ts","utf8"),
+  workbench:fs.readFileSync("src/studio/DirectorIntelligenceWorkbench.tsx","utf8"),
+  agent:fs.readFileSync("src/studio/CreativeAgentWorkbench.tsx","utf8"),
+  references:fs.readFileSync("src/platform/director-intelligence/referenceCorpus.ts","utf8"),
+  broaderReferences:fs.readFileSync("src/platform/director-intelligence/broaderReferenceCorpus.ts","utf8"),
+  judge:fs.readFileSync("src/platform/director-intelligence/judgeClient.ts","utf8"),
+  visualRepair:fs.readFileSync("scripts/autonomy-visual-director.mjs","utf8"),
+  loopRunner:fs.readFileSync("scripts/loop-run.mjs","utf8"),
+};
+const semanticFailures=[];
+if(semanticSources.council.includes('return "lock"')) semanticFailures.push("Deterministic planning lenses may not issue LOCK.");
+if(semanticSources.council.includes("confidence:")) semanticFailures.push("Planning lenses may not publish fake confidence.");
+if(!semanticSources.evaluation.includes('scoreSemantics:"deterministic-planning-proxy"')) semanticFailures.push("Evaluation scores must declare planning-proxy semantics.");
+if(!semanticSources.orchestrator.includes("judgmentPermitsProduction")) semanticFailures.push("Production authorization must require verified judgment.");
+if(!semanticSources.orchestrator.includes("expectedJudgmentScope")) semanticFailures.push("Director judgment must be bound to the current planning scope.");
+if(semanticSources.workbench.includes("DIRECTOR VERDICT") || semanticSources.agent.includes("DIRECTOR VERDICT")) semanticFailures.push("Studio may not present heuristic planning as a Director verdict.");
+if(/\bconfidence\b/.test(semanticSources.references) || /\bconfidence\b/.test(semanticSources.broaderReferences)) semanticFailures.push("Reference corpus must use evidence strength, not confidence.");
+for(const token of ["FORGE_DIRECTOR_JUDGE_CALIBRATION_JSON","captureIds","evidenceHash","scopeFingerprint","parseDirectorJudgeCalibration"]) {
+  if(!semanticSources.judge.includes(token)) semanticFailures.push(`Director judge is missing evidence/calibration contract: ${token}`);
+}
+for(const token of ["director-judgment","parseDirectorJudgment","judgment.findings"]) {
+  if(!semanticSources.visualRepair.includes(token)) semanticFailures.push(`Visual repair worker is missing Director evidence bridge: ${token}`);
+}
+if(!semanticSources.loopRunner.includes("director-judgment")) semanticFailures.push("Loop runner must preserve the Director judgment repair bridge.");
+if(semanticFailures.length) {
+  console.error("Director truthfulness audit failed:");
+  semanticFailures.forEach((failure)=>console.error("- "+failure));
+  process.exit(1);
+}
+console.log("Director truthfulness audit passed: planning proxies cannot masquerade as creative judgment.");

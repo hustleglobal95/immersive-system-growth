@@ -3,7 +3,7 @@ import type { HierarchyReport } from "@/src/platform/director-intelligence/hiera
 
 export type EvidenceClass = "client-brief" | "client-asset" | "brand-system" | "reference" | "public-research" | "forge-history" | "director-inference" | "creative-hypothesis";
 export interface DirectorEvidence { id: string; claim: string; evidenceClass: EvidenceClass; sourceIds: string[]; confidence: number; verified: boolean; affects: string[]; }
-export interface EvidenceReport { evidence: DirectorEvidence[]; unknowns: string[]; assumptions: DirectorEvidence[]; unsupportedClaims: string[]; confidence: number; }
+export interface EvidenceReport { evidence: DirectorEvidence[]; unknowns: string[]; assumptions: DirectorEvidence[]; unsupportedClaims: string[]; coverage: number; }
 
 export type MemoryNodeType = "Project" | "Brief" | "Audience" | "BrandTruth" | "BusinessObjective" | "Constraint" | "Asset" | "Reference" | "Precedent" | "DesignIssue" | "Concept" | "Territory" | "CreativePrinciple" | "FormDecision" | "ArtDirection" | "VisualLanguage" | "CreativeMutation" | "SignatureMoment" | "CameraGrammar" | "MotionGrammar" | "TypographyGrammar" | "ColorGrammar" | "LightingGrammar" | "MaterialGrammar" | "ImageGrammar" | "SoundGrammar" | "InteractionGrammar" | "StructurePattern" | "DistinctiveAsset" | "ClientFeedback" | "ProductionDecision" | "Outcome" | "FailurePattern" | "Lesson";
 export interface MemoryNode { id: string; type: MemoryNodeType; label: string; text: string; tags: string[]; projectId?: string; confidence?: number; }
@@ -25,8 +25,61 @@ export interface TasteProfile { version: 1; dimensions: Record<TasteDimension, n
 export type EvaluationDimension = "novelty" | "value" | "brandAdherence" | "emotionalResonance" | "aestheticCoherence" | "conceptualClarity" | "memorability" | "distinctiveness" | "audienceRelevance" | "structuralExpression" | "motionCameraJustification" | "interactionPurpose" | "productionFeasibility" | "mobileIntegrity" | "commercialAlignment" | "portfolioNovelty" | "assetRealism";
 export type EvaluationScores = Record<EvaluationDimension, number>;
 export type CouncilRole = "executive-creative" | "brand" | "art" | "film" | "experience" | "interaction" | "conversion" | "production" | "mobile-accessibility" | "cultural-context" | "client-advocate" | "skeptic";
-export interface CouncilCritique { role: CouncilRole; territoryId: string; scores: Partial<EvaluationScores>; strengths: string[]; concerns: string[]; blockers: string[]; recommendation: "lock" | "revise" | "research" | "asset-blocked" | "reject"; confidence: number; }
-export interface EvaluationReport { territoryId: string; scores: EvaluationScores; critiques: CouncilCritique[]; blockers: string[]; disagreements: string[]; passedHardGates: boolean; recommendation: "LOCK" | "REVISE" | "RESEARCH REQUIRED" | "ASSET BLOCKED" | "REJECT"; }
+export type PlanningDisposition = "ADVANCE" | "REVISE" | "RESEARCH REQUIRED" | "ASSET BLOCKED" | "REJECT";
+export type DirectorJudgmentVerdict = "LOCK" | "REVISE" | "REJECT";
+export type DirectorVerdict = "UNVERIFIED" | DirectorJudgmentVerdict;
+export interface CouncilCritique {
+  role: CouncilRole;
+  territoryId: string;
+  scores: Partial<EvaluationScores>;
+  strengths: string[];
+  concerns: string[];
+  blockers: string[];
+  recommendation: "advance" | "revise" | "research" | "asset-blocked" | "reject";
+  basis: "deterministic-lens";
+  evidenceCoverage: number;
+}
+export interface EvaluationReport {
+  territoryId: string;
+  scores: EvaluationScores;
+  critiques: CouncilCritique[];
+  blockers: string[];
+  disagreements: string[];
+  passedHardGates: boolean;
+  recommendation: PlanningDisposition;
+  scoreSemantics: "deterministic-planning-proxy";
+}
+export interface DirectorJudgmentEvidence {
+  source: "rendered-external-judge" | "human-review";
+  judgeId: string;
+  model?: string;
+  calibrationId?: string;
+  calibrated: boolean;
+  captureIds: string[];
+  evidenceHash: string;
+  scopeFingerprint: string;
+}
+export interface DirectorJudgmentFinding {
+  critic: "composition" | "typography" | "camera" | "motion" | "continuity" | "brand" | "art-direction" | "color" | "lighting" | "material" | "image-direction" | "sound" | "originality" | "craft" | "interaction" | "mobile" | "performance";
+  captureId: string;
+  severity: "blocker" | "major" | "minor" | "advisory";
+  finding: string;
+  evidence: string[];
+  affectedSystems: string[];
+  repair: string;
+  confidence: number;
+}
+export interface DirectorJudgmentReport {
+  status: "unverified" | "verified";
+  verdict: DirectorVerdict;
+  confidence: number | null;
+  confidenceSemantics: "none" | "calibrated-preference";
+  reasons: string[];
+  blockers: string[];
+  dimensions: Partial<Record<"composition"|"hierarchy"|"typography"|"motion"|"camera"|"coherence"|"brandSpecificity"|"emotionalEffect"|"usability",number>>;
+  findings: DirectorJudgmentFinding[];
+  evidence: DirectorJudgmentEvidence | null;
+}
 
 export interface OriginalityFingerprint { conceptual: number; narrative: number; spatial: number; interaction: number; motion: number; camera: number; composition: number; typographyBehavior: number; signatureMechanism: number; portfolio: number; category: number; sources: string[]; }
 export interface ClicheScan { category: DirectorBrief["projectType"]; detected: string[]; density: number; retainedWithReason: Array<{ pattern: string; reason: string }>; verdict: "clear" | "watch" | "rebuild"; }
@@ -36,7 +89,7 @@ export type StressStatus = "PASS" | "PASS WITH DEGRADATION" | "REQUIRES REVISION
 export interface StressResult { id: string; label: string; status: StressStatus; reason: string; mitigation?: string; }
 export interface StressLabReport { territoryId: string; results: StressResult[]; blockers: string[]; resilienceScore: number; }
 
-export interface CreativeCeiling { current: number; projected: number; constraints: string[]; highestLeverageUpgrades: string[]; confidence: number; }
+export interface CreativeCeiling { current: number; projected: number; constraints: string[]; highestLeverageUpgrades: string[]; evidenceCoverage: number; }
 export type AssetClass = "hero-critical" | "signature-critical" | "proof-critical" | "supporting" | "utility" | "optional";
 export type AssetDecision = "use" | "upgrade" | "re-edit" | "replace" | "create" | "omit";
 export interface AssetGapItem { label: string; assetClass: AssetClass; decision: AssetDecision; exists: boolean; reason: string; creativeConsequence: string; }
@@ -57,7 +110,39 @@ export interface ContinuousReview { stage: ReviewStage; driftScore: number; deci
 export interface LearningObservation { id: string; observation: string; sampleSize: number; confidence: "low" | "medium" | "high"; evidenceIds: string[]; action: string; createdAt: string; }
 export interface CalibrationCase { id: string; label: string; expectedDisposition: EvaluationReport["recommendation"]; benchmarkScores: Partial<EvaluationScores>; notes: string[]; }
 
-export interface DirectorIntelligenceInput { brief: DirectorBrief; precedents?: CreativePrecedent[]; portfolio?: CreativeFingerprint[]; memory?: CreativeMemoryGraph; taste?: TasteProfile; decisions?: DecisionLedger; }
-export interface DirectorIntelligenceReport { brief: DirectorBrief; treatment: DirectorTreatment; evidence: EvidenceReport; precedents: RetrievedPrecedent[]; fingerprint: CreativeFingerprint; collisions: PortfolioCollision[]; evaluations: EvaluationReport[]; selectedEvaluation: EvaluationReport; originality: OriginalityFingerprint; cliches: ClicheScan; stress: StressLabReport; ceiling: CreativeCeiling; assetGap: AssetGapReport; leverage: ProductionLeverageItem[]; hierarchy: HierarchyReport; whyLadders: WhyLadder[]; decisions: DecisionLedger; defense: DefensePacket; verdict: EvaluationReport["recommendation"]; blockers: string[]; generatedAt: string; }
+export interface DirectorIntelligenceInput {
+  brief: DirectorBrief;
+  precedents?: CreativePrecedent[];
+  portfolio?: CreativeFingerprint[];
+  memory?: CreativeMemoryGraph;
+  taste?: TasteProfile;
+  decisions?: DecisionLedger;
+  judgment?: DirectorJudgmentReport;
+}
+export interface DirectorIntelligenceReport {
+  brief: DirectorBrief;
+  treatment: DirectorTreatment;
+  evidence: EvidenceReport;
+  precedents: RetrievedPrecedent[];
+  fingerprint: CreativeFingerprint;
+  collisions: PortfolioCollision[];
+  evaluations: EvaluationReport[];
+  selectedEvaluation: EvaluationReport;
+  originality: OriginalityFingerprint;
+  cliches: ClicheScan;
+  stress: StressLabReport;
+  ceiling: CreativeCeiling;
+  assetGap: AssetGapReport;
+  leverage: ProductionLeverageItem[];
+  hierarchy: HierarchyReport;
+  whyLadders: WhyLadder[];
+  decisions: DecisionLedger;
+  defense: DefensePacket;
+  planningDisposition: PlanningDisposition;
+  judgment: DirectorJudgmentReport;
+  verdict: DirectorVerdict;
+  blockers: string[];
+  generatedAt: string;
+}
 
 export type { DirectorBrief, DirectorTreatment, DirectorTerritory };

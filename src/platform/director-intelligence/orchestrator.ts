@@ -3,7 +3,7 @@ import { directProject } from "@/src/platform/directorEngine";
 import { createProductionPlanFromTreatment } from "@/src/platform/directorProductionPlan";
 import type { DirectorIntelligenceInput, DirectorIntelligenceReport, EvaluationReport } from "@/src/platform/director-intelligence/types";
 import type { DirectorHumanApprovals } from "@/src/platform/director-intelligence/humanGates";
-import { buildEvidenceReport, requireEvidenceForLock } from "@/src/platform/director-intelligence/evidence";
+import { buildEvidenceReport, requireEvidenceForPlanningAdvance } from "@/src/platform/director-intelligence/evidence";
 import { retrievePrecedents, deconstructReference } from "@/src/platform/director-intelligence/precedents";
 import { divergeTreatment } from "@/src/platform/director-intelligence/divergence";
 import { fingerprintTreatment, scanPortfolio } from "@/src/platform/director-intelligence/portfolioMemory";
@@ -35,6 +35,8 @@ import { directDisciplines } from "@/src/platform/director-intelligence/discipli
 import { estimateCreativeCeilingV2 } from "@/src/platform/director-intelligence/creativeCeilingV2";
 import { reviewCreativeMemory } from "@/src/platform/director-intelligence/creativeMemory";
 import { resolveCreativeTaste, type CreativeTasteLayers } from "@/src/platform/director-intelligence/creativeTaste";
+import { judgmentPermitsProduction, parseDirectorJudgment, unverifiedDirectorJudgment } from "@/src/platform/director-intelligence/judgment";
+import { stateFingerprint } from "@/src/core/journal/stateFingerprint";
 
 export function runDirectorIntelligence(input: DirectorIntelligenceInput & { approvals?: DirectorHumanApprovals; finalCutRequested?: boolean; tasteLayers?: CreativeTasteLayers }) {
   const brief = parseDirectorBrief(input.brief);
@@ -42,7 +44,7 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
   const diverged = divergeTreatment(brief, baseline);
   let treatment = diverged.treatment;
   const evidence = buildEvidenceReport(brief, treatment);
-  const evidenceBlockers = requireEvidenceForLock(evidence);
+  const evidenceBlockers = requireEvidenceForPlanningAdvance(evidence);
 
   const precedentPool = input.precedents ?? undefined;
   const modes = ["problem", "medium-transfer", "constraint"] as const;
@@ -125,10 +127,29 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
     if (creativeMemory.verdict==="rewrite") blockers.push("Creative Memory detects material house-style repetition; rewrite the strongest repeated creative devices before lock.");
   }
 
-  let verdict: DirectorIntelligenceReport["verdict"] = debate.disposition === "REJECT ALL" ? "REJECT" : debate.disposition;
-  if (blockers.length && verdict === "LOCK") verdict = evidenceBlockers.length ? "RESEARCH REQUIRED" : assetGap.blockers.length ? "ASSET BLOCKED" : "REVISE";
+  let planningDisposition: DirectorIntelligenceReport["planningDisposition"] = debate.disposition === "REJECT ALL" ? "REJECT" : debate.disposition;
+  if (blockers.length && planningDisposition === "ADVANCE") {
+    planningDisposition = evidenceBlockers.length ? "RESEARCH REQUIRED" : assetGap.blockers.length ? "ASSET BLOCKED" : "REVISE";
+  }
+  const expectedJudgmentScope=stateFingerprint({
+    brief,
+    treatment,
+    planningDisposition,
+  });
+  const suppliedJudgment=input.judgment ? parseDirectorJudgment(input.judgment) : unverifiedDirectorJudgment();
+  const judgment=suppliedJudgment.status==="verified" && suppliedJudgment.evidence?.scopeFingerprint!==expectedJudgmentScope
+    ? unverifiedDirectorJudgment("Rendered judgment evidence does not match the current brief, treatment and planning disposition.")
+    : suppliedJudgment;
+  const verdict = judgment.verdict;
+  const judgmentBlockers = judgment.status === "verified"
+    ? judgment.blockers
+    : ["Creative judgment is UNVERIFIED until rendered evidence is reviewed by a calibrated judge or human reviewer."];
 
-  const report: DirectorIntelligenceReport = { brief, treatment, evidence, precedents, fingerprint: fingerprintTreatment(treatment), collisions, evaluations, selectedEvaluation, originality, cliches, stress, ceiling, assetGap, leverage, hierarchy, whyLadders, decisions, defense, verdict, blockers: unique(blockers), generatedAt: new Date().toISOString() };
+  const report: DirectorIntelligenceReport = {
+    brief,treatment,evidence,precedents,fingerprint:fingerprintTreatment(treatment),collisions,evaluations,selectedEvaluation,
+    originality,cliches,stress,ceiling,assetGap,leverage,hierarchy,whyLadders,decisions,defense,
+    planningDisposition,judgment,verdict,blockers:unique([...blockers,...judgmentBlockers]),generatedAt:new Date().toISOString(),
+  };
   const humanGates = evaluateHumanGates({ brief, treatment, evidence, selectedEvaluation, assetGap, decisions, approvals: input.approvals, finalCutRequested: input.finalCutRequested });
   const baseProductionPlan = createProductionPlanFromTreatment(treatment);
   const gateBlockers = humanGates.pending.map((gate) => `Human gate: ${gate.label} — ${gate.reason}`);
@@ -145,7 +166,7 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
     readiness: {
       ...baseProductionPlan.readiness,
       blockers: unique([...baseProductionPlan.readiness.blockers, ...report.blockers, ...gateBlockers]),
-      readyForProduction: baseProductionPlan.readiness.readyForProduction && report.verdict === "LOCK" && humanGates.authorizedForProduction,
+      readyForProduction: baseProductionPlan.readiness.readyForProduction && judgmentPermitsProduction(report.planningDisposition,report.judgment) && humanGates.authorizedForProduction,
     },
   };
   return {

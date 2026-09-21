@@ -11,7 +11,7 @@ export interface CreativeCeilingV2 {
   dimensions:Record<CreativeCeilingDimension,number>;
   bottlenecks:Array<{dimension:CreativeCeilingDimension;score:number;reason:string}>;
   highestLeverage:Array<{dimension:CreativeCeilingDimension;gain:number;action:string}>;
-  confidence:number;
+  evidenceCoverage:number;
 }
 
 export function estimateCreativeCeilingV2(input:{
@@ -82,8 +82,8 @@ export function estimateCreativeCeilingV2(input:{
     action:actions[item.dimension],
   }));
   const projected=clamp(current+highestLeverage.slice(0,3).reduce((sum,item)=>sum+item.gain,0)*.62);
-  const confidence=Number(Math.max(.48,Math.min(.94,.58+brief.differentiators.length*.04+brief.existingAssets.length*.012+(divergence.sufficient ? 0.08 : 0))).toFixed(2));
-  return {current,projected,dimensions,bottlenecks,highestLeverage,confidence};
+  const evidenceCoverage=Number(Math.max(0,Math.min(1,.38+brief.differentiators.length*.05+brief.existingAssets.length*.015+(divergence.sufficient ? 0.08 : 0))).toFixed(2));
+  return {current,projected,dimensions,bottlenecks,highestLeverage,evidenceCoverage};
 }
 
 function discipline(items:string[],base:number) {

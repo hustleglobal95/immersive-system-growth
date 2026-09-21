@@ -31,13 +31,13 @@ export function buildEvidenceReport(brief: DirectorBrief, treatment?: DirectorTr
   const assumptions = items.filter((item) => item.evidenceClass === "creative-hypothesis" || item.evidenceClass === "director-inference");
   const unsupportedClaims = assumptions.filter((item) => !item.verified && item.confidence < 0.7).map((item) => item.claim);
   const verifiedWeight = items.length ? items.reduce((sum, item) => sum + (item.verified ? item.confidence : item.confidence * 0.55), 0) / items.length : 0;
-  return { evidence: items, unknowns, assumptions, unsupportedClaims, confidence: Number(verifiedWeight.toFixed(2)) };
+  return { evidence: items, unknowns, assumptions, unsupportedClaims, coverage: Number(verifiedWeight.toFixed(2)) };
 }
 
-export function requireEvidenceForLock(report: EvidenceReport) {
+export function requireEvidenceForPlanningAdvance(report: EvidenceReport) {
   const blockers: string[] = [];
-  if (report.confidence < 0.65) blockers.push(`Evidence confidence ${report.confidence.toFixed(2)} is below lock threshold 0.65.`);
+  if (report.coverage < 0.65) blockers.push(`Evidence coverage ${report.coverage.toFixed(2)} is below planning-advance threshold 0.65.`);
   if (report.unsupportedClaims.length > 3) blockers.push("Too many unsupported creative assumptions materially affect the direction.");
-  if (report.unknowns.some((item) => item.toLowerCase().includes("differentiator"))) blockers.push("Differentiation evidence is missing; territory lock would be weakly grounded.");
+  if (report.unknowns.some((item) => item.toLowerCase().includes("differentiator"))) blockers.push("Differentiation evidence is missing; territory advancement would be weakly grounded.");
   return blockers;
 }

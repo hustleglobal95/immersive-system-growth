@@ -27,6 +27,6 @@ export function estimateCreativeCeiling(brief: DirectorBrief, treatment: Directo
   if (upgrades.length === 0) upgrades.push("Concentrate additional craft on the protected signature moment rather than adding more features.");
 
   const projected = clamp(current + Math.min(1.8, upgrades.length * 0.45 + assetPenalty * 0.5));
-  const confidence = Number(Math.max(0.45, Math.min(0.9, 0.55 + brief.differentiators.length * 0.04 + brief.existingAssets.length * 0.015 - constraints.length * 0.03)).toFixed(2));
-  return { current, projected, constraints, highestLeverageUpgrades: upgrades.slice(0, 5), confidence };
+  const evidenceCoverage = Number(Math.max(0, Math.min(1, 0.35 + brief.differentiators.length * 0.05 + brief.existingAssets.length * 0.02 - constraints.length * 0.03)).toFixed(2));
+  return { current, projected, constraints, highestLeverageUpgrades: upgrades.slice(0, 5), evidenceCoverage };
 }

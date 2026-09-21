@@ -14,7 +14,8 @@ export interface ConstructionCandidate {
   summary:string[];
   blockers:string[];
   director:{
-    verdict:string;
+    planningDisposition:string;
+    judgment:string;
     hierarchyScore:number;
     territoryId:string;
     constructionMode:string;
@@ -59,7 +60,7 @@ export function buildConstructionCandidate(input:{
       : []),
   ];
   const blockers=[
-    ...(intelligence.report.verdict==="REJECT" ? ["Director rejected every current territory for this brief."] : []),
+    ...(intelligence.report.planningDisposition==="REJECT" ? ["Director planning rejected every current territory for this brief."] : []),
     ...hierarchyBlockers,
     ...creativeBlockers,
     ...(!plan.validation.valid ? plan.validation.errors : []),
@@ -69,7 +70,8 @@ export function buildConstructionCandidate(input:{
   ];
 
   const director={
-    verdict:intelligence.report.verdict,
+    planningDisposition:intelligence.report.planningDisposition,
+    judgment:intelligence.report.verdict,
     hierarchyScore:intelligence.report.hierarchy.overallScore,
     territoryId:intelligence.report.treatment.selectedTerritoryId,
     constructionMode:intelligence.constructionPlan.mode,
@@ -98,7 +100,7 @@ export function buildConstructionCandidate(input:{
   const changed=JSON.stringify(candidate)!==JSON.stringify(experience);
   const signatureIndex=signatureSceneIndex(candidate.scenes.length,intelligence.report.treatment.emotionalArc);
   const summary=[
-    `Director territory ${director.territoryId}; construction mode ${director.constructionMode}; hierarchy ${director.hierarchyScore}/10; creative ceiling ${intelligence.creativeCeiling.current}→${intelligence.creativeCeiling.projected}.`,
+    `Director territory ${director.territoryId}; planning ${director.planningDisposition}; rendered judgment ${director.judgment}; construction mode ${director.constructionMode}; hierarchy ${director.hierarchyScore}/10; creative ceiling proxy ${intelligence.creativeCeiling.current}→${intelligence.creativeCeiling.projected}.`,
     `Creative DNA: ${intelligence.creativeDNA.northStar}`,
     `Visual language: ${intelligence.visualLanguages.find((item)=>item.territoryId===director.territoryId)?.modeLabel ?? "directed"}; minimum territory distance ${intelligence.visualLanguageDivergence.minimumDistance}%.`,
     `${buildable.length}/${plan.sceneMoves.length} planned scene moves were asset-ready and eligible for construction.`,

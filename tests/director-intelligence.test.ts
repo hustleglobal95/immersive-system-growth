@@ -15,6 +15,8 @@ import { resolveCreativeTaste } from "../src/platform/director-intelligence/crea
 import { reviewCreativeMemory } from "../src/platform/director-intelligence/creativeMemory";
 import { createEmptyMemoryGraph, ingestCreativeIntelligenceMemory, ingestProjectMemory } from "../src/platform/director-intelligence/memory";
 import { deconstructReference } from "../src/platform/director-intelligence/precedents";
+import { parseDirectorJudgment } from "../src/platform/director-intelligence/judgment";
+import { stateFingerprint } from "../src/core/journal/stateFingerprint";
 
 const brief = {
   projectName: "Aurelia Tower",
@@ -45,7 +47,12 @@ test("advanced Director runs full intelligence pipeline", () => {
   assert.equal(result.constructionPlan.sceneDecisions.length, result.report.treatment.emotionalArc.length);
   assert.ok(result.constructionPlan.sceneDecisions.every((scene) => scene.continuityAnchor.length > 0));
   assert.ok(result.constructionPlan.criticalBootStrategy.length > 0);
-  assert.ok(["LOCK", "REVISE", "RESEARCH REQUIRED", "ASSET BLOCKED", "REJECT"].includes(result.report.verdict));
+  assert.ok(["ADVANCE","REVISE","RESEARCH REQUIRED","ASSET BLOCKED","REJECT"].includes(result.report.planningDisposition));
+  assert.equal(result.report.verdict,"UNVERIFIED");
+  assert.equal(result.report.judgment.status,"unverified");
+  assert.equal(result.productionPlan.readiness.readyForProduction,false);
+  assert.equal(result.report.selectedEvaluation.scoreSemantics,"deterministic-planning-proxy");
+  assert.ok(result.report.selectedEvaluation.critiques.every((critique)=>critique.basis==="deterministic-lens"));
 });
 
 test("Creative Intelligence 2 produces a complete project-specific creative system", () => {
@@ -202,4 +209,131 @@ test("research helper requires provenance", () => {
   const research = buildResearchBrief("Aurelia", "property", brief.objective);
   assert.ok(research.queries.length >= 3);
   assert.ok(auditResearchFindings([{ id: "x", topic: "precedent", claim: "Useful claim", source: "not-a-url", sourceAuthority: "secondary", retrievedAt: "2026-01-01" }]).length >= 1);
+});
+
+
+test("Director requires calibrated rendered judgment before creative LOCK", () => {
+  const first=runDirectorIntelligence({brief});
+  const judgment=parseDirectorJudgment({
+    status:"verified",
+    verdict:"LOCK",
+    confidence:.84,
+    confidenceSemantics:"calibrated-preference",
+    reasons:["Rendered hierarchy, composition and brand specificity meet the calibrated production threshold."],
+    blockers:[],
+    dimensions:{composition:8.8,hierarchy:9,typography:8.5,motion:8.4,camera:8.6,coherence:8.9,brandSpecificity:9.1,emotionalEffect:8.3,usability:8.6},
+    evidence:{
+      source:"rendered-external-judge",
+      judgeId:"test-judge",
+      model:"fixture",
+      calibrationId:"human-benchmark-v1",
+      calibrated:true,
+      captureIds:["desktop-arrival","desktop-signature"],
+      evidenceHash:"a".repeat(64),
+      scopeFingerprint:stateFingerprint({brief:first.report.brief,treatment:first.report.treatment,planningDisposition:first.report.planningDisposition}),
+    },
+  });
+  const second=runDirectorIntelligence({
+    brief,
+    judgment,
+    approvals:{lockedTerritoryId:first.report.treatment.selectedTerritoryId},
+  });
+  assert.equal(second.report.verdict,"LOCK");
+  assert.equal(second.report.judgment.status,"verified");
+  assert.equal(second.report.judgment.confidenceSemantics,"calibrated-preference");
+  if(second.report.planningDisposition==="ADVANCE" && second.humanGates.pending.length===0 && second.productionPlan.readiness.blockers.length===0) {
+    assert.equal(second.productionPlan.readiness.readyForProduction,true);
+  }
+});
+
+test("verified judgment rejects fake calibration and insufficient rendered evidence", () => {
+  assert.throws(()=>parseDirectorJudgment({
+    status:"verified",verdict:"LOCK",confidence:.9,confidenceSemantics:"calibrated-preference",reasons:["Looks good"],blockers:[],dimensions:{},
+    evidence:{source:"rendered-external-judge",judgeId:"x",calibrated:false,captureIds:["only-one"],evidenceHash:"b".repeat(64)},
+  }));
+});
+
+
+test("Director LOCK cannot hide material repair findings",()=>{
+  assert.throws(()=>parseDirectorJudgment({
+    status:"verified",
+    verdict:"LOCK",
+    confidence:.9,
+    confidenceSemantics:"calibrated-preference",
+    reasons:["Strong overall frame."],
+    blockers:[],
+    dimensions:{composition:8.8},
+    findings:[{
+      critic:"composition",
+      captureId:"desktop-arrival",
+      severity:"major",
+      finding:"The hero still collides with the primary copy.",
+      evidence:["The subject overlaps the text block in the reviewed frame."],
+      affectedSystems:["composition"],
+      repair:"Move the hero right and restore negative space before lock.",
+      confidence:.91,
+    }],
+    evidence:{
+      source:"rendered-external-judge",
+      judgeId:"fixture",
+      calibrationId:"benchmark-v1",
+      calibrated:true,
+      captureIds:["desktop-arrival","desktop-signature"],
+      evidenceHash:"e".repeat(64),
+      scopeFingerprint:"forge1:1234567890abcdef",
+    },
+  }));
+});
+
+
+test("Director production LOCK rejects low calibrated preference confidence",()=>{
+  assert.throws(()=>parseDirectorJudgment({
+    status:"verified",
+    verdict:"LOCK",
+    confidence:.51,
+    confidenceSemantics:"calibrated-preference",
+    reasons:["Direction is promising but preference evidence is weak."],
+    blockers:[],
+    dimensions:{composition:8.1},
+    findings:[],
+    evidence:{
+      source:"rendered-external-judge",
+      judgeId:"fixture",
+      calibrationId:"benchmark-v1",
+      calibrated:true,
+      captureIds:["desktop-arrival","desktop-signature"],
+      evidenceHash:"f".repeat(64),
+      scopeFingerprint:"forge1:1234567890abcdef",
+    },
+  }));
+});
+
+
+test("Director rejects a verified judgment replayed against a different planning scope",()=>{
+  const first=runDirectorIntelligence({brief});
+  const judgment=parseDirectorJudgment({
+    status:"verified",
+    verdict:"LOCK",
+    confidence:.86,
+    confidenceSemantics:"calibrated-preference",
+    reasons:["Rendered direction meets the benchmark."],
+    blockers:[],
+    dimensions:{composition:8.8,coherence:8.7},
+    findings:[],
+    evidence:{
+      source:"rendered-external-judge",
+      judgeId:"fixture",
+      calibrationId:"benchmark-v1",
+      calibrated:true,
+      captureIds:["desktop-arrival","desktop-signature"],
+      evidenceHash:"1".repeat(64),
+      scopeFingerprint:"forge1:1234567890abcdef",
+    },
+  });
+  const replayed=runDirectorIntelligence({brief,judgment});
+  assert.equal(replayed.report.verdict,"UNVERIFIED");
+  assert.equal(replayed.report.judgment.status,"unverified");
+  assert.match(replayed.report.judgment.reasons[0],/does not match the current brief, treatment and planning disposition/i);
+  assert.equal(replayed.productionPlan.readiness.readyForProduction,false);
+  assert.notEqual(first.report.generatedAt,"");
 });

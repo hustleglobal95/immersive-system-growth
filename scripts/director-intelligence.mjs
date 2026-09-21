@@ -11,6 +11,7 @@ const portfolioPath = process.argv.find((arg) => arg.startsWith("--portfolio="))
 const decisionsPath = process.argv.find((arg) => arg.startsWith("--decisions="))?.split("=")[1];
 const memoryPath = process.argv.find((arg) => arg.startsWith("--memory="))?.split("=")[1];
 const operatorId = process.argv.find((arg) => arg.startsWith("--operator="))?.split("=")[1];
+const judgmentPath = process.argv.find((arg) => arg.startsWith("--judgment="))?.split("=")[1];
 const raw = JSON.parse(await fs.readFile(inputPath, "utf8"));
 const brief = parseDirectorBrief(raw);
 
@@ -33,6 +34,7 @@ const storedMemories=(await loadJsonDirectory("forge-intelligence/projects",".me
 const explicitMemory = memoryPath ? await readOptionalJson(memoryPath) : undefined;
 const memory = mergeMemoryGraphs([...storedMemories,...(explicitMemory ? [explicitMemory] : [])]);
 const decisions = decisionsPath ? await readOptionalJson(decisionsPath) : undefined;
+const judgment = judgmentPath ? await readOptionalJson(judgmentPath) : undefined;
 
 const approvals = {
   brandTruthConfirmed: process.argv.includes("--confirm-brand-truth"),
@@ -49,11 +51,14 @@ const result = runDirectorIntelligence({
   ...(tasteLayers ? { tasteLayers } : {}),
   ...(memory.nodes.length ? { memory } : {}),
   ...(decisions ? { decisions } : {}),
+  ...(judgment ? { judgment } : {}),
   approvals,
   finalCutRequested,
 });
 await fs.writeFile(outputPath, JSON.stringify(result, null, 2) + "\n");
-console.log(`Forge Director Intelligence: ${result.report.verdict}`);
+console.log(`Director planning disposition: ${result.report.planningDisposition}`);
+console.log(`Director creative verdict: ${result.report.verdict}`);
+console.log(`Judgment evidence: ${result.report.judgment.status}${result.report.judgment.evidence ? ` / ${result.report.judgment.evidence.source}` : ""}`);
 console.log(`Selected territory: ${result.report.treatment.selectedTerritoryId}`);
 console.log(`Creative ceiling: ${result.creativeCeiling.current.toFixed(1)} -> ${result.creativeCeiling.projected.toFixed(1)}`);
 console.log(`Stress resilience: ${result.report.stress.resilienceScore.toFixed(1)}/10`);

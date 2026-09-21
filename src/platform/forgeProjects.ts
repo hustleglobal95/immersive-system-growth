@@ -1,5 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
 import { parseExperience } from "@/src/lib/configSchema";
 import { parseInteractionGraph } from "@/src/lib/interactionGraph";
 import { emptyInteractionGraph } from "@/src/platform/emptyInteractionGraph";
@@ -7,86 +5,64 @@ import { parseStudioProject } from "@/src/platform/studioSchema";
 import { parseAssetManifest } from "@/src/platform/assetManifestSchema";
 import { parseCinematicSystems } from "@/src/lib/cinematic/schema";
 import { cinematicSystems as productionCinematicSystems } from "@/src/lib/cinematic/config";
+import { forgeProjectRegistry } from "@/src/generated/forgeProjectRegistry";
 
-/** A project Forge can open in Studio: the active configuration plus every client bundle. */
+/** A project Forge can open in Studio: the active configuration plus every generated client bundle. */
 export interface ForgeProjectSummary {
-  id: string;
-  slug: string;
-  name: string;
-  description: string;
-  sceneCount: number;
-  active: boolean;
-  liveHref?: string;
+  id:string;
+  slug:string;
+  name:string;
+  description:string;
+  sceneCount:number;
+  active:boolean;
+  liveHref?:string;
 }
 
-const root = process.cwd();
-const read = (file: string) => JSON.parse(fs.readFileSync(path.join(root, file), "utf8"));
-const exists = (file: string) => fs.existsSync(path.join(root, file));
+type RegistryEntry=(typeof forgeProjectRegistry)[number];
 
-function projectFiles(): { slug: string; file: string; active: boolean; graph?: string }[] {
-  const clients = exists("clients")
-    ? fs.readdirSync(path.join(root, "clients"), { withFileTypes: true })
-        .filter((entry) => entry.isDirectory() && exists(`clients/${entry.name}/studio-project.json`))
-        .map((entry) => ({ slug: entry.name, file: `clients/${entry.name}/studio-project.json`, active: false, graph: `clients/${entry.name}/interaction-graph.json` }))
-    : [];
-  return [{ slug: "active", file: "config/studio-project.json", active: true, graph: "config/interaction-graph.json" }, ...clients];
-}
-
-function load(entry: ReturnType<typeof projectFiles>[number]) {
-  const project = parseStudioProject(read(entry.file));
-  const experience = parseExperience(read(project.experiencePath));
-  const manifestCandidates=[
-    path.posix.join(path.posix.dirname(project.experiencePath),"asset-manifest.json"),
-    path.posix.join(path.posix.dirname(entry.file),"asset-manifest.json"),
-    entry.active ? "config/asset-manifest.json" : "",
-  ].filter(Boolean);
-  const manifestPath=manifestCandidates.find((candidate)=>exists(candidate));
-  const assetManifest=manifestPath
-    ? parseAssetManifest(read(manifestPath))
+function load(entry:RegistryEntry) {
+  const project=parseStudioProject(entry.project);
+  const experience=parseExperience(entry.experience);
+  const assetManifest=entry.assetManifest
+    ? parseAssetManifest(entry.assetManifest)
     : parseAssetManifest({models:[],textures:[],hdr:[],video:[],budgets:{modelMb:12,textureMb:5,hdrMb:12,videoMb:20,totalMb:45}});
-  const cinematicCandidates=[
-    path.posix.join(path.posix.dirname(project.experiencePath),"cinematic-systems.json"),
-    path.posix.join(path.posix.dirname(entry.file),"cinematic-systems.json"),
-    entry.active ? "config/cinematic-systems.json" : "",
-  ].filter(Boolean);
-  const cinematicPath=cinematicCandidates.find((candidate)=>exists(candidate));
-  const cinematicSystems=cinematicPath
-    ? parseCinematicSystems(read(cinematicPath))
+  const cinematicSystems=entry.cinematicSystems
+    ? parseCinematicSystems(entry.cinematicSystems)
     : parseCinematicSystems({version:1,defaults:productionCinematicSystems.defaults,scenes:[]});
-  return { project, experience, assetManifest, cinematicSystems };
+  return {project,experience,assetManifest,cinematicSystems};
 }
 
-export function listForgeProjects(): ForgeProjectSummary[] {
-  const seen = new Set<string>();
-  const projects: ForgeProjectSummary[] = [];
-  for (const entry of projectFiles()) {
+export function listForgeProjects():ForgeProjectSummary[] {
+  const seen=new Set<string>();
+  const projects:ForgeProjectSummary[]=[];
+  for(const entry of forgeProjectRegistry) {
     try {
-      const { project, experience } = load(entry);
-      if (seen.has(project.id)) continue;
+      const {project,experience}=load(entry);
+      if(seen.has(project.id)) continue;
       seen.add(project.id);
       projects.push({
-        id: project.id,
-        slug: entry.slug,
-        name: project.name,
-        description: experience.meta.description,
-        sceneCount: experience.scenes.length,
-        active: entry.active,
-        liveHref: entry.active ? "/site" : exists(`app/${entry.slug}/page.tsx`) ? `/${entry.slug}` : undefined,
+        id:project.id,
+        slug:entry.slug,
+        name:project.name,
+        description:experience.meta.description,
+        sceneCount:experience.scenes.length,
+        active:entry.active,
+        ...(entry.liveHref?{liveHref:entry.liveHref}:{}),
       });
     } catch {
-      // A client bundle that fails validation is not offered for opening.
+      // A generated client bundle that fails validation is not offered for opening.
     }
   }
   return projects;
 }
 
-export function loadForgeProject(slug: string) {
-  const entry = projectFiles().find((item) => item.slug === slug);
-  if (!entry) return null;
-  const { project, experience, assetManifest, cinematicSystems } = load(entry);
-  let interactionGraph = emptyInteractionGraph(project.id);
-  if (entry.graph && exists(entry.graph)) {
-    try { interactionGraph = parseInteractionGraph(read(entry.graph)); } catch { /* fall back to an empty graph */ }
+export function loadForgeProject(slug:string) {
+  const entry=forgeProjectRegistry.find((item)=>item.slug===slug);
+  if(!entry) return null;
+  const {project,experience,assetManifest,cinematicSystems}=load(entry);
+  let interactionGraph=emptyInteractionGraph(project.id);
+  if(entry.interactionGraph) {
+    try { interactionGraph=parseInteractionGraph(entry.interactionGraph); } catch { /* fall back to an empty graph */ }
   }
-  return { project, experience, assetManifest, interactionGraph, cinematicSystems };
+  return {project,experience,assetManifest,interactionGraph,cinematicSystems};
 }

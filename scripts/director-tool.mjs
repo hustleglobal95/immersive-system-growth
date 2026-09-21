@@ -28,7 +28,7 @@ switch (mode) {
   case "diverge": output = { territories: report.treatment.territories, divergence: run.divergence }; break;
   case "debate": output = run.debate; break;
   case "critique": output = { selected: report.selectedEvaluation, originality: report.originality, cliches: report.cliches, councilCalibration: run.councilCalibration }; break;
-  case "kill": output = { verdict: report.verdict, blockers: report.blockers, skeptic: report.selectedEvaluation.critiques.find((item) => item.role === "skeptic"), stressFatal: report.stress.results.filter((item) => item.status === "FATAL") }; break;
+  case "kill": output = { planningDisposition: report.planningDisposition, judgment: report.judgment, blockers: report.blockers, skeptic: report.selectedEvaluation.critiques.find((item) => item.role === "skeptic"), stressFatal: report.stress.results.filter((item) => item.status === "FATAL") }; break;
   case "stress": output = runStressLab(brief, report.treatment, report.treatment.territories.find((item) => item.id === report.treatment.selectedTerritoryId) ?? report.treatment.territories[0]); break;
   case "similarity": output = { fingerprint: report.fingerprint, collisions: report.collisions }; break;
   case "ceiling": output = report.ceiling; break;

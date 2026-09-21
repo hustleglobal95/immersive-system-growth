@@ -2639,7 +2639,7 @@ function rankPatternEvidence(
         referenceIds: [],
         sourceHosts: new Set<string>(),
       };
-      bucket.support += reference.confidence * evidenceWeight;
+      bucket.support += reference.evidenceStrength * evidenceWeight;
       if (!bucket.referenceIds.includes(reference.id)) {
         bucket.referenceIds.push(reference.id);
       }

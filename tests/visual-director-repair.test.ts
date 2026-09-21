@@ -7,6 +7,7 @@ import { buildRenderReviewPlan } from "../src/platform/autonomy/visualReview";
 import { planVisualRepairs, applyVisualRepairPlan } from "../src/platform/autonomy/repairPlanner";
 import { buildPairwiseCriticRequests, pairwiseJudgmentFromResponse, parseVisualDirectorResponse } from "../src/platform/autonomy/visualDirector";
 import { forcedOptimizationDecision } from "../src/platform/autonomy/forcedOptimization";
+import { parseDirectorJudgment } from "../src/platform/director-intelligence/judgment";
 
 const initial=parseExperience(raw);
 
@@ -247,4 +248,74 @@ test("pairwise comparison uses reversed order and candidate hard gates fail glob
   });
   assert.equal(rejected.accepted,false);
   assert.equal(rejected.winner,"invalid");
+});
+
+
+test("verified Director judgment findings become bounded Loop repair inputs",()=>{
+  const reviewPlan=buildRenderReviewPlan(initial,3);
+  const capture=reviewPlan.captures.find((item)=>item.viewport==="desktop")!;
+  const judgment=parseDirectorJudgment({
+    status:"verified",
+    verdict:"REVISE",
+    confidence:.86,
+    confidenceSemantics:"calibrated-preference",
+    reasons:["The rendered direction is strong but the hero framing is too tight."],
+    blockers:["Hero framing needs revision before lock."],
+    dimensions:{composition:7.4,camera:7.2,coherence:8.2},
+    findings:[{
+      critic:"camera",
+      captureId:capture.id,
+      severity:"major",
+      finding:"The camera is too tight and leaves insufficient negative space for the authored copy.",
+      evidence:["The hero crop collides with the primary text block in the reviewed frame."],
+      affectedSystems:["camera","composition"],
+      repair:"Pull back the camera to restore negative space before the copy settles.",
+      confidence:.9,
+    }],
+    evidence:{
+      source:"rendered-external-judge",
+      judgeId:"calibrated-director",
+      model:"fixture",
+      calibrationId:"benchmark-v1",
+      calibrated:true,
+      captureIds:[capture.id,reviewPlan.captures[1].id],
+      evidenceHash:"c".repeat(64),
+      scopeFingerprint:"forge1:1234567890abcdef",
+    },
+  });
+  const plan=planVisualRepairs({findings:judgment.findings,reviewPlan,experience:initial});
+  assert.ok(plan.commands.some((command)=>command.type==="camera.applyChoreography"));
+  assert.equal(plan.blockers.length,0);
+});
+
+test("Director judgment rejects repair findings that cite unseen captures",()=>{
+  const reviewPlan=buildRenderReviewPlan(initial,2);
+  assert.throws(()=>parseDirectorJudgment({
+    status:"verified",
+    verdict:"REVISE",
+    confidence:.8,
+    confidenceSemantics:"calibrated-preference",
+    reasons:["Revision needed."],
+    blockers:["Framing issue."],
+    dimensions:{composition:6.8},
+    findings:[{
+      critic:"composition",
+      captureId:"not-reviewed",
+      severity:"major",
+      finding:"The focal hierarchy is unresolved in the supplied frame.",
+      evidence:["Subject and copy compete for the same visual priority."],
+      affectedSystems:["composition"],
+      repair:"Reduce subject dominance and restore a single focal hierarchy.",
+      confidence:.88,
+    }],
+    evidence:{
+      source:"rendered-external-judge",
+      judgeId:"calibrated-director",
+      calibrationId:"benchmark-v1",
+      calibrated:true,
+      captureIds:[reviewPlan.captures[0].id,reviewPlan.captures[1].id],
+      evidenceHash:"d".repeat(64),
+      scopeFingerprint:"forge1:1234567890abcdef",
+    },
+  }));
 });
