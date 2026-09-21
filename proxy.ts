@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { STUDIO_SESSION_COOKIE, verifyStudioSessionToken } from "@/src/platform/studioAccess";
+import { STUDIO_SESSION_COOKIE, studioAuthConfiguration, verifyStudioSessionToken } from "@/src/platform/studioAccess";
 import {
   isProtectedAuthoringPath,
   isStudioAuthBootstrapPath,
@@ -18,6 +18,21 @@ export async function proxy(request:NextRequest) {
 
   if(!studioAuthEnabled(process.env)) return NextResponse.next();
   if(isStudioAuthBootstrapPath(path)) return NextResponse.next();
+
+  const auth=studioAuthConfiguration(process.env);
+  if(!auth.configured) {
+    if(path.startsWith("/api/")) {
+      return NextResponse.json({
+        ok:false,
+        error:auth.issue ?? "Forge Studio authentication setup is incomplete.",
+        setupRequired:true,
+      },{status:503});
+    }
+    const login=new URL("/studio/login",request.url);
+    login.searchParams.set("next",path+request.nextUrl.search);
+    login.searchParams.set("setup","1");
+    return NextResponse.redirect(login);
+  }
 
   const token=request.cookies.get(STUDIO_SESSION_COOKIE)?.value ?? "";
   const identity=await verifyStudioSessionToken(token,process.env.FORGE_INTERNAL_SESSION_SECRET ?? "");
