@@ -5,6 +5,12 @@ import type { CameraShotName } from "@/src/lib/cameraShots";
 import rawVisualSystems from "@/config/visual-systems.json";
 import { parseVisualSystems, type VisualSystemsManifest } from "@/src/platform/visualSystems";
 import { constrainQuality, nextQuality } from "@/src/lib/quality";
+import {
+  initialRenderGovernorState,
+  nextRenderGovernorTier,
+  type RenderGovernorState,
+  type RenderGovernorTelemetry,
+} from "@/src/lib/renderGovernor";
 
 export interface CameraPreview {
   name: CameraShotName;
@@ -53,6 +59,7 @@ interface ExperienceState {
   adaptiveTier: QualityTier;
   deviceCeiling: QualityTier;
   profileReady: boolean;
+  renderGovernor: RenderGovernorState;
   reducedMotion: boolean;
   systemReducedMotion: boolean;
   motionOverride: boolean | null;
@@ -78,6 +85,9 @@ interface ExperienceState {
   setQuality: (mode: QualityMode) => void;
   setProfile: (ceiling: QualityTier, mode: QualityMode) => void;
   adaptQuality: (direction: 1 | -1 | 0) => void;
+  adaptRendering: (direction: 1 | -1 | 0, reason?: string) => void;
+  setRenderGovernorTelemetry: (telemetry: RenderGovernorTelemetry) => void;
+  resetRenderGovernor: () => void;
   setReducedMotion: (value: boolean | null) => void;
   setSystemReducedMotion: (value: boolean) => void;
   setDebug: (value: boolean) => void;
@@ -125,6 +135,7 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
   adaptiveTier: "low",
   deviceCeiling: "low",
   profileReady: false,
+  renderGovernor: { ...initialRenderGovernorState, telemetry: { ...initialRenderGovernorState.telemetry } },
   // Motion on is the server-rendered default because it is what most visitors get, and the
   // layout depends on it: rendering the reduced page first made every section 900px, then
   // SystemProfile resolved the real preference on mount and they jumped to 2880px, growing the
@@ -170,6 +181,7 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
       adaptiveTier: deviceCeiling,
       quality: constrainQuality(qualityMode, deviceCeiling, deviceCeiling),
       profileReady: true,
+      renderGovernor: { ...initialRenderGovernorState, telemetry: { ...initialRenderGovernorState.telemetry } },
     }),
   adaptQuality: (direction) =>
     set((state) => {
@@ -180,6 +192,101 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
         quality: constrainQuality("auto", adaptiveTier, state.deviceCeiling),
       };
     }),
+  adaptRendering: (direction, reason = "performance-monitor") =>
+    set((state) => {
+      const governor = state.renderGovernor;
+      if (direction === 0) {
+        const adaptiveTier = state.qualityMode === "auto" ? "low" : state.adaptiveTier;
+        return {
+          adaptiveTier,
+          quality: constrainQuality(state.qualityMode, adaptiveTier, state.deviceCeiling),
+          renderGovernor: {
+            ...governor,
+            tier: "survival",
+            pressureStreak: 0,
+            transitions: governor.transitions + (governor.tier === "survival" ? 0 : 1),
+            lastReason: reason + ":fallback",
+          },
+        };
+      }
+      if (direction === -1) {
+        if (governor.tier !== "survival") {
+          return {
+            renderGovernor: {
+              ...governor,
+              tier: nextRenderGovernorTier(governor.tier, 1),
+              pressureStreak: 0,
+              transitions: governor.transitions + 1,
+              lastReason: reason + ":degrade-render-cost",
+            },
+          };
+        }
+        if (governor.pressureStreak < 1) {
+          return {
+            renderGovernor: {
+              ...governor,
+              pressureStreak: governor.pressureStreak + 1,
+              lastReason: reason + ":protect-subject-tier",
+            },
+          };
+        }
+        if (state.qualityMode === "auto" && state.adaptiveTier !== "low") {
+          const adaptiveTier = nextQuality(state.adaptiveTier, -1);
+          return {
+            adaptiveTier,
+            quality: constrainQuality("auto", adaptiveTier, state.deviceCeiling),
+            renderGovernor: {
+              ...governor,
+              pressureStreak: 0,
+              transitions: governor.transitions + 1,
+              lastReason: reason + ":coarse-tier-degrade",
+            },
+          };
+        }
+        return {
+          renderGovernor: {
+            ...governor,
+            pressureStreak: Math.min(3, governor.pressureStreak + 1),
+            lastReason: reason + ":survival-floor",
+          },
+        };
+      }
+      if (governor.tier !== "native") {
+        return {
+          renderGovernor: {
+            ...governor,
+            tier: nextRenderGovernorTier(governor.tier, -1),
+            pressureStreak: 0,
+            transitions: governor.transitions + 1,
+            lastReason: reason + ":recover-render-quality",
+          },
+        };
+      }
+      if (state.qualityMode === "auto" && state.adaptiveTier !== state.deviceCeiling) {
+        const adaptiveTier = nextQuality(state.adaptiveTier, 1);
+        return {
+          adaptiveTier,
+          quality: constrainQuality("auto", adaptiveTier, state.deviceCeiling),
+          renderGovernor: {
+            ...governor,
+            pressureStreak: 0,
+            transitions: governor.transitions + 1,
+            lastReason: reason + ":recover-subject-tier",
+          },
+        };
+      }
+      return {
+        renderGovernor: {
+          ...governor,
+          pressureStreak: 0,
+          lastReason: reason + ":native-stable",
+        },
+      };
+    }),
+  setRenderGovernorTelemetry: (telemetry) =>
+    set((state) => ({ renderGovernor: { ...state.renderGovernor, telemetry } })),
+  resetRenderGovernor: () =>
+    set({ renderGovernor: { ...initialRenderGovernorState, telemetry: { ...initialRenderGovernorState.telemetry } } }),
   setReducedMotion: (motionOverride) =>
     set((state) => ({
       motionOverride,
@@ -252,5 +359,6 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
       runtimeProgress: null,
       runtimeCamera: null,
       orbit: { ...defaultOrbit },
+      renderGovernor: { ...initialRenderGovernorState, telemetry: { ...initialRenderGovernorState.telemetry } },
     })),
 }));

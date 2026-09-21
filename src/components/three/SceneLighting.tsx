@@ -7,7 +7,8 @@ import { useExperienceStore } from "@/src/store/experienceStore";
 import { cinematicRenderProfile } from "@/src/lib/renderProfile";
 export function SceneLighting() {
   const quality = useExperienceStore((state) => state.quality);
-  const profile = cinematicRenderProfile(quality);
+  const governorTier = useExperienceStore((state) => state.renderGovernor.tier);
+  const profile = cinematicRenderProfile(quality,governorTier);
   const frame = useCinematicFrame(),
     ambient = useRef<AmbientLight>(null),
     key = useRef<DirectionalLight>(null),

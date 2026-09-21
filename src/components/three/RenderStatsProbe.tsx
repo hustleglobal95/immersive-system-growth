@@ -2,6 +2,7 @@
 import { useEffect, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useExperienceStore } from "@/src/store/experienceStore";
+import { renderGovernorProfile } from "@/src/lib/renderGovernor";
 
 type ForgeRenderStats = {
   calls:number;
@@ -15,6 +16,10 @@ type ForgeRenderStats = {
   drawingBufferPixels:number;
   pixelRatio:number;
   sampledAt:number;
+  quality:string;
+  governorTier:string;
+  governorFrameP95:number;
+  reconstruction:string;
 };
 
 export function RenderStatsProbe() {
@@ -34,6 +39,8 @@ export function RenderStatsProbe() {
     sum.current.ms += delta * 1000;
     if (sum.current.frames >= 30) {
       const r = gl.info.render;
+      const runtime=useExperienceStore.getState();
+      const governorProfile=renderGovernorProfile(runtime.quality,runtime.renderGovernor.tier);
       const stats:ForgeRenderStats={
         calls:r.calls,
         triangles:r.triangles,
@@ -46,6 +53,10 @@ export function RenderStatsProbe() {
         drawingBufferPixels:gl.domElement.width*gl.domElement.height,
         pixelRatio:gl.getPixelRatio(),
         sampledAt:performance.now(),
+        quality:runtime.quality,
+        governorTier:runtime.renderGovernor.tier,
+        governorFrameP95:runtime.renderGovernor.telemetry.frameP95,
+        reconstruction:governorProfile.reconstruction,
       };
       // A bounded read-only profiling bridge lets Loop Engine compare incumbent/candidate
       // render cost without coupling the production runtime to the authoring process.

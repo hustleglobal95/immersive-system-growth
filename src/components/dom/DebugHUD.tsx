@@ -6,6 +6,7 @@ export function DebugHUD() {
   const scene = useExperienceStore((s) => s.activeScene),
     quality = useExperienceStore((s) => s.quality),
     mode = useExperienceStore((s) => s.qualityMode),
+    governor = useExperienceStore((s) => s.renderGovernor),
     stats = useExperienceStore((s) => s.rendererStats),
     camera = useExperienceStore((s) => s.cameraTelemetry),
     interactionState = useInteractionStore((s) => s.state),
@@ -19,6 +20,9 @@ export function DebugHUD() {
         {Object.entries({
           scene: experience.scenes[scene]?.label,
           quality: `${quality} (${mode})`,
+          governor: governor.tier,
+          "governor p95": governor.telemetry.frameP95 ? governor.telemetry.frameP95.toFixed(1)+" ms" : "sampling",
+          "governor reason": governor.lastReason,
           interaction: interactionState,
           "graph event": lastEvent ? [lastEvent.type, lastEvent.target ?? lastEvent.sceneId ?? lastEvent.name].filter(Boolean).join(" / ") : "none",
           "graph triggers": matchedTriggers.length ? matchedTriggers.join(", ") : "none",

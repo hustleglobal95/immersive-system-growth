@@ -22,6 +22,7 @@ import { MaskedMediaLayer } from "./MaskedMediaLayer";
 import { NocterraEnvironment } from "./NocterraEnvironment";
 import { AtelierMarisEnvironment } from "./AtelierMarisEnvironment";
 import { useStudioEditor } from "@/src/components/runtime/StudioEditorContext";
+import { cinematicRenderProfile } from "@/src/lib/renderProfile";
 function CanvasFallback() {
   useEffect(() => useExperienceStore.getState().setWebglStatus("failed"), []);
   return null;
@@ -33,6 +34,8 @@ export function SceneCanvas() {
   const studioEditor = useStudioEditor();
   const guides = useExperienceStore((s) => s.guides);
   const quality = useExperienceStore((s) => s.quality);
+  const governorTier = useExperienceStore((s) => s.renderGovernor.tier);
+  const renderProfile=cinematicRenderProfile(quality,governorTier);
   const camera = experience.scenes[0].camera.from;
   const nocterra = experience.meta.name.startsWith("NOCTERRA");
   const atelierMaris = experience.meta.name.startsWith("ATELIER MARIS");
@@ -43,7 +46,7 @@ export function SceneCanvas() {
         camera={{ position: camera.position, fov: camera.fov, near: 0.05, far: 120 }}
         dpr={1}
         gl={{ antialias: cinematicProject, alpha: false, powerPreference: "high-performance" }}
-        shadows={quality === "high"}
+        shadows={renderProfile.shadows}
         fallback={<CanvasFallback />}
       >
         <RendererLifecycle />

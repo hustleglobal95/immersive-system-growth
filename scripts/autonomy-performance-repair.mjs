@@ -31,7 +31,7 @@ function buildPlan(experience,summary,strategy) {
   if(!summary || summary.measuredStates<2) return empty(strategy,"Performance evidence is incomplete; no optimization candidate was produced.");
   if(summary.score>=98 && summary.worstRafP95<=18) return empty(strategy,"The incumbent is already inside the conservative headless performance envelope.");
   const runtime=experience.runtime;
-  const severe=summary.worstRafP95>28 || summary.score<70;
+  const severe=summary.worstRafP95>28 || summary.score<70 || Number(summary.maxGovernorSeverity ?? 0)>=2;
   const changes=[];
   const add=(key,to,why)=>{
     const from=runtime[key];
@@ -58,6 +58,9 @@ function buildPlan(experience,summary,strategy) {
       maxCalls:summary.maxCalls,
       maxTriangles:summary.maxTriangles,
       maxDrawingBufferPixels:summary.maxDrawingBufferPixels,
+      maxGovernorSeverity:summary.maxGovernorSeverity ?? 0,
+      governorTiers:summary.governorTiers ?? [],
+      minPixelRatio:summary.minPixelRatio ?? null,
     },
     changes,
     summary:summaryLines,

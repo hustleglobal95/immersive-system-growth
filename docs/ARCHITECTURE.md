@@ -74,11 +74,13 @@ Draco and Basis decoders are copied from the locked Three version during dev/bui
 
 ## Rendering and quality
 
-SystemProfile completes before Canvas mounts. Missing capability hints choose conservatively. QualityMode is auto/low/medium/high; actual quality is constrained by a device ceiling. PerformanceMonitor changes only automatic selection, steps one tier at a time and falls back after bounded flip-flops. Manual settings cannot be overwritten by it.
+SystemProfile completes before Canvas mounts. Missing capability hints choose conservatively. QualityMode is auto/low/medium/high; actual quality is constrained by a device ceiling. Manual settings cannot be overwritten.
 
-DPR is bounded by tier, device DPR and maxPixels. Canvas antialias is fixed off; high composer MSAA is the adjustable antialias policy. Low uses no composer, shadows or particles. GLB lowUrl/heroLowModel selects an authored lower-cost variant. Reduced motion keeps cinematic motion conservative, disables smoothing/parallax/particles/postprocessing, pauses autonomous media and makes runtime sequence/camera actions resolve deterministically to their endpoint rather than animating.
+Runtime adaptation is two-stage. PerformanceMonitor pressure first drives the Render Governor through `native → balanced → performance → survival`. Those states reduce internal DPR, postprocessing, shadows and decorative particle density while intentionally preserving the current subject/model quality tier. A second sustained decline at the survival floor may lower the automatic coarse quality tier. Recovery reverses the same order: render cost is restored before a coarse subject tier is promoted.
 
-Renderer stats aggregate all previous-frame passes with autoReset disabled. Frame milliseconds are scheduling intervals, not GPU timings. GPU ms is explicitly unavailable. Do not infer memory bytes from texture counts.
+DPR is bounded by tier, device DPR and maxPixels, then multiplied by the governor's internal render scale without ever exceeding the authored/pixel-budget result. The browser compositor spatially upscales the canvas; this is not neural/temporal DLSS. Low uses no composer and authored lowUrl/heroLowModel remains the final coarse fallback after secondary render cost has already been shed. Reduced motion keeps cinematic motion conservative, disables smoothing/parallax/particles/postprocessing, pauses autonomous media and makes runtime sequence/camera actions resolve deterministically to their endpoint rather than animating.
+
+Renderer stats aggregate all previous-frame passes with autoReset disabled. The profiling bridge also exposes governor tier, rolling frame p95, effective pixel ratio and whether the canvas is native or browser-spatially scaled. Frame milliseconds are scheduling intervals, not GPU timings. GPU ms is explicitly unavailable. Do not infer memory bytes from texture counts.
 
 ## Lint boundary
 
