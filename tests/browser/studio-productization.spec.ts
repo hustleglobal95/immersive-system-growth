@@ -50,7 +50,7 @@ test("Ship is guided by default and owner credentials stay behind Advanced", asy
 
 test("Project Vault is reachable without permanent top-level navigation", async ({ page }) => {
   await page.goto("/studio");
-  await page.keyboard.press(process.platform === "darwin" ? "Meta+K" : "Control+K");
+  await page.getByRole("button", { name: "Open command palette" }).click();
   await page.getByRole("button", { name: "Project Vault", exact: true }).click();
   await expect(page.getByRole("dialog", { name: "Durable projects and restore points." })).toBeVisible();
   await expect(page.getByRole("button", { name: "Save to Project Vault" })).toBeVisible();
@@ -62,7 +62,7 @@ test("Project Vault is reachable without permanent top-level navigation", async 
 
 test("Improvement evidence keeps the Loop Engine behind the simplified surface", async ({ page }) => {
   await page.goto("/studio");
-  await page.keyboard.press(process.platform === "darwin" ? "Meta+K" : "Control+K");
+  await page.getByRole("button", { name: "Open command palette" }).click();
   const palette=page.getByRole("dialog", { name: "Go anywhere. Do anything." });
   await expect(palette).toBeVisible();
   await palette.getByRole("button", { name: "Improvement evidence", exact: true }).click();
