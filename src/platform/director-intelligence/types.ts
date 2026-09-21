@@ -58,6 +58,16 @@ export interface DirectorJudgmentEvidence {
   captureIds: string[];
   evidenceHash: string;
 }
+export interface DirectorJudgmentFinding {
+  critic: "composition" | "typography" | "camera" | "motion" | "continuity" | "brand" | "art-direction" | "color" | "lighting" | "material" | "image-direction" | "sound" | "originality" | "craft" | "interaction" | "mobile" | "performance";
+  captureId: string;
+  severity: "blocker" | "major" | "minor" | "advisory";
+  finding: string;
+  evidence: string[];
+  affectedSystems: string[];
+  repair: string;
+  confidence: number;
+}
 export interface DirectorJudgmentReport {
   status: "unverified" | "verified";
   verdict: DirectorVerdict;
@@ -66,6 +76,7 @@ export interface DirectorJudgmentReport {
   reasons: string[];
   blockers: string[];
   dimensions: Partial<Record<"composition"|"hierarchy"|"typography"|"motion"|"camera"|"coherence"|"brandSpecificity"|"emotionalEffect"|"usability",number>>;
+  findings: DirectorJudgmentFinding[];
   evidence: DirectorJudgmentEvidence | null;
 }
 
