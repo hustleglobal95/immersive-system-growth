@@ -41,12 +41,13 @@ const responseSchema=z.object({
 }).strict();
 
 export type DirectorJudgeInput=z.infer<typeof inputSchema>;
+export type DirectorJudgeEnvironment=Record<string,string|undefined>;
 
-export function directorJudgeConfigured(environment:NodeJS.ProcessEnv=process.env) {
+export function directorJudgeConfigured(environment:DirectorJudgeEnvironment=process.env) {
   return Boolean(environment.FORGE_DIRECTOR_JUDGE_URL && environment.FORGE_DIRECTOR_JUDGE_CALIBRATION_JSON);
 }
 
-export async function runDirectorJudge(rawInput:unknown,environment:NodeJS.ProcessEnv=process.env):Promise<DirectorJudgmentReport> {
+export async function runDirectorJudge(rawInput:unknown,environment:DirectorJudgeEnvironment=process.env):Promise<DirectorJudgmentReport> {
   const input=inputSchema.parse(rawInput);
   const url=environment.FORGE_DIRECTOR_JUDGE_URL;
   const calibrationJson=environment.FORGE_DIRECTOR_JUDGE_CALIBRATION_JSON;
