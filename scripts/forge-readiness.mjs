@@ -87,6 +87,8 @@ has("NEXT_PUBLIC_SITE_URL")
   : hold("Production canonical origin","Set NEXT_PUBLIC_SITE_URL before a production build so metadata/sitemap do not advertise localhost.");
 
 proof("Real-device performance","Headless/browser CI is not proof of physical-device smoothness. Test representative iPhone/Android hardware before shipping a high-end project.");
+proof("Autonomous construction scope","Construction Loop currently orchestrates and improves projects inside Forge's existing scene/config/runtime vocabulary. Bespoke React structure, novel shader systems, unusual world logic or new primitives can still require Claude/human code.");
+proof("Prompt-to-site reliability","Forge can generate detailed direction and implementation constraints, but there is no truthful guarantee that a model will reproduce an elite reference in one to three attempts. Rendered iteration remains part of the production process.");
 proof("Creative ceiling","Forge supplies strong systems and construction intelligence, but world-class output still depends on asset quality, art direction, typography, camera tuning and rendered iteration. A passing build does not certify elite visual quality.");
 
 const rank={READY:0,SETUP:1,VERIFY:2};
