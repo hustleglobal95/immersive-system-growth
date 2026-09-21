@@ -20,6 +20,7 @@ const winnerSchema=z.object({
   fingerprint:fingerprint,
   repairSignature:optionalFingerprint,
   repairSummary:z.array(z.string().max(400)).max(8),
+  repairCommandTypes:z.array(z.string().min(1).max(120)).max(7),
   preferenceAgreement:z.number().min(0).max(1).nullable(),
   functionalPassed:z.boolean().nullable(),
   motionScore:z.number().nullable(),
@@ -90,6 +91,8 @@ export interface ProjectLearningPattern {
   averageMotionScore:number|null;
   averagePerformanceDelta:number|null;
   averageAssetScoreDelta:number|null;
+  commonRepairCommands:string[];
+  evidenceExamples:string[];
   status:"hypothesis"|"review-ready";
   rule:string;
 }
@@ -133,6 +136,7 @@ export function createProjectLearningRecord(input:{
       fingerprint:candidate.fingerprint,
       repairSignature:candidate.repairSignature,
       repairSummary:candidate.repairSummary,
+      repairCommandTypes:candidate.repairCommandTypes ?? [],
       preferenceAgreement:candidate.preferenceAgreement,
       functionalPassed:candidate.functionalPassed,
       motionScore:candidate.motionScore,
@@ -231,6 +235,14 @@ export function evaluateProjectLearning(recordsInput:ProjectLearningRecord[]):Pr
     const performance=average(numbers(rows.map((row)=>delta(row.winner.performanceScoreBefore,row.winner.performanceScoreAfter))));
     const asset=average(numbers(rows.map((row)=>delta(row.winner.assetScoreBefore,row.winner.assetScoreAfter))));
     const reviewReady=projectCount>=3 && rows.length>=3 && (agreement ?? 0)>=0.75;
+    const commandCounts=new Map<string,number>();
+    for(const row of rows) for(const command of row.winner.repairCommandTypes) commandCounts.set(command,(commandCounts.get(command) ?? 0)+1);
+    const commonRepairCommands=[...commandCounts.entries()]
+      .filter(([,count])=>count>=Math.ceil(rows.length/2))
+      .sort((a,b)=>b[1]-a[1] || a[0].localeCompare(b[0]))
+      .map(([command])=>command)
+      .slice(0,7);
+    const evidenceExamples=[...new Set(rows.flatMap((row)=>row.winner.repairSummary).filter(Boolean))].slice(0,4);
     return {
       key,
       loopId:rows[0].record.loopId,
@@ -241,6 +253,8 @@ export function evaluateProjectLearning(recordsInput:ProjectLearningRecord[]):Pr
       averageMotionScore:motion,
       averagePerformanceDelta:performance,
       averageAssetScoreDelta:asset,
+      commonRepairCommands,
+      evidenceExamples,
       status:reviewReady ? "review-ready" : "hypothesis",
       rule:reviewReady
         ? "Independent project support is strong enough for human review as a possible Forge-wide lesson. Do not auto-promote it."
@@ -295,12 +309,20 @@ export function promoteProjectLearningPattern(input:{
     input.pattern.samples+" accepted winner samples",
     agreement===null ? "preference agreement unavailable" : Math.round(agreement*100)+"% average preference agreement",
   ].join(", ");
+  const commandEvidence=input.pattern.commonRepairCommands.length
+    ? "Common bounded repairs: "+input.pattern.commonRepairCommands.join(", ")+"."
+    : "No single bounded repair command dominated the accepted samples.";
+  const examples=input.pattern.evidenceExamples.length
+    ? "Accepted evidence examples: "+input.pattern.evidenceExamples.join(" | ")
+    : "";
   const lesson=[
     marker,
     evidence+".",
+    commandEvidence,
+    examples,
     "Approved by "+approver+".",
     "Use as contextual evidence, not a mandatory design prescription.",
-  ].join(" ");
+  ].filter(Boolean).join(" ");
   return addLesson(graph,projectId,lesson,confidence);
 }
 
