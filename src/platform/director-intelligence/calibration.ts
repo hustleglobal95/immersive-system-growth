@@ -1,14 +1,14 @@
 import type { CalibrationCase, CouncilCritique, EvaluationReport } from "@/src/platform/director-intelligence/types";
 
 export const calibrationCases: CalibrationCase[] = [
-  { id: "exceptional-specific", label: "Exceptional, specific, feasible", expectedDisposition: "LOCK", benchmarkScores: { conceptualClarity: 9.2, brandAdherence: 9.3, distinctiveness: 9.1, productionFeasibility: 8.4 }, notes: ["Strong idea and brand ownership."] },
+  { id: "exceptional-specific", label: "Exceptional, specific, feasible", expectedDisposition: "ADVANCE", benchmarkScores: { conceptualClarity: 9.2, brandAdherence: 9.3, distinctiveness: 9.1, productionFeasibility: 8.4 }, notes: ["Strong idea and brand ownership."] },
   { id: "beautiful-generic", label: "Beautiful but generic", expectedDisposition: "REJECT", benchmarkScores: { aestheticCoherence: 9.4, brandAdherence: 5.5, portfolioNovelty: 5.8, distinctiveness: 6 }, notes: ["Aesthetics cannot compensate for weak ownership."] },
   { id: "original-impossible", label: "Original but impossible", expectedDisposition: "REVISE", benchmarkScores: { novelty: 9.5, productionFeasibility: 4.8, assetRealism: 4.5 }, notes: ["Preserve idea; redesign execution."] },
   { id: "feasible-boring", label: "Feasible but boring", expectedDisposition: "REVISE", benchmarkScores: { productionFeasibility: 9.3, novelty: 5.2, memorability: 5.5 }, notes: ["Feasibility is not creative quality."] },
   { id: "branded-unusable", label: "Highly branded but unusable", expectedDisposition: "REVISE", benchmarkScores: { brandAdherence: 9.4, interactionPurpose: 4.9, mobileIntegrity: 5.2 }, notes: ["Brand fit cannot erase user harm."] },
 ];
 
-export function evaluateJudgeCalibration(actual: EvaluationReport[], cases: CalibrationCase[] = calibrationCases) {
+export function evaluatePlanningCalibration(actual: EvaluationReport[], cases: CalibrationCase[] = calibrationCases) {
   const byId = new Map(actual.map((report) => [report.territoryId, report]));
   let matched = 0; const failures: string[] = [];
   for (const item of cases) {
