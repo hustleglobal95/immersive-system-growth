@@ -6,6 +6,17 @@ export const studioRoles = ["reviewer", "designer", "director", "developer", "ow
 export type StudioRole = (typeof studioRoles)[number];
 export interface StudioIdentity { id: string; name: string; role: StudioRole; }
 
+export interface StudioAuthConfiguration {
+  enabled:boolean;
+  configured:boolean;
+  setupRequired:boolean;
+  sessionSecretConfigured:boolean;
+  usersConfigured:boolean;
+  ownerConfigured:boolean;
+  userCount:number;
+  issue:string|null;
+}
+
 type StudioAccessEnvironment={ [key:string]:string|undefined };
 
 const userSchema = z.object({
@@ -26,6 +37,50 @@ export class StudioAccessError extends Error {
 
 export function studioAccessEnabled(environment: StudioAccessEnvironment = process.env) {
   return studioAuthEnabled(environment);
+}
+
+export function studioAuthConfiguration(environment: StudioAccessEnvironment = process.env):StudioAuthConfiguration {
+  const enabled=studioAccessEnabled(environment);
+  if(!enabled) {
+    return {
+      enabled:false,
+      configured:true,
+      setupRequired:false,
+      sessionSecretConfigured:false,
+      usersConfigured:false,
+      ownerConfigured:false,
+      userCount:0,
+      issue:null,
+    };
+  }
+
+  const sessionSecretConfigured=(environment.FORGE_INTERNAL_SESSION_SECRET?.length ?? 0)>=32;
+  let users:ReturnType<typeof parseStudioUsers>=[];
+  let parseIssue:string|null=null;
+  try {
+    users=parseStudioUsers(environment);
+  } catch(error) {
+    parseIssue=error instanceof Error ? error.message : "FORGE_INTERNAL_USERS_JSON is invalid";
+  }
+  const usersConfigured=users.length>0;
+  const ownerConfigured=users.some((user)=>user.role==="owner");
+  const configured=!parseIssue && sessionSecretConfigured && usersConfigured && ownerConfigured;
+  const issue=parseIssue
+    ?? (!sessionSecretConfigured ? "FORGE_INTERNAL_SESSION_SECRET must be at least 32 characters."
+      : !usersConfigured ? "No Forge Studio users are configured. No passphrase exists yet."
+      : !ownerConfigured ? "Forge Studio requires at least one owner account."
+      : null);
+
+  return {
+    enabled:true,
+    configured,
+    setupRequired:!configured,
+    sessionSecretConfigured,
+    usersConfigured,
+    ownerConfigured,
+    userCount:users.length,
+    issue,
+  };
 }
 
 export function parseStudioUsers(environment: StudioAccessEnvironment = process.env) {
