@@ -228,7 +228,7 @@ class RestoreBoundedSceneRepairCommand implements ForgeCommand<ExperienceConfig,
 
 function mutateScene(
   state:ExperienceConfig,
-  transactionId:string,
+  transactionId:string|undefined,
   sceneId:string,
   eventType:string,
   apply:(scene:SceneDefinition,adjusted:string[])=>void,
