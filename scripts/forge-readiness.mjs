@@ -15,12 +15,17 @@ const yes=(label,detail)=>rows.push({status:"READY",label,detail});
 const hold=(label,detail)=>rows.push({status:"SETUP",label,detail});
 const proof=(label,detail)=>rows.push({status:"VERIFY",label,detail});
 
+function localAuthDisabled(){
+  return env.NODE_ENV!=="production" && env.STUDIO_AUTH_ENABLED!=="true";
+}
 function internalAccessReady(){
-  if(env.STUDIO_AUTH_ENABLED==="false") return true;
+  if(localAuthDisabled()) return true;
   if((env.FORGE_INTERNAL_SESSION_SECRET?.length ?? 0)<32) return false;
   try{
     const users=JSON.parse(env.FORGE_INTERNAL_USERS_JSON ?? "[]");
-    return Array.isArray(users)&&users.length>0&&users.every((user)=>user&&typeof user.id==="string"&&typeof user.name==="string"&&typeof user.role==="string"&&/^pbkdf2\$\d+\$[A-Za-z0-9_-]+\$[A-Za-z0-9_-]+$/.test(user.secretHash ?? ""));
+    return Array.isArray(users)&&users.length>0
+      && users.some((user)=>user?.role==="owner")
+      && users.every((user)=>user&&typeof user.id==="string"&&typeof user.name==="string"&&typeof user.role==="string"&&/^pbkdf2\$\d+\$[A-Za-z0-9_-]+\$[A-Za-z0-9_-]+$/.test(user.secretHash ?? ""));
   }catch{return false;}
 }
 function directorCalibrationReady(){
@@ -49,12 +54,12 @@ file(".github/workflows/ci.yml")||file(".github/workflows/forge-ci.yml")||file("
   ? yes("Hosted CI contract","A GitHub Actions validation workflow exists.")
   : proof("Hosted CI contract","No canonical CI workflow was detected by the readiness script.");
 
-if(env.STUDIO_AUTH_ENABLED==="false"){
-  yes("Local Studio access","Authentication is explicitly disabled for local authoring.");
+if(localAuthDisabled()){
+  yes("Local Studio access","Development is in Local owner mode; no Studio password is required.");
 }else if(internalAccessReady()){
   yes("Studio internal access","Session secret and at least one valid internal user are configured.");
 }else{
-  hold("Studio access","Auth defaults on. Use npm run studio:local for solo local work, or configure FORGE_INTERNAL_SESSION_SECRET + FORGE_INTERNAL_USERS_JSON.");
+  hold("Studio access","Shared/production auth is not ready. Configure a 32+ character session secret and at least one owner user; local development can use npm run studio:local.");
 }
 
 const localStorageReady=env.NODE_ENV!=="production" && env.FORGE_LOCAL_STORAGE_ENABLED==="true";
