@@ -12,13 +12,14 @@ import { useCinematicFrame } from "@/src/components/three/CinematicFrame";
 import { cinematicRenderProfile } from "@/src/lib/renderProfile";
 export function PostFX() {
   const quality = useExperienceStore((s) => s.quality),
+    governorTier = useExperienceStore((s) => s.renderGovernor.tier),
     motion = useExperienceStore((s) => s.reducedMotion);
   const frame = useCinematicFrame(),
     bloom = useRef<BloomEffect>(null),
     vignette = useRef<VignetteEffect>(null);
-  const profile = cinematicRenderProfile(quality);
+  const profile = cinematicRenderProfile(quality,governorTier);
   useFrame(() => {
-    if (bloom.current) bloom.current.intensity = frame.current.post.bloom;
+    if (bloom.current) bloom.current.intensity = frame.current.post.bloom * profile.bloomScale;
     if (vignette.current)
       vignette.current.darkness = frame.current.post.vignette;
   });
