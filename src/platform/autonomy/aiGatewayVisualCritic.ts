@@ -16,7 +16,7 @@ export async function callAiGatewayPairwiseVisualCritic(input:{
   const environment=input.environment ?? process.env;
   const token=environment.AI_GATEWAY_API_KEY || environment.VERCEL_OIDC_TOKEN || "";
   if(!token) throw new Error("AI Gateway visual critic requires AI_GATEWAY_API_KEY or VERCEL_OIDC_TOKEN");
-  const model=environment.FORGE_AI_GATEWAY_VISUAL_MODEL?.trim() || "openai/gpt-5.6-sol";
+  const model=environment.FORGE_AI_GATEWAY_VISUAL_MODEL?.trim() || "openai/gpt-5.4";
   const fetchImpl=input.fetchImpl ?? fetch;
   const instruction=[
     "You are Forge's comparative visual judge.",
