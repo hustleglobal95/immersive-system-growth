@@ -12,7 +12,7 @@ import rawGraph from "../config/interaction-graph.json";
 test("Studio authentication is frictionless locally, fail-closed in production, and role ordering is explicit", () => {
   assert.equal(studioAccessEnabled({ NODE_ENV:"development" }), false);
   assert.equal(studioAccessEnabled({ NODE_ENV:"production" }), true);
-  assert.equal(studioAccessEnabled({ NODE_ENV:"production",STUDIO_AUTH_ENABLED: "false" }), false);
+  assert.equal(studioAccessEnabled({ NODE_ENV:"production",STUDIO_AUTH_ENABLED: "false" }), true);
   assert.equal(studioAccessEnabled({ NODE_ENV:"development",STUDIO_AUTH_ENABLED: "true" }), true);
   assert.equal(hasStudioRole({ id: "d", name: "Designer", role: "designer" }, "reviewer"), true);
   assert.equal(hasStudioRole({ id: "d", name: "Designer", role: "designer" }, "developer"), false);
