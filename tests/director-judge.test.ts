@@ -5,6 +5,7 @@ import { runDirectorJudge } from "../src/platform/director-intelligence/judgeCli
 
 const input={
   projectContext:"Aurelia Tower — premium waterfront residence",
+  scopeFingerprint:"forge1:1234567890abcdef",
   planningDisposition:"ADVANCE" as const,
   treatment:{thesis:"Elevation becomes a progressive separation from city noise.",selectedTerritoryId:"ascent"},
   captures:[
