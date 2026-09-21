@@ -22,6 +22,7 @@ import { apertureRadius, useLightLab } from './lightLab';
 import { ObservatoryWorld } from './ObservatoryWorld';
 import { CinematicRealism } from './CinematicRealism';
 import { needsDemandFrame } from './demandFrame';
+import { cinematicRenderProfile } from '@/src/lib/renderProfile';
 const StudioTransformGizmo = lazy(() => import('@/src/components/three/StudioTransformGizmo').then(m => ({ default: m.StudioTransformGizmo })));
 
 function StudioEnvironment() {
@@ -147,8 +148,10 @@ function FrameDemand() {
 }
 export function HeliotStage({ children }: { children?: ReactNode } = {}) {
   const quality=useExperienceStore(s=>s.quality);
+  const governorTier=useExperienceStore(s=>s.renderGovernor.tier);
+  const profile=cinematicRenderProfile(quality,governorTier);
   const editor = useStudioEditor();
-  return <Canvas frameloop="demand" shadows={quality!=='low'} camera={{ position: [5, 2.2, 8], fov: 43, near: .025, far: 450 }} dpr={1} gl={{ antialias: true, powerPreference: 'high-performance' }} fallback={<span>The optical study remains available below.</span>}>
+  return <Canvas frameloop="demand" shadows={profile.shadows} camera={{ position: [5, 2.2, 8], fov: 43, near: .025, far: 450 }} dpr={1} gl={{ antialias: true, powerPreference: 'high-performance' }} fallback={<span>The optical study remains available below.</span>}>
     <RendererLifecycle /><AdaptiveQuality /><RenderStatsProbe /><PerformanceLedger /><StudioEnvironment />
     <CinematicFrame>
       <WorldAtmosphere /><SceneLighting /><CameraRig banking /><LabOrbitControls /><FrameDemand />
