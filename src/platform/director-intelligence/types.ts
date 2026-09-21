@@ -57,6 +57,7 @@ export interface DirectorJudgmentEvidence {
   calibrated: boolean;
   captureIds: string[];
   evidenceHash: string;
+  scopeFingerprint: string;
 }
 export interface DirectorJudgmentFinding {
   critic: "composition" | "typography" | "camera" | "motion" | "continuity" | "brand" | "art-direction" | "color" | "lighting" | "material" | "image-direction" | "sound" | "originality" | "craft" | "interaction" | "mobile" | "performance";
