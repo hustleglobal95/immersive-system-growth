@@ -2,6 +2,11 @@ import fs from "node:fs";
 
 const env=process.env;
 const rows=[];
+const profile=(process.argv.find((arg)=>arg.startsWith("--profile="))?.split("=")[1] || "full");
+if(!["full","local","connected"].includes(profile)) {
+  console.error("Unknown readiness profile. Use --profile=full|local|connected.");
+  process.exit(2);
+}
 
 const has=(name)=>Boolean(env[name]?.trim());
 const file=(path)=>fs.existsSync(path);
@@ -32,6 +37,8 @@ const coreFiles=[
   "src/platform/createExperienceEngine.ts",
   "src/platform/loops/loopRegistry.ts",
   "src/platform/director-intelligence/orchestrator.ts",
+  "src/platform/buildPacket.ts",
+  "scripts/forge-build-packet.mjs",
   "config/experience.json",
 ];
 coreFiles.every(file)
@@ -97,7 +104,7 @@ proof("Prompt-to-site reliability","Forge can generate detailed direction and im
 proof("Creative ceiling","Forge supplies strong systems and construction intelligence, but world-class output still depends on asset quality, art direction, typography, camera tuning and rendered iteration. A passing build does not certify elite visual quality.");
 
 const rank={READY:0,SETUP:1,VERIFY:2};
-console.log("\nFORGE OPERATIONAL READINESS\n");
+console.log("\nFORGE OPERATIONAL READINESS · "+profile.toUpperCase()+"\n");
 for(const row of rows.sort((a,b)=>rank[a.status]-rank[b.status])){
   console.log(`${row.status.padEnd(6)}  ${row.label}`);
   console.log(`        ${row.detail}`);
@@ -107,4 +114,13 @@ const setup=rows.filter((r)=>r.status==="SETUP").length;
 const verify=rows.filter((r)=>r.status==="VERIFY").length;
 console.log(`\nSummary: ${ready} ready · ${setup} setup-required · ${verify} external-verification items.`);
 console.log("Use npm run verify for code/release gates. Use npm run forge:readiness before starting a client project.");
-if(process.argv.includes("--strict")&&setup>0) process.exitCode=1;
+const localRequired=new Set(["Core runtime + Studio source","Studio access","Local Studio access","Studio internal access","Project Vault","Generated-asset storage","Permanent generated-asset storage"]);
+const strictFailures=rows.filter((row)=>row.status==="SETUP" && (
+  profile==="full"
+  || profile==="connected"
+  || (profile==="local" && localRequired.has(row.label))
+));
+if(process.argv.includes("--strict")&&strictFailures.length>0) {
+  console.error("\nStrict "+profile+" readiness failed: "+strictFailures.map((row)=>row.label).join(", "));
+  process.exitCode=1;
+}
