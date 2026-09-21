@@ -44,6 +44,24 @@ export function routeVisualFinding(finding:VisualCriticFinding):AgenticRoute {
 }
 
 export function classifyFinding(finding:VisualCriticFinding):AgentTaskDomain {
+  // Critic ownership wins over incidental affected-system mentions. A strategic
+  // originality finding may mention camera/motion as evidence, but that must
+  // never downgrade it into an automatic camera or motion repair.
+  switch(finding.critic) {
+    case "brand":
+    case "originality":
+    case "sound": return "director";
+    case "material":
+    case "image-direction": return "asset";
+    case "mobile": return "mobile";
+    case "performance": return "performance";
+    case "interaction": return "interaction";
+    case "camera": return "camera";
+    case "motion":
+    case "continuity": return "motion";
+    case "typography": return "typography";
+  }
+
   const systems=finding.affectedSystems.join(" ").toLowerCase();
   if(/camera|lens|framing/.test(systems)) return "camera";
   if(/mobile|responsive|viewport/.test(systems)) return "mobile";
@@ -51,27 +69,7 @@ export function classifyFinding(finding:VisualCriticFinding):AgentTaskDomain {
   if(/asset|media source|texture|model|video/.test(systems)) return "asset";
   if(/interaction|pointer|touch|drag|hover/.test(systems)) return "interaction";
   if(/motion|transition|timing|scroll/.test(systems)) return "motion";
-
-  switch(finding.critic) {
-    case "camera": return "camera";
-    case "motion":
-    case "continuity": return "motion";
-    case "typography": return "typography";
-    case "interaction": return "interaction";
-    case "mobile": return "mobile";
-    case "performance": return "performance";
-    case "material":
-    case "image-direction": return "asset";
-    case "brand":
-    case "originality":
-    case "sound": return "director";
-    case "composition":
-    case "art-direction":
-    case "color":
-    case "lighting":
-    case "craft":
-    default: return "composition";
-  }
+  return "composition";
 }
 
 function routeForDomain(domain:AgentTaskDomain,finding:VisualCriticFinding):AgenticRoute {
