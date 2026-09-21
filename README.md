@@ -17,7 +17,7 @@ npm run build
 npm run start
 ```
 
-For development use `npm run dev`. Dev/build prepares locally served Draco and Basis decoders from the locked Three dependency. Open http://localhost:3000. No runtime gstatic decoder dependency is required.
+For development use `npm run dev`. Local development now defaults to **Local owner** and does not require a Forge password unless you explicitly set `STUDIO_AUTH_ENABLED=true`. For the clearest Studio-only path, run `npm run studio:local` and open http://localhost:3000/studio. Dev/build prepares locally served Draco and Basis decoders from the locked Three dependency. No runtime gstatic decoder dependency is required.
 
 ## Forge Studio
 
