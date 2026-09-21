@@ -39,7 +39,7 @@ test("Director judge can use AI Gateway directly while preserving calibrated ide
   const calibration=JSON.stringify({
     version:1,
     id:"gateway-cal-v1",
-    judgeId:"ai-gateway:openai/gpt-5.6-sol",
+    judgeId:"ai-gateway:openai/gpt-5.4",
     benchmarkSetId:"human-pairs-v1",
     reviewedAt:"2026-09-20T20:00:00.000Z",
     sampleSize:40,
@@ -50,7 +50,7 @@ test("Director judge can use AI Gateway directly while preserving calibrated ide
   });
   const environment={
     AI_GATEWAY_API_KEY:"gateway-key",
-    FORGE_AI_GATEWAY_DIRECTOR_MODEL:"openai/gpt-5.6-sol",
+    FORGE_AI_GATEWAY_DIRECTOR_MODEL:"openai/gpt-5.4",
     FORGE_DIRECTOR_JUDGE_CALIBRATION_JSON:calibration,
   };
   assert.equal(directorJudgeConfigured(environment),true);
@@ -70,7 +70,7 @@ test("Director judge can use AI Gateway directly while preserving calibrated ide
   });
   assert.equal(result.status,"verified");
   assert.equal(result.verdict,"LOCK");
-  assert.equal(result.evidence?.judgeId,"ai-gateway:openai/gpt-5.6-sol");
+  assert.equal(result.evidence?.judgeId,"ai-gateway:openai/gpt-5.4");
   assert.equal(result.evidence?.calibrationId,"gateway-cal-v1");
   assert.equal((requestBody as {response_format?:{type?:string}}).response_format?.type,"json_schema");
 });
@@ -78,7 +78,7 @@ test("Director judge can use AI Gateway directly while preserving calibrated ide
 test("AI Gateway Director judge refuses calibration for a different judge identity",async()=>{
   const environment={
     AI_GATEWAY_API_KEY:"gateway-key",
-    FORGE_AI_GATEWAY_DIRECTOR_MODEL:"openai/gpt-5.6-sol",
+    FORGE_AI_GATEWAY_DIRECTOR_MODEL:"openai/gpt-5.4",
     FORGE_DIRECTOR_JUDGE_CALIBRATION_JSON:JSON.stringify({
       version:1,id:"wrong-cal",judgeId:"different-judge",benchmarkSetId:"human-pairs-v1",
       reviewedAt:"2026-09-20T20:00:00.000Z",sampleSize:40,pairwiseAgreement:.82,lockPrecision:.9,falseLockRate:.05,reviewer:"creative-director",
