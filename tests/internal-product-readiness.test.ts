@@ -84,11 +84,11 @@ test("internal product release boundaries preserve automation and gate human act
 
 
 test("local Project Vault performs durable save, version and restore without GitHub credentials", async () => {
-  const namespace="test-"+crypto.randomUUID();
-  const localDir=".forge/local-vault/"+namespace;
-  const environment={ NODE_ENV:"development", FORGE_LOCAL_STORAGE_ENABLED:"true", FORGE_LOCAL_VAULT_NAMESPACE:namespace } as NodeJS.ProcessEnv;
+  const localDir=".forge/local-vault";
+  const environment={ NODE_ENV:"development", FORGE_LOCAL_STORAGE_ENABLED:"true" } as NodeJS.ProcessEnv;
   const actor={id:"local-owner",name:"Local owner",role:"owner"};
   try {
+    fs.rmSync(localDir,{recursive:true,force:true});
     const first=await saveVaultProject({
       experience:rawExperience,
       project:rawProject,
