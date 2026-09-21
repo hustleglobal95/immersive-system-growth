@@ -152,6 +152,7 @@ test("local Project Vault performs durable save, version and restore without Git
         strategyId:"hierarchy-first",
         fingerprint:"b".repeat(64),
         repairSummary:["Improved focal hierarchy without changing project truth."],
+        repairCommandTypes:["scene.adjustSubjectFraming"],
         preferenceAgreement:.9,
         functionalPassed:true,
         motionScore:92,
