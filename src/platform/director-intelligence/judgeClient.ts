@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
 import { parseDirectorJudgment, unverifiedDirectorJudgment } from "@/src/platform/director-intelligence/judgment";
+import { parseDirectorJudgeCalibration } from "@/src/platform/director-intelligence/judgeCalibration";
 import type { DirectorJudgmentReport } from "@/src/platform/director-intelligence/types";
 
 const captureSchema=z.object({
@@ -42,14 +43,15 @@ const responseSchema=z.object({
 export type DirectorJudgeInput=z.infer<typeof inputSchema>;
 
 export function directorJudgeConfigured(environment:NodeJS.ProcessEnv=process.env) {
-  return Boolean(environment.FORGE_DIRECTOR_JUDGE_URL && environment.FORGE_DIRECTOR_JUDGE_CALIBRATION_ID);
+  return Boolean(environment.FORGE_DIRECTOR_JUDGE_URL && environment.FORGE_DIRECTOR_JUDGE_CALIBRATION_JSON);
 }
 
 export async function runDirectorJudge(rawInput:unknown,environment:NodeJS.ProcessEnv=process.env):Promise<DirectorJudgmentReport> {
   const input=inputSchema.parse(rawInput);
   const url=environment.FORGE_DIRECTOR_JUDGE_URL;
-  const calibrationId=environment.FORGE_DIRECTOR_JUDGE_CALIBRATION_ID;
-  if(!url || !calibrationId) return unverifiedDirectorJudgment("Rendered Director judgment is not configured. FORGE_DIRECTOR_JUDGE_URL and FORGE_DIRECTOR_JUDGE_CALIBRATION_ID are required.");
+  const calibrationJson=environment.FORGE_DIRECTOR_JUDGE_CALIBRATION_JSON;
+  if(!url || !calibrationJson) return unverifiedDirectorJudgment("Rendered Director judgment is not configured. FORGE_DIRECTOR_JUDGE_URL and FORGE_DIRECTOR_JUDGE_CALIBRATION_JSON are required.");
+  const calibration=parseDirectorJudgeCalibration(JSON.parse(calibrationJson));
 
   const response=await fetch(url,{
     method:"POST",
@@ -74,6 +76,7 @@ export async function runDirectorJudge(rawInput:unknown,environment:NodeJS.Proce
   });
   if(!response.ok) throw new Error("Director judge failed with HTTP "+response.status);
   const raw=responseSchema.parse(await response.json());
+  if(raw.judgeId!==calibration.judgeId) throw new Error("Director judge identity does not match the calibrated judge record.");
   const evidenceHash=hashEvidence(input.captures);
   return parseDirectorJudgment({
     status:"verified",
@@ -87,7 +90,7 @@ export async function runDirectorJudge(rawInput:unknown,environment:NodeJS.Proce
       source:"rendered-external-judge",
       judgeId:raw.judgeId,
       model:raw.model,
-      calibrationId,
+      calibrationId:calibration.id,
       calibrated:true,
       captureIds:input.captures.map((capture)=>capture.id),
       evidenceHash,
