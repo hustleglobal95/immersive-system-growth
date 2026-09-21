@@ -256,6 +256,9 @@ test("Loop Engine scripts preserve human approval and legacy repair compatibilit
   assert.match(runner,/saveVaultLoopCandidate/);
   assert.match(runner,/cinematicSystems/);
   assert.match(runner,/boundedFailures/);
+  assert.match(runner,/reviewOnly/);
+  assert.match(runner,/awaits human visual review/);
+  assert.doesNotMatch(runner,/FORGE_VISUAL_CRITIC_URL is required\. Loop Engine fails closed/);
   assert.doesNotMatch(runner,/writeFile\([^\n]*config\/experience\.json/);
   assert.match(accept,/Human approval is required/);
   assert.match(accept,/--approve/);
