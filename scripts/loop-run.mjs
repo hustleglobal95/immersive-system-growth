@@ -264,6 +264,9 @@ try {
         const repairPlan=await readJson(path.join(reviewRoot,"repair-plan.json"),null);
         evidence.repairSignature=repairPlanSignature(repairPlan);
         evidence.repairSummary=Array.isArray(repairPlan?.summary) ? repairPlan.summary.slice(0,8).map((item)=>String(item).slice(0,400)) : [];
+        evidence.repairCommandTypes=Array.isArray(repairPlan?.commands)
+          ? [...new Set(repairPlan.commands.map((command)=>String(command?.type || "")).filter(Boolean))].slice(0,7)
+          : [];
         if(worker.code!==0 || !(await exists(candidateExperiencePath))) {
           const repairResult=await readJson(path.join(reviewRoot,"repair-result.json"),{});
           evidence.reason=boundedReason(repairResult.errors?.join("; ") || definition.label+" repair worker did not produce a safe candidate.");
