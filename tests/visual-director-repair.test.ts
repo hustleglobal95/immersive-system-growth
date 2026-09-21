@@ -336,7 +336,7 @@ test("AI Gateway visual critic uses structured multimodal comparison and validat
     request,
     firstImage:"Zmlyc3Q=",
     secondImage:"c2Vjb25k",
-    environment:{AI_GATEWAY_API_KEY:"test-key",FORGE_AI_GATEWAY_VISUAL_MODEL:"openai/gpt-5.6-sol"},
+    environment:{AI_GATEWAY_API_KEY:"test-key",FORGE_AI_GATEWAY_VISUAL_MODEL:"openai/gpt-5.4"},
     fetchImpl:async(_url,init)=>{
       captured=init;
       return new Response(JSON.stringify({
@@ -353,7 +353,7 @@ test("AI Gateway visual critic uses structured multimodal comparison and validat
   assert.equal(result.winner,"second");
   assert.equal(result.confidence,.88);
   const body=JSON.parse(String(captured?.body));
-  assert.equal(body.model,"openai/gpt-5.6-sol");
+  assert.equal(body.model,"openai/gpt-5.4");
   assert.equal(body.response_format.type,"json_schema");
   assert.equal(body.messages[0].content.filter((part:{type:string})=>part.type==="image_url").length,2);
   assert.match(String((captured?.headers as Record<string,string>).authorization),/Bearer test-key/);
