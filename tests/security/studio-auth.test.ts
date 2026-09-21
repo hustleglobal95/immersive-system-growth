@@ -10,6 +10,9 @@ test("Studio auth defaults off in development, on in production, and lab remains
   assert.equal(studioAuthEnabled({NODE_ENV:"production"}),true);
   assert.equal(studioAuthEnabled({NODE_ENV:"development",STUDIO_AUTH_ENABLED:"true"}),true);
   assert.equal(studioAuthEnabled({NODE_ENV:"production",STUDIO_AUTH_ENABLED:"false"}),true);
+  assert.equal(studioAuthEnabled({NODE_ENV:"production",CI:"true",STUDIO_AUTH_ENABLED:"false"}),true);
+  assert.equal(studioAuthEnabled({NODE_ENV:"production",FORGE_STUDIO_TEST_AUTH_BYPASS:"true",STUDIO_AUTH_ENABLED:"false"}),true);
+  assert.equal(studioAuthEnabled({NODE_ENV:"production",CI:"true",FORGE_STUDIO_TEST_AUTH_BYPASS:"true",STUDIO_AUTH_ENABLED:"false"}),false);
   assert.equal(studioAvailableInProduction({NODE_ENV:"production"}),false);
   assert.equal(studioAvailableInProduction({NODE_ENV:"production",ENABLE_STUDIO_IN_PROD:"true"}),true);
   assert.equal(isProtectedAuthoringPath("/studio"),true);
