@@ -41,6 +41,11 @@ export interface AgentContextCapsule {
     signatureMoment:CreativeStateGraph["direction"]["signatureMoment"];
   };
   scene:CreativeStateGraph["implementation"]["sceneContracts"][number]|null;
+  sceneLink:{
+    strategicSceneId:string|null;
+    runtimeSceneId:string|null;
+    mapping:"exact-id"|"ordinal"|"none";
+  };
   runtime:{
     scene:ExperienceConfig["scenes"][number]|null;
     assets:AssetManifest|null;
@@ -64,12 +69,19 @@ export function compileAgentContext(input:{
   };
 }):AgentContextCapsule {
   const {graph,task}=input;
-  const scene=task.sceneId
-    ? graph.implementation.sceneContracts.find((item)=>item.id===task.sceneId) ?? null
-    : null;
-  const runtimeScene=task.sceneId
-    ? input.currentState?.experience?.scenes.find((item)=>item.id===task.sceneId) ?? null
-    : null;
+  const strategicScenes=graph.implementation.sceneContracts;
+  const runtimeScenes=input.currentState?.experience?.scenes ?? [];
+  const strategicExact=task.sceneId ? strategicScenes.find((item)=>item.id===task.sceneId) ?? null : null;
+  const runtimeExact=task.sceneId ? runtimeScenes.find((item)=>item.id===task.sceneId) ?? null : null;
+  const strategicIndex=strategicExact ? strategicScenes.findIndex((item)=>item.id===strategicExact.id) : -1;
+  const runtimeIndex=runtimeExact ? runtimeScenes.findIndex((item)=>item.id===runtimeExact.id) : -1;
+  const scene=strategicExact ?? (runtimeIndex>=0 ? strategicScenes[runtimeIndex] ?? null : null);
+  const runtimeScene=runtimeExact ?? (strategicIndex>=0 ? runtimeScenes[strategicIndex] ?? null : null);
+  const mapping:AgentContextCapsule["sceneLink"]["mapping"]=strategicExact&&runtimeExact
+    ? "exact-id"
+    : scene&&runtimeScene
+      ? "ordinal"
+      : "none";
   const policy=domainPolicy(task.domain);
   const capabilities=policy.capabilityIds.filter((id)=>Boolean(capabilityById(id)));
   return {
@@ -89,6 +101,11 @@ export function compileAgentContext(input:{
       signatureMoment:graph.direction.signatureMoment,
     },
     scene,
+    sceneLink:{
+      strategicSceneId:scene?.id ?? null,
+      runtimeSceneId:runtimeScene?.id ?? null,
+      mapping,
+    },
     runtime:{
       scene:runtimeScene,
       assets:policy.includeAssets ? input.currentState?.assetManifest ?? null : null,
