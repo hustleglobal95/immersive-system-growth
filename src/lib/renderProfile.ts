@@ -1,17 +1,24 @@
 import type { QualityTier } from "@/src/types/experience";
+import {
+  governedShadowMapSize,
+  renderGovernorProfile,
+  type RenderGovernorTier,
+} from "@/src/lib/renderGovernor";
 
 export interface CinematicRenderProfile {
   antialias: "none" | "smaa";
   bloom: boolean;
   bloomMipmap: boolean;
+  bloomScale:number;
   composerMultisampling: number;
+  shadows:boolean;
   shadowMapSize: number;
   shadowRadius: number;
   shadowBias: number;
   powerPreference: "default" | "high-performance";
 }
 
-const profiles: Record<QualityTier, CinematicRenderProfile> = {
+const profiles: Record<QualityTier, Omit<CinematicRenderProfile,"bloomScale"|"shadows">> = {
   low: {
     antialias: "none",
     bloom: false,
@@ -44,6 +51,22 @@ const profiles: Record<QualityTier, CinematicRenderProfile> = {
   },
 };
 
-export function cinematicRenderProfile(tier: QualityTier): CinematicRenderProfile {
-  return profiles[tier];
+export function cinematicRenderProfile(
+  tier: QualityTier,
+  governorTier:RenderGovernorTier="native",
+): CinematicRenderProfile {
+  const base=profiles[tier];
+  const governor=renderGovernorProfile(tier,governorTier);
+  const reduced=governor.postFx==="reduced";
+  const off=governor.postFx==="off";
+  return {
+    ...base,
+    antialias:off || (reduced && tier!=="high") ? "none" : base.antialias,
+    bloom:base.bloom && !off && (!reduced || tier==="high"),
+    bloomMipmap:base.bloomMipmap && governorTier==="native",
+    bloomScale:governor.bloomScale,
+    shadows:tier==="high" && governor.shadows,
+    shadowMapSize:governedShadowMapSize(base.shadowMapSize,tier,governorTier),
+    shadowRadius:Math.max(1,base.shadowRadius*governor.shadowScale),
+  };
 }
