@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { runDirectorJudge } from "../src/platform/director-intelligence/judgeClient.ts";
+import { stateFingerprint } from "../src/core/journal/stateFingerprint.ts";
 
 const options=args(process.argv.slice(2));
 const directorPath=String(options.director || "director-intelligence-report.json");
@@ -24,6 +25,11 @@ if(captures.length<2) {
   process.exit(2);
 }
 
+const scopeFingerprint=stateFingerprint({
+  brief:report.brief,
+  treatment:report.treatment,
+  planningDisposition:report.planningDisposition,
+});
 const judgment=await runDirectorJudge({
   projectContext:[
     report.brief?.projectName,
@@ -31,6 +37,7 @@ const judgment=await runDirectorJudge({
     report.brief?.audience,
     report.brief?.brandTruth,
   ].filter(Boolean).join(" — "),
+  scopeFingerprint,
   planningDisposition:report.planningDisposition,
   treatment:report.treatment,
   captures,
