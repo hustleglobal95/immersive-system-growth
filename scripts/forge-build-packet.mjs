@@ -3,25 +3,34 @@ import path from "node:path";
 import { parseDirectorBrief } from "../src/platform/directorSchema.ts";
 import { runDirectorIntelligence } from "../src/platform/director-intelligence/orchestrator.ts";
 import { buildForgeBuildPacket } from "../src/platform/buildPacket.ts";
+import { inferPromptIntelligence } from "../src/platform/autonomy/promptIntelligence.ts";
+import { parseExperience } from "../src/lib/configSchema.ts";
+import { parseAssetManifest } from "../src/platform/assetManifestSchema.ts";
 
 const options=Object.fromEntries(process.argv.slice(2).filter((arg)=>arg.startsWith("--")&&arg.includes("=")).map((arg)=>arg.slice(2).split(/=(.*)/s,2)));
 const briefPath=String(options.brief || "config/director-brief.example.json");
 const output=String(options.output || "");
+const prompt=String(options.prompt || "").trim();
+const projectName=String(options.name || "Forge Project").trim().slice(0,100);
 const [briefRaw,experience,assetManifest,interactionGraph,cinematicSystems,repoContract]=await Promise.all([
-  fs.readFile(briefPath,"utf8"),
+  prompt ? Promise.resolve("") : fs.readFile(briefPath,"utf8"),
   fs.readFile(String(options.experience || "config/experience.json"),"utf8"),
   fs.readFile(String(options.manifest || "config/asset-manifest.json"),"utf8"),
   fs.readFile(String(options.graph || "config/interaction-graph.json"),"utf8"),
   fs.readFile(String(options.cinematic || "config/cinematic-systems.json"),"utf8"),
   fs.readFile("CLAUDE.md","utf8"),
 ]);
-const brief=parseDirectorBrief(JSON.parse(briefRaw));
+const parsedExperience=parseExperience(JSON.parse(experience));
+const parsedManifest=parseAssetManifest(JSON.parse(assetManifest));
+const brief=prompt
+  ? inferPromptIntelligence({prompt,projectName,sceneCount:parsedExperience.scenes.length,manifest:parsedManifest}).brief
+  : parseDirectorBrief(JSON.parse(briefRaw));
 const director=runDirectorIntelligence({brief});
 const packet=buildForgeBuildPacket({
   director,
   currentState:{
-    experience:JSON.parse(experience),
-    assetManifest:JSON.parse(assetManifest),
+    experience:parsedExperience,
+    assetManifest:parsedManifest,
     interactionGraph:JSON.parse(interactionGraph),
     cinematicSystems:JSON.parse(cinematicSystems),
   },
