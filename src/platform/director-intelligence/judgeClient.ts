@@ -120,7 +120,7 @@ async function callCustomDirectorJudge(input:DirectorJudgeInput,environment:Dire
 }
 
 async function callGatewayDirectorJudge(input:DirectorJudgeInput,environment:DirectorJudgeEnvironment,token:string,fetchImpl:typeof fetch) {
-  const model=environment.FORGE_AI_GATEWAY_DIRECTOR_MODEL?.trim() || environment.FORGE_AI_GATEWAY_VISUAL_MODEL?.trim() || "openai/gpt-5.6-sol";
+  const model=environment.FORGE_AI_GATEWAY_DIRECTOR_MODEL?.trim() || environment.FORGE_AI_GATEWAY_VISUAL_MODEL?.trim() || "openai/gpt-5.4";
   const judgeId="ai-gateway:"+model;
   const content:Array<Record<string,unknown>>=[
     {type:"text",text:[
