@@ -101,7 +101,7 @@ export function renderGovernorProfile(
 
 export function governedDpr(baseDpr:number,quality:QualityTier,tier:RenderGovernorTier) {
   const profile=renderGovernorProfile(quality,tier);
-  return Math.max(profile.minDpr,Math.min(baseDpr,baseDpr*profile.dprScale));
+  return Math.min(baseDpr,Math.max(Math.min(baseDpr,profile.minDpr),baseDpr*profile.dprScale));
 }
 
 export function governedParticleCount(count:number,quality:QualityTier,tier:RenderGovernorTier) {
