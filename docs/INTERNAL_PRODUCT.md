@@ -58,12 +58,15 @@ The project journal records:
 - review publishing
 - permanent asset promotion
 - explicit production lessons
+- human-approved Loop acceptance and linked Project Learning records
 
 Use **Record lesson** for information worth teaching future Forge direction. Keep it factual and operational. Example:
 
 > On mobile, the slower orbit preserved the luxury feel better than cutting the shot.
 
 The journal is intentionally structured separately from Git commit history so Director/autonomy can consume project learning later without reverse-engineering repository messages.
+
+Accepted Loop winners also write typed evidence under `.forge/vault/projects/<project-id>/learning/`. Run `npm run learning:eval` to aggregate those records across projects. Cross-project patterns cannot enter Director Creative Memory until they clear the independent-project evidence threshold and a human explicitly runs `npm run learning:promote -- --pattern <loop:strategy> --approved-by "<name>" --approve`.
 
 ## Asset Vault
 
