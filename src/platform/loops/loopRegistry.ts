@@ -47,7 +47,7 @@ const definitions:LoopDefinition[]=[
     worker:"visual-repair",
     executable:true,
     verifiers:["schema","functional","motion","mobile","visual"],
-    allowedRepairCommands:["scene.adjustPresentation","motion.applyArchetype","camera.applyChoreography"],
+    allowedRepairCommands:["scene.adjustSubjectFraming","scene.adjustMediaFraming","motion.applyArchetype","camera.applyChoreography"],
     strategies:[
       { id:"mobile-composition",label:"Mobile composition",instruction:"Judge mobile first. Repair crop, negative space, type/subject separation and visual hierarchy without flattening the concept into a generic stacked layout." },
       { id:"mobile-camera",label:"Mobile camera",instruction:"Judge mobile first. Reduce or redirect camera travel only when necessary to preserve subject readability, orientation and the intended cinematic beat." },
@@ -113,7 +113,7 @@ const definitions:LoopDefinition[]=[
     worker:"construction",
     executable:true,
     verifiers:["schema","functional","assets","motion","mobile","performance","accessibility","visual"],
-    allowedRepairCommands:["scene.adjustPresentation","motion.applyArchetype","camera.applyChoreography"],
+    allowedRepairCommands:["scene.adjustLighting","scene.adjustSubjectFraming","scene.adjustMediaFraming","scene.adjustMaterialSurface","motion.applyArchetype","camera.applyChoreography"],
     strategies:[
       { id:"hierarchy-first",label:"Hierarchy first",instruction:"Use Director hierarchy and construction evidence to coordinate scene motion while protecting one signature peak and reducing decorative pressure in supporting chapters." },
       { id:"camera-structure",label:"Camera structure",instruction:"Re-author camera interpolation and coordinated motion while preserving every authored camera endpoint, client fact and semantic scene boundary." },
