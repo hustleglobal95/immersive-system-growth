@@ -2,8 +2,29 @@ import Link from "next/link";
 import { experience } from "@/src/lib/experience";
 
 export function SiteChrome() {
+  const weekleyConcept = experience.meta.name.startsWith("David Weekley Homes");
   const nocterra = experience.meta.name.startsWith("NOCTERRA");
   const atelierMaris = experience.meta.name.startsWith("ATELIER MARIS");
+
+  if (weekleyConcept) {
+    return (
+      <header className="weekley-chrome" aria-label="David Weekley redesign concept navigation">
+        <Link className="weekley-brand" href="#arrival" aria-label="David Weekley Homes redesign concept, return to opening">
+          <strong>DAVID WEEKLEY HOMES</strong>
+          <small>INDEPENDENT FORGE REDESIGN CONCEPT</small>
+        </Link>
+        <nav className="weekley-nav" aria-label="Experience chapters">
+          <Link href="#place">Find a place</Link>
+          <Link href="#community">Communities</Link>
+          <Link href="#difference">The difference</Link>
+        </nav>
+        <div className="weekley-actions">
+          <span>Design · Choice · Service</span>
+          <Link className="weekley-actions__primary" href="#tour">Schedule a tour</Link>
+        </div>
+      </header>
+    );
+  }
 
   if (atelierMaris) {
     return (
