@@ -40,6 +40,10 @@ test("generated stress fixture preserves invariants at flagship-scale scene coun
     id: `stress-scene-${index + 1}`,
     label: `Stress Scene ${index + 1}`,
     range: [index / 16, (index + 1) / 16] as [number, number],
+    blocks: source.blocks.map((block, blockIndex) => ({
+      ...structuredClone(block),
+      id: `stress-block-${index}-${blockIndex}`,
+    })),
     motionTracks: Array.from({ length: 4 }, (__, trackIndex) => ({
       ...structuredClone(source.motionTracks[trackIndex % Math.max(1, source.motionTracks.length)] ?? {
         id: "generated",
