@@ -70,6 +70,11 @@
       "occlusion": []
     },
     {
+      "id": "community",
+      "procedural": [],
+      "occlusion": []
+    },
+    {
       "id": "threshold",
       "stack": {
         "enabled": false,
