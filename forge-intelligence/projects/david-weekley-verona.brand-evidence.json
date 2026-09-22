@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "clientName": "David Weekley Homes — Verona, Central Pasco County",
+  "officialSources": [
+    {
+      "label": "David Weekley Homes — Verona land acquisition announcement",
+      "url": "https://www.davidweekleyhomes.com/news/article/david-weekley-homes-expands-tampa-presence-with-land-acquisition-in-pasco-county",
+      "observations": [
+        "David Weekley acquired 156 homesites in the future Verona master-planned community in central Pasco County.",
+        "Home sales are expected to begin in summer 2027.",
+        "Verona is planned as a 1,500-acre master-planned community with approximately 2,500 homes from multiple builders.",
+        "Weekley's 156 single-family homesites are split across 40-foot, 50-foot and 60-foot homesite widths.",
+        "The public announcement frames Verona as part of David Weekley's continued Tampa-area growth and emphasizes thoughtfully designed homes."
+      ]
+    },
+    {
+      "label": "David Weekley Homes — FlexSpace and Brand Promise",
+      "url": "https://www.davidweekleyhomes.com/livingweekley/david-weekley-difference/choice/flexspace",
+      "observations": [
+        "David Weekley states its Brand Promise as Design, Choice and Service.",
+        "FlexSpace options let buyers modify floor plans and personalize homes to fit the way they live.",
+        "Personalization is presented as a practical part of the homebuilding proposition rather than a decorative add-on."
+      ]
+    },
+    {
+      "label": "David Weekley Homes — Tampa model-home visit experience",
+      "url": "https://www.davidweekleyhomes.com/realtors/fl/tampa/realtors/visiting-our-homes",
+      "observations": [
+        "Onsite Sales Consultants help visitors with community information, floor-plan details, financing options and the buying process.",
+        "Model homes are positioned as a way to picture life in a David Weekley home.",
+        "The company highlights Personal Builder and Warranty Service programs as part of customer service."
+      ]
+    },
+    {
+      "label": "David Weekley Homes — Tampa market",
+      "url": "https://www.davidweekleyhomes.com/new-homes/fl/tampa/tampa",
+      "observations": [
+        "The Tampa experience gives buyers direct access to communities, floor plans, quick move-ins, comparison and model-home tour scheduling.",
+        "The market page uses concrete buying information such as pricing, availability and plan choice rather than purely atmospheric storytelling.",
+        "The sales journey repeatedly routes qualified visitors toward personal tours and contact with a Sales Consultant."
+      ]
+    },
+    {
+      "label": "David Weekley Homes — company purpose and scale",
+      "url": "https://careers.davidweekleyhomes.com/aboutus",
+      "observations": [
+        "The company's stated purpose is Building Dreams, Enhancing Lives.",
+        "David Weekley describes its homes as quality homes with innovative floor plans designed around customer needs.",
+        "The company describes Design, Choice and Service as its brand promise and says it operates across 19 markets."
+      ]
+    }
+  ],
+  "verifiedBrandTruth": "David Weekley is not selling architecture as spectacle; it is selling confidence in a future home through thoughtful design, meaningful choice, guided service and a homebuilding process that helps buyers imagine and shape how they will live.",
+  "verifiedAudience": "Future Tampa-area homeowners and relocating buyers evaluating where to live, which home design fits them, how much choice they will have, what the future community will become and whether they trust the builder enough to begin the process.",
+  "verifiedPrimaryAction": "Explore the community",
+  "differentiators": [
+    "Design, Choice and Service are explicit parts of the company's brand promise.",
+    "Personalization through FlexSpace and design selections is integrated into the product experience.",
+    "The company uses model homes, floor-plan detail, Sales Consultants, Personal Builder and Warranty Service to reduce buyer uncertainty.",
+    "Verona gives David Weekley a future-community story with 156 homesites across three homesite-width categories inside a much larger master-planned environment."
+  ],
+  "commercialJobs": [
+    "Make Verona understandable before the neighborhood is fully built.",
+    "Help buyers move from regional context to community, homesite and home-design choice without losing orientation.",
+    "Turn floor-plan choice and personalization into a visual decision tool instead of a static content page.",
+    "Show how David Weekley's Design, Choice and Service promise changes the buyer experience.",
+    "Create enough confidence and emotional projection that a qualified buyer wants updates, a model-home visit or a conversation with a Sales Consultant."
+  ],
+  "visualSignals": [
+    "Bright Central Florida daylight, landscape and neighborhood scale rather than a dark boutique-residence mood.",
+    "Masterplan, map, homesite and wayfinding logic should be first-class visual material.",
+    "40-foot, 50-foot and 60-foot homesite categories can become a spatial comparison language when factual detail is needed.",
+    "Home design, plan comparison and personalization should feel interactive and decision-oriented.",
+    "The experience should visibly move across scales: region → community → homesite → home design → personalized life.",
+    "Information surfaces should feel clear, established and useful enough for a major national homebuilder while still cinematic."
+  ],
+  "antiSignals": [
+    "Atelier Maris-style oversized Cormorant/editorial serif headlines over full-screen architectural photography.",
+    "Ink, ivory, stone, beige and muted-gold quiet-luxury palette as the default identity.",
+    "A boutique architectural-film narrative built around approach, threshold, material, ritual, horizon and private inquiry.",
+    "Alternating sticky story panels and slow observational scrolling as the dominant interaction model.",
+    "A single trophy-home or resort mentality that ignores community scale, buyer choice and homebuilding process.",
+    "Generic luxury-real-estate copy such as elevated living, timeless, refined, sanctuary or new standard.",
+    "Animation whose only purpose is to look expensive rather than help a buyer understand place, choice or process."
+  ],
+  "contentSignals": [
+    "156 David Weekley homesites at Verona.",
+    "Future sales timing: summer 2027 according to the July 15, 2026 official announcement.",
+    "Master-planned community context: approximately 1,500 acres and approximately 2,500 homes from multiple builders.",
+    "Homesite widths: 40-foot, 50-foot and 60-foot categories.",
+    "Design, Choice and Service brand promise.",
+    "FlexSpace and personalization.",
+    "Floor plans, model-home tours, quick move-ins, comparison and Sales Consultant guidance as recurring buyer tasks.",
+    "Personal Builder and Warranty Service as trust-building parts of the customer journey."
+  ],
+  "unknowns": [
+    "Final Verona amenity package and community-brand visual identity are not yet verified.",
+    "Final Verona home-plan lineup, prices, architectural elevations and model-home assets are not yet verified.",
+    "Any illustrative masterplan, home rendering or lifestyle scene created before official assets arrive must be labeled internally as conceptual."
+  ]
+}

@@ -1,6 +1,7 @@
 import type { runDirectorIntelligence } from "@/src/platform/director-intelligence/orchestrator";
 import { buildCreativeStateGraph, buildSignatureSliceGate } from "@/src/platform/agentic/creativeStateGraph";
 import { assertProductionOriginalityGate } from "@/src/platform/director-intelligence/productionOriginalityGate";
+import type { BrandEvidence } from "@/src/platform/autonomy/brandEvidence";
 
 type DirectorRun=ReturnType<typeof runDirectorIntelligence>;
 
@@ -13,10 +14,11 @@ export interface ForgeBuildPacketInput {
     cinematicSystems?:unknown;
   };
   repoContract:string;
+  brandEvidence?:BrandEvidence;
 }
 
 export function buildForgeBuildPacket(input:ForgeBuildPacketInput) {
-  const {director,currentState}=input;
+  const {director,currentState,brandEvidence}=input;
   const report=director.report;
   assertProductionOriginalityGate(director.originalityGate);
   const treatment=report.treatment;
@@ -39,6 +41,22 @@ export function buildForgeBuildPacket(input:ForgeBuildPacketInput) {
     "## PROJECT BRIEF",
     json(report.brief),
     "",
+    "## VERIFIED CLIENT / BRAND EVIDENCE",
+    brandEvidence ? json(brandEvidence) : "No structured brand evidence supplied. For named-client Signature/Flagship work, implementation must remain research-blocked until official first-party evidence is attached.",
+    "",
+    "## BRAND-SPECIFICITY CONTRACT",
+    brandEvidence
+      ? [
+          "Every major visual decision must trace to the supplied first-party evidence, a real buyer/user job, or a project-specific constraint.",
+          "Reusable Forge engineering may transfer. Prior-project visual grammar may not.",
+          "The logo-swap test must fail: this experience should not plausibly belong to another client after changing the logo.",
+          "Do not use generic premium/luxury shorthand when a more specific client truth exists.",
+          "Preserve these anti-signals: "+brandEvidence.antiSignals.join(" | "),
+          "Preserve these visual signals: "+brandEvidence.visualSignals.join(" | "),
+          "Make these commercial jobs legible: "+brandEvidence.commercialJobs.join(" | "),
+        ].join("\n")
+      : "No verified brand-specificity contract is available.",
+    "",
     "## CONTROLLING THESIS",
     selected?.thesis ?? treatment.thesis,
     "",
@@ -53,6 +71,13 @@ export function buildForgeBuildPacket(input:ForgeBuildPacketInput) {
     "",
     "## SELECTED VISUAL LANGUAGE",
     json(director.visualLanguages.find((item)=>item.territoryId===treatment.selectedTerritoryId) ?? director.visualLanguages[0]),
+    "",
+    "## PORTFOLIO DIVERGENCE EVIDENCE",
+    json({
+      originalityGate:director.originalityGate,
+      collisions:report.collisions,
+      creativeMemory:director.creativeMemory,
+    }),
     "",
     "## CREATIVE STATE GRAPH",
     "This is the canonical creative truth. Director-locked fields may not be rewritten by implementation workers.",
@@ -118,17 +143,23 @@ export function buildForgeBuildPacket(input:ForgeBuildPacketInput) {
     "- Rendered evidence and pairwise comparison decide promotion; new candidates never replace the incumbent by existence alone.",
     "",
     "## IMPLEMENTATION ORDER",
+    "0. For named-client work, verify the supplied brand evidence is present and specific enough to support visual decisions. If it is absent, stop instead of generating a generic premium direction.",
     "1. Inspect the existing project and identify which Forge-native systems already own each requirement.",
     "2. Write the scene implementation map before changing production code: subject, copy, negative space, camera start/end/path, lighting, object state, typography behavior, interaction, transition, mobile equivalent, assets and preload requirements.",
     "3. Reuse the persistent Canvas, GSAP/ScrollTrigger, deterministic motion tracks, Forge camera choreography, interaction graph, media/mask and visual-physics systems before adding new architecture.",
     "4. Implement the smallest coherent vertical slice that proves the signature moment and continuity language.",
-    "5. Extend the same grammar across supporting scenes without giving every section equal spectacle.",
-    "6. Implement mobile as a re-directed composition preserving the same idea, not a shrunken desktop.",
-    "7. Run the repository verification gates and inspect rendered desktop/mobile evidence.",
-    "8. Correct framing, hierarchy, timing, first-use hitching, continuity and mobile failures before declaring completion.",
+    "5. Capture that slice at desktop and mobile before expanding. Compare it against the packet's brand-specificity contract and prior-project collision evidence. If the result could be mistaken for an existing Forge project, rebuild the slice rather than polishing it.",
+    "6. Extend the proven grammar across supporting scenes without giving every section equal spectacle.",
+    "7. Implement mobile as a re-directed composition preserving the same idea, not a shrunken desktop.",
+    "8. Run the repository verification gates and inspect rendered desktop/mobile evidence.",
+    "9. Run the visual review/repair path on the actual rendered output. Correct brand-generic composition, typography, palette, interaction and narrative decisions before micro-polish.",
+    "10. Correct framing, hierarchy, timing, first-use hitching, continuity and mobile failures before declaring completion.",
     "",
     "## NON-NEGOTIABLES",
     "- Do not invent client facts, metrics, materials, dimensions, awards, testimonials or asset availability.",
+    "- Do not use an unrelated Forge project's typography stack, palette, composition system, narrative arc or signature interaction as a shortcut.",
+    "- Do not treat words like premium, cinematic, luxury, editorial, minimal or immersive as art direction. Those are not client-specific decisions.",
+    "- Do not expand full-site production from a visually generic signature slice.",
     "- Do not add a new animation clock.",
     "- Do not create a second competing WebGL architecture when the persistent Forge Canvas can own the effect.",
     "- Do not flatten the signature moment on mobile; reduce simultaneous complexity while preserving meaning.",
@@ -138,6 +169,9 @@ export function buildForgeBuildPacket(input:ForgeBuildPacketInput) {
     "",
     "## ACCEPTANCE CONTRACT",
     "- The rendered experience communicates the controlling thesis without requiring the strategy document.",
+    "- At least five visible design decisions can be traced directly to verified client evidence or a specific buyer/user job.",
+    "- The logo-swap test fails: replacing the client identity with an unrelated competitor would make the art direction feel wrong.",
+    "- The signature slice is materially distinct from prior Forge portfolio fingerprints in typography, composition, palette, narrative and signature mechanism.",
     "- The named signature moment is clearly the strongest visual/interactive beat.",
     "- Supporting chapters contain enough stillness and restraint for the peak to matter.",
     "- Copy and focal subject do not compete for the same spatial priority.",

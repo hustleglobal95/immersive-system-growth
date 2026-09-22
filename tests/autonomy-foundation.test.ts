@@ -7,6 +7,8 @@ import { autonomyContract } from "../src/platform/autonomy/contracts";
 import { runAutonomyBenchmark } from "../src/platform/autonomy/autonomyBenchmark";
 import { buildRenderReviewPlan } from "../src/platform/autonomy/visualReview";
 import { buildFunctionalVerificationPlan } from "../src/platform/autonomy/functionalVerification";
+import { parseBrandEvidence } from "../src/platform/autonomy/brandEvidence";
+import fs from "node:fs";
 import rawExperience from "../config/experience.json" with { type: "json" };
 import { parseExperience } from "../src/lib/configSchema";
 import type { AssetManifest } from "../src/types/assets";
@@ -30,6 +32,21 @@ test("short prompts infer commercially distinct Director briefs", () => {
   assert.notEqual(hotel.brief.audience,saas.brief.audience);
   assert.ok(watch.recommendedMedia.includes("real-3d"));
   assert.ok(watch.brief.brandTruth.includes("Working hypothesis"));
+});
+
+test("homebuilder prompts resolve to community decision-making instead of generic luxury property", () => {
+  const packet=inferPromptIntelligence({
+    prompt:"David Weekley Homes at Verona. Create an immersive launch experience for a future master-planned community with home designs, homesites and buyer choice.",
+    projectName:"David Weekley Homes at Verona",
+    sceneCount:7,
+    manifest:emptyManifest,
+  });
+  assert.equal(packet.projectType.value,"property");
+  assert.equal(packet.brief.primaryAction,"Explore the community");
+  assert.match(packet.brief.audience,/Future homeowners|community/i);
+  assert.match(packet.brief.brandTruth,/community understandable|builder trust|ownership/i);
+  assert.ok(packet.brief.constraints.some((item)=>/logo swap/i.test(item)));
+  assert.ok(packet.researchNeeds.some((item)=>/official site/i.test(item)));
 });
 
 test("prompt intelligence carries registered assets into Director evidence", () => {
@@ -110,4 +127,14 @@ test("functional verification derives commercial and mobile gates from prompt in
   assert.ok(scenarios.some((item) => item.id === "primary-action" && item.steps.some((step) => step.includes(packet.primaryAction.value))));
   assert.ok(scenarios.some((item) => item.id === "mobile-equivalence"));
   assert.ok(scenarios.every((item) => item.required));
+});
+
+
+test("David Weekley Verona client evidence stays structured and specific",()=>{
+  const evidence=parseBrandEvidence(JSON.parse(fs.readFileSync("forge-intelligence/projects/david-weekley-verona.brand-evidence.json","utf8")));
+  assert.equal(evidence.clientName,"David Weekley Homes — Verona, Central Pasco County");
+  assert.ok(evidence.officialSources.length>=4);
+  assert.ok(evidence.visualSignals.some((item)=>/masterplan|homesite|wayfinding/i.test(item)));
+  assert.ok(evidence.antiSignals.some((item)=>/Atelier Maris/i.test(item)));
+  assert.ok(evidence.commercialJobs.some((item)=>/before the neighborhood is fully built/i.test(item)));
 });
