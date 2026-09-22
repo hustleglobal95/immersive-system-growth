@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "id": "atelier-maris-casa-lumen",
-  "name": "ATELIER MARIS / Casa Lumen",
+  "id": "david-weekley-forge-concept",
+  "name": "David Weekley Homes / FORGE Redesign Concept",
   "experiencePath": "config/experience.json",
   "visualSystemsPath": "config/visual-systems.json",
   "contentSources": [],
   "deployment": {
     "provider": "vercel",
-    "projectName": "atelier-maris-casa-lumen",
+    "projectName": "david-weekley-forge-concept",
     "productionBranch": "main"
   },
   "telemetry": {
@@ -21,53 +21,33 @@
   "experienceModesPath": "config/experience-modes.json",
   "discoverability": {
     "version": 1,
-    "siteName": "Atelier Maris",
+    "siteName": "David Weekley Homes / Independent FORGE Concept",
     "canonicalBaseUrl": "https://immersive-system-growth.vercel.app",
-    "defaultTitle": "Atelier Maris — Coastal Architecture on the Costa Brava",
-    "defaultDescription": "Atelier Maris is a coastal architecture practice in Begur creating restrained houses shaped by section, light, material discipline and direct studio oversight.",
+    "defaultTitle": "David Weekley Homes / Independent FORGE Redesign Concept",
+    "defaultDescription": "An independent cinematic home-discovery concept built entirely with the FORGE experience system.",
     "primaryEntity": {
-      "type": "ProfessionalService",
-      "name": "Atelier Maris",
-      "description": "A coastal architecture practice in Begur, Costa Brava, working from site and section through technical design and construction oversight.",
+      "type": "WebSite",
+      "name": "David Weekley Homes / Independent FORGE Concept",
+      "description": "A design study showing a continuous journey from place and community to home and personal tour.",
       "url": "https://immersive-system-growth.vercel.app/site",
       "sameAs": [],
-      "areaServed": [
-        "Begur",
-        "Costa Brava",
-        "Catalonia"
-      ]
+      "areaServed": ["United States"]
     },
     "searchIntents": [
-      "coastal architect Costa Brava",
-      "architect Begur Spain",
-      "luxury residential architecture Costa Brava",
-      "custom house architect Costa Brava"
+      "new home discovery experience",
+      "home builder website redesign",
+      "immersive real estate experience"
     ],
     "authorityTopics": [
-      "coastal residential architecture",
-      "site and feasibility",
-      "section-led design",
-      "daylight and material restraint",
-      "construction oversight"
+      "new home discovery",
+      "community exploration",
+      "home personalization",
+      "guided home tours"
     ],
-    "publicPaths": [
-      "/site",
-      "/work",
-      "/about"
-    ],
-    "privatePaths": [
-      "/design",
-      "/director",
-      "/forge",
-      "/heliot",
-      "/lab",
-      "/structure",
-      "/studio",
-      "/type-vault",
-      "/api/"
-    ],
+    "publicPaths": ["/", "/site"],
+    "privatePaths": ["/design", "/director", "/forge", "/heliot", "/lab", "/structure", "/studio", "/type-vault", "/api/"],
     "ai": {
-      "allowSearchCrawlers": true,
+      "allowSearchCrawlers": false,
       "allowTrainingCrawlers": false,
       "publishLlmsTxt": true
     }
