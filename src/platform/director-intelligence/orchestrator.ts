@@ -37,6 +37,7 @@ import { reviewCreativeMemory } from "@/src/platform/director-intelligence/creat
 import { resolveCreativeTaste, type CreativeTasteLayers } from "@/src/platform/director-intelligence/creativeTaste";
 import { judgmentPermitsProduction, parseDirectorJudgment, unverifiedDirectorJudgment } from "@/src/platform/director-intelligence/judgment";
 import { stateFingerprint } from "@/src/core/journal/stateFingerprint";
+import { evaluateProductionOriginalityGate } from "@/src/platform/director-intelligence/productionOriginalityGate";
 
 export function runDirectorIntelligence(input: DirectorIntelligenceInput & { approvals?: DirectorHumanApprovals; finalCutRequested?: boolean; tasteLayers?: CreativeTasteLayers }) {
   const brief = parseDirectorBrief(input.brief);
@@ -117,14 +118,18 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
   const creativeCeiling = estimateCreativeCeilingV2({
     brief,treatment,selected:selectedEvaluation,assetGap,dna:creativeDNA,art:artDirection,divergence:visualLanguageDivergence,
   });
+  const originalityGate=evaluateProductionOriginalityGate({
+    tier:brief.tier,
+    collisions,
+    memoryVerdict:creativeMemory.verdict,
+  });
 
-  const blockers = [...selectedEvaluation.blockers, ...whyBlockers, ...hierarchyBlockers];
+  const blockers = [...selectedEvaluation.blockers, ...whyBlockers, ...hierarchyBlockers, ...originalityGate.blockers];
   if (inflation.warning) blockers.push(inflation.warning);
   if (!diverged.diversity.sufficient) blockers.push(`Territory diversity score ${diverged.diversity.score} is below the required divergence threshold.`);
   if (brief.tier === "signature" || brief.tier === "flagship") {
     if (!precedents.some((item) => !item.precedent.industries.includes(brief.projectType))) blockers.push("Signature/Flagship direction lacks a cross-domain precedent transfer.");
     if (!visualLanguageDivergence.sufficient) blockers.push(...visualLanguageDivergence.blockers);
-    if (creativeMemory.verdict==="rewrite") blockers.push("Creative Memory detects material house-style repetition; rewrite the strongest repeated creative devices before lock.");
   }
 
   let planningDisposition: DirectorIntelligenceReport["planningDisposition"] = debate.disposition === "REJECT ALL" ? "REJECT" : debate.disposition;
@@ -172,7 +177,7 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
   return {
     report,productionPlan,debate,audience,brandAssets,referenceDeconstructions,construction,constructionPlan,
     divergence:diverged.diversity,visualLanguages,visualLanguageDivergence,creativeDNA,artDirection,disciplineDirections,
-    creativeMutations,creativeMemory,creativeCeiling,councilCalibration:inflation,humanGates,tasteCalibration:selectedTaste,
+    creativeMutations,creativeMemory,creativeCeiling,originalityGate,councilCalibration:inflation,humanGates,tasteCalibration:selectedTaste,
     tasteModel:resolvedTaste,
   };
 }
