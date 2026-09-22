@@ -33,7 +33,9 @@ Never assume an asset, service or project fact that is not present.
 
 For any named external client, company, product, property, development or URL, do not let category priors become art direction.
 
-Use first-party sources first. Research the official site and any official product/community/press pages relevant to the request, then write `test-results/forge-brand-evidence.json` with this exact shape:
+First search `forge-intelligence/projects/*.brand-evidence.json` for matching client evidence. If a matching file exists, verify that its first-party sources are still relevant and use or refresh it rather than starting from generic category assumptions.
+
+Use first-party sources first. Research the official site and any official product/community/press pages relevant to the request, then write or refresh a structured brand-evidence file with this exact shape:
 
 ```json
 {
@@ -65,7 +67,7 @@ A named-client Signature/Flagship build without this evidence file is blocked. D
 Convert the user's instruction into one execution contract:
 
 ```bash
-npm run forge:build-packet -- --name="<project name>" --prompt="<user request>" --client-work=true --evidence=test-results/forge-brand-evidence.json --output=test-results/forge-build-packet.md
+npm run forge:build-packet -- --name="<project name>" --prompt="<user request>" --client-work=true --evidence="<matching brand-evidence.json>" --output=test-results/forge-build-packet.md
 ```
 
 Read the entire packet before editing production code.
