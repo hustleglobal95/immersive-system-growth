@@ -12,6 +12,7 @@ type ProjectProfile = {
 };
 
 const profiles: ProjectProfile[] = [
+  { type: "property", signals: ["homebuilder","home builder","new homes","master-planned","master planned","community","communities","homesite","homesites","floor plan","floor plans","model home","model homes","neighborhood","neighborhoods","residential community","residential development","home design","home designs","build a home","builder"], audience: "Future homeowners and relocating buyers trying to understand the community, compare home designs, imagine daily life, personalize a plan and trust the builder before making a major commitment.", action: "Explore the community", truth: "Make an unbuilt or unfamiliar community understandable, desirable and explorable while turning builder trust, choice and the path to ownership into concrete evidence.", differentiators: ["Community understanding before sales pressure","Home choice and personalization made interactive","Builder trust and process as visible proof","Information architecture that helps a buyer make a real decision"] },
   { type: "automotive", signals: ["car","automotive","vehicle","ev","electric sports car","supercar","sedan","suv","roadster"], audience: "Prospective drivers and enthusiasts comparing design, performance, engineering and ownership value.", action: "Explore the vehicle", truth: "Turn engineering and driving character into visible proof rather than generic speed spectacle.", differentiators: ["Engineering translated into experience","Recognizable vehicle character","Performance evidence before spectacle"] },
   { type: "property", signals: ["tower","residence","residences","real estate","property","condo","condominium","apartment","development","waterfront","penthouse"], audience: "Qualified buyers evaluating place, privacy, architecture, views, material quality and long-term value.", action: "Request a private presentation", truth: "Make the property's strongest spatial or lifestyle advantage felt before asking for inquiry.", differentiators: ["Place-specific value","Architectural proof","A credible sense of arrival and ownership"] },
   { type: "hospitality", signals: ["hotel","resort","stay","restaurant","hospitality","spa","retreat","destination","villa","booking"], audience: "Travelers deciding whether the destination feels distinctive enough to visit, stay or book.", action: "Book the experience", truth: "Make the destination's atmosphere and ritual of arrival tangible before presenting booking utility.", differentiators: ["Sense of place","Arrival as narrative","Atmosphere connected to conversion"] },
@@ -47,8 +48,14 @@ export function inferPromptIntelligence(input: { prompt: string; projectName: st
   const brandTruth = makeField(profile.truth + " Working hypothesis from the prompt: " + stripLeadVerb(sourcePrompt) + ".", Math.max(0.5,typeConfidence - 0.15), "inference", [sourcePrompt], true);
   const assets = directorAssets(input.manifest);
   const differentiators = unique(profile.differentiators.concat(extractClaims(sourcePrompt))).slice(0,6);
+  const clientSpecificSignal=looksClientSpecific(sourcePrompt,input.projectName);
   const constraints = [
     "Protect mobile meaning before preserving desktop rendering cost.",
+    ...(clientSpecificSignal ? [
+      "Do not default to Forge house style, category moodboards or prior-project composition. Reusable code may transfer; visual identity may not.",
+      "A logo swap test must fail: the final direction should not plausibly belong to an unrelated client in the same category.",
+      "Named-client visual decisions must trace back to verified brand/business evidence before Signature/Flagship implementation.",
+    ] : []),
     "Prefer existing registered assets before inventing production cost.",
     "Current project contains " + input.sceneCount + " scenes and " + assets.length + " registered production assets.",
     "Every proposed scene must include an explicit asset strategy and reversible production path.",
@@ -80,6 +87,7 @@ export function inferPromptIntelligence(input: { prompt: string; projectName: st
     differentiators,
     constraints,
     unknowns: [
+      ...(clientSpecificSignal ? ["Named-client brand evidence has not yet been verified by this short-prompt compiler."] : []),
       "Exact brand guidelines and prohibited visual territory are not verified.",
       "The final commercial conversion action is inferred until confirmed.",
       "Any product, property or performance claim not present in the prompt or registered evidence remains unverified.",
@@ -90,6 +98,10 @@ export function inferPromptIntelligence(input: { prompt: string; projectName: st
       "Creative brand truth is a hypothesis derived from the prompt, not a verified client claim.",
     ],
     researchNeeds: [
+      ...(clientSpecificSignal ? [
+        "Research the named client's official site and first-party materials before locking visual language.",
+        "Extract client-specific visual/content signals plus prohibited category cliches and prior-Forge collision risks.",
+      ] : []),
       "Verify the brand/product truth behind the working hypothesis.",
       "Identify owned visual or verbal assets that competitors cannot credibly use.",
       "Check category cliches before final territory lock.",
@@ -154,6 +166,12 @@ function scoreSignals(lower: string, signals: string[]) { return signals.reduce(
 function hasSignal(lower:string, signal:string) { if (signal.includes(" ") || signal.includes("-")) return lower.includes(signal); return lower.split(/[^a-z0-9]+/).includes(signal); }
 function makeField<T>(value:T, confidence:number, evidenceClass:InferredField<T>["evidenceClass"], evidence:string[], requiresConfirmation:boolean):InferredField<T> { return { value, confidence:clamp(confidence), evidenceClass, evidence, requiresConfirmation }; }
 function stripLeadVerb(value:string) { return value.replace(/^(make|create|build)\s+/i,"").trim(); }
+function looksClientSpecific(prompt:string,projectName:string) {
+  if(/https?:\/\//i.test(prompt)) return true;
+  const normalized=projectName.trim();
+  if(!normalized || /^(forge project|ci signature product|watch|hotel|cloud)$/i.test(normalized)) return false;
+  return normalized.split(/\s+/).length>=2 && /[A-Z]/.test(normalized);
+}
 function normalize(value:string) { return value.trim().replace(/\s+/g," ").slice(0,4000) || "Create a memorable immersive experience."; }
 function fileName(value:string) { return value.split("/").filter(Boolean).pop() ?? value; }
 function slug(value:string) { return value.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,120) || "asset"; }
