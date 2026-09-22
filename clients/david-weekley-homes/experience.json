@@ -1,0 +1,183 @@
+{
+  "meta": {
+    "name": "David Weekley Homes | FORGE Redesign Concept",
+    "description": "An independent cinematic redesign concept that turns new-home discovery into a continuous journey from place to personal tour.",
+    "themeColor": "#ef8354",
+    "backgroundColor": "#071523"
+  },
+  "runtime": {
+    "sceneHeightVh": 152,
+    "cameraDamping": 7.6,
+    "objectDamping": 8.8,
+    "pointerInfluence": 0.045,
+    "minDpr": 1,
+    "maxDpr": 2,
+    "maxPixels": 6000000,
+    "preloadMb": 28
+  },
+  "heroModel": "",
+  "stage": "minimal",
+  "heroVisible": false,
+  "assets": [
+    {
+      "id": "weekley-residence",
+      "kind": "model",
+      "url": "/models/reference/pavilion.glb",
+      "lowUrl": "/models/reference/pavilion-low.glb",
+      "scenes": ["community", "threshold", "living"],
+      "persist": false,
+      "position": [0, -0.86, -1.25],
+      "rotation": [0, 0.08, 0],
+      "scale": 1.35
+    }
+  ],
+  "scenes": [
+    {
+      "id": "arrival",
+      "label": "Find Your Place",
+      "range": [0, 0.12],
+      "easing": "cinematic",
+      "camera": { "path": "dolly", "from": { "position": [-6.8, 2.9, 13.5], "target": [0, 0.25, 0], "fov": 48 }, "to": { "position": [-3.7, 1.55, 8.2], "target": [0, 0.05, -0.4], "fov": 42 } },
+      "mobileCamera": { "path": "dolly", "from": { "position": [-7.8, 3.5, 16.8], "target": [0, 0.3, 0], "fov": 60 }, "to": { "position": [-4.4, 2.15, 10.4], "target": [0, 0.08, -0.4], "fov": 54 } },
+      "motionTracks": [],
+      "media": { "kind": "image", "src": "https://images.unsplash.com/photo-1762337018404-052afb0e3370?auto=format&fit=crop&fm=jpg&q=86&w=2400", "alt": "Contemporary residence positioned against a coastal landscape", "transition": "mask", "blendColor": "#071523", "maskSoftness": 14, "mask": { "preset": "diagonal-cut", "renderer": "auto", "direction": "right", "origin": [62, 48], "softness": 13, "scale": 1.08, "rotation": -4, "intensity": 1, "seed": 418, "invert": false, "edgeColor": "#ef8354", "edgeWidth": 1 }, "layers": [], "position": [50, 48], "mobilePosition": [58, 50], "overlap": 0.28, "direction": "up", "zoom": 1.08, "textEnd": 0.28 },
+      "blocks": [{ "id": "market-direction", "type": "statement", "title": "Start with the life you want to live.", "body": "Explore new homes by market, community, home design, or move-in timeline.", "accent": "HOME SEARCH" }],
+      "hero": { "motion": "linear", "from": { "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": 1 }, "to": { "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": 1 } },
+      "world": { "background": "#071523", "fog": "#10283a", "fogDensity": 0.008, "ambient": 0.58, "key": 4.2, "rim": 1.5, "keyColor": "#ffe2c7", "rimColor": "#9fc4d4", "exposure": 1.08 },
+      "material": { "tint": "#fff8ef", "tintStrength": 0.04, "metalness": null, "roughness": null, "clearcoat": null },
+      "post": { "bloom": 0.1, "vignette": 0.2 },
+      "copy": { "eyebrow": "DAVID WEEKLEY HOMES / REDESIGN CONCEPT", "headline": "Find the place that feels like home.", "body": "Home discovery should begin with possibility, not a wall of listings.", "align": "left", "cta": { "label": "Explore homes by market", "href": "https://www.davidweekleyhomes.com/new-homes" } }
+    },
+    {
+      "id": "place",
+      "label": "The Place",
+      "range": [0.12, 0.24],
+      "easing": "cinematic",
+      "camera": { "path": "arc", "from": { "position": [-3.7, 1.55, 8.2], "target": [0, 0.05, -0.4], "fov": 42 }, "to": { "position": [2.9, 4.4, 7.1], "target": [0, 0, -1.2], "fov": 45 } },
+      "mobileCamera": { "path": "arc", "from": { "position": [-4.4, 2.15, 10.4], "target": [0, 0.08, -0.4], "fov": 54 }, "to": { "position": [3.4, 5.2, 9.6], "target": [0, 0, -1.2], "fov": 58 } },
+      "motionTracks": [],
+      "media": { "kind": "image", "src": "https://images.unsplash.com/photo-1774423864869-702b21c2490a?auto=format&fit=crop&fm=jpg&q=86&w=2400", "alt": "A bright contemporary room connected to an expansive horizon", "transition": "curtain", "blendColor": "#0a1a28", "maskSoftness": 18, "layers": [], "position": [54, 50], "mobilePosition": [61, 50], "overlap": 0.25, "direction": "up", "zoom": 1.06, "textEnd": 0.3 },
+      "blocks": [],
+      "hero": { "motion": "linear", "from": { "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": 1 }, "to": { "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": 1 } },
+      "world": { "background": "#0a1a28", "fog": "#112a3c", "fogDensity": 0.007, "ambient": 0.62, "key": 4.5, "rim": 1.65, "keyColor": "#f8dcc0", "rimColor": "#9dbbca", "exposure": 1.1 },
+      "material": { "tint": "#fff8ef", "tintStrength": 0.03, "metalness": null, "roughness": null, "clearcoat": null },
+      "post": { "bloom": 0.11, "vignette": 0.18 },
+      "copy": { "eyebrow": "PLACE BEFORE PLAN", "headline": "First choose how you want to live.", "body": "Across 19 markets, the search begins with daily life: the commute, the school morning, the water, the trail, and the people nearby.", "align": "right" }
+    },
+    {
+      "id": "community",
+      "label": "The Community",
+      "range": [0.24, 0.37],
+      "easing": "cinematic",
+      "camera": { "path": "crane", "from": { "position": [2.9, 4.4, 7.1], "target": [0, 0, -1.2], "fov": 45 }, "to": { "position": [1.45, 2.28, 5.75], "target": [0, 0.32, 0], "fov": 44 } },
+      "mobileCamera": { "path": "crane", "from": { "position": [3.4, 5.2, 9.6], "target": [0, 0, -1.2], "fov": 58 }, "to": { "position": [1.914, 3.0872, 7.59], "target": [0, 0.32, 0], "fov": 56 } },
+      "motionTracks": [],
+      "media": { "kind": "image", "src": "https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=84&w=2400", "alt": "Sunlit residential architecture organized around landscape and shared outdoor space", "transition": "wipe", "blendColor": "#0b1a25", "maskSoftness": 12, "layers": [], "position": [52, 50], "mobilePosition": [62, 50], "overlap": 0.3, "direction": "up", "zoom": 1.05, "textEnd": 0.26 },
+      "blocks": [],
+      "hero": { "motion": "linear", "from": { "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": 1 }, "to": { "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": 1 } },
+      "world": { "background": "#0b1a25", "fog": "#162733", "fogDensity": 0.006, "ambient": 0.7, "key": 4.8, "rim": 1.7, "keyColor": "#f5dfbd", "rimColor": "#b8cbd2", "exposure": 1.12 },
+      "material": { "tint": "#fffaf3", "tintStrength": 0.02, "metalness": null, "roughness": null, "clearcoat": null },
+      "post": { "bloom": 0.1, "vignette": 0.16 },
+      "copy": { "eyebrow": "COMMUNITY", "headline": "A home belongs to everything around it.", "body": "Landscape, gathering spaces, nearby routines, and the shape of the street establish the experience before the front door opens.", "align": "left" }
+    },
+    {
+      "id": "threshold",
+      "label": "Cross the Threshold",
+      "range": [0.37, 0.51],
+      "easing": "cinematic",
+      "camera": { "path": "threshold", "waypoints": [[1.1, 1.35, 5], [0.4, 0.9, 2.7], [0, 0.62, 0.5]], "targetWaypoints": [[0, 0, -1], [0, 0, -2], [0, 0, -3]], "from": { "position": [1.45, 2.28, 5.75], "target": [0, 0.32, 0], "fov": 44 }, "to": { "position": [0, 0.58, -0.1], "target": [0, 0.15, -3], "fov": 39 } },
+      "mobileCamera": { "path": "threshold", "from": { "position": [1.914, 3.0872, 7.59], "target": [0, 0.32, 0], "fov": 56 }, "to": { "position": [0, 0.92, 1], "target": [0, 0.2, -3], "fov": 52 } },
+      "motionTracks": [],
+      "media": { "kind": "image", "src": "https://images.unsplash.com/photo-1769737122085-97b1ee5ab104?auto=format&fit=crop&fm=jpg&q=86&w=2400", "alt": "Open-plan home interior viewed from an architectural threshold", "transition": "mask", "blendColor": "#0a1720", "maskSoftness": 15, "mask": { "preset": "split-center", "renderer": "auto", "direction": "right", "origin": [50, 50], "softness": 12, "scale": 1.04, "rotation": 0, "intensity": 1, "seed": 206, "invert": false, "edgeColor": "#f8e2cf", "edgeWidth": 0.8 }, "layers": [], "position": [55, 50], "mobilePosition": [64, 50], "overlap": 0.32, "direction": "up", "zoom": 1.08, "textEnd": 0.24 },
+      "blocks": [],
+      "hero": { "motion": "linear", "from": { "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": 1 }, "to": { "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": 1 } },
+      "world": { "background": "#0a1720", "fog": "#15232c", "fogDensity": 0.005, "ambient": 0.74, "key": 4.9, "rim": 1.62, "keyColor": "#f5dfbd", "rimColor": "#b8cbd2", "exposure": 1.12 },
+      "material": { "tint": "#fffaf3", "tintStrength": 0.02, "metalness": null, "roughness": null, "clearcoat": null },
+      "post": { "bloom": 0.09, "vignette": 0.14 },
+      "copy": { "eyebrow": "THE SIGNATURE MOMENT", "headline": "Come inside before you choose.", "body": "The home is experienced as space, light, movement, and connection rather than reduced to a thumbnail and square footage.", "align": "right" }
+    },
+    {
+      "id": "living",
+      "label": "Made for Living",
+      "range": [0.51, 0.63],
+      "easing": "cinematic",
+      "camera": { "path": "arc", "from": { "position": [0, 0.58, -0.1], "target": [0, 0.15, -3], "fov": 39 }, "to": { "position": [3.1, 1.12, -2.3], "target": [0.2, 0.15, -3.8], "fov": 44 } },
+      "mobileCamera": { "path": "arc", "from": { "position": [0, 0.92, 1], "target": [0, 0.2, -3], "fov": 52 }, "to": { "position": [3.8, 1.7, -1.2], "target": [0.2, 0.18, -3.8], "fov": 56 } },
+      "motionTracks": [],
+      "media": { "kind": "image", "src": "https://images.unsplash.com/photo-1769737122085-97b1ee5ab104?auto=format&fit=crop&fm=jpg&q=86&w=2400", "alt": "Open kitchen and living space filled with natural light", "transition": "zoom", "blendColor": "#0d1820", "maskSoftness": 16, "layers": [], "position": [55, 50], "mobilePosition": [64, 50], "overlap": 0.24, "direction": "up", "zoom": 1.08, "textEnd": 0.28 },
+      "blocks": [],
+      "hero": { "motion": "linear", "from": { "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": 1 }, "to": { "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": 1 } },
+      "world": { "background": "#0d1820", "fog": "#19242b", "fogDensity": 0.004, "ambient": 0.78, "key": 4.65, "rim": 1.5, "keyColor": "#efd9b8", "rimColor": "#a8c2ce", "exposure": 1.13 },
+      "material": { "tint": "#fffaf3", "tintStrength": 0.02, "metalness": null, "roughness": null, "clearcoat": null },
+      "post": { "bloom": 0.08, "vignette": 0.12 },
+      "copy": { "eyebrow": "LIVABILITY", "headline": "Designed around the way a day actually moves.", "body": "Natural gathering, clear circulation, useful storage, outdoor connection, and flexible rooms make the plan support real life.", "align": "left" }
+    },
+    {
+      "id": "choice",
+      "label": "Your Choices",
+      "range": [0.63, 0.75],
+      "easing": "cinematic",
+      "camera": { "path": "macro", "from": { "position": [3.1, 1.12, -2.3], "target": [0.2, 0.15, -3.8], "fov": 44 }, "to": { "position": [1.05, 0.38, -3.25], "target": [0.25, 0.05, -4.05], "fov": 28 } },
+      "mobileCamera": { "path": "macro", "from": { "position": [3.8, 1.7, -1.2], "target": [0.2, 0.18, -3.8], "fov": 56 }, "to": { "position": [1.4, 0.7, -2.6], "target": [0.25, 0.08, -4.05], "fov": 40 } },
+      "motionTracks": [],
+      "media": { "kind": "image", "src": "https://images.unsplash.com/photo-1770970831074-6e88b6cc260b?auto=format&fit=crop&fm=jpg&q=86&w=2200", "alt": "Architectural material samples and design selections", "transition": "mask", "blendColor": "#18130f", "maskSoftness": 20, "mask": { "preset": "ink-spread", "renderer": "auto", "direction": "right", "origin": [45, 55], "softness": 18, "scale": 1.06, "rotation": 0, "intensity": 1.15, "seed": 724, "invert": false, "edgeColor": "#f1d8c4", "edgeWidth": 0.8 }, "layers": [], "position": [50, 50], "mobilePosition": [50, 50], "overlap": 0.28, "direction": "up", "zoom": 1.1, "textEnd": 0.24 },
+      "blocks": [],
+      "hero": { "motion": "linear", "from": { "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": 1 }, "to": { "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": 1 } },
+      "world": { "background": "#18130f", "fog": "#211912", "fogDensity": 0.004, "ambient": 0.72, "key": 5.1, "rim": 1.35, "keyColor": "#f2d9b8", "rimColor": "#d2b38b", "exposure": 1.12 },
+      "material": { "tint": "#f1dfc8", "tintStrength": 0.08, "metalness": null, "roughness": 0.66, "clearcoat": 0.08 },
+      "post": { "bloom": 0.1, "vignette": 0.16 },
+      "copy": { "eyebrow": "CHOICE", "headline": "Make the decisions that make it yours.", "body": "Personalization becomes a guided material story, not an overwhelming catalog of disconnected options.", "align": "right" }
+    },
+    {
+      "id": "difference",
+      "label": "The Difference",
+      "range": [0.75, 0.87],
+      "easing": "cinematic",
+      "camera": { "path": "pullback", "from": { "position": [1.05, 0.38, -3.25], "target": [0.25, 0.05, -4.05], "fov": 28 }, "to": { "position": [-5.2, 2.8, 10.6], "target": [0, 0.1, 0], "fov": 48 } },
+      "mobileCamera": { "path": "pullback", "from": { "position": [1.4, 0.7, -2.6], "target": [0.25, 0.08, -4.05], "fov": 40 }, "to": { "position": [-6.2, 3.4, 13.6], "target": [0, 0.1, 0], "fov": 60 } },
+      "motionTracks": [],
+      "media": { "kind": "color", "fill": "#f3efe8", "alt": "Warm neutral editorial field", "transition": "curtain", "maskSoftness": 14, "layers": [], "position": [50, 50], "mobilePosition": [50, 50], "overlap": 0.24, "direction": "down", "zoom": 1.05, "textEnd": 0.28 },
+      "blocks": [
+        { "id": "design-proof", "type": "statement", "title": "Design", "body": "Plans shaped around livability, natural light, and meaningful connection.", "accent": "01" },
+        { "id": "choice-proof", "type": "statement", "title": "Choice", "body": "Guided personalization that keeps the home coherent and personal.", "accent": "02" },
+        { "id": "service-proof", "type": "statement", "title": "Service", "body": "A clear relationship from first search through construction and after move-in.", "accent": "03" }
+      ],
+      "hero": { "motion": "linear", "from": { "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": 1 }, "to": { "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": 1 } },
+      "world": { "background": "#f3efe8", "fog": "#e8e1d7", "fogDensity": 0.006, "ambient": 0.62, "key": 4.4, "rim": 1.35, "keyColor": "#ebd5b8", "rimColor": "#9fb9c5", "exposure": 1.06 },
+      "material": { "tint": "#fff8ef", "tintStrength": 0.02, "metalness": null, "roughness": null, "clearcoat": null },
+      "post": { "bloom": 0.06, "vignette": 0.1 },
+      "copy": { "eyebrow": "THE DAVID WEEKLEY DIFFERENCE", "headline": "Design. Choice. Service.", "body": "A simple promise becomes the structure of the entire buyer experience.", "align": "center" }
+    },
+    {
+      "id": "welcome",
+      "label": "Welcome Home",
+      "range": [0.87, 1],
+      "easing": "cinematic",
+      "camera": { "path": "dolly", "from": { "position": [-5.2, 2.8, 10.6], "target": [0, 0.1, 0], "fov": 48 }, "to": { "position": [-3.6, 1.8, 8.2], "target": [0, 0.1, 0], "fov": 43 } },
+      "mobileCamera": { "path": "dolly", "from": { "position": [-6.2, 3.4, 13.6], "target": [0, 0.1, 0], "fov": 60 }, "to": { "position": [-4.4, 2.4, 10.4], "target": [0, 0.1, 0], "fov": 54 } },
+      "motionTracks": [],
+      "media": { "kind": "image", "src": "https://images.unsplash.com/photo-1762337018404-052afb0e3370?auto=format&fit=crop&fm=jpg&q=84&w=2600", "alt": "Completed contemporary home in warm evening light", "transition": "zoom", "blendColor": "#071523", "maskSoftness": 16, "layers": [], "position": [50, 46], "mobilePosition": [61, 50], "overlap": 0.3, "direction": "up", "zoom": 1.08, "textEnd": 0.26 },
+      "blocks": [],
+      "hero": { "motion": "linear", "from": { "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": 1 }, "to": { "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": 1 } },
+      "world": { "background": "#071523", "fog": "#10283a", "fogDensity": 0.007, "ambient": 0.56, "key": 4, "rim": 1.5, "keyColor": "#e7c79d", "rimColor": "#789eb3", "exposure": 1.03 },
+      "material": { "tint": "#ffffff", "tintStrength": 0, "metalness": null, "roughness": null, "clearcoat": null },
+      "post": { "bloom": 0.11, "vignette": 0.2 },
+      "copy": { "eyebrow": "BUILDING DREAMS, ENHANCING LIVES", "headline": "See how home feels in person.", "body": "Choose a market, visit a model home, and continue the conversation with a local team.", "align": "center", "cta": { "label": "Schedule a personal tour", "href": "#tour" } }
+    }
+  ],
+  "hotspots": [
+    { "id": "community-life", "sceneId": "community", "label": "Life beyond the homesite", "description": "Community discovery connects the home to shared spaces, everyday routes, and the wider place.", "position": [-0.8, 0.15, -2.2] },
+    { "id": "threshold-light", "sceneId": "threshold", "label": "Indoor-outdoor connection", "description": "The threshold preserves the exterior horizon so entering the home feels continuous rather than like a page change.", "position": [2.75, 0.65, -0.6] },
+    { "id": "material-choice", "sceneId": "choice", "label": "Guided personalization", "description": "Material decisions are grouped into coherent stories so individual choices still create one resolved home.", "position": [0, -0.92, 4.2] }
+  ],
+  "conversion": {
+    "id": "tour",
+    "eyebrow": "PERSONAL TOUR",
+    "title": "Let’s find the right place to begin.",
+    "body": "Tell us what market and type of home you are exploring. This concept form demonstrates the completed FORGE conversion path and does not submit to David Weekley Homes.",
+    "intent": "enquiry",
+    "submit": "Request a tour",
+    "consent": "I understand this is an independent redesign concept and agree to be contacted about this demonstration request.",
+    "note": "Independent redesign study. Not affiliated with or endorsed by David Weekley Homes."
+  }
+}
