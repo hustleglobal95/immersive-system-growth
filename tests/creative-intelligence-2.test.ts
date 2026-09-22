@@ -102,10 +102,14 @@ test("browser creative workflows load protected institutional memory and layered
   assert.match(route,/readOperatorTaste\(identity\.id\)/);
   assert.match(route,/readProjectTaste\(projectId\)/);
   assert.match(route,/readMemoryDirectory\(projectId\)/);
+  assert.match(route,/readPortfolioDirectory\(projectId\)/);
+  assert.match(route,/portfolioFingerprints/);
   assert.match(route,/node\.projectId!==currentProjectId/);
   assert.match(hook,/creative-intelligence\/context/);
-  assert.match(agent,/useCreativeIntelligenceContext/);
-  assert.match(director,/useCreativeIntelligenceContext/);
+  assert.match(hook,/portfolio:data\.portfolio/);
+  assert.match(agent,/portfolio:creativeContext\.portfolio/);
+  assert.match(agent,/originalityBlocked/);
+  assert.match(director,/portfolio:creativeContext\.portfolio/);
 });
 
 test("Creative Agent UI exposes DNA and mutation before execution",()=>{
