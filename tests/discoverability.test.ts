@@ -35,7 +35,7 @@ test("structured data describes both the website and primary entity",()=>{
 
 test("llms text is grounded in declared public pages and authority topics",()=>{
   const text=buildLlmsText(project.discoverability,experience);
-  assert.match(text,new RegExp(`# ${project.discoverability.siteName.replace(/[.*+?^${}()|[\\]\\]/g,"\\\\assert.match(text,/# Atelier Maris/);")}`));
+  assert.ok(text.includes(`# ${project.discoverability.siteName}`));
   assert.match(text,/Authority topics/);
   assert.match(text,/https:\/\/immersive-system-growth\.vercel\.app\/site/);
   assert.doesNotMatch(text,/\/studio\b/);
