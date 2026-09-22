@@ -5,9 +5,11 @@ import { runDirectorIntelligence } from "../src/platform/director-intelligence/o
 import { inferPromptIntelligence } from "../src/platform/autonomy/promptIntelligence.ts";
 import { parseExperience } from "../src/lib/configSchema.ts";
 import { parseAssetManifest } from "../src/platform/assetManifestSchema.ts";
+import { loadCreativeContext } from "./lib/creative-context.mjs";
 import { parseInteractionGraph } from "../src/lib/interactionGraph.ts";
 import { buildCreativeStateGraph, buildSignatureSliceGate } from "../src/platform/agentic/creativeStateGraph.ts";
 import { compileAgentContext } from "../src/platform/agentic/contextCompiler.ts";
+import { assertProductionOriginalityGate } from "../src/platform/director-intelligence/productionOriginalityGate.ts";
 
 const options=Object.fromEntries(process.argv.slice(2).filter((arg)=>arg.startsWith("--")&&arg.includes("=")).map((arg)=>arg.slice(2).split(/=(.*)/s,2)));
 const domain=String(options.domain || "").trim();
@@ -37,7 +39,13 @@ const interactionGraph=parseInteractionGraph(JSON.parse(graphRaw));
 const brief=prompt
   ? inferPromptIntelligence({prompt,projectName,sceneCount:experience.scenes.length,manifest:assetManifest}).brief
   : parseDirectorBrief(JSON.parse(briefRaw));
-const director=runDirectorIntelligence({brief});
+const creativeContext=await loadCreativeContext(brief.projectName);
+const director=runDirectorIntelligence({
+  brief,
+  ...(creativeContext.memory.nodes.length ? {memory:creativeContext.memory}:{}),
+  ...(creativeContext.portfolio.length ? {portfolio:creativeContext.portfolio}:{}),
+});
+assertProductionOriginalityGate(director.originalityGate);
 const creativeState=buildCreativeStateGraph(director);
 const signature=buildSignatureSliceGate(creativeState);
 const requestedScene=String(options.scene || "").trim();
