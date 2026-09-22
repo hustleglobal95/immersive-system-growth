@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { parseAssetManifest } from "../src/platform/assetManifestSchema.ts";
 import { buildConstructionCandidate } from "../src/platform/constructionWorker.ts";
+import { loadCreativeContext } from "./lib/creative-context.mjs";
 
 const options=args(process.argv.slice(2));
 const experiencePath=String(options.experience || "config/experience.json");
@@ -19,7 +20,13 @@ if(context.length<12) {
 }
 const experience=JSON.parse(await fs.readFile(experiencePath,"utf8"));
 const manifest=parseAssetManifest(JSON.parse(await fs.readFile(manifestPath,"utf8")));
-const candidate=buildConstructionCandidate({experience,manifest,context,strategy});
+const creativeContext=await loadCreativeContext(experience?.meta?.name || "Forge Project");
+const candidate=buildConstructionCandidate({
+  experience,manifest,context,strategy,
+  memory:creativeContext.memory,
+  portfolio:creativeContext.portfolio,
+  antiRepeatContextLoaded:creativeContext.loaded,
+});
 await fs.mkdir(outputRoot,{recursive:true});
 const plan={
   version:1,
