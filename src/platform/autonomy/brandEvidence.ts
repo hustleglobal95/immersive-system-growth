@@ -35,7 +35,7 @@ export function applyBrandEvidenceToBrief(brief:DirectorBrief,evidence:BrandEvid
     lesson:[
       "Verified official source: "+source.url,
       ...source.observations,
-    ].join(" "),
+    ].join(" ").slice(0,600),
   }));
   const constraints=[
     ...brief.constraints,
@@ -49,8 +49,8 @@ export function applyBrandEvidenceToBrief(brief:DirectorBrief,evidence:BrandEvid
     audience:evidence.verifiedAudience ?? brief.audience,
     primaryAction:evidence.verifiedPrimaryAction ?? brief.primaryAction,
     brandTruth:evidence.verifiedBrandTruth,
-    differentiators:[...new Set([...evidence.differentiators,...brief.differentiators])].slice(0,48),
-    constraints:[...new Set(constraints)].slice(0,48),
+    differentiators:[...new Set([...evidence.differentiators,...brief.differentiators])].map((item)=>item.slice(0,300)).slice(0,48),
+    constraints:[...new Set(constraints)].map((item)=>item.slice(0,300)).slice(0,48),
     references:[...sourceReferences,...brief.references].slice(0,20),
   });
 }
