@@ -34,7 +34,7 @@ npm run lint
 npm run build
 ```
 
-For the full release gate:
+The test fixtures are client-neutral, so project activation does not inherit assumptions from a prior showcase.\n\nFor the full release gate:
 
 ```bash
 npm run verify
