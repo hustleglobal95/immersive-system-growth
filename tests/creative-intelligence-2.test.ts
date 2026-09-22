@@ -102,10 +102,14 @@ test("browser creative workflows load protected institutional memory and layered
   assert.match(route,/readOperatorTaste\(identity\.id\)/);
   assert.match(route,/readProjectTaste\(projectId\)/);
   assert.match(route,/readMemoryDirectory\(projectId\)/);
+  assert.match(route,/readPortfolioDirectory\(projectId\)/);
+  assert.match(route,/portfolioFingerprints/);
   assert.match(route,/node\.projectId!==currentProjectId/);
   assert.match(hook,/creative-intelligence\/context/);
-  assert.match(agent,/useCreativeIntelligenceContext/);
-  assert.match(director,/useCreativeIntelligenceContext/);
+  assert.match(hook,/portfolio:data\.portfolio/);
+  assert.match(agent,/portfolio:creativeContext\.portfolio/);
+  assert.match(agent,/originalityBlocked/);
+  assert.match(director,/portfolio:creativeContext\.portfolio/);
 });
 
 test("Creative Agent UI exposes DNA and mutation before execution",()=>{
@@ -114,4 +118,15 @@ test("Creative Agent UI exposes DNA and mutation before execution",()=>{
   assert.match(agent,/CREATIVE MUTATION/);
   assert.match(agent,/creativeCeiling/);
   assert.match(agent,/visualLanguageDivergence/);
+});
+
+
+test("Atelier Maris is persisted as prior-project originality evidence",()=>{
+  const fingerprint=JSON.parse(fs.readFileSync("forge-intelligence/projects/atelier-maris-casa-lumen.fingerprint.json","utf8"));
+  const memory=JSON.parse(fs.readFileSync("forge-intelligence/projects/atelier-maris-casa-lumen.memory.json","utf8"));
+  assert.equal(fingerprint.projectId,"atelier-maris-casa-lumen");
+  assert.ok(fingerprint.typographyBehavior.some((item:string)=>/Cormorant|serif/i.test(item)));
+  assert.ok(fingerprint.compositionPatterns.some((item:string)=>/sticky story panel/i.test(item)));
+  assert.ok(memory.nodes.some((node:{type:string})=>node.type==="TypographyGrammar"));
+  assert.ok(memory.nodes.some((node:{type:string})=>node.type==="SignatureMoment"));
 });

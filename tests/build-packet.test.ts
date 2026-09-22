@@ -4,6 +4,8 @@ import fs from "node:fs";
 import { runDirectorIntelligence } from "../src/platform/director-intelligence/orchestrator";
 import { buildForgeBuildPacket } from "../src/platform/buildPacket";
 import { parseDirectorBrief } from "../src/platform/directorSchema";
+import { directProject } from "../src/platform/directorEngine";
+import { fingerprintTreatment } from "../src/platform/director-intelligence/portfolioMemory";
 import rawExperience from "../config/experience.json";
 import rawManifest from "../config/asset-manifest.json";
 import rawGraph from "../config/interaction-graph.json";
@@ -48,4 +50,19 @@ test("Forge Build Packet preserves unverified judgment semantics instead of pret
   });
   assert.match(packet,/not yet verified/i);
   assert.match(packet,/implementation plan, not proof/i);
+});
+
+
+test("Forge Build Packet hard-stops Signature work that collides with prior Forge creative language",()=>{
+  const brief=parseDirectorBrief({...rawBrief,tier:"signature"});
+  const previous=fingerprintTreatment(directProject(brief),"atelier-maris-prior");
+  const director=runDirectorIntelligence({brief,portfolio:[previous]});
+  assert.equal(director.originalityGate.required,true);
+  assert.equal(director.originalityGate.passed,false);
+  assert.ok(director.report.blockers.some((item)=>/anti-repeat gate blocked/i.test(item)));
+  assert.throws(()=>buildForgeBuildPacket({
+    director,
+    currentState:{experience:rawExperience,assetManifest:rawManifest,interactionGraph:rawGraph,cinematicSystems:rawCinematic},
+    repoContract:"Test contract",
+  }),/portfolio collision|anti-repeat/i);
 });

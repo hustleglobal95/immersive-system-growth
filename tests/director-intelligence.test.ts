@@ -337,3 +337,36 @@ test("Director rejects a verified judgment replayed against a different planning
   assert.equal(replayed.productionPlan.readiness.readyForProduction,false);
   assert.notEqual(first.report.generatedAt,"");
 });
+
+
+test("Signature originality gate blocks watch-or-worse Creative Memory and portfolio collisions",()=>{
+  const baseline=runDirectorIntelligence({brief});
+  const memory={
+    version:1 as const,
+    nodes:[{
+      id:"prior-signature",
+      type:"SignatureMoment" as const,
+      label:"Prior Forge signature mechanism",
+      text:baseline.creativeDNA.signatureMechanism,
+      tags:["signature","property","prior-project"],
+      projectId:"atelier-maris-prior",
+      confidence:1,
+    }],
+    edges:[],
+  };
+  const previous=fingerprintTreatment(directProject(brief),"atelier-maris-prior");
+  const result=runDirectorIntelligence({brief,memory,portfolio:[previous]});
+  assert.equal(result.originalityGate.required,true);
+  assert.equal(result.originalityGate.passed,false);
+  assert.ok(result.originalityGate.blockers.some((item)=>/Creative Memory|portfolio collision/i.test(item)));
+  assert.notEqual(result.report.planningDisposition,"ADVANCE");
+  assert.equal(result.productionPlan.readiness.readyForProduction,false);
+});
+
+test("Cinematic work reports overlap without applying the Signature hard gate",()=>{
+  const cinematic={...brief,tier:"cinematic" as const};
+  const previous=fingerprintTreatment(directProject(cinematic),"previous-cinematic");
+  const result=runDirectorIntelligence({brief:cinematic,portfolio:[previous]});
+  assert.equal(result.originalityGate.required,false);
+  assert.equal(result.originalityGate.passed,true);
+});

@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { requireStudioRole, studioAccessErrorResponse } from "@/src/platform/studioAccess";
 import { createTasteProfile } from "@/src/platform/director-intelligence/taste";
-import type { CreativeMemoryGraph, MemoryEdge, MemoryNode, TasteProfile } from "@/src/platform/director-intelligence/types";
+import type { CreativeFingerprint, CreativeMemoryGraph, MemoryEdge, MemoryNode, TasteProfile } from "@/src/platform/director-intelligence/types";
 import type { CreativeTasteLayers } from "@/src/platform/director-intelligence/creativeTaste";
 
 export const runtime="nodejs";
@@ -19,11 +19,12 @@ export async function GET(request:Request) {
     if(!projectName || projectName.length>160) return Response.json({ok:false,error:"A valid project name is required."},{status:400});
     const projectId=slug(projectName);
 
-    const [studio,operator,project,memoryGraphs]=await Promise.all([
+    const [studio,operator,project,memoryGraphs,portfolio]=await Promise.all([
       readStudioTaste(),
       readOperatorTaste(identity.id),
       readProjectTaste(projectId),
       readMemoryDirectory(projectId),
+      readPortfolioDirectory(projectId),
     ]);
     const tasteLayers:CreativeTasteLayers={
       ...(studio ? {studio}:{}),
@@ -36,9 +37,14 @@ export async function GET(request:Request) {
       identity:{id:identity.id,role:identity.role},
       tasteLayers,
       memory,
+      portfolio,
       counts:{
-        priorProjects:new Set(memory.nodes.map((node)=>node.projectId).filter(Boolean)).size,
+        priorProjects:new Set([
+          ...memory.nodes.map((node)=>node.projectId).filter(Boolean),
+          ...portfolio.map((item)=>item.projectId),
+        ]).size,
         memoryNodes:memory.nodes.length,
+        portfolioFingerprints:portfolio.length,
         tasteLayers:Object.keys(tasteLayers).length,
       },
     });
@@ -87,6 +93,37 @@ async function readMemoryDirectory(currentProjectId:string) {
     if(isMissing(error)) return [];
     throw error;
   }
+}
+
+async function readPortfolioDirectory(currentProjectId:string):Promise<CreativeFingerprint[]> {
+  try {
+    const entries=await fs.readdir(MEMORY_ROOT,{withFileTypes:true});
+    const fingerprints:CreativeFingerprint[]=[];
+    for(const entry of entries.filter((item)=>item.isFile() && item.name.endsWith(".fingerprint.json")).sort((a,b)=>a.name.localeCompare(b.name))) {
+      const value=JSON.parse(await fs.readFile(path.join(MEMORY_ROOT,entry.name),"utf8"));
+      const values=Array.isArray(value) ? value : [value];
+      for(const candidate of values) {
+        if(isCreativeFingerprint(candidate) && candidate.projectId!==currentProjectId) fingerprints.push(candidate);
+      }
+    }
+    return fingerprints;
+  } catch(error) {
+    if(isMissing(error)) return [];
+    throw error;
+  }
+}
+
+function isCreativeFingerprint(value:unknown):value is CreativeFingerprint {
+  if(!value || typeof value!=="object") return false;
+  const item=value as Partial<CreativeFingerprint>;
+  const lists=[
+    item.thesisTerms,item.narrativePattern,item.emotionalCurve,item.structureRoles,item.cameraDevices,item.motionDevices,
+    item.interactionDevices,item.transitionDevices,item.typographyBehavior,item.compositionPatterns,item.distinctiveAssets,
+    item.colorMaterialDescriptors,item.soundDescriptors,
+  ];
+  return typeof item.projectId==="string"
+    && typeof item.signatureMechanism==="string"
+    && lists.every((list)=>Array.isArray(list));
 }
 
 function normalizeTaste(value:unknown):TasteProfile|undefined {

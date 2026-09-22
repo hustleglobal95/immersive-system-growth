@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { CreativeMemoryGraph } from "@/src/platform/director-intelligence/types";
+import type { CreativeFingerprint, CreativeMemoryGraph } from "@/src/platform/director-intelligence/types";
 import type { CreativeTasteLayers } from "@/src/platform/director-intelligence/creativeTaste";
 
 interface CreativeIntelligenceContextResponse {
@@ -9,7 +9,8 @@ interface CreativeIntelligenceContextResponse {
   error?:string;
   tasteLayers?:CreativeTasteLayers;
   memory?:CreativeMemoryGraph;
-  counts?:{priorProjects:number;memoryNodes:number;tasteLayers:number};
+  portfolio?:CreativeFingerprint[];
+  counts?:{priorProjects:number;memoryNodes:number;portfolioFingerprints:number;tasteLayers:number};
 }
 
 export function useCreativeIntelligenceContext(projectName:string) {
@@ -38,8 +39,10 @@ export function useCreativeIntelligenceContext(projectName:string) {
   return {
     tasteLayers:data.tasteLayers,
     memory:data.memory,
+    portfolio:data.portfolio,
     counts:data.counts,
     loading,
+    loaded:Boolean(data.ok) && !data.error,
     error:data.error,
   };
 }

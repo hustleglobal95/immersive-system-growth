@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "nodes": [
+    {
+      "id": "atelier-art-direction",
+      "type": "ArtDirection",
+      "label": "Atelier architectural-film art direction",
+      "text": "Full-screen fixed cinematic media with sticky editorial story panels, large negative space, warm dark scrims and an architectural walkthrough rhythm.",
+      "tags": [
+        "atelier-maris",
+        "architectural-film",
+        "sticky-panels",
+        "full-screen-media"
+      ],
+      "projectId": "atelier-maris-casa-lumen",
+      "confidence": 1
+    },
+    {
+      "id": "atelier-type-grammar",
+      "type": "TypographyGrammar",
+      "label": "Atelier oversized serif editorial hierarchy",
+      "text": "Oversized Cormorant Garamond serif display typography, tight tracking, DM Sans or Manrope support, tiny uppercase letterspaced metadata and sparse editorial labels.",
+      "tags": [
+        "atelier-maris",
+        "cormorant",
+        "oversized-serif",
+        "editorial"
+      ],
+      "projectId": "atelier-maris-casa-lumen",
+      "confidence": 1
+    },
+    {
+      "id": "atelier-color-grammar",
+      "type": "ColorGrammar",
+      "label": "Atelier ink stone ivory palette",
+      "text": "Near-black ink ground with stone beige, warm ivory and restrained Mediterranean blue accents; warm natural material palette.",
+      "tags": [
+        "atelier-maris",
+        "ink",
+        "stone",
+        "ivory",
+        "warm-neutral"
+      ],
+      "projectId": "atelier-maris-casa-lumen",
+      "confidence": 1
+    },
+    {
+      "id": "atelier-motion-grammar",
+      "type": "MotionGrammar",
+      "label": "Atelier patient architectural camera grammar",
+      "text": "Patient dolly, crane, threshold, interior arc, material macro and horizon-release camera moves controlled continuously by scroll with copy fades and focus pulls.",
+      "tags": [
+        "atelier-maris",
+        "dolly",
+        "threshold",
+        "horizon-release",
+        "scroll"
+      ],
+      "projectId": "atelier-maris-casa-lumen",
+      "confidence": 1
+    },
+    {
+      "id": "atelier-structure",
+      "type": "StructurePattern",
+      "label": "Atelier approach-to-horizon narrative",
+      "text": "Approach, orientation, threshold, interior, material, ritual, process, horizon and inquiry chapters build toward one wide landscape release.",
+      "tags": [
+        "atelier-maris",
+        "approach",
+        "threshold",
+        "material",
+        "horizon",
+        "inquiry"
+      ],
+      "projectId": "atelier-maris-casa-lumen",
+      "confidence": 1
+    },
+    {
+      "id": "atelier-signature",
+      "type": "SignatureMoment",
+      "label": "Atelier horizon release",
+      "text": "After a compressed architectural walkthrough, the camera and composition release into the widest coastal horizon view before settling into private inquiry.",
+      "tags": [
+        "atelier-maris",
+        "horizon",
+        "release",
+        "architectural-film"
+      ],
+      "projectId": "atelier-maris-casa-lumen",
+      "confidence": 1
+    },
+    {
+      "id": "atelier-interaction",
+      "type": "InteractionGrammar",
+      "label": "Atelier observational scroll interaction",
+      "text": "The visitor primarily observes a scroll-directed architectural film with selective material hotspots and a horizontal image roll rather than constructing or configuring the experience.",
+      "tags": [
+        "atelier-maris",
+        "scroll",
+        "observational",
+        "hotspot",
+        "image-roll"
+      ],
+      "projectId": "atelier-maris-casa-lumen",
+      "confidence": 1
+    }
+  ],
+  "edges": []
+}

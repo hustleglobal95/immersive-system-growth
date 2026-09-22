@@ -1,5 +1,6 @@
 import type { runDirectorIntelligence } from "@/src/platform/director-intelligence/orchestrator";
 import { buildCreativeStateGraph, buildSignatureSliceGate } from "@/src/platform/agentic/creativeStateGraph";
+import { assertProductionOriginalityGate } from "@/src/platform/director-intelligence/productionOriginalityGate";
 
 type DirectorRun=ReturnType<typeof runDirectorIntelligence>;
 
@@ -17,6 +18,7 @@ export interface ForgeBuildPacketInput {
 export function buildForgeBuildPacket(input:ForgeBuildPacketInput) {
   const {director,currentState}=input;
   const report=director.report;
+  assertProductionOriginalityGate(director.originalityGate);
   const treatment=report.treatment;
   const selected=treatment.territories.find((item)=>item.id===treatment.selectedTerritoryId) ?? treatment.territories[0];
   const creativeState=buildCreativeStateGraph(director);
