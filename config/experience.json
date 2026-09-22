@@ -110,7 +110,50 @@
           "fov": 54
         }
       },
-      "motionTracks": [],
+      "motionTracks": [
+        {
+          "id": "weekley-arrival-copy-y-desktop",
+          "label": "Arrival copy settle",
+          "viewport": "desktop",
+          "muted": false,
+          "locked": false,
+          "type": "number",
+          "target": "copy.y",
+          "blend": "absolute",
+          "keyframes": [
+            {
+              "id": "weekley-arrival-copy-y-0",
+              "at": 0,
+              "value": 22,
+              "easing": "smooth"
+            },
+            {
+              "id": "weekley-arrival-copy-y-1",
+              "at": 0.1,
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "id": "weekley-arrival-copy-y-2",
+              "at": 0.78,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "id": "weekley-arrival-copy-y-3",
+              "at": 0.9,
+              "value": -11,
+              "easing": "smooth"
+            },
+            {
+              "id": "weekley-arrival-copy-y-4",
+              "at": 1,
+              "value": -11,
+              "easing": "linear"
+            }
+          ]
+        }
+      ],
       "media": {
         "kind": "image",
         "src": "https://images.unsplash.com/photo-1762337018404-052afb0e3370?auto=format&fit=crop&fm=jpg&q=86&w=2400",
