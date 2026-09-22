@@ -1,0 +1,123 @@
+{
+  "projectId": "atelier-maris-casa-lumen",
+  "thesisTerms": [
+    "coastal",
+    "residence",
+    "architectural",
+    "film",
+    "scroll",
+    "site",
+    "massing",
+    "threshold",
+    "interior",
+    "material",
+    "ritual",
+    "horizon",
+    "editorial",
+    "restraint"
+  ],
+  "narrativePattern": [
+    "approach",
+    "parti",
+    "threshold",
+    "interior",
+    "material",
+    "ritual",
+    "process",
+    "horizon",
+    "inquiry"
+  ],
+  "emotionalCurve": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    5,
+    4,
+    9,
+    6
+  ],
+  "structureRoles": [
+    "arrival",
+    "orientation",
+    "compression",
+    "release",
+    "material-study",
+    "lifestyle-ritual",
+    "process-proof",
+    "visual-climax",
+    "private-inquiry"
+  ],
+  "cameraDevices": [
+    "coastal dolly",
+    "massing crane",
+    "architectural threshold",
+    "interior arc",
+    "material macro",
+    "wellness swoop",
+    "studio pullback",
+    "horizon release"
+  ],
+  "motionDevices": [
+    "continuous scroll choreography",
+    "slow camera drift",
+    "copy fade and lift",
+    "focus pull",
+    "exposure breathing",
+    "mask reveal",
+    "levitating image roll"
+  ],
+  "interactionDevices": [
+    "scroll-controlled walkthrough",
+    "material inspection hotspot",
+    "horizontal image roll",
+    "private inquiry"
+  ],
+  "transitionDevices": [
+    "geometry-led reveal",
+    "soft mask reveal",
+    "dissolve",
+    "threshold passage",
+    "wide landscape reveal",
+    "film-burn handoff"
+  ],
+  "typographyBehavior": [
+    "oversized cormorant garamond serif display",
+    "dm sans uppercase labels",
+    "manrope editorial grotesk",
+    "large negative space",
+    "tight display tracking",
+    "small letterspaced metadata"
+  ],
+  "compositionPatterns": [
+    "full-screen fixed media",
+    "sticky story panel",
+    "alternating left right copy",
+    "centered editorial chapter",
+    "dark scrim over photography",
+    "hairline editorial spreads",
+    "large negative space"
+  ],
+  "distinctiveAssets": [
+    "architectural pavilion",
+    "mediterranean coastal imagery",
+    "material macro imagery",
+    "horizon landscape"
+  ],
+  "signatureMechanism": "a scroll-controlled architectural film that moves from coastal approach through threshold and material tactility into a wide horizon release before private inquiry",
+  "colorMaterialDescriptors": [
+    "ink black",
+    "stone beige",
+    "ivory",
+    "muted warm neutral",
+    "mediterranean blue",
+    "travertine",
+    "oak",
+    "low-iron glass",
+    "linen",
+    "dark water",
+    "olive foliage"
+  ],
+  "soundDescriptors": []
+}
