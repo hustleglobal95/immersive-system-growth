@@ -26,7 +26,7 @@
     "defaultTitle": "David Weekley Homes / Independent FORGE Redesign Concept",
     "defaultDescription": "An independent cinematic home-discovery concept built entirely with the FORGE experience system.",
     "primaryEntity": {
-      "type": "WebSite",
+      "type": "Organization",
       "name": "David Weekley Homes / Independent FORGE Concept",
       "description": "A design study showing a continuous journey from place and community to home and personal tour.",
       "url": "https://immersive-system-growth.vercel.app/site",
