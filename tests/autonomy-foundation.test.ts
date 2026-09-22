@@ -32,6 +32,21 @@ test("short prompts infer commercially distinct Director briefs", () => {
   assert.ok(watch.brief.brandTruth.includes("Working hypothesis"));
 });
 
+test("homebuilder prompts resolve to community decision-making instead of generic luxury property", () => {
+  const packet=inferPromptIntelligence({
+    prompt:"David Weekley Homes at Verona. Create an immersive launch experience for a future master-planned community with home designs, homesites and buyer choice.",
+    projectName:"David Weekley Homes at Verona",
+    sceneCount:7,
+    manifest:emptyManifest,
+  });
+  assert.equal(packet.projectType.value,"property");
+  assert.equal(packet.brief.primaryAction,"Explore the community");
+  assert.match(packet.brief.audience,/Future homeowners|community/i);
+  assert.match(packet.brief.brandTruth,/community understandable|builder trust|ownership/i);
+  assert.ok(packet.brief.constraints.some((item)=>/logo swap/i.test(item)));
+  assert.ok(packet.researchNeeds.some((item)=>/official site/i.test(item)));
+});
+
 test("prompt intelligence carries registered assets into Director evidence", () => {
   const manifest: AssetManifest = {
     ...emptyManifest,
