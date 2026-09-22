@@ -3,6 +3,7 @@ import { inferPromptIntelligence } from "@/src/platform/autonomy/promptIntellige
 import { runDirectorIntelligence } from "@/src/platform/director-intelligence/orchestrator";
 import { applyCreativeExecutionPlan, planCreativeExecution, type CreativeExecutionPlan } from "@/src/platform/creative-agent/executionPlan";
 import type { AssetManifest } from "@/src/types/assets";
+import type { CreativeFingerprint, CreativeMemoryGraph } from "@/src/platform/director-intelligence/types";
 import type { ExperienceConfig, SceneDefinition } from "@/src/types/experience";
 
 export type ConstructionStrategy="hierarchy-first"|"camera-structure"|"signature-budget";
@@ -29,6 +30,9 @@ export function buildConstructionCandidate(input:{
   manifest:AssetManifest;
   context:string;
   strategy:ConstructionStrategy;
+  memory?:CreativeMemoryGraph;
+  portfolio?:CreativeFingerprint[];
+  antiRepeatContextLoaded?:boolean;
 }):ConstructionCandidate {
   const experience=parseExperience(input.experience);
   const prompt=inferPromptIntelligence({
@@ -37,7 +41,11 @@ export function buildConstructionCandidate(input:{
     sceneCount:experience.scenes.length,
     manifest:input.manifest,
   });
-  const intelligence=runDirectorIntelligence({brief:prompt.brief});
+  const intelligence=runDirectorIntelligence({
+    brief:prompt.brief,
+    ...(input.memory?.nodes.length ? {memory:input.memory}:{}),
+    ...(input.portfolio?.length ? {portfolio:input.portfolio}:{}),
+  });
   const variation=input.strategy==="hierarchy-first" ? 0 : input.strategy==="camera-structure" ? 1 : 2;
   const plan=planCreativeExecution({
     idea:input.context,
@@ -51,12 +59,14 @@ export function buildConstructionCandidate(input:{
     mutations:intelligence.creativeMutations,
   });
   const hierarchyBlockers=intelligence.report.hierarchy.blockers ?? [];
+  const signatureTier=["signature","flagship"].includes(intelligence.report.brief.tier);
   const creativeBlockers=[
+    ...(signatureTier && input.antiRepeatContextLoaded===false
+      ? ["Construction cannot run Signature/Flagship work until prior Forge creative memory and portfolio fingerprints are loaded."]
+      : []),
+    ...intelligence.originalityGate.blockers,
     ...(!intelligence.visualLanguageDivergence.sufficient && ["signature","flagship"].includes(intelligence.report.brief.tier)
       ? intelligence.visualLanguageDivergence.blockers
-      : []),
-    ...(intelligence.creativeMemory.verdict==="rewrite" && ["signature","flagship"].includes(intelligence.report.brief.tier)
-      ? ["Creative Memory requires a rewrite before construction because the selected direction repeats prior creative language."]
       : []),
   ];
   const blockers=[
