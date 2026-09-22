@@ -3,15 +3,15 @@
   "id": "david-weekley-concept-interactions",
   "initialState": "searching",
   "states": ["searching", "exploring", "inside", "tour-intent"],
-  "variables": { "enteredHome": false, "tourIntent": false },
+  "variables": { "entered-home": false, "tour-intent": false },
   "nodes": [
     { "id": "enter-community", "kind": "trigger", "label": "Enter community chapter", "position": { "x": 40, "y": 80 }, "event": "scene-enter", "sceneId": "community", "states": ["searching"] },
     { "id": "state-exploring", "kind": "state", "label": "Exploring community", "position": { "x": 320, "y": 80 }, "state": "exploring" },
     { "id": "cross-threshold", "kind": "trigger", "label": "Cross the home threshold", "position": { "x": 40, "y": 250 }, "event": "scene-enter", "sceneId": "threshold", "states": ["exploring"] },
-    { "id": "mark-entered", "kind": "action", "label": "Mark home entered", "position": { "x": 320, "y": 250 }, "action": { "type": "set-variable", "key": "enteredHome", "value": true } },
+    { "id": "mark-entered", "kind": "action", "label": "Mark home entered", "position": { "x": 320, "y": 250 }, "action": { "type": "set-variable", "key": "entered-home", "value": true } },
     { "id": "state-inside", "kind": "state", "label": "Inside the home", "position": { "x": 590, "y": 250 }, "state": "inside" },
     { "id": "request-tour", "kind": "trigger", "label": "Request personal tour", "position": { "x": 40, "y": 430 }, "event": "click", "target": "cta-tour", "states": ["inside", "exploring"] },
-    { "id": "mark-tour", "kind": "action", "label": "Record tour intent", "position": { "x": 320, "y": 430 }, "action": { "type": "set-variable", "key": "tourIntent", "value": true } },
+    { "id": "mark-tour", "kind": "action", "label": "Record tour intent", "position": { "x": 320, "y": 430 }, "action": { "type": "set-variable", "key": "tour-intent", "value": true } },
     { "id": "state-tour", "kind": "state", "label": "Tour intent", "position": { "x": 590, "y": 430 }, "state": "tour-intent" },
     { "id": "emit-tour", "kind": "action", "label": "Emit tour request", "position": { "x": 850, "y": 430 }, "action": { "type": "emit", "name": "personal-tour-requested", "payload": { "experience": "david-weekley-forge-concept" } } }
   ],
