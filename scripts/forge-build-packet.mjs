@@ -6,6 +6,7 @@ import { buildForgeBuildPacket } from "../src/platform/buildPacket.ts";
 import { inferPromptIntelligence } from "../src/platform/autonomy/promptIntelligence.ts";
 import { parseExperience } from "../src/lib/configSchema.ts";
 import { parseAssetManifest } from "../src/platform/assetManifestSchema.ts";
+import { loadCreativeContext } from "./lib/creative-context.mjs";
 
 const options=Object.fromEntries(process.argv.slice(2).filter((arg)=>arg.startsWith("--")&&arg.includes("=")).map((arg)=>arg.slice(2).split(/=(.*)/s,2)));
 const briefPath=String(options.brief || "config/director-brief.example.json");
@@ -25,7 +26,12 @@ const parsedManifest=parseAssetManifest(JSON.parse(assetManifest));
 const brief=prompt
   ? inferPromptIntelligence({prompt,projectName,sceneCount:parsedExperience.scenes.length,manifest:parsedManifest}).brief
   : parseDirectorBrief(JSON.parse(briefRaw));
-const director=runDirectorIntelligence({brief});
+const creativeContext=await loadCreativeContext(brief.projectName);
+const director=runDirectorIntelligence({
+  brief,
+  ...(creativeContext.memory.nodes.length ? {memory:creativeContext.memory}:{}),
+  ...(creativeContext.portfolio.length ? {portfolio:creativeContext.portfolio}:{}),
+});
 const packet=buildForgeBuildPacket({
   director,
   currentState:{
