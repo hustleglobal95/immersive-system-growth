@@ -58,7 +58,8 @@ export function CreativeAgentWorkbench() {
     brief,
     ...(creativeContext.tasteLayers ? {tasteLayers:creativeContext.tasteLayers}:{}),
     ...(creativeContext.memory?.nodes.length ? {memory:creativeContext.memory}:{}),
-  }), [brief,creativeContext.memory,creativeContext.tasteLayers]);
+    ...(creativeContext.portfolio?.length ? {portfolio:creativeContext.portfolio}:{}),
+  }), [brief,creativeContext.memory,creativeContext.portfolio,creativeContext.tasteLayers]);
   const report = intelligence.report;
 
   const plan = useMemo(() => planCreativeExecution({
@@ -84,6 +85,8 @@ export function CreativeAgentWorkbench() {
     setSelectedScenes(plan.sceneMoves.map((move) => move.sceneIndex));
   }
   const hierarchyBlocked = report.hierarchy.blockers.length > 0;
+  const signatureTier=brief.tier==="signature" || brief.tier==="flagship";
+  const originalityBlocked=signatureTier && (!creativeContext.loaded || !intelligence.originalityGate.passed);
   const selectedTerritory = report.treatment.territories.find((item) => item.id === report.treatment.selectedTerritoryId);
   const selectedBlocked = plan.sceneMoves.filter((move) => selectedScenes.includes(move.sceneIndex) && !move.assetPlan.canBuildNow).length;
 
@@ -99,6 +102,12 @@ export function CreativeAgentWorkbench() {
   };
 
   const applyPlan = () => {
+    if (originalityBlocked) {
+      setNotice(creativeContext.loaded
+        ? `Creative Agent held the patch: ${intelligence.originalityGate.blockers[0] ?? "Signature/Flagship originality gate failed."}`
+        : "Creative Agent held the patch until prior Forge project memory and portfolio fingerprints finish loading.");
+      return;
+    }
     if (hierarchyBlocked) {
       setNotice(`Creative Agent held the patch because hierarchy is unresolved: ${report.hierarchy.blockers[0]}`);
       return;
@@ -256,8 +265,8 @@ export function CreativeAgentWorkbench() {
             {plan.patchSummary.map((line, index) => <code key={line} className={selectedScenes.includes(plan.sceneMoves[index]?.sceneIndex ?? -1) ? "" : "is-muted"}>{line}</code>)}
           </div>}
           <div className="creative-agent__apply-row">
-            <div><strong>{selectedScenes.length} scene{selectedScenes.length === 1 ? "" : "s"} selected · {selectedBlocked} asset-blocked · {hierarchyBlocked ? "hierarchy held" : "hierarchy clear"}</strong><span>Missing assets are never faked as complete. Existing non-agent authored tracks are preserved.</span></div>
-            <button className="creative-agent__apply" disabled={!plan.validation.valid || hierarchyBlocked} onClick={applyPlan}>Apply reversible plan</button>
+            <div><strong>{selectedScenes.length} scene{selectedScenes.length === 1 ? "" : "s"} selected · {selectedBlocked} asset-blocked · {hierarchyBlocked ? "hierarchy held" : "hierarchy clear"} · {originalityBlocked ? "originality held" : "originality clear"}</strong><span>Missing assets are never faked as complete. Signature/Flagship work cannot apply while prior-project repetition is unresolved.</span></div>
+            <button className="creative-agent__apply" disabled={!plan.validation.valid || hierarchyBlocked || originalityBlocked} onClick={applyPlan}>Apply reversible plan</button>
           </div>
         </section>
 
