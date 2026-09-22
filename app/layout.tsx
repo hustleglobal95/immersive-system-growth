@@ -12,14 +12,13 @@ import "./experience-modes.css";
 import "./design-system.css";
 import "./nocterra.css";
 import "./atelier-maris.css";
+import "./weekley-concept.css";
 import "./pages.css";
 
 const project=parseStudioProject(rawProject);
 const discoverability=project.discoverability;
 
 export const metadata: Metadata = {
-  // metadataBase is what makes Open Graph and canonical URLs absolute. Without it a social
-  // scraper resolves them against the request and sees localhost.
   metadataBase: new URL(discoverability.canonicalBaseUrl || siteUrl()),
   title: discoverability.defaultTitle || experience.meta.name,
   description: discoverability.defaultDescription || experience.meta.description,
@@ -38,9 +37,10 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  const isWeekleyConcept = experience.meta.name.startsWith("David Weekley Homes");
   const isNocterra = experience.meta.name.startsWith("NOCTERRA");
   const isAtelierMaris = experience.meta.name.startsWith("ATELIER MARIS");
-  const project = isAtelierMaris ? "atelier-maris" : isNocterra ? "nocterra" : "forge";
+  const project = isWeekleyConcept ? "weekley-concept" : isAtelierMaris ? "atelier-maris" : isNocterra ? "nocterra" : "forge";
   return (
     <html lang="en">
       <body
