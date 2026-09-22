@@ -55,8 +55,8 @@ test("generated stress fixture preserves invariants at flagship-scale scene coun
         muted: false,
         locked: false,
         keyframes: [
-          { id: `generated-${index}-${trackIndex}-0`, at: 0, value: 0, easing: "linear" },
-          { id: `generated-${index}-${trackIndex}-1`, at: 1, value: 1, easing: "linear" },
+          { id: `generated-${index}-${trackIndex}-0`, at: 0, value: [0, 0, 42, 1][trackIndex], easing: "linear" },
+          { id: `generated-${index}-${trackIndex}-1`, at: 1, value: [1, 1, 46, 1.1][trackIndex], easing: "linear" },
         ],
       }),
       id: `stress-${index}-${trackIndex}`,
