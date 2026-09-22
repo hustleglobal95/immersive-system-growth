@@ -64,6 +64,10 @@ For any request to show, preview, open, capture, share, or deploy an existing pr
 40. Full-site construction must not expand past the Signature Slice Gate while the protected signature slice has blockers or loses comparative rendered review.
 41. Autonomous visual repair must prefer domain-specific bounded commands (lighting, subject framing, media framing, authored-material, camera, motion). The legacy broad presentation repair remains compatibility-only; do not use it to bypass Capability Router ownership.
 42. Project Learning may be created only from a human-promoted Loop winner with hard gates clear and comparative candidate-win evidence. Cross-project patterns remain hypotheses until independently repeated; even review-ready patterns require explicit human promotion before entering Director Creative Memory.
+43. Named-client Signature/Flagship work requires structured first-party brand evidence before Build Packet generation. Category priors, generic premium language and prior Forge aesthetics are not substitutes for client research.
+44. Reusable Forge code may transfer across projects; visual identity may not. Do not inherit typography stacks, palettes, composition patterns, narrative arcs or signature interactions from unrelated prior projects unless the current client evidence independently justifies them.
+45. Before expanding a named-client signature slice, the rendered result must fail the logo-swap test, pass portfolio-collision review, expose at least five client-specific evidence-traceable decisions and survive a category-cliche review. If it fails, rebuild the slice rather than polishing it.
+46. A technically valid but visually interchangeable client site is a failed Forge build. Brand specificity and originality are release concerns, not optional creative polish.
 
 ## Before implementation
 
