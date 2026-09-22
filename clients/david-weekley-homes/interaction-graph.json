@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "id": "david-weekley-concept-interactions",
+  "initialState": "searching",
+  "states": ["searching", "exploring", "inside", "tour-intent"],
+  "variables": { "enteredHome": false, "tourIntent": false },
+  "nodes": [
+    { "id": "enter-community", "kind": "trigger", "label": "Enter community chapter", "position": { "x": 40, "y": 80 }, "event": "scene-enter", "sceneId": "community", "states": ["searching"] },
+    { "id": "state-exploring", "kind": "state", "label": "Exploring community", "position": { "x": 320, "y": 80 }, "state": "exploring" },
+    { "id": "cross-threshold", "kind": "trigger", "label": "Cross the home threshold", "position": { "x": 40, "y": 250 }, "event": "scene-enter", "sceneId": "threshold", "states": ["exploring"] },
+    { "id": "mark-entered", "kind": "action", "label": "Mark home entered", "position": { "x": 320, "y": 250 }, "action": { "type": "set-variable", "key": "enteredHome", "value": true } },
+    { "id": "state-inside", "kind": "state", "label": "Inside the home", "position": { "x": 590, "y": 250 }, "state": "inside" },
+    { "id": "request-tour", "kind": "trigger", "label": "Request personal tour", "position": { "x": 40, "y": 430 }, "event": "click", "target": "cta-tour", "states": ["inside", "exploring"] },
+    { "id": "mark-tour", "kind": "action", "label": "Record tour intent", "position": { "x": 320, "y": 430 }, "action": { "type": "set-variable", "key": "tourIntent", "value": true } },
+    { "id": "state-tour", "kind": "state", "label": "Tour intent", "position": { "x": 590, "y": 430 }, "state": "tour-intent" },
+    { "id": "emit-tour", "kind": "action", "label": "Emit tour request", "position": { "x": 850, "y": 430 }, "action": { "type": "emit", "name": "personal-tour-requested", "payload": { "experience": "david-weekley-forge-concept" } } }
+  ],
+  "edges": [
+    { "id": "community-exploring", "from": "enter-community", "to": "state-exploring", "branch": "always", "priority": 0 },
+    { "id": "threshold-entered", "from": "cross-threshold", "to": "mark-entered", "branch": "always", "priority": 0 },
+    { "id": "entered-inside", "from": "mark-entered", "to": "state-inside", "branch": "always", "priority": 0 },
+    { "id": "tour-marked", "from": "request-tour", "to": "mark-tour", "branch": "always", "priority": 0 },
+    { "id": "tour-state", "from": "mark-tour", "to": "state-tour", "branch": "always", "priority": 0 },
+    { "id": "tour-emitted", "from": "state-tour", "to": "emit-tour", "branch": "always", "priority": 0 }
+  ],
+  "mobileSubstitutions": []
+}
