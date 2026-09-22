@@ -49,7 +49,7 @@ test("generated stress fixture preserves invariants at flagship-scale scene coun
         id: "generated",
         label: "Generated",
         type: "number",
-        target: "copy.opacity",
+        target: ["copy.opacity", "copy.y", "camera.fov", "world.exposure"][trackIndex],
         blend: "absolute",
         viewport: "all",
         muted: false,
