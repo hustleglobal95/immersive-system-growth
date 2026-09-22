@@ -18,7 +18,7 @@
   },
   "scenes": [
     {
-      "id": "approach",
+      "id": "arrival",
       "stack": {
         "enabled": false,
         "scaleTo": 0.96,
@@ -48,7 +48,7 @@
       "occlusion": []
     },
     {
-      "id": "parti",
+      "id": "place",
       "procedural": [
         {
           "id": "parti-halftone",
@@ -98,7 +98,7 @@
       ]
     },
     {
-      "id": "material",
+      "id": "choice",
       "procedural": [
         {
           "id": "material-grid",
@@ -120,7 +120,7 @@
       "occlusion": []
     },
     {
-      "id": "wellness",
+      "id": "living",
       "procedural": [],
       "occlusion": [
         {
@@ -140,7 +140,7 @@
       ]
     },
     {
-      "id": "horizon",
+      "id": "difference",
       "stack": {
         "enabled": false,
         "scaleTo": 0.96,
@@ -431,7 +431,7 @@
       }
     },
     {
-      "id": "inquiry",
+      "id": "welcome",
       "stack": {
         "enabled": false,
         "scaleTo": 0.96,
