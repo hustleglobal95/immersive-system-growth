@@ -78,7 +78,12 @@ test("generated stress fixture preserves invariants at flagship-scale scene coun
     if (next.kind === "video" && next.sceneId) next.sceneId = rename(next.sceneId);
     return next;
   });
-  const stress = parseExperience({ ...structuredClone(base), scenes, hotspots, assets });
+  let stress: ReturnType<typeof parseExperience>;
+  try {
+    stress = parseExperience({ ...structuredClone(base), scenes, hotspots, assets });
+  } catch (error) {
+    assert.fail(error instanceof Error ? error.message : String(error));
+  }
   assert.equal(stress.scenes.length, 16);
   const stressSceneIds = new Set(stress.scenes.map((scene) => scene.id));
   assert.equal(stress.hotspots.length, base.hotspots.length);
