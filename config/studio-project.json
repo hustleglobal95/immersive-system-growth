@@ -31,7 +31,9 @@
       "description": "A design study showing a continuous journey from place and community to home and personal tour.",
       "url": "https://immersive-system-growth.vercel.app/site",
       "sameAs": [],
-      "areaServed": ["United States"]
+      "areaServed": [
+        "United States"
+      ]
     },
     "searchIntents": [
       "new home discovery experience",
@@ -44,10 +46,23 @@
       "home personalization",
       "guided home tours"
     ],
-    "publicPaths": ["/", "/site"],
-    "privatePaths": ["/design", "/director", "/forge", "/heliot", "/lab", "/structure", "/studio", "/type-vault", "/api/"],
+    "publicPaths": [
+      "/",
+      "/site"
+    ],
+    "privatePaths": [
+      "/design",
+      "/director",
+      "/forge",
+      "/heliot",
+      "/lab",
+      "/structure",
+      "/studio",
+      "/type-vault",
+      "/api/"
+    ],
     "ai": {
-      "allowSearchCrawlers": false,
+      "allowSearchCrawlers": true,
       "allowTrainingCrawlers": false,
       "publishLlmsTxt": true
     }
