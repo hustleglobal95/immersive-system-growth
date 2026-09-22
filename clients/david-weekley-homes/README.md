@@ -6,7 +6,7 @@ This client project is a complete independent redesign study built only with the
 
 `codex/david-weekley-forge-redesign`
 
-The branch activates the concept at `/` and `/site`. The Studio remains available at `/studio` for scene, camera, motion, asset, and release review.
+The branch activates the concept at `/` and `/site`. GitHub Actions runs the full FORGE release contract for every review revision. The Studio remains available at `/studio` for scene, camera, motion, asset, and release review.
 
 ## Signature slice
 
