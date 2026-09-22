@@ -29,12 +29,43 @@ Inspect the active project:
 
 Never assume an asset, service or project fact that is not present.
 
-## 2. Compile the Forge Build Packet
+## 2. Establish client-specific evidence before direction
+
+For any named external client, company, product, property, development or URL, do not let category priors become art direction.
+
+Use first-party sources first. Research the official site and any official product/community/press pages relevant to the request, then write `test-results/forge-brand-evidence.json` with this exact shape:
+
+```json
+{
+  "version": 1,
+  "clientName": "Exact client name",
+  "officialSources": [
+    {
+      "label": "Official source label",
+      "url": "https://...",
+      "observations": ["Specific factual observation", "Specific visual/content observation"]
+    }
+  ],
+  "verifiedBrandTruth": "A defensible client-specific truth grounded in the sources.",
+  "verifiedAudience": "Optional evidence-grounded audience.",
+  "verifiedPrimaryAction": "Optional evidence-grounded primary action.",
+  "differentiators": ["Specific differentiator", "Specific differentiator"],
+  "commercialJobs": ["What the experience must help the client/customer accomplish"],
+  "visualSignals": ["Brand/place/product-specific visual signal", "Another signal"],
+  "antiSignals": ["Generic/category direction that would make this client interchangeable", "Prior-Forge house style to avoid"],
+  "contentSignals": ["Information or proof that should become visually legible"],
+  "unknowns": ["Anything still unverified"]
+}
+```
+
+A named-client Signature/Flagship build without this evidence file is blocked. Do not compensate by inventing a plausible luxury/premium/editorial direction.
+
+## 3. Compile the Forge Build Packet
 
 Convert the user's instruction into one execution contract:
 
 ```bash
-npm run forge:build-packet -- --name="<project name>" --prompt="<user request>" --output=test-results/forge-build-packet.md
+npm run forge:build-packet -- --name="<project name>" --prompt="<user request>" --client-work=true --evidence=test-results/forge-brand-evidence.json --output=test-results/forge-build-packet.md
 ```
 
 Read the entire packet before editing production code.
@@ -55,7 +86,7 @@ The packet owns:
 
 Do not replace the thesis with an easier generic concept.
 
-## 3. Write the implementation map
+## 4. Write the implementation map
 
 Before editing, state the production mapping for every major scene/chapter:
 
@@ -82,7 +113,7 @@ npm run forge:context -- --domain="<camera|motion|composition|typography|interac
 
 Read the capsule before making the specialist change. Respect its allowed systems, registered capabilities, denied actions and verification requirements. A worker may reason about anything, but it may mutate only what its capability route permits.
 
-## 4. Build with existing Forge systems first
+## 5. Build with existing Forge systems first
 
 Prefer, in order:
 
@@ -98,7 +129,7 @@ Never add a second animation clock or competing Canvas.
 
 Do not add a library merely because a reference used one.
 
-## 5. Prove the signature slice first
+## 6. Prove the signature slice first
 
 Implement enough of the experience to prove:
 
@@ -111,9 +142,16 @@ Implement enough of the experience to prove:
 
 Render it before spreading the language across the rest of the site.
 
+Before expansion, perform these rejection tests on the actual render:
+
+- **logo-swap test** — if an unrelated competitor could inherit the screen by changing only logo/copy, reject it;
+- **portfolio-collision test** — compare typography, palette, composition, narrative and signature interaction against prior Forge projects; material resemblance means rebuild, not polish;
+- **evidence trace test** — identify at least five visible decisions that map directly to verified client evidence or a real user/commercial job;
+- **category-cliche test** — if the visual idea can be summarized only with words like premium, luxury, cinematic, editorial, minimal or immersive, it is not directed enough.
+
 The Build Packet's Signature Slice Gate is mandatory. If the signature slice has a blocker or loses a pairwise comparison, do not expand full-site production. Fix or replace the slice first. More sections do not rescue a weak core idea.
 
-## 6. Complete the experience
+## 7. Complete the experience
 
 Extend the proven grammar to supporting chapters.
 
@@ -126,7 +164,7 @@ Protect contrast:
 
 Preserve client facts and existing conversion requirements.
 
-## 7. Render and inspect
+## 8. Render and inspect
 
 Do not declare completion from source code.
 
@@ -142,10 +180,12 @@ npm run test:browser -- --max-failures=1
 
 Use the Loop Engine for bounded refinement when appropriate.
 
+For named-client work, visual review must explicitly inspect **brand specificity** and **originality** on the rendered screenshots. A technically correct but interchangeable site is a failed build.
+
 If a custom visual critic or AI Gateway critic is configured, use comparative rendered judgment.
 If not, stay in human-review mode; never fabricate a visual win.
 
-## 8. Repair
+## 9. Repair
 
 Fix rendered deviations in this order:
 
@@ -160,7 +200,7 @@ Fix rendered deviations in this order:
 
 Do not polish tiny details while a major hierarchy or asset problem remains.
 
-## 9. Final gate
+## 10. Final gate
 
 Run:
 
