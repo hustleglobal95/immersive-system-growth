@@ -119,3 +119,14 @@ test("Creative Agent UI exposes DNA and mutation before execution",()=>{
   assert.match(agent,/creativeCeiling/);
   assert.match(agent,/visualLanguageDivergence/);
 });
+
+
+test("Atelier Maris is persisted as prior-project originality evidence",()=>{
+  const fingerprint=JSON.parse(fs.readFileSync("forge-intelligence/projects/atelier-maris-casa-lumen.fingerprint.json","utf8"));
+  const memory=JSON.parse(fs.readFileSync("forge-intelligence/projects/atelier-maris-casa-lumen.memory.json","utf8"));
+  assert.equal(fingerprint.projectId,"atelier-maris-casa-lumen");
+  assert.ok(fingerprint.typographyBehavior.some((item:string)=>/Cormorant|serif/i.test(item)));
+  assert.ok(fingerprint.compositionPatterns.some((item:string)=>/sticky story panel/i.test(item)));
+  assert.ok(memory.nodes.some((node:{type:string})=>node.type==="TypographyGrammar"));
+  assert.ok(memory.nodes.some((node:{type:string})=>node.type==="SignatureMoment"));
+});
