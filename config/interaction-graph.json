@@ -1,1 +1,27 @@
-{"version":1,"id":"atelier-maris-interactions","initialState":"observing","states":["observing","inside","material-study","inquiry"],"variables":{"entered":false,"material-inspected":false},"nodes":[{"id":"cross-threshold","kind":"trigger","label":"Cross architectural threshold","position":{"x":40,"y":80},"event":"scene-enter","sceneId":"threshold","states":["observing"]},{"id":"mark-entered","kind":"action","label":"Mark residence entered","position":{"x":300,"y":80},"action":{"type":"set-variable","key":"entered","value":true}},{"id":"state-inside","kind":"state","label":"Inside residence","position":{"x":560,"y":80},"state":"inside"},{"id":"enter-material","kind":"trigger","label":"Begin material study","position":{"x":40,"y":260},"event":"scene-enter","sceneId":"material","states":["inside"]},{"id":"state-material","kind":"state","label":"Material study","position":{"x":300,"y":260},"state":"material-study"},{"id":"open-detail","kind":"trigger","label":"Inspect architectural detail","position":{"x":40,"y":430},"event":"hotspot-open","states":["inside","material-study"]},{"id":"mark-material","kind":"action","label":"Record material inspection","position":{"x":300,"y":430},"action":{"type":"set-variable","key":"material-inspected","value":true}},{"id":"emit-detail","kind":"action","label":"Emit design detail event","position":{"x":560,"y":430},"action":{"type":"emit","name":"architectural-detail-inspected","payload":{"experience":"atelier-maris-casa-lumen"}}},{"id":"reach-horizon","kind":"trigger","label":"Reach horizon reveal","position":{"x":40,"y":600},"event":"scene-enter","sceneId":"horizon","states":["inside","material-study"]},{"id":"emit-horizon","kind":"action","label":"Emit horizon reveal","position":{"x":300,"y":600},"action":{"type":"emit","name":"horizon-revealed","payload":{"experience":"atelier-maris-casa-lumen"}}},{"id":"request-inquiry","kind":"trigger","label":"Begin private conversation","position":{"x":40,"y":770},"event":"click","target":"cta-inquiry","states":["inside","material-study"]},{"id":"state-inquiry","kind":"state","label":"Inquiry intent","position":{"x":300,"y":770},"state":"inquiry"},{"id":"emit-inquiry","kind":"action","label":"Emit inquiry intent","position":{"x":560,"y":770},"action":{"type":"emit","name":"private-residence-inquiry","payload":{"experience":"atelier-maris-casa-lumen"}}}],"edges":[{"id":"threshold-entered","from":"cross-threshold","to":"mark-entered","branch":"always","priority":0},{"id":"entered-inside","from":"mark-entered","to":"state-inside","branch":"always","priority":0},{"id":"material-state","from":"enter-material","to":"state-material","branch":"always","priority":0},{"id":"detail-marked","from":"open-detail","to":"mark-material","branch":"always","priority":0},{"id":"detail-emitted","from":"mark-material","to":"emit-detail","branch":"always","priority":0},{"id":"horizon-event","from":"reach-horizon","to":"emit-horizon","branch":"always","priority":0},{"id":"inquiry-state","from":"request-inquiry","to":"state-inquiry","branch":"always","priority":0},{"id":"inquiry-event","from":"state-inquiry","to":"emit-inquiry","branch":"always","priority":0}],"mobileSubstitutions":[]}
+{
+  "version": 1,
+  "id": "david-weekley-concept-interactions",
+  "initialState": "searching",
+  "states": ["searching", "exploring", "inside", "tour-intent"],
+  "variables": { "enteredHome": false, "tourIntent": false },
+  "nodes": [
+    { "id": "enter-community", "kind": "trigger", "label": "Enter community chapter", "position": { "x": 40, "y": 80 }, "event": "scene-enter", "sceneId": "community", "states": ["searching"] },
+    { "id": "state-exploring", "kind": "state", "label": "Exploring community", "position": { "x": 320, "y": 80 }, "state": "exploring" },
+    { "id": "cross-threshold", "kind": "trigger", "label": "Cross the home threshold", "position": { "x": 40, "y": 250 }, "event": "scene-enter", "sceneId": "threshold", "states": ["exploring"] },
+    { "id": "mark-entered", "kind": "action", "label": "Mark home entered", "position": { "x": 320, "y": 250 }, "action": { "type": "set-variable", "key": "enteredHome", "value": true } },
+    { "id": "state-inside", "kind": "state", "label": "Inside the home", "position": { "x": 590, "y": 250 }, "state": "inside" },
+    { "id": "request-tour", "kind": "trigger", "label": "Request personal tour", "position": { "x": 40, "y": 430 }, "event": "click", "target": "cta-tour", "states": ["inside", "exploring"] },
+    { "id": "mark-tour", "kind": "action", "label": "Record tour intent", "position": { "x": 320, "y": 430 }, "action": { "type": "set-variable", "key": "tourIntent", "value": true } },
+    { "id": "state-tour", "kind": "state", "label": "Tour intent", "position": { "x": 590, "y": 430 }, "state": "tour-intent" },
+    { "id": "emit-tour", "kind": "action", "label": "Emit tour request", "position": { "x": 850, "y": 430 }, "action": { "type": "emit", "name": "personal-tour-requested", "payload": { "experience": "david-weekley-forge-concept" } } }
+  ],
+  "edges": [
+    { "id": "community-exploring", "from": "enter-community", "to": "state-exploring", "branch": "always", "priority": 0 },
+    { "id": "threshold-entered", "from": "cross-threshold", "to": "mark-entered", "branch": "always", "priority": 0 },
+    { "id": "entered-inside", "from": "mark-entered", "to": "state-inside", "branch": "always", "priority": 0 },
+    { "id": "tour-marked", "from": "request-tour", "to": "mark-tour", "branch": "always", "priority": 0 },
+    { "id": "tour-state", "from": "mark-tour", "to": "state-tour", "branch": "always", "priority": 0 },
+    { "id": "tour-emitted", "from": "state-tour", "to": "emit-tour", "branch": "always", "priority": 0 }
+  ],
+  "mobileSubstitutions": []
+}
