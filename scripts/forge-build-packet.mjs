@@ -32,9 +32,11 @@ const inferredBrief=prompt
 let brandEvidence=null;
 if(evidencePath) {
   brandEvidence=parseBrandEvidence(JSON.parse(await fs.readFile(evidencePath,"utf8")));
+} else if(clientWork || /https?:\/\//i.test(prompt)) {
+  brandEvidence=await discoverBrandEvidence({projectName,prompt});
 }
 if((clientWork || /https?:\/\//i.test(prompt)) && !brandEvidence) {
-  throw new Error("Named-client build blocked: supply verified first-party brand evidence with --evidence=<path>. Generic category priors are not sufficient.");
+  throw new Error("Named-client build blocked: no matching verified first-party brand evidence was found. Create forge-intelligence/projects/<client>.brand-evidence.json or pass --evidence=<path>; generic category priors are not sufficient.");
 }
 const brief=brandEvidence ? applyBrandEvidenceToBrief(inferredBrief,brandEvidence) : inferredBrief;
 const creativeContext=await loadCreativeContext(brief.projectName);
@@ -61,4 +63,37 @@ if(output) {
   console.log("Forge Build Packet written to "+output);
 } else {
   console.log(packet);
+}
+
+
+async function discoverBrandEvidence({projectName,prompt}) {
+  const root=path.resolve("forge-intelligence/projects");
+  let entries=[];
+  try {
+    entries=await fs.readdir(root,{withFileTypes:true});
+  } catch(error) {
+    if(error?.code==="ENOENT") return null;
+    throw error;
+  }
+  const targetTokens=meaningfulTokens(projectName+" "+prompt);
+  const candidates=[];
+  for(const entry of entries.filter((item)=>item.isFile() && item.name.endsWith(".brand-evidence.json"))) {
+    const file=path.join(root,entry.name);
+    try {
+      const evidence=parseBrandEvidence(JSON.parse(await fs.readFile(file,"utf8")));
+      const candidateTokens=meaningfulTokens(evidence.clientName+" "+entry.name);
+      const overlap=[...candidateTokens].filter((token)=>targetTokens.has(token)).length;
+      const score=overlap/Math.max(1,Math.min(candidateTokens.size,targetTokens.size));
+      if(overlap>=2) candidates.push({evidence,score,overlap,file});
+    } catch {
+      // Invalid evidence remains unusable and will be caught when explicitly selected.
+    }
+  }
+  candidates.sort((a,b)=>b.score-a.score || b.overlap-a.overlap || a.file.localeCompare(b.file));
+  return candidates[0]?.evidence ?? null;
+}
+
+function meaningfulTokens(value) {
+  const stop=new Set(["the","and","for","with","from","into","homes","home","project","conceptual","launch","experience","website","site"]);
+  return new Set(String(value).toLowerCase().split(/[^a-z0-9]+/).filter((token)=>token.length>=3 && !stop.has(token)));
 }
