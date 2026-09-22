@@ -2,7 +2,7 @@
   "version": 2,
   "id": "david-weekley-forge-concept",
   "name": "David Weekley Homes / FORGE Redesign Concept",
-  "experiencePath": "config/experience.json",
+  "experiencePath": "clients/david-weekley-homes/experience.json",
   "visualSystemsPath": "config/visual-systems.json",
   "contentSources": [],
   "deployment": {
