@@ -16,9 +16,9 @@ test("marketplace search, comparison and personalization work across viewports",
   await page.getByRole("button", { name: "Compare" }).click();
   await expect(page.locator(".dw-compare")).toContainText("1 item selected");
 
-  await page.locator('[data-forge-interaction="select-palette"]').filter({ hasText: "Quiet coast" }).click();
-  await expect(page.locator(".dw-room__label")).toContainText("Quiet coast");
-  await expect(page.locator(".dw-personalize__visual")).toHaveAttribute("data-palette", "coast");
+  await page.locator('[data-forge-interaction="select-gallery"]').filter({ hasText: "Kitchen" }).click();
+  await expect(page.locator(".dw-gallery-label")).toContainText("Kitchen");
+  await expect(page.locator(".dw-personalize__visual")).toHaveAttribute("data-gallery", "kitchen");
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.locator(".dw-site")).toBeVisible();
