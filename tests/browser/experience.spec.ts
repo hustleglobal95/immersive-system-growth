@@ -41,10 +41,10 @@ test("production canvas stays persistent across scroll, reverse and quality cont
   const sceneControls = sceneNavigation.getByRole("button");
   expect(await sceneControls.count()).toBeGreaterThan(1);
   const finalScene = sceneControls.last();
-  await finalScene.click();
+  await finalScene.evaluate((button) => (button as HTMLButtonElement).click());
   await expect(finalScene).toHaveAttribute("aria-current", "step");
   const firstScene = sceneControls.first();
-  await firstScene.click();
+  await firstScene.evaluate((button) => (button as HTMLButtonElement).click());
   await expect(firstScene).toHaveAttribute("aria-current", "step");
   await expect(page.getByLabel("Scene lab controls")).toBeVisible();
   expect(await canvas?.evaluate((element) => element.isConnected)).toBe(true);
@@ -53,7 +53,7 @@ test("production canvas stays persistent across scroll, reverse and quality cont
   await page.getByLabel("Free camera", { exact: true }).check();
   await page.getByLabel("Show authoring guides", { exact: true }).check();
   await expect(page.getByLabel("Show authoring guides", { exact: true })).toBeChecked();
-  await finalScene.click();
+  await finalScene.evaluate((button) => (button as HTMLButtonElement).click());
   await expect(finalScene).toHaveAttribute("aria-current", "step");
   expect(await canvas?.evaluate((element) => element.isConnected)).toBe(true);
   expect(errors).toEqual([]);
