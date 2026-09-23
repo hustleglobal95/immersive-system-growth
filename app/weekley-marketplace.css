@@ -1,18 +1,62 @@
+@font-face {
+  font-family: "Museo Sans DWH";
+  src: url("https://www.davidweekleyhomes.com/_content/fonts/Museo/museosans_300_macroman/MuseoSans_300-webfont.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Museo Sans DWH";
+  src: url("https://www.davidweekleyhomes.com/_content/fonts/Museo/museosans_500_macroman/MuseoSans_500-webfont.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Museo Sans DWH";
+  src: url("https://www.davidweekleyhomes.com/_content/fonts/Museo/museosans_700_macroman/MuseoSans_700-webfont.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Museo Sans DWH";
+  src: url("https://www.davidweekleyhomes.com/_content/fonts/Museo/museosans_900_macroman/MuseoSans_900-webfont.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Museo Slab DWH";
+  src: url("https://www.davidweekleyhomes.com/_content/fonts/Museo/museoslab_700_macroman/Museo_Slab_700-webfont.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Museo Slab DWH";
+  src: url("https://www.davidweekleyhomes.com/_content/fonts/Museo/museoslab_900_macroman/Museo_Slab_900-webfont.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 body[data-project="weekley-marketplace"] {
-  --dw-ink: #173040;
-  --dw-ink-soft: #415a68;
-  --dw-paper: #f4f1ea;
-  --dw-white: #fffdf8;
-  --dw-line: rgba(23, 48, 64, .16);
-  --dw-blue: #0d4964;
-  --dw-blue-deep: #092f43;
-  --dw-coral: #df654c;
-  --dw-sage: #718173;
-  --dw-shadow: 0 24px 70px rgba(18, 42, 54, .13);
+  --dw-ink: #3d3c37;
+  --dw-ink-soft: #5d5c54;
+  --dw-paper: #f5f4f1;
+  --dw-white: #ffffff;
+  --dw-line: rgba(61, 60, 55, .18);
+  --dw-blue: #005090;
+  --dw-blue-deep: #003b6a;
+  --dw-coral: #f2894f;
+  --dw-sage: #6e7568;
+  --dw-shadow: 0 22px 60px rgba(61, 60, 55, .15);
   background: var(--dw-paper);
   color: var(--dw-ink);
   color-scheme: light;
-  font-family: var(--font-body), Arial, sans-serif;
+  font-family: "Museo Sans DWH", Arial, sans-serif;
+  font-weight: 300;
 }
 
 body[data-project="weekley-marketplace"] .experience-root {
@@ -35,7 +79,7 @@ body[data-project="weekley-marketplace"] .experience-root {
 
 .dw-site a { color: inherit; }
 .dw-site button,
-.dw-site select { font: inherit; }
+.dw-site select { font-family: "Museo Sans DWH", Arial, sans-serif; }
 .dw-site button { color: inherit; }
 
 .dw-skip {
@@ -59,50 +103,18 @@ body[data-project="weekley-marketplace"] .experience-root {
   align-items: center;
   gap: 32px;
   padding: 0 clamp(24px, 4vw, 68px);
-  color: #fff;
-  border-bottom: 1px solid rgba(255, 255, 255, .28);
+  color: var(--dw-ink);
+  background: rgba(255, 255, 255, .97);
+  border-bottom: 1px solid var(--dw-line);
 }
 
 .dw-wordmark {
-  width: fit-content;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  width: min(230px, 26vw);
+  display: block;
   color: inherit;
   text-decoration: none;
 }
-.dw-wordmark__mark {
-  width: 35px;
-  height: 31px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  align-items: end;
-  gap: 2px;
-  padding: 3px;
-  border: 1px solid currentColor;
-}
-.dw-wordmark__mark i {
-  display: block;
-  height: 19px;
-  border: 1px solid currentColor;
-  border-bottom: 0;
-  transform: skewY(-28deg);
-  transform-origin: bottom;
-}
-.dw-wordmark > span:last-child { display: grid; gap: 0; }
-.dw-wordmark strong {
-  font-size: 14px;
-  line-height: 1;
-  letter-spacing: -.02em;
-}
-.dw-wordmark small {
-  margin-top: 3px;
-  font-size: 8px;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: .28em;
-  text-transform: uppercase;
-}
+.dw-wordmark img { width: 100%; height: auto; display: block; }
 
 .dw-header nav { display: flex; align-items: center; gap: clamp(24px, 3vw, 50px); }
 .dw-header nav a {
@@ -110,7 +122,7 @@ body[data-project="weekley-marketplace"] .experience-root {
   padding: 8px 0;
   text-decoration: none;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: .015em;
 }
 .dw-header nav a::after {
@@ -134,6 +146,7 @@ body[data-project="weekley-marketplace"] .experience-root {
   border-bottom: 1px solid currentColor;
   font-size: 12px;
   font-weight: 700;
+  color: var(--dw-blue);
 }
 .dw-header__cta svg,
 .dw-text-link svg,
@@ -164,8 +177,8 @@ body[data-project="weekley-marketplace"] .experience-root {
   inset: 0;
   z-index: -3;
   background:
-    linear-gradient(90deg, rgba(5, 30, 42, .58), rgba(5, 30, 42, .05) 72%),
-    url("https://images.unsplash.com/photo-1762337018404-052afb0e3370?auto=format&fit=crop&fm=jpg&q=86&w=2400") center 54% / cover;
+    linear-gradient(90deg, rgba(0, 52, 91, .62), rgba(0, 52, 91, .08) 72%),
+    url("https://www.davidweekleyhomes.com/media/HomeGalleryImage/085436a0-01f1-4a12-bf9c-557f2f63be4a.jpg") center 50% / cover;
   transform: scale(1.015);
 }
 .dw-hero__wash {
@@ -189,18 +202,19 @@ body[data-project="weekley-marketplace"] .experience-root {
 .dw-hero h1 {
   max-width: 760px;
   margin: 0;
-  font-family: var(--font-editorial), Georgia, serif;
-  font-size: clamp(4.2rem, 7vw, 7.4rem);
-  font-weight: 500;
-  letter-spacing: -.065em;
-  line-height: .9;
+  font-family: "Museo Slab DWH", Rockwell, serif;
+  font-size: clamp(3.9rem, 6.2vw, 6.6rem);
+  font-weight: 900;
+  letter-spacing: -.035em;
+  line-height: .94;
   text-wrap: balance;
 }
 .dw-hero__intro {
   max-width: 560px;
   margin: 30px 0 0;
   color: rgba(255, 255, 255, .82);
-  font-size: clamp(1rem, 1.25vw, 1.2rem);
+  font-size: clamp(1rem, 1.25vw, 1.15rem);
+  font-weight: 300;
   line-height: 1.6;
 }
 .dw-text-link {
@@ -241,8 +255,9 @@ body[data-project="weekley-marketplace"] .experience-root {
   color: #fff;
 }
 .dw-search__heading span {
-  font-family: var(--font-editorial), Georgia, serif;
-  font-size: 25px;
+  font-family: "Museo Slab DWH", Rockwell, serif;
+  font-size: 23px;
+  font-weight: 900;
   line-height: 1;
 }
 .dw-search__heading small { color: rgba(255, 255, 255, .65); font-size: 10px; }
@@ -307,7 +322,7 @@ body[data-project="weekley-marketplace"] .experience-root {
   border-right: 1px solid var(--dw-line);
 }
 .dw-proof-bar p:first-child { padding-left: 0; }
-.dw-proof-bar strong { font-family: var(--font-editorial), Georgia, serif; font-size: 25px; font-weight: 600; }
+.dw-proof-bar strong { font-family: "Museo Slab DWH", Rockwell, serif; font-size: 25px; font-weight: 700; }
 .dw-proof-bar span { color: var(--dw-ink-soft); font-size: 11px; }
 .dw-proof-bar a { display: inline-flex; align-items: center; gap: 10px; margin-left: 38px; text-decoration: none; font-size: 11px; font-weight: 800; }
 
@@ -324,10 +339,10 @@ body[data-project="weekley-marketplace"] .experience-root {
 .dw-personalize__content h2,
 .dw-tour h2 {
   margin: 0;
-  font-family: var(--font-editorial), Georgia, serif;
-  font-size: clamp(3rem, 5.2vw, 6rem);
-  font-weight: 500;
-  letter-spacing: -.055em;
+  font-family: "Museo Slab DWH", Rockwell, serif;
+  font-size: clamp(2.9rem, 4.8vw, 5.5rem);
+  font-weight: 900;
+  letter-spacing: -.035em;
   line-height: .98;
 }
 .dw-section-head > p,
@@ -378,7 +393,7 @@ body[data-project="weekley-marketplace"] .experience-root {
   text-transform: uppercase;
 }
 .dw-market-card__body > p:first-child span { color: #7c8c93; text-align: right; }
-.dw-market-card h3 { margin: 0; font-family: var(--font-editorial), Georgia, serif; font-size: 30px; font-weight: 600; letter-spacing: -.035em; }
+.dw-market-card h3 { margin: 0; font-family: "Museo Slab DWH", Rockwell, serif; font-size: 30px; font-weight: 700; letter-spacing: -.025em; }
 .dw-market-card__body > p:nth-of-type(2) { min-height: 66px; margin: 12px 0 22px; color: var(--dw-ink-soft); font-size: 13px; line-height: 1.65; }
 .dw-market-card__actions { padding-top: 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--dw-line); }
 .dw-market-card__actions a { display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 11px; font-weight: 800; }
@@ -402,42 +417,28 @@ body[data-project="weekley-marketplace"] .experience-root {
   border-bottom: 1px solid var(--dw-line);
 }
 .dw-plan-card > p:first-child { grid-column: 1 / -1; margin: 0; color: var(--dw-coral); font-size: 9px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
-.dw-plan-card h3 { margin: 0; font-family: var(--font-editorial), Georgia, serif; font-size: 36px; font-weight: 600; letter-spacing: -.04em; }
+.dw-plan-card h3 { margin: 0; font-family: "Museo Slab DWH", Rockwell, serif; font-size: 36px; font-weight: 700; letter-spacing: -.025em; }
 .dw-plan-card > p:nth-of-type(2) { margin: 0; color: var(--dw-ink-soft); font-size: 13px; line-height: 1.6; }
 .dw-plan-card ul { grid-column: 1; margin: 10px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; list-style: none; }
 .dw-plan-card li { padding: 6px 9px; border: 1px solid var(--dw-line); font-size: 9px; font-weight: 700; }
 .dw-plan-card dl { grid-column: 2; grid-row: 3 / span 2; margin: 0; padding-left: 20px; border-left: 1px solid var(--dw-line); }
 .dw-plan-card dt { margin-bottom: 7px; color: #7c8c93; font-size: 9px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
-.dw-plan-card dd { margin: 0; font-family: var(--font-editorial), Georgia, serif; font-size: 18px; line-height: 1.25; }
+.dw-plan-card dd { margin: 0; font-family: "Museo Slab DWH", Rockwell, serif; font-size: 18px; font-weight: 700; line-height: 1.25; }
 .dw-plan-card button { grid-column: 1 / -1; justify-self: start; margin-top: 8px; padding: 0 0 5px; border: 0; border-bottom: 1px solid currentColor; background: transparent; cursor: pointer; font-size: 10px; font-weight: 800; }
 
 .dw-personalize { min-height: 720px; display: grid; grid-template-columns: 1.18fr .82fr; background: var(--dw-white); }
-.dw-personalize__visual { position: relative; min-height: 650px; overflow: hidden; background: #d4c1a8; transition: background 300ms ease; }
-.dw-personalize__visual[data-palette="coast"] { background: #afc5c6; }
-.dw-personalize__visual[data-palette="contrast"] { background: #b7afa4; }
-.dw-room { position: absolute; inset: 9% 7%; overflow: hidden; background: linear-gradient(150deg, #f4eee4 0 48%, #c2a581 48% 52%, #e8dfd2 52%); box-shadow: inset 0 0 0 1px rgba(23, 48, 64, .1); transition: filter 300ms ease; }
-[data-palette="coast"] .dw-room { filter: hue-rotate(28deg) saturate(.75) brightness(1.03); }
-[data-palette="contrast"] .dw-room { filter: saturate(.45) contrast(1.05); }
-.dw-room::before { content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 50%, rgba(255,255,255,.28)); }
-.dw-room__window { position: absolute; left: 9%; top: 11%; width: 33%; height: 48%; border: 8px solid #f5f0e8; background: linear-gradient(#91b2bc 0 52%, #799284 52% 55%, #d1b37b 55%); box-shadow: 0 18px 38px rgba(23,48,64,.18); }
-.dw-room__window::before { content: ""; position: absolute; left: 50%; inset-block: 0; width: 6px; background: #f5f0e8; }
-.dw-room__island { position: absolute; left: 24%; bottom: 13%; width: 54%; height: 24%; background: linear-gradient(#eadfd0 0 13%, #8a6a50 13%); box-shadow: 18px 24px 40px rgba(37,34,29,.25); transform: skewY(-4deg); }
-.dw-room__cabinet { position: absolute; right: 8%; top: 20%; width: 29%; height: 39%; background: repeating-linear-gradient(90deg, #a28c74 0 31%, #866f5a 31% 33%); box-shadow: inset 0 8px #d7c4a8; }
-.dw-room__pendant { position: absolute; top: 0; width: 2px; height: 23%; background: #514a41; }
-.dw-room__pendant::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 42px; height: 24px; border-radius: 50% 50% 5px 5px; background: #45413b; transform: translate(-50%, 40%); }
-.dw-room__pendant--one { left: 45%; }
-.dw-room__pendant--two { left: 62%; height: 19%; }
-.dw-room__label { position: absolute; left: 0; bottom: 0; min-width: 180px; display: grid; gap: 4px; padding: 16px 20px; background: var(--dw-blue); color: #fff; }
-.dw-room__label small { font-size: 8px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; opacity: .7; }
-.dw-room__label strong { font-family: var(--font-editorial), Georgia, serif; font-size: 20px; }
+.dw-personalize__visual { position: relative; min-height: 650px; overflow: hidden; background: #e8e6e0; }
+.dw-personalize__visual > img { width: 100%; height: 100%; min-height: 650px; display: block; object-fit: cover; transition: opacity 180ms ease; }
+.dw-gallery-label { position: absolute; left: 0; bottom: 0; min-width: 190px; display: grid; gap: 4px; padding: 16px 20px; background: var(--dw-blue); color: #fff; }
+.dw-gallery-label small { font-size: 8px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; opacity: .72; }
+.dw-gallery-label strong { font-family: "Museo Slab DWH", Rockwell, serif; font-size: 20px; font-weight: 700; }
 .dw-personalize__content { padding: clamp(70px, 9vw, 140px) clamp(30px, 7vw, 105px); display: flex; flex-direction: column; justify-content: center; }
 .dw-personalize__content > p { max-width: 500px; margin-top: 24px; }
 .dw-personalize fieldset { margin: 38px 0 0; padding: 0; display: grid; gap: 9px; border: 0; }
 .dw-personalize legend { margin-bottom: 12px; font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
 .dw-personalize fieldset button { min-height: 54px; padding: 9px 12px; display: flex; align-items: center; gap: 14px; border: 1px solid var(--dw-line); background: transparent; cursor: pointer; font-size: 11px; font-weight: 800; text-align: left; }
 .dw-personalize fieldset button.is-active { border-color: var(--dw-blue); box-shadow: inset 3px 0 var(--dw-blue); }
-.dw-personalize fieldset button > span { display: flex; width: 87px; height: 32px; }
-.dw-personalize fieldset i { flex: 1; }
+.dw-personalize fieldset button > img { width: 86px; height: 44px; display: block; flex: 0 0 auto; object-fit: cover; }
 
 .dw-difference { background: var(--dw-blue); color: #fff; }
 .dw-difference .dw-section-head > p { color: rgba(255,255,255,.7); }
@@ -445,10 +446,10 @@ body[data-project="weekley-marketplace"] .experience-root {
 .dw-difference-grid article { min-height: 300px; padding: 35px; border-right: 1px solid rgba(255,255,255,.2); }
 .dw-difference-grid article:last-child { border: 0; }
 .dw-difference-grid span { color: #f1a18e; font-size: 10px; font-weight: 800; }
-.dw-difference-grid h3 { margin: 75px 0 12px; font-family: var(--font-editorial), Georgia, serif; font-size: 40px; font-weight: 500; }
+.dw-difference-grid h3 { margin: 75px 0 12px; font-family: "Museo Slab DWH", Rockwell, serif; font-size: 40px; font-weight: 900; }
 .dw-difference-grid p { max-width: 350px; margin: 0; color: rgba(255,255,255,.68); font-size: 13px; line-height: 1.65; }
 .dw-difference blockquote { max-width: 920px; margin: 100px auto 0; text-align: center; }
-.dw-difference blockquote p { margin: 0; font-family: var(--font-editorial), Georgia, serif; font-size: clamp(2.2rem, 4vw, 4.6rem); line-height: 1.08; letter-spacing: -.035em; }
+.dw-difference blockquote p { margin: 0; font-family: "Museo Slab DWH", Rockwell, serif; font-size: clamp(2.2rem, 4vw, 4.6rem); font-weight: 700; line-height: 1.08; letter-spacing: -.025em; }
 .dw-difference blockquote footer { margin-top: 22px; color: rgba(255,255,255,.52); font-size: 9px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
 
 .dw-tour { min-height: 620px; display: grid; grid-template-columns: 1.2fr .8fr; background: var(--dw-coral); color: #fff; }
@@ -460,7 +461,7 @@ body[data-project="weekley-marketplace"] .experience-root {
 .dw-tour__steps { padding: clamp(60px, 9vw, 130px) clamp(30px, 6vw, 85px); display: grid; align-content: center; gap: 0; background: #c94d3d; }
 .dw-tour__steps p { margin: 0; padding: 26px 0; display: grid; grid-template-columns: 36px 1fr; gap: 7px 12px; border-bottom: 1px solid rgba(255,255,255,.24); }
 .dw-tour__steps span { grid-row: 1 / span 2; color: rgba(255,255,255,.55); font-size: 9px; font-weight: 800; }
-.dw-tour__steps strong { font-family: var(--font-editorial), Georgia, serif; font-size: 22px; font-weight: 500; }
+.dw-tour__steps strong { font-family: "Museo Slab DWH", Rockwell, serif; font-size: 22px; font-weight: 700; }
 .dw-tour__steps small { color: rgba(255,255,255,.66); font-size: 11px; line-height: 1.45; }
 
 .dw-footer {
@@ -472,7 +473,8 @@ body[data-project="weekley-marketplace"] .experience-root {
   color: #fff;
 }
 .dw-footer > div { display: flex; flex-direction: column; align-items: flex-start; gap: 11px; }
-.dw-footer > div:first-child > p { margin: 12px 0 0; color: rgba(255,255,255,.55); font-family: var(--font-editorial), Georgia, serif; font-size: 18px; }
+.dw-footer > div:first-child > .dw-wordmark { width: min(230px, 100%); padding: 10px 12px; background: #fff; }
+.dw-footer > div:first-child > p { margin: 12px 0 0; color: rgba(255,255,255,.62); font-family: "Museo Slab DWH", Rockwell, serif; font-size: 18px; font-weight: 700; }
 .dw-footer > div > strong { margin-bottom: 7px; color: rgba(255,255,255,.5); font-size: 9px; letter-spacing: .15em; text-transform: uppercase; }
 .dw-footer > div > a { text-decoration: none; font-size: 11px; line-height: 1.5; }
 .dw-footer__note p { margin: 0; color: rgba(255,255,255,.55); font-size: 10px; line-height: 1.6; }
@@ -495,7 +497,7 @@ body[data-project="weekley-marketplace"] .experience-root {
   transform: translateX(-50%);
 }
 .dw-compare > span { margin-right: auto; font-size: 11px; }
-.dw-compare > span strong { margin-right: 3px; color: #f1a18e; font-family: var(--font-editorial), Georgia, serif; font-size: 20px; }
+.dw-compare > span strong { margin-right: 3px; color: #f1a18e; font-family: "Museo Slab DWH", Rockwell, serif; font-size: 20px; font-weight: 700; }
 .dw-compare button { padding: 8px; border: 0; background: transparent; color: rgba(255,255,255,.65); cursor: pointer; font-size: 10px; }
 .dw-compare a { min-height: 38px; padding: 0 13px; display: flex; align-items: center; gap: 8px; background: #fff; color: var(--dw-ink); text-decoration: none; font-size: 10px; font-weight: 800; }
 
@@ -532,7 +534,8 @@ body[data-project="weekley-marketplace"] .experience-root {
   .dw-plans { grid-template-columns: 1fr; }
   .dw-plans__lead { position: static; }
   .dw-personalize { grid-template-columns: 1fr; }
-  .dw-personalize__visual { min-height: 580px; }
+  .dw-personalize__visual,
+  .dw-personalize__visual > img { min-height: 580px; }
   .dw-difference-grid { grid-template-columns: 1fr; }
   .dw-difference-grid article { min-height: auto; border-right: 0; border-bottom: 1px solid rgba(255,255,255,.2); }
   .dw-difference-grid h3 { margin-top: 35px; }
@@ -566,9 +569,8 @@ body[data-project="weekley-marketplace"] .experience-root {
   .dw-market-card__image { aspect-ratio: 1.35; }
   .dw-plan-card { grid-template-columns: 1fr; }
   .dw-plan-card dl { grid-column: 1; grid-row: auto; margin-top: 12px; }
-  .dw-personalize__visual { min-height: 420px; }
-  .dw-room { inset: 7% 5%; }
-  .dw-room__pendant::after { width: 28px; }
+  .dw-personalize__visual,
+  .dw-personalize__visual > img { min-height: 420px; }
   .dw-personalize__content { padding: 70px 20px; }
   .dw-tour__content,
   .dw-tour__steps { padding: 76px 20px; }
