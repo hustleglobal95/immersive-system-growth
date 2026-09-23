@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "activeMode": "scroll-storytelling",
+  "activeMode": "interactive-cards",
   "modes": [
     {
       "id": "scroll-storytelling",
