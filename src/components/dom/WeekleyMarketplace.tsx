@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const officialHomes = "https://www.davidweekleyhomes.com/new-homes";
 const officialContact = "https://www.davidweekleyhomes.com/contact-us";
@@ -13,60 +13,84 @@ const officialImages = {
   exterior: "https://www.davidweekleyhomes.com/media/HomeGalleryImage/c8dcfecc-c338-4686-8bc0-8aa5f96cf9ff.jpg",
 };
 
+const marketDestinations: Record<string, { homes: string; ready: string; models: string }> = {
+  Houston: {
+    homes: "https://www.davidweekleyhomes.com/new-homes/tx/houston",
+    ready: "https://www.davidweekleyhomes.com/new-homes/tx/houston/homes-ready-soon",
+    models: "https://www.davidweekleyhomes.com/new-homes/tx/houston/model-home-gallery",
+  },
+  Austin: {
+    homes: "https://www.davidweekleyhomes.com/new-homes/tx/austin",
+    ready: "https://www.davidweekleyhomes.com/new-homes/tx/austin/homes-ready-soon",
+    models: "https://www.davidweekleyhomes.com/new-homes/tx/austin/model-home-gallery",
+  },
+  Tampa: {
+    homes: "https://www.davidweekleyhomes.com/new-homes/fl/tampa",
+    ready: "https://www.davidweekleyhomes.com/new-homes/fl/tampa/homes-ready-soon",
+    models: "https://www.davidweekleyhomes.com/new-homes/fl/tampa/model-home-gallery",
+  },
+};
+
 const marketPaths = [
   {
     id: "houston",
     market: "Houston",
-    title: "Houston communities",
-    type: "Move-in ready + build",
-    copy: "Compare community lifestyles, home types and timing before opening live inventory.",
+    title: "Houston",
+    type: "Texas",
+    copy: "Explore neighborhoods across David Weekley's home market, including city living and homes ready soon.",
     image: officialImages.exterior,
     imagePosition: "50% 48%",
+    href: marketDestinations.Houston.homes,
   },
   {
     id: "austin",
     market: "Austin",
-    title: "Austin-area homes",
-    type: "Build + personalization",
-    copy: "Start with the way you want to live, then narrow the official search to the right area.",
+    title: "Austin",
+    type: "Texas",
+    copy: "Find new communities, ready homes and model homes throughout the Austin area.",
     image: officialImages.living,
     imagePosition: "50% 48%",
+    href: marketDestinations.Austin.homes,
   },
   {
     id: "tampa",
     market: "Tampa",
-    title: "Tampa Bay communities",
-    type: "Planned communities",
-    copy: "See the decisions that matter first, from location and amenities to plan flexibility.",
+    title: "Tampa Bay",
+    type: "Florida",
+    copy: "Discover coastal communities, South Tampa city homes and available homes across the region.",
     image: officialImages.kitchen,
     imagePosition: "50% 50%",
+    href: marketDestinations.Tampa.homes,
   },
 ];
 
 const planPaths = [
   {
-    id: "courtyard",
-    eyebrow: "Illustrative path 01",
-    title: "Courtyard living",
-    story: "A social center, strong indoor-outdoor connection and private bedroom wings.",
-    specs: ["Single level", "Flexible study", "Outdoor room"],
-    bestFor: "Hosting without losing privacy",
+    id: "ready",
+    eyebrow: "01 / Move sooner",
+    title: "A home ready soon",
+    story: "Start with homes already underway. See the actual location, plan and expected timing on David Weekley's live listings.",
+    specs: ["Live availability", "Actual home details", "A shorter path to move-in"],
+    bestFor: "When timing leads the decision",
+    destination: "ready" as const,
   },
   {
-    id: "flex",
-    eyebrow: "Illustrative path 02",
-    title: "Flexible two-story",
-    story: "Shared life downstairs, adaptable rooms upstairs and space that changes over time.",
-    specs: ["Two levels", "Game room", "Guest option"],
-    bestFor: "Growing and multigenerational households",
+    id: "community",
+    eyebrow: "02 / Choose a place",
+    title: "Build in a community",
+    story: "Find the neighborhood first, then explore its homes, floor plans and the choices available there.",
+    specs: ["Community context", "Floor plan options", "Design choices"],
+    bestFor: "When where you live matters most",
+    destination: "homes" as const,
   },
   {
-    id: "retreat",
-    eyebrow: "Illustrative path 03",
-    title: "Low-maintenance retreat",
-    story: "An efficient footprint with generous light, useful storage and fewer unused rooms.",
-    specs: ["Right-sized", "Open kitchen", "Covered patio"],
-    bestFor: "Simpler daily living",
+    id: "model",
+    eyebrow: "03 / Experience it",
+    title: "Walk through a model",
+    story: "Move beyond floor plan diagrams and see how the spaces connect before you plan an in-person visit.",
+    specs: ["Model home gallery", "Room-by-room views", "Visit planning"],
+    bestFor: "When you need to feel the space",
+    destination: "models" as const,
   },
 ];
 
@@ -98,6 +122,8 @@ export function WeekleyMarketplace() {
   const [timeline, setTimeline] = useState("Any timeline");
   const [searched, setSearched] = useState(false);
   const [compare, setCompare] = useState<string[]>([]);
+  const [compareOpen, setCompareOpen] = useState(false);
+  const comparePanelRef = useRef<HTMLElement>(null);
   const [gallery, setGallery] = useState("living");
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -106,6 +132,33 @@ export function WeekleyMarketplace() {
     [market],
   );
   const selectedGallery = galleryViews.find((item) => item.id === gallery) ?? galleryViews[0];
+  const selectedMarkets = marketPaths.filter((item) => compare.includes(item.id));
+  const selectedDestination = marketDestinations[market];
+  const readySoon = homeType === "Move-in ready" || timeline === "As soon as possible";
+  const resultUrl = selectedDestination
+    ? selectedDestination[readySoon ? "ready" : "homes"]
+    : officialHomes;
+  const resultLabel = selectedDestination
+    ? `${readySoon ? "View homes ready soon" : "Explore new homes"} in ${market}`
+    : "Choose a market on the official site";
+
+  useEffect(() => {
+    if (!compareOpen) return;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const panel = comparePanelRef.current;
+    panel?.querySelector<HTMLButtonElement>("button")?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setCompareOpen(false);
+      if (event.key !== "Tab" || !panel) return;
+      const focusable = [...panel.querySelectorAll<HTMLElement>('button, a[href]')];
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => { document.removeEventListener("keydown", onKeyDown); previousFocus?.focus(); };
+  }, [compareOpen]);
 
   const runSearch = () => {
     setSearched(true);
@@ -147,19 +200,21 @@ export function WeekleyMarketplace() {
 
       <div id="main-content">
         <section className="dw-hero" id="find" aria-labelledby="dw-hero-title">
-          <div className="dw-hero__image" role="img" aria-label="David Weekley Homes owner's retreat" />
+          <div className="dw-hero__image" role="img" aria-label="David Weekley Homes exterior" />
           <div className="dw-hero__wash" />
           <div className="dw-hero__content">
-            <p className="dw-kicker"><span>New homes</span> built around real life</p>
+            <p className="dw-kicker"><span>David Weekley Homes</span> / A better way to begin</p>
             <h1 id="dw-hero-title">Find the home<br />your life fits into.</h1>
-            <p className="dw-hero__intro">Start with where, how and when you want to live. We will help you turn those choices into a clearer path home.</p>
-            <a className="dw-text-link dw-text-link--light" href="#difference">Why Weekley <ArrowIcon /></a>
+            <p className="dw-hero__intro">The right home starts with the right questions. Explore where you want to be, how you want to live, and what comes next.</p>
+            <a className="dw-text-link dw-text-link--light" href="#communities">Explore places to live <ArrowIcon /></a>
           </div>
+
+          <div className="dw-hero__caption"><span>THE WEEKLEY EXPERIENCE</span><span>Design / Choice / Service</span></div>
 
           <div className="dw-search" aria-label="Home search">
             <div className="dw-search__heading">
-              <span>Start your search</span>
-              <small>Three choices. A more useful first step.</small>
+              <span>Begin your search</span>
+              <small>Find a path that fits your life.</small>
             </div>
             <label>
               <span>Where</span>
@@ -176,7 +231,6 @@ export function WeekleyMarketplace() {
                 <option>Any home type</option>
                 <option>Move-in ready</option>
                 <option>Build from a plan</option>
-                <option>Build on your lot</option>
               </select>
             </label>
             <label>
@@ -195,9 +249,9 @@ export function WeekleyMarketplace() {
         </section>
 
         <section className="dw-proof-bar" aria-label="Company facts">
-          <p><strong>Since 1976</strong><span>Building homes and relationships</span></p>
-          <p><strong>13 states</strong><span>Local teams with national strength</span></p>
-          <p><strong>19 markets</strong><span>More ways to find your fit</span></p>
+          <p><strong>Since 1976</strong><span>Building dreams, enhancing lives</span></p>
+          <p><strong>125,000+</strong><span>Homeowners and counting</span></p>
+          <p><strong>19 markets</strong><span>Across 13 states</span></p>
           <a href="#difference">Our difference <ArrowIcon /></a>
         </section>
 
@@ -205,14 +259,15 @@ export function WeekleyMarketplace() {
           <div className="dw-section-head">
             <div>
               <p className="dw-kicker">Explore by market</p>
-              <h2 id="markets-title">Do not start with a list.<br />Start with your life.</h2>
+              <h2 id="markets-title">Find your place.<br />Then find your home.</h2>
             </div>
-            <p>Use these guided paths to understand the choice. Live availability, pricing and community details open on the official site.</p>
+            <p>Explore a few of the places David Weekley builds. Each destination opens real communities and current home information on the official website.</p>
           </div>
 
           {searched && (
             <div className="dw-search-result" role="status">
-              Showing {market === "Any market" ? "all concept pathways" : `${market} pathways`} for {homeType.toLowerCase()} and {timeline.toLowerCase()}.
+              <div><strong>{market === "Any market" ? "Start with a location" : `Your ${market} search`}</strong><span>{readySoon ? "Timing matters most. Start with current homes ready soon." : homeType === "Build from a plan" ? "Explore communities and available home designs." : "Explore communities and current home options."}</span></div>
+              <a href={resultUrl} target="_blank" rel="noreferrer">{resultLabel} <ArrowIcon /></a>
             </div>
           )}
 
@@ -220,15 +275,15 @@ export function WeekleyMarketplace() {
             {visibleMarkets.map((item, index) => (
               <article className="dw-market-card" key={item.id}>
                 <div className="dw-market-card__image">
-                  <img src={item.image} alt="" style={{ objectPosition: item.imagePosition }} />
-                  <span>0{index + 1}</span>
+                  <img src={item.image} alt="David Weekley Homes photography" style={{ objectPosition: item.imagePosition }} />
+                  <span>0{index + 1} / 03</span>
                 </div>
                 <div className="dw-market-card__body">
                   <p>{item.market} <span>{item.type}</span></p>
                   <h3>{item.title}</h3>
                   <p>{item.copy}</p>
                   <div className="dw-market-card__actions">
-                    <a href={officialHomes} target="_blank" rel="noreferrer">Open live search <ArrowIcon /></a>
+                    <a href={item.href} target="_blank" rel="noreferrer">Explore {item.market} <ArrowIcon /></a>
                     <button
                       type="button"
                       className={compare.includes(item.id) ? "is-selected" : ""}
@@ -248,9 +303,9 @@ export function WeekleyMarketplace() {
         <section className="dw-section dw-plans" id="plans" aria-labelledby="plans-title">
           <div className="dw-plans__lead">
             <p className="dw-kicker">Plan finder</p>
-            <h2 id="plans-title">Choose the feeling first.</h2>
-            <p>Square footage does not tell you how a home lives. Compare the choices that shape an ordinary Tuesday.</p>
-            <a className="dw-text-link" href={officialHomes} target="_blank" rel="noreferrer">Browse official plans <ArrowIcon /></a>
+            <h2 id="plans-title">Three ways<br />to move forward.</h2>
+            <p>Your next step depends on what matters most today: timing, place, or the feeling of walking through a home.</p>
+            <a className="dw-text-link" href={resultUrl} target="_blank" rel="noreferrer">Explore real homes <ArrowIcon /></a>
           </div>
           <div className="dw-plan-list">
             {planPaths.map((plan) => (
@@ -260,9 +315,9 @@ export function WeekleyMarketplace() {
                 <p>{plan.story}</p>
                 <ul>{plan.specs.map((spec) => <li key={spec}>{spec}</li>)}</ul>
                 <dl><dt>Best for</dt><dd>{plan.bestFor}</dd></dl>
-                <button type="button" onClick={() => toggleCompare(plan.id)} aria-pressed={compare.includes(plan.id)}>
-                  {compare.includes(plan.id) ? "Remove from comparison" : "Add to comparison"}
-                </button>
+                <a className="dw-plan-card__link" href={selectedDestination?.[plan.destination] ?? officialHomes} target="_blank" rel="noreferrer">
+                  {plan.destination === "ready" ? "See homes ready soon" : plan.destination === "models" ? "Explore model homes" : "Browse communities"} <ArrowIcon />
+                </a>
               </article>
             ))}
           </div>
@@ -293,7 +348,7 @@ export function WeekleyMarketplace() {
                 </button>
               ))}
             </fieldset>
-            <a className="dw-text-link" href={officialContact} target="_blank" rel="noreferrer">Meet the design team <ArrowIcon /></a>
+            <a className="dw-text-link" href="https://www.davidweekleyhomes.com/new-homes/fl/tampa/design-center" target="_blank" rel="noreferrer">Explore the Tampa Design Center <ArrowIcon /></a>
           </div>
         </section>
 
@@ -344,10 +399,31 @@ export function WeekleyMarketplace() {
 
       {compare.length > 0 && (
         <aside className="dw-compare" aria-live="polite">
-          <span><strong>{compare.length}</strong> {compare.length === 1 ? "item" : "items"} selected</span>
-          <button type="button" onClick={() => setCompare([])}>Clear</button>
-          <a href="#plans">Review comparison <ArrowIcon /></a>
+          <span><strong>{compare.length}</strong> {compare.length === 1 ? "market" : "markets"} selected</span>
+          <button type="button" onClick={() => { setCompare([]); setCompareOpen(false); }}>Clear</button>
+          <button type="button" className="dw-compare__open" onClick={() => setCompareOpen(true)}>Compare markets <ArrowIcon /></button>
         </aside>
+      )}
+
+      {compareOpen && selectedMarkets.length > 0 && (
+        <div className="dw-compare-dialog" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setCompareOpen(false); }}>
+          <section role="dialog" aria-modal="true" aria-labelledby="dw-compare-title" className="dw-compare-dialog__panel" ref={comparePanelRef}>
+            <div className="dw-compare-dialog__head">
+              <div><p className="dw-kicker">Your shortlist</p><h2 id="dw-compare-title">Compare places to live.</h2></div>
+              <button type="button" onClick={() => setCompareOpen(false)} aria-label="Close comparison">Close ×</button>
+            </div>
+            <p className="dw-compare-dialog__note">These are location paths, not inventory comparisons. Current communities, prices and availability are on the official site.</p>
+            <div className="dw-compare-dialog__grid">
+              {selectedMarkets.map((item) => (
+                <article key={item.id}>
+                  <img src={item.image} alt="David Weekley Homes photography" />
+                  <p>{item.type}</p><h3>{item.title}</h3><p>{item.copy}</p>
+                  <div><a href={item.href} target="_blank" rel="noreferrer">View communities <ArrowIcon /></a><a href={marketDestinations[item.market].ready} target="_blank" rel="noreferrer">Homes ready soon <ArrowIcon /></a></div>
+                </article>
+              ))}
+            </div>
+          </section>
+        </div>
       )}
     </main>
   );

@@ -164,8 +164,8 @@ body[data-project="weekley-marketplace"] .experience-root {
 
 .dw-hero {
   position: relative;
-  min-height: min(840px, 100svh);
-  padding: 190px clamp(24px, 7vw, 112px) 172px;
+  min-height: min(810px, 100svh);
+  padding: 180px clamp(24px, 7vw, 112px) 160px;
   display: flex;
   align-items: center;
   isolation: isolate;
@@ -177,8 +177,8 @@ body[data-project="weekley-marketplace"] .experience-root {
   inset: 0;
   z-index: -3;
   background:
-    linear-gradient(90deg, rgba(0, 52, 91, .62), rgba(0, 52, 91, .08) 72%),
-    url("https://www.davidweekleyhomes.com/media/HomeGalleryImage/085436a0-01f1-4a12-bf9c-557f2f63be4a.jpg") center 50% / cover;
+    linear-gradient(90deg, rgba(0, 42, 70, .56), rgba(0, 42, 70, .04) 72%),
+    url("https://www.davidweekleyhomes.com/media/HomeGalleryImage/c8dcfecc-c338-4686-8bc0-8aa5f96cf9ff.jpg") center 50% / cover;
   transform: scale(1.015);
 }
 .dw-hero__wash {
@@ -188,9 +188,9 @@ body[data-project="weekley-marketplace"] .experience-root {
   background:
     linear-gradient(180deg, rgba(4, 31, 43, .45), transparent 34%),
     linear-gradient(0deg, rgba(4, 28, 38, .55), transparent 45%),
-    linear-gradient(90deg, rgba(7, 39, 53, .68), rgba(7, 39, 53, .08) 62%);
+    linear-gradient(90deg, rgba(7, 39, 53, .76), rgba(7, 39, 53, .08) 68%);
 }
-.dw-hero__content { width: min(670px, 58vw); }
+.dw-hero__content { width: min(700px, 62vw); }
 .dw-kicker {
   margin: 0 0 20px;
   font-size: 11px;
@@ -202,11 +202,11 @@ body[data-project="weekley-marketplace"] .experience-root {
 .dw-hero h1 {
   max-width: 760px;
   margin: 0;
-  font-family: "Museo Slab DWH", Rockwell, serif;
-  font-size: clamp(3.9rem, 6.2vw, 6.6rem);
-  font-weight: 900;
-  letter-spacing: -.035em;
-  line-height: .94;
+  font-family: "Museo Sans DWH", Arial, sans-serif;
+  font-size: clamp(3.6rem, 5.8vw, 6.3rem);
+  font-weight: 700;
+  letter-spacing: -.045em;
+  line-height: 1.02;
   text-wrap: balance;
 }
 .dw-hero__intro {
@@ -217,6 +217,20 @@ body[data-project="weekley-marketplace"] .experience-root {
   font-weight: 300;
   line-height: 1.6;
 }
+.dw-hero__caption {
+  position: absolute;
+  right: clamp(24px, 7vw, 112px);
+  bottom: 94px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: right;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-shadow: 0 1px 8px rgba(0,0,0,.55);
+}
+.dw-hero__caption span:first-child { font-size: 9px; letter-spacing: .16em; opacity: .7; }
 .dw-text-link {
   width: fit-content;
   display: inline-flex;
@@ -255,9 +269,8 @@ body[data-project="weekley-marketplace"] .experience-root {
   color: #fff;
 }
 .dw-search__heading span {
-  font-family: "Museo Slab DWH", Rockwell, serif;
-  font-size: 23px;
-  font-weight: 900;
+  font-size: 22px;
+  font-weight: 700;
   line-height: 1;
 }
 .dw-search__heading small { color: rgba(255, 255, 255, .65); font-size: 10px; }
@@ -339,11 +352,11 @@ body[data-project="weekley-marketplace"] .experience-root {
 .dw-personalize__content h2,
 .dw-tour h2 {
   margin: 0;
-  font-family: "Museo Slab DWH", Rockwell, serif;
-  font-size: clamp(2.9rem, 4.8vw, 5.5rem);
-  font-weight: 900;
-  letter-spacing: -.035em;
-  line-height: .98;
+  font-family: "Museo Sans DWH", Arial, sans-serif;
+  font-size: clamp(2.7rem, 4.2vw, 4.8rem);
+  font-weight: 700;
+  letter-spacing: -.043em;
+  line-height: 1.06;
 }
 .dw-section-head > p,
 .dw-plans__lead > p,
@@ -358,12 +371,20 @@ body[data-project="weekley-marketplace"] .experience-root {
 .dw-market-section { background: var(--dw-white); }
 .dw-search-result {
   margin: -30px 0 36px;
-  padding: 14px 18px;
-  border-left: 3px solid var(--dw-coral);
-  background: #f5ede7;
+  padding: 18px 22px;
+  border-left: 3px solid var(--dw-blue);
+  background: #edf4f8;
   color: var(--dw-ink-soft);
   font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
 }
+.dw-search-result div { display: grid; gap: 5px; }
+.dw-search-result strong { color: var(--dw-ink); font-size: 15px; }
+.dw-search-result a { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; color: var(--dw-blue); font-weight: 700; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.dw-search-result svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.5; }
 .dw-market-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
 .dw-market-card { min-width: 0; border: 1px solid var(--dw-line); background: #fff; }
 .dw-market-card__image { position: relative; aspect-ratio: 1.25; overflow: hidden; background: #dce1de; }
@@ -393,7 +414,7 @@ body[data-project="weekley-marketplace"] .experience-root {
   text-transform: uppercase;
 }
 .dw-market-card__body > p:first-child span { color: #7c8c93; text-align: right; }
-.dw-market-card h3 { margin: 0; font-family: "Museo Slab DWH", Rockwell, serif; font-size: 30px; font-weight: 700; letter-spacing: -.025em; }
+.dw-market-card h3 { margin: 0; font-size: 30px; font-weight: 700; letter-spacing: -.025em; }
 .dw-market-card__body > p:nth-of-type(2) { min-height: 66px; margin: 12px 0 22px; color: var(--dw-ink-soft); font-size: 13px; line-height: 1.65; }
 .dw-market-card__actions { padding-top: 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--dw-line); }
 .dw-market-card__actions a { display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 11px; font-weight: 800; }
@@ -417,14 +438,15 @@ body[data-project="weekley-marketplace"] .experience-root {
   border-bottom: 1px solid var(--dw-line);
 }
 .dw-plan-card > p:first-child { grid-column: 1 / -1; margin: 0; color: var(--dw-coral); font-size: 9px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
-.dw-plan-card h3 { margin: 0; font-family: "Museo Slab DWH", Rockwell, serif; font-size: 36px; font-weight: 700; letter-spacing: -.025em; }
+.dw-plan-card h3 { margin: 0; font-size: 34px; font-weight: 700; letter-spacing: -.03em; }
 .dw-plan-card > p:nth-of-type(2) { margin: 0; color: var(--dw-ink-soft); font-size: 13px; line-height: 1.6; }
 .dw-plan-card ul { grid-column: 1; margin: 10px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; list-style: none; }
 .dw-plan-card li { padding: 6px 9px; border: 1px solid var(--dw-line); font-size: 9px; font-weight: 700; }
 .dw-plan-card dl { grid-column: 2; grid-row: 3 / span 2; margin: 0; padding-left: 20px; border-left: 1px solid var(--dw-line); }
 .dw-plan-card dt { margin-bottom: 7px; color: #7c8c93; font-size: 9px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
 .dw-plan-card dd { margin: 0; font-family: "Museo Slab DWH", Rockwell, serif; font-size: 18px; font-weight: 700; line-height: 1.25; }
-.dw-plan-card button { grid-column: 1 / -1; justify-self: start; margin-top: 8px; padding: 0 0 5px; border: 0; border-bottom: 1px solid currentColor; background: transparent; cursor: pointer; font-size: 10px; font-weight: 800; }
+.dw-plan-card__link { grid-column: 1 / -1; justify-self: start; display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; padding: 0 0 5px; border-bottom: 1px solid currentColor; text-decoration: none; font-size: 11px; font-weight: 700; }
+.dw-plan-card__link svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.5; }
 
 .dw-personalize { min-height: 720px; display: grid; grid-template-columns: 1.18fr .82fr; background: var(--dw-white); }
 .dw-personalize__visual { position: relative; min-height: 650px; overflow: hidden; background: #e8e6e0; }
@@ -452,13 +474,13 @@ body[data-project="weekley-marketplace"] .experience-root {
 .dw-difference blockquote p { margin: 0; font-family: "Museo Slab DWH", Rockwell, serif; font-size: clamp(2.2rem, 4vw, 4.6rem); font-weight: 700; line-height: 1.08; letter-spacing: -.025em; }
 .dw-difference blockquote footer { margin-top: 22px; color: rgba(255,255,255,.52); font-size: 9px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
 
-.dw-tour { min-height: 620px; display: grid; grid-template-columns: 1.2fr .8fr; background: var(--dw-coral); color: #fff; }
+.dw-tour { min-height: 620px; display: grid; grid-template-columns: 1.2fr .8fr; background: var(--dw-blue); color: #fff; }
 .dw-tour__content { padding: clamp(80px, 10vw, 150px) clamp(30px, 9vw, 140px); }
 .dw-tour__content > p { max-width: 580px; margin-top: 26px; color: rgba(255,255,255,.78); }
 .dw-tour__content > div { margin-top: 38px; display: flex; align-items: center; gap: 28px; }
 .dw-button { min-height: 52px; display: inline-flex; align-items: center; gap: 12px; padding: 0 22px; text-decoration: none; font-size: 11px; font-weight: 800; }
 .dw-button--light { background: #fff; color: var(--dw-ink); }
-.dw-tour__steps { padding: clamp(60px, 9vw, 130px) clamp(30px, 6vw, 85px); display: grid; align-content: center; gap: 0; background: #c94d3d; }
+.dw-tour__steps { padding: clamp(60px, 9vw, 130px) clamp(30px, 6vw, 85px); display: grid; align-content: center; gap: 0; background: var(--dw-blue-deep); }
 .dw-tour__steps p { margin: 0; padding: 26px 0; display: grid; grid-template-columns: 36px 1fr; gap: 7px 12px; border-bottom: 1px solid rgba(255,255,255,.24); }
 .dw-tour__steps span { grid-row: 1 / span 2; color: rgba(255,255,255,.55); font-size: 9px; font-weight: 800; }
 .dw-tour__steps strong { font-family: "Museo Slab DWH", Rockwell, serif; font-size: 22px; font-weight: 700; }
@@ -499,7 +521,24 @@ body[data-project="weekley-marketplace"] .experience-root {
 .dw-compare > span { margin-right: auto; font-size: 11px; }
 .dw-compare > span strong { margin-right: 3px; color: #f1a18e; font-family: "Museo Slab DWH", Rockwell, serif; font-size: 20px; font-weight: 700; }
 .dw-compare button { padding: 8px; border: 0; background: transparent; color: rgba(255,255,255,.65); cursor: pointer; font-size: 10px; }
-.dw-compare a { min-height: 38px; padding: 0 13px; display: flex; align-items: center; gap: 8px; background: #fff; color: var(--dw-ink); text-decoration: none; font-size: 10px; font-weight: 800; }
+.dw-compare .dw-compare__open { min-height: 38px; padding: 0 13px; display: flex; align-items: center; gap: 8px; background: #fff; color: var(--dw-ink); font-size: 10px; font-weight: 800; }
+
+.dw-compare-dialog { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 24px; background: rgba(0, 28, 50, .74); }
+.dw-compare-dialog__panel { width: min(1080px, 100%); max-height: min(90vh, 900px); overflow-y: auto; padding: clamp(24px, 4vw, 55px); background: #fff; box-shadow: 0 25px 70px rgba(0, 0, 0, .28); }
+.dw-compare-dialog__head { display: flex; justify-content: space-between; align-items: start; gap: 30px; }
+.dw-compare-dialog__head h2 { margin: 0; font-size: clamp(2rem, 4vw, 3.6rem); line-height: 1.08; letter-spacing: -.04em; }
+.dw-compare-dialog__head button { padding: 9px 12px; border: 1px solid var(--dw-line); background: #fff; cursor: pointer; white-space: nowrap; }
+.dw-compare-dialog__note { max-width: 720px; margin: 18px 0 28px; color: var(--dw-ink-soft); line-height: 1.55; font-size: 13px; }
+.dw-compare-dialog__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.dw-compare-dialog__grid article { border: 1px solid var(--dw-line); }
+.dw-compare-dialog__grid img { width: 100%; aspect-ratio: 1.55; object-fit: cover; display: block; }
+.dw-compare-dialog__grid article > p, .dw-compare-dialog__grid h3, .dw-compare-dialog__grid article > div { margin-left: 18px; margin-right: 18px; }
+.dw-compare-dialog__grid article > p:first-of-type { margin-top: 19px; margin-bottom: 4px; color: var(--dw-blue); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; }
+.dw-compare-dialog__grid h3 { margin-top: 0; margin-bottom: 8px; font-size: 24px; }
+.dw-compare-dialog__grid article > p:nth-of-type(2) { min-height: 72px; color: var(--dw-ink-soft); line-height: 1.5; font-size: 12px; }
+.dw-compare-dialog__grid article > div { display: grid; gap: 12px; padding: 15px 0 20px; border-top: 1px solid var(--dw-line); }
+.dw-compare-dialog__grid a { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; text-decoration: none; color: var(--dw-blue); }
+.dw-compare-dialog__grid svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.5; }
 
 @media (max-width: 1120px) {
   .dw-header { grid-template-columns: 1fr auto; }
@@ -541,6 +580,7 @@ body[data-project="weekley-marketplace"] .experience-root {
   .dw-difference-grid h3 { margin-top: 35px; }
   .dw-tour { grid-template-columns: 1fr; }
   .dw-footer { grid-template-columns: 1fr 1fr; }
+  .dw-compare-dialog__grid { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 600px) {
@@ -548,6 +588,7 @@ body[data-project="weekley-marketplace"] .experience-root {
   .dw-header nav.is-open { top: 72px; }
   .dw-hero { min-height: 740px; padding: 126px 20px 320px; }
   .dw-hero__image { background-position: 63% 54%; }
+  .dw-hero__caption { display: none; }
   .dw-hero h1 { font-size: clamp(3.25rem, 16vw, 4.75rem); }
   .dw-hero__intro { margin-top: 22px; font-size: 15px; }
   .dw-search { bottom: -260px; grid-template-columns: 1fr 1fr; }
@@ -567,6 +608,8 @@ body[data-project="weekley-marketplace"] .experience-root {
   .dw-tour h2 { font-size: clamp(2.75rem, 13vw, 4rem); }
   .dw-market-card { display: block; }
   .dw-market-card__image { aspect-ratio: 1.35; }
+  .dw-search-result { margin-top: -20px; align-items: flex-start; flex-direction: column; }
+  .dw-search-result a { white-space: normal; }
   .dw-plan-card { grid-template-columns: 1fr; }
   .dw-plan-card dl { grid-column: 1; grid-row: auto; margin-top: 12px; }
   .dw-personalize__visual,
@@ -578,7 +621,10 @@ body[data-project="weekley-marketplace"] .experience-root {
   .dw-footer { grid-template-columns: 1fr; padding: 60px 20px 24px; }
   .dw-footer__bottom { flex-direction: column; }
   .dw-compare { bottom: 10px; gap: 8px; }
-  .dw-compare a { font-size: 9px; }
+  .dw-compare .dw-compare__open { font-size: 9px; }
+  .dw-compare-dialog { padding: 8px; }
+  .dw-compare-dialog__panel { max-height: calc(100vh - 16px); padding: 24px 18px; }
+  .dw-compare-dialog__grid { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

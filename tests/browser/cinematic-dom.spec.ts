@@ -10,11 +10,17 @@ test("marketplace search, comparison and personalization work across viewports",
 
   await page.locator(".dw-search select").first().selectOption("Houston");
   await page.getByRole("button", { name: /Show my paths/i }).click();
-  await expect(page.getByText(/Showing Houston pathways/i)).toBeVisible();
+  await expect(page.getByText("Your Houston search")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Explore new homes in Houston/i })).toHaveAttribute("href", "https://www.davidweekleyhomes.com/new-homes/tx/houston");
   await expect(page.locator(".dw-market-card")).toHaveCount(1);
 
   await page.getByRole("button", { name: "Compare" }).click();
-  await expect(page.locator(".dw-compare")).toContainText("1 item selected");
+  await expect(page.locator(".dw-compare")).toContainText("1 market selected");
+  await page.getByRole("button", { name: "Compare markets" }).click();
+  await expect(page.getByRole("dialog", { name: "Compare places to live." })).toBeVisible();
+  await expect(page.getByRole("dialog").getByRole("link", { name: "Homes ready soon" })).toHaveAttribute("href", "https://www.davidweekleyhomes.com/new-homes/tx/houston/homes-ready-soon");
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
 
   await page.locator('[data-forge-interaction="select-gallery"]').filter({ hasText: "Kitchen" }).click();
   await expect(page.locator(".dw-gallery-label")).toContainText("Kitchen");
