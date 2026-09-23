@@ -18,33 +18,113 @@
   "heroModel": "",
   "stage": "minimal",
   "heroVisible": false,
-  "assets": [],
+  "assets": [
+    {
+      "id": "weekley-pavilion",
+      "kind": "model",
+      "url": "/models/reference/pavilion.glb",
+      "lowUrl": "/models/reference/pavilion-low.glb",
+      "scenes": [
+        "find",
+        "personalize"
+      ],
+      "persist": false,
+      "position": [
+        0,
+        -0.8,
+        -1
+      ],
+      "rotation": [
+        0,
+        0.15,
+        0
+      ],
+      "scale": 1.25
+    }
+  ],
   "scenes": [
     {
       "id": "find",
       "label": "Find a home",
-      "range": [0, 0.17],
+      "range": [
+        0,
+        0.17
+      ],
       "easing": "smooth",
       "camera": {
         "path": "dolly",
-        "from": { "position": [-5.5, 2.4, 11], "target": [0, 0, 0], "fov": 48 },
-        "to": { "position": [-3.2, 1.8, 8], "target": [0, -0.1, -0.4], "fov": 44 }
+        "from": {
+          "position": [
+            -5.5,
+            2.4,
+            11
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 48
+        },
+        "to": {
+          "position": [
+            -3.2,
+            1.8,
+            8
+          ],
+          "target": [
+            0,
+            -0.1,
+            -0.4
+          ],
+          "fov": 44
+        }
       },
       "motionTracks": [],
       "media": {
         "kind": "image",
         "src": "https://www.davidweekleyhomes.com/media/HomeGalleryImage/085436a0-01f1-4a12-bf9c-557f2f63be4a.jpg",
         "alt": "David Weekley Homes owner's retreat",
-        "scrim": 0.42,
+        "scrim": 0.6,
         "transition": "dissolve",
-        "position": [50, 54],
-        "mobilePosition": [63, 54]
+        "position": [
+          50,
+          54
+        ],
+        "mobilePosition": [
+          63,
+          54
+        ]
       },
       "blocks": [],
       "hero": {
         "motion": "linear",
-        "from": { "position": [0, -0.8, -1], "rotation": [0, 0.15, 0], "scale": 1.25 },
-        "to": { "position": [0, -0.8, -1.4], "rotation": [0, 0.28, 0], "scale": 1.16 }
+        "from": {
+          "position": [
+            0,
+            -0.8,
+            -1
+          ],
+          "rotation": [
+            0,
+            0.15,
+            0
+          ],
+          "scale": 1.25
+        },
+        "to": {
+          "position": [
+            0,
+            -0.8,
+            -1.4
+          ],
+          "rotation": [
+            0,
+            0.28,
+            0
+          ],
+          "scale": 1.16
+        }
       },
       "world": {
         "background": "#f4f1ea",
@@ -57,40 +137,106 @@
         "rimColor": "#df654c",
         "exposure": 1
       },
-      "material": { "tint": "#ffffff", "tintStrength": 0, "metalness": null, "roughness": null, "clearcoat": null },
-      "post": { "bloom": 0.08, "vignette": 0.05 },
+      "material": {
+        "tint": "#ffffff",
+        "tintStrength": 0,
+        "metalness": null,
+        "roughness": null,
+        "clearcoat": null
+      },
+      "post": {
+        "bloom": 0.08,
+        "vignette": 0.05
+      },
       "copy": {
         "eyebrow": "New homes built around real life",
         "headline": "Find the home your life fits into.",
         "body": "Start with where, how and when you want to live. The experience turns those priorities into a clearer path through markets, home types and timing.",
         "align": "left",
-        "cta": { "label": "Start your search", "href": "#communities" }
+        "cta": {
+          "label": "Start your search",
+          "href": "#communities"
+        }
       }
     },
     {
       "id": "communities",
       "label": "Market paths",
-      "range": [0.17, 0.38],
+      "range": [
+        0.17,
+        0.38
+      ],
       "easing": "smooth",
       "camera": {
         "path": "arc",
-        "from": { "position": [-3.2, 1.8, 8], "target": [0, -0.1, -0.4], "fov": 44 },
-        "to": { "position": [2.8, 2.1, 7.5], "target": [0, 0, -0.6], "fov": 46 }
+        "from": {
+          "position": [
+            -3.2,
+            1.8,
+            8
+          ],
+          "target": [
+            0,
+            -0.1,
+            -0.4
+          ],
+          "fov": 44
+        },
+        "to": {
+          "position": [
+            2.8,
+            2.1,
+            7.5
+          ],
+          "target": [
+            0,
+            0,
+            -0.6
+          ],
+          "fov": 46
+        }
       },
       "motionTracks": [],
       "media": {
         "kind": "image",
         "src": "https://www.davidweekleyhomes.com/media/HomeGalleryImage/c8dcfecc-c338-4686-8bc0-8aa5f96cf9ff.jpg",
         "alt": "David Weekley Homes exterior",
-        "scrim": 0.36,
+        "scrim": 0.6,
         "transition": "wipe",
-        "position": [50, 48]
+        "position": [
+          50,
+          48
+        ]
       },
       "blocks": [],
       "hero": {
         "motion": "linear",
-        "from": { "position": [0, -0.8, -1.4], "rotation": [0, 0.28, 0], "scale": 1.16 },
-        "to": { "position": [0.2, -0.85, -1.6], "rotation": [0, -0.18, 0], "scale": 1.08 }
+        "from": {
+          "position": [
+            0,
+            -0.8,
+            -1.4
+          ],
+          "rotation": [
+            0,
+            0.28,
+            0
+          ],
+          "scale": 1.16
+        },
+        "to": {
+          "position": [
+            0.2,
+            -0.85,
+            -1.6
+          ],
+          "rotation": [
+            0,
+            -0.18,
+            0
+          ],
+          "scale": 1.08
+        }
       },
       "world": {
         "background": "#fffdf8",
@@ -103,8 +249,17 @@
         "rimColor": "#718173",
         "exposure": 1
       },
-      "material": { "tint": "#ffffff", "tintStrength": 0, "metalness": null, "roughness": null, "clearcoat": null },
-      "post": { "bloom": 0.05, "vignette": 0.04 },
+      "material": {
+        "tint": "#ffffff",
+        "tintStrength": 0,
+        "metalness": null,
+        "roughness": null,
+        "clearcoat": null
+      },
+      "post": {
+        "bloom": 0.05,
+        "vignette": 0.04
+      },
       "copy": {
         "eyebrow": "Explore by market",
         "headline": "Do not start with a list. Start with your life.",
@@ -115,12 +270,39 @@
     {
       "id": "plans",
       "label": "Plan finder",
-      "range": [0.38, 0.56],
+      "range": [
+        0.38,
+        0.56
+      ],
       "easing": "smooth",
       "camera": {
         "path": "orbit",
-        "from": { "position": [2.8, 2.1, 7.5], "target": [0, 0, -0.6], "fov": 46 },
-        "to": { "position": [5.4, 1.6, 6.4], "target": [0, -0.15, -0.8], "fov": 42 }
+        "from": {
+          "position": [
+            2.8,
+            2.1,
+            7.5
+          ],
+          "target": [
+            0,
+            0,
+            -0.6
+          ],
+          "fov": 46
+        },
+        "to": {
+          "position": [
+            5.4,
+            1.6,
+            6.4
+          ],
+          "target": [
+            0,
+            -0.15,
+            -0.8
+          ],
+          "fov": 42
+        }
       },
       "motionTracks": [],
       "media": {
@@ -133,8 +315,32 @@
       "blocks": [],
       "hero": {
         "motion": "linear",
-        "from": { "position": [0.2, -0.85, -1.6], "rotation": [0, -0.18, 0], "scale": 1.08 },
-        "to": { "position": [-0.2, -0.82, -1.2], "rotation": [0, -0.46, 0], "scale": 1.15 }
+        "from": {
+          "position": [
+            0.2,
+            -0.85,
+            -1.6
+          ],
+          "rotation": [
+            0,
+            -0.18,
+            0
+          ],
+          "scale": 1.08
+        },
+        "to": {
+          "position": [
+            -0.2,
+            -0.82,
+            -1.2
+          ],
+          "rotation": [
+            0,
+            -0.46,
+            0
+          ],
+          "scale": 1.15
+        }
       },
       "world": {
         "background": "#f4f1ea",
@@ -147,8 +353,17 @@
         "rimColor": "#df654c",
         "exposure": 1.05
       },
-      "material": { "tint": "#ffffff", "tintStrength": 0, "metalness": null, "roughness": null, "clearcoat": null },
-      "post": { "bloom": 0.04, "vignette": 0.03 },
+      "material": {
+        "tint": "#ffffff",
+        "tintStrength": 0,
+        "metalness": null,
+        "roughness": null,
+        "clearcoat": null
+      },
+      "post": {
+        "bloom": 0.04,
+        "vignette": 0.03
+      },
       "copy": {
         "eyebrow": "Plan finder",
         "headline": "Choose the feeling first.",
@@ -159,27 +374,81 @@
     {
       "id": "personalize",
       "label": "Design and Choice",
-      "range": [0.56, 0.73],
+      "range": [
+        0.56,
+        0.73
+      ],
       "easing": "cinematic",
       "camera": {
         "path": "subject-orbit",
-        "from": { "position": [5.4, 1.6, 6.4], "target": [0, -0.15, -0.8], "fov": 42 },
-        "to": { "position": [1.8, 1.3, 5.4], "target": [0, -0.2, -0.9], "fov": 38 }
+        "from": {
+          "position": [
+            5.4,
+            1.6,
+            6.4
+          ],
+          "target": [
+            0,
+            -0.15,
+            -0.8
+          ],
+          "fov": 42
+        },
+        "to": {
+          "position": [
+            1.8,
+            1.3,
+            5.4
+          ],
+          "target": [
+            0,
+            -0.2,
+            -0.9
+          ],
+          "fov": 38
+        }
       },
       "motionTracks": [],
       "media": {
         "kind": "image",
         "src": "https://www.davidweekleyhomes.com/media/HomeGalleryImage/aa45cb37-1050-43b1-9b8b-d139dbd31772.jpg",
         "alt": "David Weekley Homes kitchen",
-        "scrim": 0.34,
+        "scrim": 0.6,
         "transition": "dissolve",
-        "position": [50, 50]
+        "position": [
+          50,
+          50
+        ]
       },
       "blocks": [],
       "hero": {
         "motion": "linear",
-        "from": { "position": [-0.2, -0.82, -1.2], "rotation": [0, -0.46, 0], "scale": 1.15 },
-        "to": { "position": [0, -0.78, -0.8], "rotation": [0, 0.36, 0], "scale": 1.28 }
+        "from": {
+          "position": [
+            -0.2,
+            -0.82,
+            -1.2
+          ],
+          "rotation": [
+            0,
+            -0.46,
+            0
+          ],
+          "scale": 1.15
+        },
+        "to": {
+          "position": [
+            0,
+            -0.78,
+            -0.8
+          ],
+          "rotation": [
+            0,
+            0.36,
+            0
+          ],
+          "scale": 1.28
+        }
       },
       "world": {
         "background": "#fffdf8",
@@ -192,8 +461,17 @@
         "rimColor": "#afc5c6",
         "exposure": 1.08
       },
-      "material": { "tint": "#c8ad8d", "tintStrength": 0.12, "metalness": null, "roughness": 0.72, "clearcoat": null },
-      "post": { "bloom": 0.06, "vignette": 0.04 },
+      "material": {
+        "tint": "#c8ad8d",
+        "tintStrength": 0.12,
+        "metalness": null,
+        "roughness": 0.72,
+        "clearcoat": null
+      },
+      "post": {
+        "bloom": 0.06,
+        "vignette": 0.04
+      },
       "copy": {
         "eyebrow": "Design and Choice",
         "headline": "Make it yours without making it harder.",
@@ -204,12 +482,39 @@
     {
       "id": "difference",
       "label": "Why Weekley",
-      "range": [0.73, 0.88],
+      "range": [
+        0.73,
+        0.88
+      ],
       "easing": "smooth",
       "camera": {
         "path": "pullback",
-        "from": { "position": [1.8, 1.3, 5.4], "target": [0, -0.2, -0.9], "fov": 38 },
-        "to": { "position": [-2.6, 2.2, 8.2], "target": [0, 0, -0.6], "fov": 47 }
+        "from": {
+          "position": [
+            1.8,
+            1.3,
+            5.4
+          ],
+          "target": [
+            0,
+            -0.2,
+            -0.9
+          ],
+          "fov": 38
+        },
+        "to": {
+          "position": [
+            -2.6,
+            2.2,
+            8.2
+          ],
+          "target": [
+            0,
+            0,
+            -0.6
+          ],
+          "fov": 47
+        }
       },
       "motionTracks": [],
       "media": {
@@ -223,8 +528,32 @@
       "blocks": [],
       "hero": {
         "motion": "linear",
-        "from": { "position": [0, -0.78, -0.8], "rotation": [0, 0.36, 0], "scale": 1.28 },
-        "to": { "position": [0, -0.9, -1.8], "rotation": [0, 0.08, 0], "scale": 1.02 }
+        "from": {
+          "position": [
+            0,
+            -0.78,
+            -0.8
+          ],
+          "rotation": [
+            0,
+            0.36,
+            0
+          ],
+          "scale": 1.28
+        },
+        "to": {
+          "position": [
+            0,
+            -0.9,
+            -1.8
+          ],
+          "rotation": [
+            0,
+            0.08,
+            0
+          ],
+          "scale": 1.02
+        }
       },
       "world": {
         "background": "#0d4964",
@@ -237,8 +566,17 @@
         "rimColor": "#df654c",
         "exposure": 0.95
       },
-      "material": { "tint": "#afc5c6", "tintStrength": 0.16, "metalness": null, "roughness": null, "clearcoat": null },
-      "post": { "bloom": 0.08, "vignette": 0.08 },
+      "material": {
+        "tint": "#afc5c6",
+        "tintStrength": 0.16,
+        "metalness": null,
+        "roughness": null,
+        "clearcoat": null
+      },
+      "post": {
+        "bloom": 0.08,
+        "vignette": 0.08
+      },
       "copy": {
         "eyebrow": "The Weekley difference",
         "headline": "Design, Choice and Service in one connected experience.",
@@ -249,12 +587,39 @@
     {
       "id": "tour",
       "label": "Plan a visit",
-      "range": [0.88, 1],
+      "range": [
+        0.88,
+        1
+      ],
       "easing": "smooth",
       "camera": {
         "path": "dolly",
-        "from": { "position": [-2.6, 2.2, 8.2], "target": [0, 0, -0.6], "fov": 47 },
-        "to": { "position": [-1.2, 1.5, 6.6], "target": [0, -0.15, -0.7], "fov": 42 }
+        "from": {
+          "position": [
+            -2.6,
+            2.2,
+            8.2
+          ],
+          "target": [
+            0,
+            0,
+            -0.6
+          ],
+          "fov": 47
+        },
+        "to": {
+          "position": [
+            -1.2,
+            1.5,
+            6.6
+          ],
+          "target": [
+            0,
+            -0.15,
+            -0.7
+          ],
+          "fov": 42
+        }
       },
       "motionTracks": [],
       "media": {
@@ -267,8 +632,32 @@
       "blocks": [],
       "hero": {
         "motion": "linear",
-        "from": { "position": [0, -0.9, -1.8], "rotation": [0, 0.08, 0], "scale": 1.02 },
-        "to": { "position": [0, -0.82, -1.2], "rotation": [0, -0.15, 0], "scale": 1.12 }
+        "from": {
+          "position": [
+            0,
+            -0.9,
+            -1.8
+          ],
+          "rotation": [
+            0,
+            0.08,
+            0
+          ],
+          "scale": 1.02
+        },
+        "to": {
+          "position": [
+            0,
+            -0.82,
+            -1.2
+          ],
+          "rotation": [
+            0,
+            -0.15,
+            0
+          ],
+          "scale": 1.12
+        }
       },
       "world": {
         "background": "#df654c",
@@ -281,14 +670,26 @@
         "rimColor": "#ffffff",
         "exposure": 1
       },
-      "material": { "tint": "#ffffff", "tintStrength": 0.06, "metalness": null, "roughness": null, "clearcoat": null },
-      "post": { "bloom": 0.07, "vignette": 0.05 },
+      "material": {
+        "tint": "#ffffff",
+        "tintStrength": 0.06,
+        "metalness": null,
+        "roughness": null,
+        "clearcoat": null
+      },
+      "post": {
+        "bloom": 0.07,
+        "vignette": 0.05
+      },
       "copy": {
         "eyebrow": "Your next step",
         "headline": "See the difference in person.",
         "body": "Share your priorities, compare real options and plan a visit with a local team that can make the next decision clearer.",
         "align": "left",
-        "cta": { "label": "Plan a visit", "href": "https://www.davidweekleyhomes.com/contact-us" }
+        "cta": {
+          "label": "Plan a visit",
+          "href": "https://www.davidweekleyhomes.com/contact-us"
+        }
       }
     }
   ],
