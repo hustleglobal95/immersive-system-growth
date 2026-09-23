@@ -15,10 +15,10 @@
   ],
   "cta": "Plan a visit",
   "visual": {
-    "palette": ["#F4F1EA", "#0D4964", "#DF654C", "#718173", "#FFFDF8"],
-    "typography": ["DM Sans", "Cormorant Garamond"],
+    "palette": ["#FFFFFF", "#005090", "#F2894F", "#5D5C54", "#F5F4F1"],
+    "typography": ["Museo Sans", "Museo Slab"],
     "materials": ["warm plaster", "natural timber", "soft blue glass", "linen", "landscape green"],
-    "motion": ["search feedback", "card comparison", "palette response", "section reveal", "responsive navigation"],
+    "motion": ["search feedback", "card comparison", "gallery response", "section reveal", "responsive navigation"],
     "sound": []
   },
   "constraints": {
@@ -72,9 +72,9 @@
     {
       "id": "personalize",
       "purpose": "Make personalization tangible and manageable",
-      "subject": "Interactive whole-home palette directions",
+      "subject": "Official David Weekley Homes room gallery",
       "copy": "Make it yours without making it harder.",
-      "interaction": "Switch live material palettes",
+      "interaction": "Switch between real published home gallery views",
       "transitionIn": "room composition opens",
       "transitionOut": "connect personal choice to company promise"
     },
