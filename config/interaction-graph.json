@@ -6,7 +6,7 @@
   "variables": {
     "searched": false,
     "comparison-started": false,
-    "palette-selected": false
+    "gallery-selected": false
   },
   "nodes": [
     {
@@ -49,20 +49,20 @@
       "state": "comparing"
     },
     {
-      "id": "select-design-palette",
+      "id": "select-home-gallery",
       "kind": "trigger",
-      "label": "Select personalization palette",
+      "label": "Select home gallery view",
       "position": { "x": 40, "y": 420 },
       "event": "click",
-      "target": "select-palette",
+      "target": "select-gallery",
       "states": ["browsing", "comparing", "personalizing"]
     },
     {
-      "id": "mark-palette",
+      "id": "mark-gallery",
       "kind": "action",
-      "label": "Record palette selection",
+      "label": "Record gallery selection",
       "position": { "x": 300, "y": 420 },
-      "action": { "type": "set-variable", "key": "palette-selected", "value": true }
+      "action": { "type": "set-variable", "key": "gallery-selected", "value": true }
     },
     {
       "id": "state-personalizing",
@@ -103,8 +103,8 @@
     { "id": "search-recorded", "from": "run-home-search", "to": "mark-searched", "branch": "always", "priority": 0 },
     { "id": "comparison-recorded", "from": "compare-market", "to": "mark-comparison", "branch": "always", "priority": 0 },
     { "id": "comparison-state", "from": "mark-comparison", "to": "state-comparing", "branch": "always", "priority": 0 },
-    { "id": "palette-recorded", "from": "select-design-palette", "to": "mark-palette", "branch": "always", "priority": 0 },
-    { "id": "palette-state", "from": "mark-palette", "to": "state-personalizing", "branch": "always", "priority": 0 },
+    { "id": "gallery-recorded", "from": "select-home-gallery", "to": "mark-gallery", "branch": "always", "priority": 0 },
+    { "id": "gallery-state", "from": "mark-gallery", "to": "state-personalizing", "branch": "always", "priority": 0 },
     { "id": "tour-state", "from": "request-tour", "to": "state-tour-intent", "branch": "always", "priority": 0 },
     { "id": "tour-emitted", "from": "state-tour-intent", "to": "emit-tour-intent", "branch": "always", "priority": 0 }
   ],
