@@ -8,16 +8,20 @@ async function prepare(page: Page) {
   await page.goto("/", { waitUntil: "domcontentloaded", timeout: 15000 });
   await page.locator(".dw-site").waitFor({ state: "attached", timeout: 10000 });
   await page.evaluate(async () => {
-    await document.fonts.ready;
-    await Promise.all(
-      [...document.images].map((image) => image.complete
-        ? Promise.resolve()
-        : new Promise<void>((resolve) => {
-            image.addEventListener("load", () => resolve(), { once: true });
-            image.addEventListener("error", () => resolve(), { once: true });
-          }),
-      ),
-    );
+    // Some official image hosts can leave a request pending in CI. Capture the
+    // rendered page after a short grace period instead of waiting indefinitely.
+    await Promise.race([
+      Promise.all([
+        document.fonts.ready,
+        ...[...document.images].map((image) => image.complete
+          ? Promise.resolve()
+          : new Promise<void>((resolve) => {
+              image.addEventListener("load", () => resolve(), { once: true });
+              image.addEventListener("error", () => resolve(), { once: true });
+            })),
+      ]),
+      new Promise<void>((resolve) => window.setTimeout(resolve, 12000)),
+    ]);
   });
 }
 
