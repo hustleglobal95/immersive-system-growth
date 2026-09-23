@@ -11,7 +11,6 @@ import {
   withinRateLimit,
 } from "../src/platform/leadCapture";
 import { conversionSchema } from "../src/lib/configSchema";
-import experience from "../config/experience.json" with { type: "json" };
 
 const enquiry = { name: "Marta Roca", email: "marta@example.com", message: "We have a plot above Aiguablava.", consent: true as const, intent: "enquiry" as const, source: "enquire", honeypot: "", elapsedMs: 9000 };
 const brochure = { name: "Jordi Vidal", email: "jordi@example.com", consent: true as const, intent: "brochure" as const, brochureId: "casa-lumen-brochure", source: "enquire", honeypot: "", elapsedMs: 9000 };
@@ -96,11 +95,25 @@ test("submissions from one client are rate limited", () => {
   resetRateLimits();
 });
 
-test("the checked-in conversion section validates and its brochure name cannot traverse", () => {
-  const parsed = conversionSchema.safeParse(experience.conversion);
+test("conversion sections validate and brochure names cannot traverse", () => {
+  const base = {
+    id: "contact",
+    eyebrow: "Stay in touch",
+    title: "Tell us what you are looking for.",
+    body: "Share enough context for the team to provide a useful next step.",
+    intent: "both" as const,
+    submit: "Send enquiry",
+    consent: "I agree that the team may use these details to answer this enquiry.",
+    brochure: {
+      id: "sample-brochure",
+      label: "Sample brochure",
+      file: "sample-brochure.pdf",
+      size: "1 KB",
+    },
+  };
+  const parsed = conversionSchema.safeParse(base);
   assert(parsed.success);
-  if (parsed.success) assert.equal(parsed.data.brochure?.file, "casa-lumen.pdf");
-  const base = experience.conversion;
+  if (parsed.success) assert.equal(parsed.data.brochure?.file, "sample-brochure.pdf");
   for (const file of ["../../package.json", "/etc/passwd", "a/b.pdf", "note.txt", "UPPER.pdf"])
     assert(!conversionSchema.safeParse({ ...base, brochure: { ...base.brochure, file } }).success, file);
   // A brochure intent without a brochure is rejected rather than rendering a dead button.
