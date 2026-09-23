@@ -37,12 +37,15 @@ test("production canvas stays persistent across scroll, reverse and quality cont
   await expect(page.locator(".scene-canvas canvas")).toHaveCount(1);
   await expect(page.getByText("The 3D view is loading.", { exact: false })).toHaveCount(0);
   const canvas = await page.locator(".scene-canvas canvas").elementHandle();
-  const sceneNavigation = page.getByRole("navigation", { name: "Experience scenes" });
-  for (const id of ["communities", "plans", "personalize", "find"]) {
-    const sceneLink = sceneNavigation.locator(`a[href="#${id}"]`);
-    await sceneLink.click();
-    await expect(sceneLink).toHaveAttribute("aria-current", "step");
-  }
+  const sceneNavigation = page.getByRole("navigation", { name: "Interactive story cards" });
+  const sceneControls = sceneNavigation.getByRole("button");
+  expect(await sceneControls.count()).toBeGreaterThan(1);
+  const finalScene = sceneControls.last();
+  await finalScene.click();
+  await expect(finalScene).toHaveAttribute("aria-current", "step");
+  const firstScene = sceneControls.first();
+  await firstScene.click();
+  await expect(firstScene).toHaveAttribute("aria-current", "step");
   await expect(page.getByLabel("Scene lab controls")).toBeVisible();
   expect(await canvas?.evaluate((element) => element.isConnected)).toBe(true);
   await page.getByLabel("Quality", { exact: true }).selectOption("low");
@@ -50,7 +53,8 @@ test("production canvas stays persistent across scroll, reverse and quality cont
   await page.getByLabel("Free camera", { exact: true }).check();
   await page.getByLabel("Show authoring guides", { exact: true }).check();
   await expect(page.getByLabel("Show authoring guides", { exact: true })).toBeChecked();
-  await page.locator("#find").scrollIntoViewIfNeeded();
+  await finalScene.click();
+  await expect(finalScene).toHaveAttribute("aria-current", "step");
   expect(await canvas?.evaluate((element) => element.isConnected)).toBe(true);
   expect(errors).toEqual([]);
 });
