@@ -4,6 +4,14 @@ import { useMemo, useState } from "react";
 
 const officialHomes = "https://www.davidweekleyhomes.com/new-homes";
 const officialContact = "https://www.davidweekleyhomes.com/contact-us";
+const officialLogo = "https://www.davidweekleyhomes.com/_images/dwh_logo.png";
+
+const officialImages = {
+  living: "https://www.davidweekleyhomes.com/media/HomeGalleryImage/71aa7185-90ac-4561-b600-53a6ccbab22b.jpg",
+  kitchen: "https://www.davidweekleyhomes.com/media/HomeGalleryImage/aa45cb37-1050-43b1-9b8b-d139dbd31772.jpg",
+  bedroom: "https://www.davidweekleyhomes.com/media/HomeGalleryImage/085436a0-01f1-4a12-bf9c-557f2f63be4a.jpg",
+  exterior: "https://www.davidweekleyhomes.com/media/HomeGalleryImage/c8dcfecc-c338-4686-8bc0-8aa5f96cf9ff.jpg",
+};
 
 const marketPaths = [
   {
@@ -12,8 +20,8 @@ const marketPaths = [
     title: "Houston communities",
     type: "Move-in ready + build",
     copy: "Compare community lifestyles, home types and timing before opening live inventory.",
-    image: "https://images.unsplash.com/photo-1762337018404-052afb0e3370?auto=format&fit=crop&fm=jpg&q=86&w=2400",
-    imagePosition: "50% 54%",
+    image: officialImages.exterior,
+    imagePosition: "50% 48%",
   },
   {
     id: "austin",
@@ -21,7 +29,7 @@ const marketPaths = [
     title: "Austin-area homes",
     type: "Build + personalization",
     copy: "Start with the way you want to live, then narrow the official search to the right area.",
-    image: "https://images.unsplash.com/photo-1774423864869-702b21c2490a?auto=format&fit=crop&fm=jpg&q=86&w=2400",
+    image: officialImages.living,
     imagePosition: "50% 48%",
   },
   {
@@ -30,7 +38,7 @@ const marketPaths = [
     title: "Tampa Bay communities",
     type: "Planned communities",
     copy: "See the decisions that matter first, from location and amenities to plan flexibility.",
-    image: "https://images.unsplash.com/photo-1766858667582-57c46e309f8a?auto=format&fit=crop&fm=jpg&q=84&w=2400",
+    image: officialImages.kitchen,
     imagePosition: "50% 50%",
   },
 ];
@@ -62,10 +70,10 @@ const planPaths = [
   },
 ];
 
-const palettes = [
-  { id: "warm", name: "Warm modern", colors: ["#c8ad8d", "#f0e8dc", "#657366"] },
-  { id: "coast", name: "Quiet coast", colors: ["#afc5c6", "#f4f1e9", "#34596a"] },
-  { id: "contrast", name: "Soft contrast", colors: ["#b7afa4", "#f5f0e8", "#26343b"] },
+const galleryViews = [
+  { id: "living", name: "Living", image: officialImages.living, alt: "David Weekley Homes living and dining room" },
+  { id: "kitchen", name: "Kitchen", image: officialImages.kitchen, alt: "David Weekley Homes kitchen" },
+  { id: "bedroom", name: "Owner's retreat", image: officialImages.bedroom, alt: "David Weekley Homes owner's retreat" },
 ];
 
 function ArrowIcon() {
@@ -79,8 +87,7 @@ function ArrowIcon() {
 function Wordmark() {
   return (
     <a className="dw-wordmark" href="#top" aria-label="David Weekley Homes redesign concept home">
-      <span className="dw-wordmark__mark" aria-hidden="true"><i /><i /><i /></span>
-      <span><strong>David Weekley</strong><small>Homes</small></span>
+      <img src={officialLogo} alt="David Weekley Homes" />
     </a>
   );
 }
@@ -91,14 +98,14 @@ export function WeekleyMarketplace() {
   const [timeline, setTimeline] = useState("Any timeline");
   const [searched, setSearched] = useState(false);
   const [compare, setCompare] = useState<string[]>([]);
-  const [palette, setPalette] = useState("warm");
+  const [gallery, setGallery] = useState("living");
   const [menuOpen, setMenuOpen] = useState(false);
 
   const visibleMarkets = useMemo(
     () => market === "Any market" ? marketPaths : marketPaths.filter((item) => item.market === market),
     [market],
   );
-  const selectedPalette = palettes.find((item) => item.id === palette) ?? palettes[0];
+  const selectedGallery = galleryViews.find((item) => item.id === gallery) ?? galleryViews[0];
 
   const runSearch = () => {
     setSearched(true);
@@ -140,7 +147,7 @@ export function WeekleyMarketplace() {
 
       <div id="main-content">
         <section className="dw-hero" id="find" aria-labelledby="dw-hero-title">
-          <div className="dw-hero__image" role="img" aria-label="Contemporary home with a welcoming landscaped approach" />
+          <div className="dw-hero__image" role="img" aria-label="David Weekley Homes owner's retreat" />
           <div className="dw-hero__wash" />
           <div className="dw-hero__content">
             <p className="dw-kicker"><span>New homes</span> built around real life</p>
@@ -262,32 +269,26 @@ export function WeekleyMarketplace() {
         </section>
 
         <section className="dw-personalize" id="personalize" aria-labelledby="personalize-title">
-          <div className="dw-personalize__visual" data-palette={selectedPalette.id}>
-            <div className="dw-room">
-              <span className="dw-room__window" />
-              <span className="dw-room__island" />
-              <span className="dw-room__cabinet" />
-              <span className="dw-room__pendant dw-room__pendant--one" />
-              <span className="dw-room__pendant dw-room__pendant--two" />
-              <div className="dw-room__label"><small>Your palette</small><strong>{selectedPalette.name}</strong></div>
-            </div>
+          <div className="dw-personalize__visual" data-gallery={selectedGallery.id}>
+            <img src={selectedGallery.image} alt={selectedGallery.alt} />
+            <div className="dw-gallery-label"><small>Home gallery</small><strong>{selectedGallery.name}</strong></div>
           </div>
           <div className="dw-personalize__content">
             <p className="dw-kicker">Design &amp; Choice</p>
             <h2 id="personalize-title">Make it yours without making it harder.</h2>
-            <p>Explore a direction, understand the decisions that matter, and see how a coordinated palette can move through the whole home.</p>
+            <p>Explore real David Weekley Homes rooms, understand the decisions that matter, and see how thoughtful design supports everyday life.</p>
             <fieldset>
-              <legend>Choose a starting palette</legend>
-              {palettes.map((item) => (
+              <legend>Explore the home gallery</legend>
+              {galleryViews.map((item) => (
                 <button
                   key={item.id}
                   type="button"
-                  className={palette === item.id ? "is-active" : ""}
-                  onClick={() => setPalette(item.id)}
-                  data-forge-interaction="select-palette"
-                  aria-pressed={palette === item.id}
+                  className={gallery === item.id ? "is-active" : ""}
+                  onClick={() => setGallery(item.id)}
+                  data-forge-interaction="select-gallery"
+                  aria-pressed={gallery === item.id}
                 >
-                  <span>{item.colors.map((color) => <i key={color} style={{ background: color }} />)}</span>
+                  <img src={item.image} alt="" />
                   {item.name}
                 </button>
               ))}
