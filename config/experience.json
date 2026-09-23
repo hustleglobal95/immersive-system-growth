@@ -18,19 +18,7 @@
   "heroModel": "",
   "stage": "minimal",
   "heroVisible": false,
-  "assets": [
-    {
-      "id": "weekley-pavilion",
-      "kind": "model",
-      "url": "/models/reference/pavilion.glb",
-      "lowUrl": "/models/reference/pavilion-low.glb",
-      "scenes": ["find", "personalize"],
-      "persist": false,
-      "position": [0, -0.8, -1],
-      "rotation": [0, 0.15, 0],
-      "scale": 1.25
-    }
-  ],
+  "assets": [],
   "scenes": [
     {
       "id": "find",
