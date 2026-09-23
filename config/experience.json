@@ -42,11 +42,6 @@
         "from": { "position": [-5.5, 2.4, 11], "target": [0, 0, 0], "fov": 48 },
         "to": { "position": [-3.2, 1.8, 8], "target": [0, -0.1, -0.4], "fov": 44 }
       },
-      "mobileCamera": {
-        "path": "dolly",
-        "from": { "position": [-7, 3, 14], "target": [0, 0, 0], "fov": 58 },
-        "to": { "position": [-4.4, 2.2, 10], "target": [0, -0.1, -0.4], "fov": 52 }
-      },
       "motionTracks": [],
       "media": {
         "kind": "image",
