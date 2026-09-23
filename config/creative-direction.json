@@ -1,155 +1,101 @@
 {
   "version": 1,
-  "conceptId": "atelier-maris-casa-lumen",
-  "concept": "Direct a coastal residence as an architectural film controlled by scroll, moving from site and massing through threshold, interior, material, ritual and horizon.",
-  "audience": "Design-conscious private clients, architects, developers and premium creative agencies evaluating a high-end immersive digital experience.",
-  "promise": "The website behaves like an architectural walkthrough with editorial restraint, not a conventional portfolio grid.",
+  "conceptId": "david-weekley-marketplace-concept",
+  "concept": "Reframe a national homebuilder website as a guided homebuyer product that begins with lifestyle priorities and leads to markets, plans, personalization and a local visit.",
+  "audience": "Prospective new-home buyers who need to understand where to look, what kind of home fits and what happens next without parsing an inventory database first.",
+  "promise": "The website turns a complicated housing search into a small sequence of useful choices while preserving access to official live inventory.",
   "emotionalArc": [
-    "Anticipation",
-    "Orientation",
-    "Compression",
-    "Release",
-    "Tactility",
-    "Stillness",
-    "Intelligence",
-    "Expansion",
-    "Desire"
+    "Welcome",
+    "Clarity",
+    "Possibility",
+    "Confidence",
+    "Personal ownership",
+    "Trust",
+    "Action"
   ],
-  "cta": "Enquire about a commission",
+  "cta": "Plan a visit",
   "visual": {
-    "palette": [
-      "#0B0A08",
-      "#D7C2A3",
-      "#F2EDE5",
-      "#234F5D"
-    ],
-    "typography": [
-      "Cormorant Garamond",
-      "DM Sans"
-    ],
-    "materials": [
-      "honed travertine",
-      "quarter-sawn oak",
-      "low-iron glass",
-      "linen",
-      "dark water",
-      "olive foliage"
-    ],
-    "motion": [
-      "coastal dolly",
-      "massing crane",
-      "architectural threshold",
-      "interior arc",
-      "material macro",
-      "wellness swoop",
-      "studio pullback",
-      "horizon release"
-    ],
+    "palette": ["#F4F1EA", "#0D4964", "#DF654C", "#718173", "#FFFDF8"],
+    "typography": ["DM Sans", "Cormorant Garamond"],
+    "materials": ["warm plaster", "natural timber", "soft blue glass", "linen", "landscape green"],
+    "motion": ["search feedback", "card comparison", "palette response", "section reveal", "responsive navigation"],
     "sound": []
   },
   "constraints": {
     "approved": [
-      "architecture remains the hero",
-      "continuous reversible camera logic",
-      "natural Mediterranean light",
-      "geometry-led reveals",
-      "large negative space",
-      "mobile-specific cinematography",
-      "material information tied to physical detail"
+      "search-led information architecture",
+      "clear homebuyer choices",
+      "interactive comparison",
+      "responsive product UI",
+      "honest links to live inventory",
+      "distinct market and plan pathways",
+      "accessible reduced-motion behavior"
     ],
     "prohibited": [
-      "generic luxury tropes",
-      "neon futurism",
-      "random particles as transitions",
-      "dashboard UI",
-      "card grids",
-      "fake awards",
-      "fake built-project claims",
-      "motion without architectural purpose"
+      "architectural portfolio film",
+      "Atelier Maris presentation components",
+      "fictional inventory or pricing",
+      "fake awards or homeowner counts",
+      "full-screen sticky chapter sequence",
+      "decorative 3D without buyer value",
+      "hidden conversion paths"
     ]
   },
   "scenes": [
     {
-      "id": "approach",
-      "purpose": "Establish site and architectural authority",
-      "subject": "Coastal topography, house and sea",
-      "copy": "Architecture shaped by sea, light, and restraint.",
-      "interaction": "Scroll toward the residence",
-      "transitionIn": "open on the coast",
-      "transitionOut": "lens compresses toward the building"
+      "id": "find",
+      "purpose": "Give the buyer a useful starting point",
+      "subject": "Market, home type and move-in timing search",
+      "copy": "Find the home your life fits into.",
+      "interaction": "Choose priorities and run the guided search",
+      "transitionIn": "arrive on a welcoming residential image",
+      "transitionOut": "search moves the buyer into market paths"
     },
     {
-      "id": "parti",
-      "purpose": "Explain massing through camera position",
-      "subject": "Primary stone planes and central court",
-      "copy": "A house drawn around the horizon.",
-      "interaction": "Crane across the parti",
-      "transitionIn": "architecture takes the frame",
-      "transitionOut": "camera commits to the entry axis"
+      "id": "communities",
+      "purpose": "Replace undifferentiated inventory with understandable paths",
+      "subject": "Market pathways with direct access to official live search",
+      "copy": "Do not start with a list. Start with your life.",
+      "interaction": "Filter and compare market paths",
+      "transitionIn": "search result confirmation",
+      "transitionOut": "move from place to plan"
     },
     {
-      "id": "threshold",
-      "purpose": "Make entry spatial and physical",
-      "subject": "Stone wall, timber screen and glass opening",
-      "copy": "The entry compresses. The view releases.",
-      "interaction": "Cross or reverse through the threshold",
-      "transitionIn": "frame narrows",
-      "transitionOut": "living volume resolves"
+      "id": "plans",
+      "purpose": "Explain how a home lives before showing raw dimensions",
+      "subject": "Illustrative plan pathways and lifestyle fit",
+      "copy": "Choose the feeling first.",
+      "interaction": "Add a plan path to comparison",
+      "transitionIn": "structured editorial list",
+      "transitionOut": "shift from plan to personal choice"
     },
     {
-      "id": "living",
-      "purpose": "Prove spatial restraint",
-      "subject": "Low living volume and horizon datum",
-      "copy": "Stillness is designed, not decorated.",
-      "interaction": "Arc through the principal room",
-      "transitionIn": "interior opens",
-      "transitionOut": "camera compresses toward material detail"
+      "id": "personalize",
+      "purpose": "Make personalization tangible and manageable",
+      "subject": "Interactive whole-home palette directions",
+      "copy": "Make it yours without making it harder.",
+      "interaction": "Switch live material palettes",
+      "transitionIn": "room composition opens",
+      "transitionOut": "connect personal choice to company promise"
     },
     {
-      "id": "material",
-      "purpose": "Demonstrate tactile intelligence",
-      "subject": "Travertine, oak and linen",
-      "copy": "Stone carries time. Timber carries touch.",
-      "interaction": "Inspect material hotspot",
-      "transitionIn": "macro study",
-      "transitionOut": "detail dissolves into bathing court"
+      "id": "difference",
+      "purpose": "Turn Design, Choice and Service into a coherent operating model",
+      "subject": "Three connected company principles",
+      "copy": "A home is a product. The experience is personal.",
+      "interaction": "Read the proof structure",
+      "transitionIn": "deep blue trust field",
+      "transitionOut": "warm handoff to next step"
     },
     {
-      "id": "wellness",
-      "purpose": "Shift from object to ritual",
-      "subject": "Bathing court, water and framed sky",
-      "copy": "Ritual spaces designed for stillness.",
-      "interaction": "Swoop through the wellness court",
-      "transitionIn": "warm dissolve",
-      "transitionOut": "pull out toward practice"
-    },
-    {
-      "id": "studio",
-      "purpose": "Show the intelligence behind the aesthetic",
-      "subject": "Models, samples and architectural process",
-      "copy": "Architecture begins with material intelligence.",
-      "interaction": "Move from detail back to system",
-      "transitionIn": "studio resolves",
-      "transitionOut": "world opens back to landscape"
-    },
-    {
-      "id": "horizon",
-      "purpose": "Deliver the largest visual release",
-      "subject": "Pool, sea and coast",
-      "copy": "The horizon becomes the final room.",
-      "interaction": "Pull back to the full site",
-      "transitionIn": "wide landscape reveal",
-      "transitionOut": "settle into inquiry composition"
-    },
-    {
-      "id": "inquiry",
-      "purpose": "Convert after the visual climax",
-      "subject": "Residence at golden hour",
-      "copy": "We take four projects a year.",
-      "interaction": "Enquire about a commission",
-      "transitionIn": "film-burn handoff",
-      "transitionOut": "none"
+      "id": "tour",
+      "purpose": "Convert clarity into a useful local conversation",
+      "subject": "Three-step model home visit path",
+      "copy": "See the difference in person.",
+      "interaction": "Plan a visit or open live homes",
+      "transitionIn": "coral conversion field",
+      "transitionOut": "full informational footer"
     }
   ],
-  "successEvent": "private-residence-inquiry"
+  "successEvent": "home-tour-intent"
 }
