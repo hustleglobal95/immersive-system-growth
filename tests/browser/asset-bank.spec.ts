@@ -55,6 +55,25 @@ test("Studio searches sources, exports provenance and inserts with undo and draf
 
 test("kit replacement requires review, blocks incompatible interactions and supports undo", async ({ page }) => {
   await page.goto("/studio");
+  await expect(page.locator("button.production-status")).toBeVisible();
+
+  // Seed the incompatibility this test owns instead of relying on the active project's graph.
+  await page.evaluate(() => {
+    const raw = localStorage.getItem("forge-studio-v2");
+    if (!raw) throw new Error("Forge Studio draft was not persisted.");
+    const draft = JSON.parse(raw);
+    draft.interactionGraph.nodes.push({
+      id: "kit-incompatible-scene",
+      kind: "trigger",
+      label: "Authored scene trigger",
+      position: { x: 40, y: 40 },
+      event: "scene-enter",
+      sceneId: "find",
+      states: [draft.interactionGraph.initialState],
+    });
+    localStorage.setItem("forge-studio-v2", JSON.stringify(draft));
+  });
+  await page.reload();
   await page.locator("details.production-advanced-menu > summary").click();
   await page.getByRole("button", { name: /Asset tools/ }).click();
   await page.getByRole("button", { name: "Review restaurant kit", exact: true }).click();
