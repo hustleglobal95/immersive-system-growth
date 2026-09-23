@@ -111,6 +111,21 @@
       "path": "https://images.unsplash.com/photo-1774423864869-702b21c2490a?auto=format&fit=crop&fm=jpg&q=84&w=2600",
       "bytes": 577773,
       "sha256": "bc11c13a072cf1cb79cbca71d73fccbad08176ce7ab6ca90f30263a6b6663e07"
+    },
+    {
+      "path": "https://www.davidweekleyhomes.com/media/HomeGalleryImage/085436a0-01f1-4a12-bf9c-557f2f63be4a.jpg",
+      "bytes": 134471,
+      "sha256": "cf1d9694a82754ed7f060d7bddbdb22204f821a18befed8220f4116e6d38041e"
+    },
+    {
+      "path": "https://www.davidweekleyhomes.com/media/HomeGalleryImage/c8dcfecc-c338-4686-8bc0-8aa5f96cf9ff.jpg",
+      "bytes": 327538,
+      "sha256": "18ba08963b595c85222af3bd7930d569eecb55a2203f9e91ed16291d403c14dc"
+    },
+    {
+      "path": "https://www.davidweekleyhomes.com/media/HomeGalleryImage/aa45cb37-1050-43b1-9b8b-d139dbd31772.jpg",
+      "bytes": 158615,
+      "sha256": "0b5a674f5258f23ed000df04023643b61ad77d6daa1d1baa0246ab0814e9b092"
     }
   ],
   "hdr": [
