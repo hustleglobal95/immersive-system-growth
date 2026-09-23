@@ -56,6 +56,12 @@ test("Studio searches sources, exports provenance and inserts with undo and draf
 test("kit replacement requires review, blocks incompatible interactions and supports undo", async ({ page }) => {
   await page.goto("/studio");
   await expect(page.locator("button.production-status")).toBeVisible();
+  await expect.poll(() => page.evaluate(() => {
+    const raw = localStorage.getItem("forge-studio-v2");
+    if (!raw) return false;
+    const draft = JSON.parse(raw);
+    return Array.isArray(draft.interactionGraph?.nodes);
+  })).toBe(true);
 
   // Seed the incompatibility this test owns instead of relying on the active project's graph.
   await page.evaluate(() => {
