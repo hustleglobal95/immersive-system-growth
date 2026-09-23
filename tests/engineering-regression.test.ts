@@ -40,22 +40,28 @@ test("generated stress fixture preserves invariants at flagship-scale scene coun
     id: `stress-scene-${index + 1}`,
     label: `Stress Scene ${index + 1}`,
     range: [index / 16, (index + 1) / 16] as [number, number],
-    motionTracks: Array.from({ length: 4 }, (__, trackIndex) => ({
-      ...structuredClone(source.motionTracks[trackIndex % Math.max(1, source.motionTracks.length)] ?? {
-        id: "generated",
-        label: "Generated",
-        type: "number",
-        target: "copy.opacity",
-        blend: "absolute",
-        viewport: "all",
-        muted: false,
-        locked: false,
-        keyframes: [
-          { id: "generated-0", at: 0, value: 0, easing: "linear" },
-          { id: "generated-1", at: 1, value: 1, easing: "linear" },
-        ],
-      }),
+    blocks: source.blocks.map((block, blockIndex) => ({
+      ...structuredClone(block),
+      id: `stress-block-${index}-${blockIndex}`,
+    })),
+    motionTracks: [
+      ["copy.opacity", 0, 1],
+      ["copy.y", 24, 0],
+      ["copy.blur", 8, 0],
+      ["post.vignette", 0, 0.2],
+    ].map(([target, from, to], trackIndex) => ({
       id: `stress-${index}-${trackIndex}`,
+      label: `Stress track ${trackIndex + 1}`,
+      type: "number" as const,
+      target,
+      blend: "absolute" as const,
+      viewport: "all" as const,
+      muted: false,
+      locked: false,
+      keyframes: [
+        { id: `stress-${index}-${trackIndex}-a`, at: 0, value: from, easing: "linear" as const },
+        { id: `stress-${index}-${trackIndex}-b`, at: 1, value: to, easing: "linear" as const },
+      ],
     })),
   }));
   // The generator renames every scene, so everything that references a scene by id has to
