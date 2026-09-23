@@ -7,6 +7,7 @@ test("marketplace search, comparison and personalization work across viewports",
   await expect(page.locator("body")).toHaveAttribute("data-project", "weekley-marketplace");
   await expect(page.getByRole("heading", { name: /Find the home your life fits into/i })).toBeVisible();
   await expect(page.locator(".story-panel")).toHaveCount(0);
+  await expect(page.locator(".telemetry-consent")).toHaveCount(0);
 
   await page.locator(".dw-search select").first().selectOption("Houston");
   await page.getByRole("button", { name: /Show my paths/i }).click();

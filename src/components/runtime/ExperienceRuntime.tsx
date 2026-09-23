@@ -109,7 +109,7 @@ export function ExperienceRuntime({ children }: { children?: ReactNode }) {
       <KeyboardController />
       <RuntimeCommandController />
       <InteractionGraphController />
-      <TelemetryClient />
+      {!marketplace && <TelemetryClient />}
 
       {marketplace ? (
         <WeekleyMarketplace />
