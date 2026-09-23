@@ -12,14 +12,13 @@ import "./experience-modes.css";
 import "./design-system.css";
 import "./nocterra.css";
 import "./atelier-maris.css";
+import "./weekley-marketplace.css";
 import "./pages.css";
 
-const project=parseStudioProject(rawProject);
-const discoverability=project.discoverability;
+const project = parseStudioProject(rawProject);
+const discoverability = project.discoverability;
 
 export const metadata: Metadata = {
-  // metadataBase is what makes Open Graph and canonical URLs absolute. Without it a social
-  // scraper resolves them against the request and sees localhost.
   metadataBase: new URL(discoverability.canonicalBaseUrl || siteUrl()),
   title: discoverability.defaultTitle || experience.meta.name,
   description: discoverability.defaultDescription || experience.meta.description,
@@ -34,17 +33,24 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: experience.meta.themeColor,
-  colorScheme: "dark",
+  colorScheme: experience.meta.name.startsWith("DWH FORGE") ? "light" : "dark",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  const isWeekley = experience.meta.name.startsWith("DWH FORGE");
   const isNocterra = experience.meta.name.startsWith("NOCTERRA");
   const isAtelierMaris = experience.meta.name.startsWith("ATELIER MARIS");
-  const project = isAtelierMaris ? "atelier-maris" : isNocterra ? "nocterra" : "forge";
+  const activeProject = isWeekley
+    ? "weekley-marketplace"
+    : isAtelierMaris
+      ? "atelier-maris"
+      : isNocterra
+        ? "nocterra"
+        : "forge";
   return (
     <html lang="en">
       <body
-        data-project={project}
+        data-project={activeProject}
         className={`${bodyFont.variable} ${editorialFont.variable} ${architecturalFont.variable}`}
       >
         <DiscoverabilityJsonLd />
