@@ -8,6 +8,8 @@ test("marketplace search, comparison and personalization work across viewports",
   await expect(page.getByRole("heading", { name: /Find the home your life fits into/i })).toBeVisible();
   await expect(page.locator(".story-panel")).toHaveCount(0);
   await expect(page.locator(".telemetry-consent")).toHaveCount(0);
+  await page.getByRole("button", { name: "Show home image 2" }).click();
+  await expect(page.getByRole("button", { name: "Show home image 2" })).toHaveAttribute("aria-pressed", "true");
 
   await page.locator(".dw-search select").first().selectOption("Houston");
   await page.getByRole("button", { name: /Show my paths/i }).click();
@@ -37,4 +39,13 @@ test("marketplace search, comparison and personalization work across viewports",
   await menu.click();
   await expect(page.locator("#dw-navigation")).toHaveClass(/is-open/);
   await expect(page.locator("#dw-navigation").getByRole("link", { name: "Find a home" })).toBeVisible();
+});
+
+test("mobile market cards end before the next section", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const lastCardBottom = await page.locator(".dw-market-card").last().evaluate((element) => element.getBoundingClientRect().bottom);
+  const nextSectionTop = await page.locator(".dw-plans").evaluate((element) => element.getBoundingClientRect().top);
+  expect(lastCardBottom).toBeLessThanOrEqual(nextSectionTop);
 });
