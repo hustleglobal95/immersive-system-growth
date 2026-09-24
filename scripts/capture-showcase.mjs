@@ -25,9 +25,11 @@ async function seek(page, progress) {
 
 async function prepare(page) {
   await page.goto(baseURL, { waitUntil: "domcontentloaded", timeout: 20000 });
-  await page.locator("canvas").first().waitFor({ state: "attached", timeout: 12000 });
+  const marketplace = await page.locator(".dw-site").count() > 0;
+  if (!marketplace) await page.locator("canvas").first().waitFor({ state: "attached", timeout: 12000 });
   await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(4200);
+  await page.waitForTimeout(marketplace ? 2400 : 4200);
+  return marketplace;
 }
 
 async function captureScreenshot(page,path) {
@@ -48,7 +50,9 @@ async function captureScreenshot(page,path) {
 }
 
 async function captureSet(browser, label, viewport, shots) {
-  const context = await browser.newContext({ viewport, deviceScaleFactor: 1 });
+  const outputDir = `test-results/showcase/${label}`;
+  await mkdir(outputDir, { recursive: true });
+  const context = await browser.newContext({ viewport, deviceScaleFactor: 1, recordVideo: { dir: outputDir, size: viewport } });
   const page = await context.newPage();
   const pageErrors = [];
   const consoleErrors = [];
@@ -56,12 +60,18 @@ async function captureSet(browser, label, viewport, shots) {
   page.on("console", (message) => {
     if (message.type() === "error") consoleErrors.push(message.text());
   });
-  const outputDir = `test-results/showcase/${label}`;
-  await mkdir(outputDir, { recursive: true });
-  await prepare(page);
+  const marketplace = await prepare(page);
+  const sectionIds = ["find", "communities", "plans", "personalize", "life", "difference", "tour"];
+  if (marketplace) shots = sectionIds.map((id, index) => [`${String(index + 1).padStart(2, "0")}-${id}`, id]);
   const captures = [];
   for (const [name, progress] of shots) {
-    await seek(page, progress);
+    if (marketplace) {
+      await page.evaluate((id) => {
+        const element = document.getElementById(id);
+        window.scrollTo({ top: id === "find" ? 0 : (element?.getBoundingClientRect().top ?? 0) + window.scrollY - 92, behavior: id === "find" ? "instant" : "smooth" });
+      }, progress);
+      await page.waitForTimeout(2600);
+    } else await seek(page, progress);
     const path = `${outputDir}/${name}.png`;
     try {
       await captureScreenshot(page,path);
@@ -72,7 +82,9 @@ async function captureSet(browser, label, viewport, shots) {
       console.error(`FAILED ${label}/${name}`, error);
     }
   }
+  const video = page.video();
   await context.close();
+  if (video) { await video.saveAs(`${outputDir}/walkthrough.webm`); await video.delete(); }
   return { label, viewport, captures, pageErrors, consoleErrors };
 }
 

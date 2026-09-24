@@ -11,6 +11,7 @@ import { HotspotDialog } from "@/src/components/dom/HotspotDialog";
 import { SiteChrome } from "@/src/components/dom/SiteChrome";
 import { SiteFooter } from "@/src/components/dom/SiteFooter";
 import { LeadCapture } from "@/src/components/dom/LeadCapture";
+import { WeekleyMarketplace } from "@/src/components/dom/WeekleyMarketplace";
 import { ExperienceModeLayer, currentExperienceMode } from "@/src/components/dom/ExperienceModeLayer";
 import { experienceModeClass } from "@/src/platform/experienceModes";
 import { WebGLBoundary } from "@/src/components/runtime/WebGLBoundary";
@@ -23,13 +24,10 @@ import { RuntimeCommandController } from "@/src/runtime/RuntimeCommandController
 import { TelemetryClient } from "@/src/components/runtime/TelemetryClient";
 import { useExperienceStore } from "@/src/store/experienceStore";
 import { isBotClient } from "@/src/lib/isBot";
+import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 
-// The user agent never changes for the life of the document, so there is nothing to subscribe
-// to. This is the same shape InquiryForm uses to read a client-only fact without a cascading
-// render, and it keeps the server snapshot honest: markup is identical for everyone.
 const subscribeNever = () => () => {};
 const serverIsNotABot = () => false;
-import { useExperienceConfig } from "@/src/components/runtime/ExperienceConfigContext";
 const SceneCanvas = dynamic(
   () => import("@/src/components/three/SceneCanvas").then((m) => m.SceneCanvas),
   { ssr: false },
@@ -40,6 +38,7 @@ const LabControls = dynamic(() =>
 const DebugHUD = dynamic(() =>
   import("@/src/components/dom/DebugHUD").then((m) => m.DebugHUD),
 );
+
 function RuntimeStatus() {
   const status = useExperienceStore((s) => s.webglStatus);
   const errors = useExperienceStore((s) => s.assetErrors);
@@ -61,10 +60,7 @@ function RuntimeStatus() {
             for (const url of [
               experience.heroModel,
               experience.heroLowModel,
-              ...experience.assets.flatMap((a) => [
-                a.url,
-                a.kind === "model" ? a.lowUrl : undefined,
-              ]),
+              ...experience.assets.flatMap((a) => [a.url, a.kind === "model" ? a.lowUrl : undefined]),
             ].filter((x): x is string => !!x)) {
               useGLTF.clear(url);
               useTexture.clear(url);
@@ -78,57 +74,67 @@ function RuntimeStatus() {
     </aside>
   );
 }
+
 export function ExperienceRuntime({ children }: { children?: ReactNode }) {
-  // Through the provider rather than the checked-in default, so the Studio's live preview shows
-  // the draft's conversion section instead of production's.
   const experience = useExperienceConfig();
-  // A crawler never sees the canvas, so it should not download it. The scene is a dynamic
-  // import, so declining to render it means the chunk is never requested at all. Resolved after
-  // mount so the server-rendered markup -- the copy a crawler actually reads -- is identical for
-  // everyone.
   const robot = useSyncExternalStore(subscribeNever, isBotClient, serverIsNotABot);
-  const pathname = usePathname(),
-    lab = pathname === "/lab";
-  const ready = useExperienceStore((s) => s.profileReady),
-    motion = useExperienceStore((s) => s.reducedMotion),
-    debug = useExperienceStore((s) => s.debug),
-    generation = useExperienceStore((s) => s.retryGeneration);
+  const pathname = usePathname();
+  const lab = pathname === "/lab";
+  const weekley = experience.meta.name.startsWith("DWH FORGE");
+  const marketplace = weekley && !lab;
+  const ready = useExperienceStore((s) => s.profileReady);
+  const motion = useExperienceStore((s) => s.reducedMotion);
+  const debug = useExperienceStore((s) => s.debug);
+  const generation = useExperienceStore((s) => s.retryGeneration);
+
   useEffect(() => {
-    const s = useExperienceStore.getState();
-    s.resetLab();
-    s.setDebug(lab || process.env.NEXT_PUBLIC_DEBUG_3D === "true");
+    const state = useExperienceStore.getState();
+    state.resetLab();
+    state.setDebug(lab || process.env.NEXT_PUBLIC_DEBUG_3D === "true");
   }, [lab]);
-  // Authoring routes do not mount the client interaction runtime or WebGL canvas.
-  // The production canvas remains persistent when navigating between / and /lab.
+
   if (pathname !== "/" && pathname !== "/site" && !lab) return <>{children}</>;
+
   return (
-    <div className={`experience-root ${experienceModeClass(currentExperienceMode.id)}`} data-experience-mode={currentExperienceMode.id} data-reduced-motion={motion} data-media-motion={!motion} data-lab={lab}>
+    <div
+      className={`experience-root ${experienceModeClass(currentExperienceMode.id)}`}
+      data-experience-mode={currentExperienceMode.id}
+      data-reduced-motion={motion}
+      data-media-motion={!motion}
+      data-lab={lab}
+    >
       <SystemProfile />
       <ScrollController />
       <PointerController />
       <KeyboardController />
       <RuntimeCommandController />
       <InteractionGraphController />
-      <TelemetryClient />
-      {currentExperienceMode.composition.navigation === "standard" && <SiteChrome />}
-      <ExperienceModeLayer />
-      {ready && !robot && (
-        <WebGLBoundary key={generation}>
-          <SceneCanvas />
-        </WebGLBoundary>
+      {!marketplace && <TelemetryClient />}
+
+      {marketplace ? (
+        <WeekleyMarketplace />
+      ) : (
+        <>
+          {currentExperienceMode.composition.navigation === "standard" && <SiteChrome />}
+          <ExperienceModeLayer />
+          {ready && !robot && (
+            <WebGLBoundary key={generation}>
+              <SceneCanvas />
+            </WebGLBoundary>
+          )}
+          <NarrativeOverlay />
+          <CinematicMedia />
+          <CinematicTransitionLayers />
+          {currentExperienceMode.composition.navigation === "standard" && <ProgressRail />}
+          <HotspotDialog />
+          <RuntimeStatus />
+          {currentExperienceMode.composition.navigation === "standard" && experience.conversion && (
+            <LeadCapture section={experience.conversion} />
+          )}
+          {currentExperienceMode.composition.navigation === "standard" && <SiteFooter />}
+        </>
       )}
-      <NarrativeOverlay />
-      <CinematicMedia />
-      <CinematicTransitionLayers />
-      {currentExperienceMode.composition.navigation === "standard" && <ProgressRail />}
-      <HotspotDialog />
-      <RuntimeStatus />
-      {/* The conversion section sits after the last chapter and before the footer: ordinary
-          unpinned DOM, so no chapter's motion can take the form away while it is being used. */}
-      {currentExperienceMode.composition.navigation === "standard" && experience.conversion && (
-        <LeadCapture section={experience.conversion} />
-      )}
-      {currentExperienceMode.composition.navigation === "standard" && <SiteFooter />}
+
       {debug && <DebugHUD />}
       {lab && <LabControls />}
       {children}

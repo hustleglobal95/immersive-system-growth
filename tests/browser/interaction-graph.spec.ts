@@ -1,40 +1,41 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
-test("production interaction graph follows Casa Lumen scene state and inquiry lifecycle", async ({ page }) => {
+async function dispatchInteraction(page: Page, target: string) {
+  await page.evaluate((interactionTarget) => {
+    window.dispatchEvent(new CustomEvent("forge:interaction-event", {
+      detail: { type: "click", target: interactionTarget },
+    }));
+  }, target);
+}
+
+test("production interaction graph follows the Weekley marketplace lifecycle", async ({ page }) => {
   await page.goto("/lab");
   const hud = page.locator(".debug-hud");
   await expect(hud).toBeVisible();
   await expect(hud).toContainText("interaction");
-  await expect(hud).toContainText("observing");
+  await expect(hud).toContainText("browsing");
 
-  await page.locator("#threshold").scrollIntoViewIfNeeded();
-  await expect(hud).toContainText("Threshold");
-  await expect(hud).toContainText("inside");
-  await expect(hud).toContainText("cross-threshold");
-
-  await page.evaluate(() => {
-    window.dispatchEvent(new CustomEvent("forge:interaction-event", {
-      detail: { type: "hotspot-open", target: "stone-joint" },
-    }));
-  });
-  await expect(hud).toContainText("open-detail");
+  await dispatchInteraction(page, "market-search");
+  await expect(hud).toContainText("market-search");
+  await expect(hud).toContainText("run-home-search");
+  await expect(hud).toContainText("browsing");
   await expect(hud).toContainText("graph guardok");
 
-  await page.locator("#material").scrollIntoViewIfNeeded();
-  await expect(hud).toContainText("Material");
-  await expect(hud).toContainText("material-study");
-  await expect(hud).toContainText("enter-material");
+  await dispatchInteraction(page, "compare-community");
+  await expect(hud).toContainText("compare-community");
+  await expect(hud).toContainText("compare-market");
+  await expect(hud).toContainText("comparing");
+  await expect(hud).toContainText("graph guardok");
 
-  await page.locator("#horizon").scrollIntoViewIfNeeded();
-  await expect(hud).toContainText("Horizon");
-  await expect(hud).toContainText("reach-horizon");
+  await dispatchInteraction(page, "select-gallery");
+  await expect(hud).toContainText("select-gallery");
+  await expect(hud).toContainText("select-home-gallery");
+  await expect(hud).toContainText("personalizing");
+  await expect(hud).toContainText("graph guardok");
 
-  await page.evaluate(() => {
-    window.dispatchEvent(new CustomEvent("forge:interaction-event", {
-      detail: { type: "click", target: "cta-inquiry" },
-    }));
-  });
-  await expect(hud).toContainText("inquiry");
-  await expect(hud).toContainText("request-inquiry");
+  await dispatchInteraction(page, "schedule-tour");
+  await expect(hud).toContainText("schedule-tour");
+  await expect(hud).toContainText("request-tour");
+  await expect(hud).toContainText("tour-intent");
   await expect(hud).toContainText("graph guardok");
 });

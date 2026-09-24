@@ -1,9 +1,9 @@
 {
   "version": 1,
   "schemaVersion": 2,
-  "id": "atelier-maris-casa-lumen",
-  "name": "ATELIER MARIS / Casa Lumen",
-  "description": "Canonical Forge project manifest for a portfolio-grade cinematic coastal architecture showcase.",
+  "id": "david-weekley-marketplace-concept",
+  "name": "David Weekley Homes / FORGE Marketplace Concept",
+  "description": "Canonical FORGE project manifest for a search-led, interactive homebuyer marketplace concept.",
   "paths": {
     "experience": "config/experience.json",
     "studioProject": "config/studio-project.json",
@@ -14,11 +14,11 @@
   },
   "performance": {
     "initialCriticalMb": 8,
-    "scenePreloadMb": 28,
-    "maxActiveMb": 112,
-    "maxTotalMb": 288,
-    "maxDrawCalls": 260,
-    "maxTriangles": 850000,
+    "scenePreloadMb": 20,
+    "maxActiveMb": 96,
+    "maxTotalMb": 240,
+    "maxDrawCalls": 220,
+    "maxTriangles": 700000,
     "targetFps": 60
   },
   "capabilities": {

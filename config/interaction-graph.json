@@ -1,1 +1,112 @@
-{"version":1,"id":"atelier-maris-interactions","initialState":"observing","states":["observing","inside","material-study","inquiry"],"variables":{"entered":false,"material-inspected":false},"nodes":[{"id":"cross-threshold","kind":"trigger","label":"Cross architectural threshold","position":{"x":40,"y":80},"event":"scene-enter","sceneId":"threshold","states":["observing"]},{"id":"mark-entered","kind":"action","label":"Mark residence entered","position":{"x":300,"y":80},"action":{"type":"set-variable","key":"entered","value":true}},{"id":"state-inside","kind":"state","label":"Inside residence","position":{"x":560,"y":80},"state":"inside"},{"id":"enter-material","kind":"trigger","label":"Begin material study","position":{"x":40,"y":260},"event":"scene-enter","sceneId":"material","states":["inside"]},{"id":"state-material","kind":"state","label":"Material study","position":{"x":300,"y":260},"state":"material-study"},{"id":"open-detail","kind":"trigger","label":"Inspect architectural detail","position":{"x":40,"y":430},"event":"hotspot-open","states":["inside","material-study"]},{"id":"mark-material","kind":"action","label":"Record material inspection","position":{"x":300,"y":430},"action":{"type":"set-variable","key":"material-inspected","value":true}},{"id":"emit-detail","kind":"action","label":"Emit design detail event","position":{"x":560,"y":430},"action":{"type":"emit","name":"architectural-detail-inspected","payload":{"experience":"atelier-maris-casa-lumen"}}},{"id":"reach-horizon","kind":"trigger","label":"Reach horizon reveal","position":{"x":40,"y":600},"event":"scene-enter","sceneId":"horizon","states":["inside","material-study"]},{"id":"emit-horizon","kind":"action","label":"Emit horizon reveal","position":{"x":300,"y":600},"action":{"type":"emit","name":"horizon-revealed","payload":{"experience":"atelier-maris-casa-lumen"}}},{"id":"request-inquiry","kind":"trigger","label":"Begin private conversation","position":{"x":40,"y":770},"event":"click","target":"cta-inquiry","states":["inside","material-study"]},{"id":"state-inquiry","kind":"state","label":"Inquiry intent","position":{"x":300,"y":770},"state":"inquiry"},{"id":"emit-inquiry","kind":"action","label":"Emit inquiry intent","position":{"x":560,"y":770},"action":{"type":"emit","name":"private-residence-inquiry","payload":{"experience":"atelier-maris-casa-lumen"}}}],"edges":[{"id":"threshold-entered","from":"cross-threshold","to":"mark-entered","branch":"always","priority":0},{"id":"entered-inside","from":"mark-entered","to":"state-inside","branch":"always","priority":0},{"id":"material-state","from":"enter-material","to":"state-material","branch":"always","priority":0},{"id":"detail-marked","from":"open-detail","to":"mark-material","branch":"always","priority":0},{"id":"detail-emitted","from":"mark-material","to":"emit-detail","branch":"always","priority":0},{"id":"horizon-event","from":"reach-horizon","to":"emit-horizon","branch":"always","priority":0},{"id":"inquiry-state","from":"request-inquiry","to":"state-inquiry","branch":"always","priority":0},{"id":"inquiry-event","from":"state-inquiry","to":"emit-inquiry","branch":"always","priority":0}],"mobileSubstitutions":[]}
+{
+  "version": 1,
+  "id": "weekley-marketplace-interactions",
+  "initialState": "browsing",
+  "states": ["browsing", "comparing", "personalizing", "tour-intent"],
+  "variables": {
+    "searched": false,
+    "comparison-started": false,
+    "gallery-selected": false
+  },
+  "nodes": [
+    {
+      "id": "run-home-search",
+      "kind": "trigger",
+      "label": "Run guided home search",
+      "position": { "x": 40, "y": 80 },
+      "event": "click",
+      "target": "market-search",
+      "states": ["browsing"]
+    },
+    {
+      "id": "mark-searched",
+      "kind": "action",
+      "label": "Record guided search",
+      "position": { "x": 300, "y": 80 },
+      "action": { "type": "set-variable", "key": "searched", "value": true }
+    },
+    {
+      "id": "compare-market",
+      "kind": "trigger",
+      "label": "Compare a market path",
+      "position": { "x": 40, "y": 250 },
+      "event": "click",
+      "target": "compare-community",
+      "states": ["browsing", "comparing"]
+    },
+    {
+      "id": "mark-comparison",
+      "kind": "action",
+      "label": "Record comparison start",
+      "position": { "x": 300, "y": 250 },
+      "action": { "type": "set-variable", "key": "comparison-started", "value": true }
+    },
+    {
+      "id": "state-comparing",
+      "kind": "state",
+      "label": "Comparing options",
+      "position": { "x": 560, "y": 250 },
+      "state": "comparing"
+    },
+    {
+      "id": "select-home-gallery",
+      "kind": "trigger",
+      "label": "Select home gallery view",
+      "position": { "x": 40, "y": 420 },
+      "event": "click",
+      "target": "select-gallery",
+      "states": ["browsing", "comparing", "personalizing"]
+    },
+    {
+      "id": "mark-gallery",
+      "kind": "action",
+      "label": "Record gallery selection",
+      "position": { "x": 300, "y": 420 },
+      "action": { "type": "set-variable", "key": "gallery-selected", "value": true }
+    },
+    {
+      "id": "state-personalizing",
+      "kind": "state",
+      "label": "Personalizing home",
+      "position": { "x": 560, "y": 420 },
+      "state": "personalizing"
+    },
+    {
+      "id": "request-tour",
+      "kind": "trigger",
+      "label": "Plan an in-person visit",
+      "position": { "x": 40, "y": 590 },
+      "event": "click",
+      "target": "schedule-tour",
+      "states": ["browsing", "comparing", "personalizing"]
+    },
+    {
+      "id": "state-tour-intent",
+      "kind": "state",
+      "label": "Tour intent",
+      "position": { "x": 300, "y": 590 },
+      "state": "tour-intent"
+    },
+    {
+      "id": "emit-tour-intent",
+      "kind": "action",
+      "label": "Emit tour intent",
+      "position": { "x": 560, "y": 590 },
+      "action": {
+        "type": "emit",
+        "name": "home-tour-intent",
+        "payload": { "experience": "david-weekley-marketplace-concept" }
+      }
+    }
+  ],
+  "edges": [
+    { "id": "search-recorded", "from": "run-home-search", "to": "mark-searched", "branch": "always", "priority": 0 },
+    { "id": "comparison-recorded", "from": "compare-market", "to": "mark-comparison", "branch": "always", "priority": 0 },
+    { "id": "comparison-state", "from": "mark-comparison", "to": "state-comparing", "branch": "always", "priority": 0 },
+    { "id": "gallery-recorded", "from": "select-home-gallery", "to": "mark-gallery", "branch": "always", "priority": 0 },
+    { "id": "gallery-state", "from": "mark-gallery", "to": "state-personalizing", "branch": "always", "priority": 0 },
+    { "id": "tour-state", "from": "request-tour", "to": "state-tour-intent", "branch": "always", "priority": 0 },
+    { "id": "tour-emitted", "from": "state-tour-intent", "to": "emit-tour-intent", "branch": "always", "priority": 0 }
+  ],
+  "mobileSubstitutions": []
+}

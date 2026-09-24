@@ -1,55 +1,55 @@
 import { mkdir } from "node:fs/promises";
-import { test } from "@playwright/test";
-import experience from "../../config/experience.json";
+import { test, type Page } from "@playwright/test";
 
-const midpoint=(range:readonly [number,number])=>range[0]+(range[1]-range[0])*.52;
-const desktopShots=experience.scenes.map((scene,index)=>[
-  `${String(index+1).padStart(2,"0")}-${scene.id}`,
-  midpoint(scene.range as [number,number]),
-] as const);
-const mobileIndexes=Array.from(new Set([0,2,Math.floor(experience.scenes.length/2),experience.scenes.length-2,experience.scenes.length-1]))
-  .filter((index)=>index>=0&&index<experience.scenes.length);
-const mobileShots=mobileIndexes.map((index)=>{
-  const scene=experience.scenes[index];
-  return [`${String(index+1).padStart(2,"0")}-${scene.id}`,midpoint(scene.range as [number,number])] as const;
-});
+const desktopShots = ["find", "communities", "plans", "personalize", "difference", "tour"] as const;
+const mobileShots = ["find", "communities", "personalize", "tour"] as const;
 
-async function seek(page: import("@playwright/test").Page, progress: number) {
-  await page.evaluate((value) => {
-    const max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-    window.scrollTo(0, max * value);
-  }, progress);
-  await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
-  await page.waitForTimeout(350);
-}
-
-async function prepare(page: import("@playwright/test").Page) {
+async function prepare(page: Page) {
   await page.goto("/", { waitUntil: "domcontentloaded", timeout: 15000 });
-  await page.locator("canvas").first().waitFor({ state: "attached", timeout: 10000 });
-  await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(3000);
+  await page.locator(".dw-site").waitFor({ state: "attached", timeout: 10000 });
+  await page.evaluate(async () => {
+    // Lazy images load when their section enters the viewport.
+    await Promise.race([
+      Promise.all([
+        document.fonts.ready,
+        ...[...document.images].filter((image) => image.loading !== "lazy").map((image) => image.complete
+          ? Promise.resolve()
+          : new Promise<void>((resolve) => {
+              image.addEventListener("load", () => resolve(), { once: true });
+              image.addEventListener("error", () => resolve(), { once: true });
+            })),
+      ]),
+      new Promise<void>((resolve) => window.setTimeout(resolve, 12000)),
+    ]);
+  });
 }
 
-test("Casa Lumen desktop delivery screenshots", async ({ page }, testInfo) => {
+async function captureSection(page: Page, id: string, path: string) {
+  await page.locator(`#${id}`).evaluate((element, sectionId) => {
+    window.scrollTo({ top: sectionId === "find" ? 0 : element.getBoundingClientRect().top + window.scrollY - 92, behavior: "instant" });
+  }, id);
+  await page.waitForTimeout(1400);
+  await page.screenshot({ path, animations: "disabled", timeout: 60000 });
+}
+
+test("David Weekley desktop delivery screenshots", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium", "Chromium visual evidence only");
   test.setTimeout(300000);
-  await mkdir("test-results/atelier-maris/desktop", { recursive: true });
+  await mkdir("test-results/david-weekley/desktop", { recursive: true });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await prepare(page);
-  for (const [name, progress] of desktopShots) {
-    await seek(page, progress);
-    await page.screenshot({ path: `test-results/atelier-maris/desktop/${name}.png`, animations: "allow", timeout: 60000 });
+  for (const [index, id] of desktopShots.entries()) {
+    await captureSection(page, id, `test-results/david-weekley/desktop/${String(index + 1).padStart(2, "0")}-${id}.png`);
   }
 });
 
-test("Casa Lumen mobile delivery screenshots", async ({ page }, testInfo) => {
+test("David Weekley mobile delivery screenshots", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium", "Chromium visual evidence only");
   test.setTimeout(180000);
-  await mkdir("test-results/atelier-maris/mobile", { recursive: true });
+  await mkdir("test-results/david-weekley/mobile", { recursive: true });
   await page.setViewportSize({ width: 390, height: 844 });
   await prepare(page);
-  for (const [name, progress] of mobileShots) {
-    await seek(page, progress);
-    await page.screenshot({ path: `test-results/atelier-maris/mobile/${name}.png`, animations: "allow", timeout: 60000 });
+  for (const [index, id] of mobileShots.entries()) {
+    await captureSection(page, id, `test-results/david-weekley/mobile/${String(index + 1).padStart(2, "0")}-${id}.png`);
   }
 });

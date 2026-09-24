@@ -23,9 +23,9 @@ test("semantic story and final CTA survive without JavaScript", async ({ browser
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1, name: "A house set into a forty-metre fall to the sea." })).toBeVisible();
-  await page.locator("#enquire").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("link", { name: "Enquire about a commission" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Life happens here." })).toBeVisible();
+  await page.locator("#tour").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("link", { name: /Plan (a|your) visit/ })).toBeVisible();
   await context.close();
 });
 
@@ -37,12 +37,15 @@ test("production canvas stays persistent across scroll, reverse and quality cont
   await expect(page.locator(".scene-canvas canvas")).toHaveCount(1);
   await expect(page.getByText("The 3D view is loading.", { exact: false })).toHaveCount(0);
   const canvas = await page.locator(".scene-canvas canvas").elementHandle();
-  const sceneNavigation = page.getByRole("navigation", { name: "Experience scenes" });
-  for (const id of ["threshold", "material", "horizon", "approach"]) {
-    const sceneLink = sceneNavigation.locator(`a[href="#${id}"]`);
-    await sceneLink.click();
-    await expect(sceneLink).toHaveAttribute("aria-current", "step");
-  }
+  const sceneNavigation = page.getByRole("navigation", { name: "Interactive story cards" });
+  const sceneControls = sceneNavigation.getByRole("button");
+  expect(await sceneControls.count()).toBeGreaterThan(1);
+  const finalScene = sceneControls.last();
+  await finalScene.evaluate((button) => (button as HTMLButtonElement).click());
+  await expect(finalScene).toHaveAttribute("aria-current", "step");
+  const firstScene = sceneControls.first();
+  await firstScene.evaluate((button) => (button as HTMLButtonElement).click());
+  await expect(firstScene).toHaveAttribute("aria-current", "step");
   await expect(page.getByLabel("Scene lab controls")).toBeVisible();
   expect(await canvas?.evaluate((element) => element.isConnected)).toBe(true);
   await page.getByLabel("Quality", { exact: true }).selectOption("low");
@@ -50,7 +53,8 @@ test("production canvas stays persistent across scroll, reverse and quality cont
   await page.getByLabel("Free camera", { exact: true }).check();
   await page.getByLabel("Show authoring guides", { exact: true }).check();
   await expect(page.getByLabel("Show authoring guides", { exact: true })).toBeChecked();
-  await page.locator("#approach").scrollIntoViewIfNeeded();
+  await finalScene.evaluate((button) => (button as HTMLButtonElement).click());
+  await expect(finalScene).toHaveAttribute("aria-current", "step");
   expect(await canvas?.evaluate((element) => element.isConnected)).toBe(true);
   expect(errors).toEqual([]);
 });
@@ -60,8 +64,8 @@ test("reduced motion, final conversion and no horizontal overflow across viewpor
   await page.goto("/");
   for (const [width, height] of sizes) {
     await page.setViewportSize({ width, height });
-    await page.locator("#enquire").scrollIntoViewIfNeeded();
-    await expect(page.getByRole("link", { name: "Enquire about a commission" })).toBeVisible();
+    await page.locator("#tour").scrollIntoViewIfNeeded();
+    await expect(page.getByRole("link", { name: /Plan (a|your) visit/ })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   }
   await expect(page.locator(".experience-root")).toHaveAttribute("data-reduced-motion", "true");
@@ -80,18 +84,18 @@ test("missing GLB preserves semantic content and exposes retry", async ({ page }
     const retryRequested = await page.evaluate(() => document.documentElement.dataset.retryRequested === "true");
     await (retryRequested ? route.continue() : route.abort());
   });
-  await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1, name: "A house set into a forty-metre fall to the sea." })).toBeVisible();
-  await page.locator("#threshold").scrollIntoViewIfNeeded();
+  await page.goto("/lab");
+  await expect(page.getByRole("heading", { level: 1, name: "Find the home your life fits into." })).toBeVisible();
+  await page.locator("#tour").scrollIntoViewIfNeeded();
   await expect(page.getByRole("button", { name: "Retry 3D" })).toBeVisible({timeout:20000});
   await page.getByRole("button", { name: "Retry 3D" }).click();
   await expect(page.getByRole("button", { name: "Retry 3D" })).toHaveCount(0);
   await expect(page.locator(".scene-canvas canvas")).toHaveCount(1);
-  await page.locator("#enquire").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("link", { name: "Enquire about a commission" })).toBeVisible();
+  await page.locator("#tour").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("link", { name: /Plan (a|your) visit/ })).toBeVisible();
 });
 
-test("WebGL failure leaves Casa Lumen content and details usable", async ({ page }) => {
+test("WebGL failure leaves the DOM-first homebuyer experience usable", async ({ page }) => {
   await emulateHumanBrowser(page);
   await page.addInitScript(() => {
     const original = HTMLCanvasElement.prototype.getContext;
@@ -105,10 +109,10 @@ test("WebGL failure leaves Casa Lumen content and details usable", async ({ page
     } as typeof original;
   });
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1, name: "A house set into a forty-metre fall to the sea." })).toBeVisible();
-  await page.locator("#material").scrollIntoViewIfNeeded();
-  await page.getByText("Honed travertine", { exact: true }).click();
-  await expect(page.getByText("Open-pore travertine", { exact: false })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Life happens here." })).toBeVisible();
+  await page.locator("#personalize").scrollIntoViewIfNeeded();
+  await page.locator('[data-forge-interaction="select-gallery"]').filter({ hasText: "Kitchen" }).click();
+  await expect(page.locator(".dw-gallery-label")).toContainText("Kitchen");
 });
 
 test("range keyboard does not invoke global scene shortcut", async ({ page }) => {
@@ -123,7 +127,7 @@ test("range keyboard does not invoke global scene shortcut", async ({ page }) =>
 test("context restoration does not remove the document", async ({ page, browserName }) => {
   test.skip(browserName !== "chromium", "WebGL loss extension is renderer-dependent");
   await emulateHumanBrowser(page);
-  await page.goto("/");
+  await page.goto("/lab");
   await expect(page.locator(".scene-canvas canvas")).toHaveCount(1);
   const supported = await page.locator(".scene-canvas canvas").evaluate((canvas) => {
     const gl = (canvas as HTMLCanvasElement).getContext("webgl2");
@@ -134,6 +138,6 @@ test("context restoration does not remove the document", async ({ page, browserN
     return true;
   });
   test.skip(!supported, "Context loss extension unavailable");
-  await expect(page.getByRole("heading", { level: 1, name: "A house set into a forty-metre fall to the sea." })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Find the home your life fits into." })).toBeVisible();
   await expect(page.getByText("The 3D view was interrupted.", { exact: false })).toHaveCount(0);
 });

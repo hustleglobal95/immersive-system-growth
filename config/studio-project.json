@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "id": "atelier-maris-casa-lumen",
-  "name": "ATELIER MARIS / Casa Lumen",
+  "id": "david-weekley-marketplace-concept",
+  "name": "David Weekley Homes / FORGE Marketplace Concept",
   "experiencePath": "config/experience.json",
   "visualSystemsPath": "config/visual-systems.json",
   "contentSources": [],
   "deployment": {
     "provider": "vercel",
-    "projectName": "atelier-maris-casa-lumen",
+    "projectName": "david-weekley-marketplace-concept",
     "productionBranch": "main"
   },
   "telemetry": {
@@ -21,40 +21,31 @@
   "experienceModesPath": "config/experience-modes.json",
   "discoverability": {
     "version": 1,
-    "siteName": "Atelier Maris",
+    "siteName": "David Weekley Homes FORGE Redesign Concept",
     "canonicalBaseUrl": "https://immersive-system-growth.vercel.app",
-    "defaultTitle": "Atelier Maris — Coastal Architecture on the Costa Brava",
-    "defaultDescription": "Atelier Maris is a coastal architecture practice in Begur creating restrained houses shaped by section, light, material discipline and direct studio oversight.",
+    "defaultTitle": "Find a Home That Fits Your Life | FORGE Redesign Concept",
+    "defaultDescription": "An independent FORGE redesign concept for a clearer homebuyer journey across markets, home plans, personalization and local guidance.",
     "primaryEntity": {
-      "type": "ProfessionalService",
-      "name": "Atelier Maris",
-      "description": "A coastal architecture practice in Begur, Costa Brava, working from site and section through technical design and construction oversight.",
+      "type": "Organization",
+      "name": "David Weekley Homes FORGE Redesign Concept",
+      "description": "An independent interactive redesign concept demonstrating a search-led homebuyer experience built with the FORGE repository.",
       "url": "https://immersive-system-growth.vercel.app/site",
-      "sameAs": [],
-      "areaServed": [
-        "Begur",
-        "Costa Brava",
-        "Catalonia"
-      ]
+      "sameAs": ["https://www.davidweekleyhomes.com/"],
+      "areaServed": ["United States"]
     },
     "searchIntents": [
-      "coastal architect Costa Brava",
-      "architect Begur Spain",
-      "luxury residential architecture Costa Brava",
-      "custom house architect Costa Brava"
+      "find new homes by market",
+      "compare new home plans",
+      "personalize a new home",
+      "schedule a model home visit"
     ],
     "authorityTopics": [
-      "coastal residential architecture",
-      "site and feasibility",
-      "section-led design",
-      "daylight and material restraint",
-      "construction oversight"
+      "new home search",
+      "home plan comparison",
+      "home personalization",
+      "homebuyer service"
     ],
-    "publicPaths": [
-      "/site",
-      "/work",
-      "/about"
-    ],
+    "publicPaths": ["/", "/site"],
     "privatePaths": [
       "/design",
       "/director",

@@ -1,1 +1,35 @@
-{"version":1,"systems":[{"id":"maris-atmosphere","label":"Atelier Maris atmospheric dust","kind":"particle-field","enabled":true,"seed":84,"instanceCount":64,"spread":[11,3.5,8],"size":0.018,"color":"#f4eadc","accent":"#d7c2a3","motion":0.16,"fallback":"static","reducedMotion":"freeze"},{"id":"maris-datum","label":"Atelier Maris architectural datum","kind":"instanced-field","enabled":true,"seed":27,"instanceCount":80,"spread":[15,0.6,10],"size":0.025,"color":"#d7c2a3","accent":"#ffffff","motion":0.08,"fallback":"static","reducedMotion":"freeze"}]}
+{
+  "version": 1,
+  "systems": [
+    {
+      "id": "market-atmosphere",
+      "label": "Marketplace ambient field",
+      "kind": "particle-field",
+      "enabled": true,
+      "seed": 84,
+      "instanceCount": 48,
+      "spread": [11, 3.5, 8],
+      "size": 0.014,
+      "color": "#f4f1ea",
+      "accent": "#df654c",
+      "motion": 0.08,
+      "fallback": "static",
+      "reducedMotion": "freeze"
+    },
+    {
+      "id": "plan-datum",
+      "label": "Plan comparison datum",
+      "kind": "instanced-field",
+      "enabled": true,
+      "seed": 27,
+      "instanceCount": 60,
+      "spread": [15, 0.6, 10],
+      "size": 0.02,
+      "color": "#0d4964",
+      "accent": "#718173",
+      "motion": 0.05,
+      "fallback": "static",
+      "reducedMotion": "freeze"
+    }
+  ]
+}
