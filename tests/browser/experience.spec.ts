@@ -23,9 +23,9 @@ test("semantic story and final CTA survive without JavaScript", async ({ browser
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1, name: "Find the home your life fits into." })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Life happens here." })).toBeVisible();
   await page.locator("#tour").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("link", { name: "Plan a visit" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Plan (a|your) visit/ })).toBeVisible();
   await context.close();
 });
 
@@ -65,7 +65,7 @@ test("reduced motion, final conversion and no horizontal overflow across viewpor
   for (const [width, height] of sizes) {
     await page.setViewportSize({ width, height });
     await page.locator("#tour").scrollIntoViewIfNeeded();
-    await expect(page.getByRole("link", { name: "Plan a visit" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Plan (a|your) visit/ })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   }
   await expect(page.locator(".experience-root")).toHaveAttribute("data-reduced-motion", "true");
@@ -92,7 +92,7 @@ test("missing GLB preserves semantic content and exposes retry", async ({ page }
   await expect(page.getByRole("button", { name: "Retry 3D" })).toHaveCount(0);
   await expect(page.locator(".scene-canvas canvas")).toHaveCount(1);
   await page.locator("#tour").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("link", { name: "Plan a visit" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Plan (a|your) visit/ })).toBeVisible();
 });
 
 test("WebGL failure leaves the DOM-first homebuyer experience usable", async ({ page }) => {
@@ -109,7 +109,7 @@ test("WebGL failure leaves the DOM-first homebuyer experience usable", async ({ 
     } as typeof original;
   });
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1, name: "Find the home your life fits into." })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Life happens here." })).toBeVisible();
   await page.locator("#personalize").scrollIntoViewIfNeeded();
   await page.locator('[data-forge-interaction="select-gallery"]').filter({ hasText: "Kitchen" }).click();
   await expect(page.locator(".dw-gallery-label")).toContainText("Kitchen");

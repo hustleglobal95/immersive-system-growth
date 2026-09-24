@@ -8,12 +8,11 @@ async function prepare(page: Page) {
   await page.goto("/", { waitUntil: "domcontentloaded", timeout: 15000 });
   await page.locator(".dw-site").waitFor({ state: "attached", timeout: 10000 });
   await page.evaluate(async () => {
-    // Some official image hosts can leave a request pending in CI. Capture the
-    // rendered page after a short grace period instead of waiting indefinitely.
+    // Lazy images load when their section enters the viewport.
     await Promise.race([
       Promise.all([
         document.fonts.ready,
-        ...[...document.images].map((image) => image.complete
+        ...[...document.images].filter((image) => image.loading !== "lazy").map((image) => image.complete
           ? Promise.resolve()
           : new Promise<void>((resolve) => {
               image.addEventListener("load", () => resolve(), { once: true });
@@ -26,8 +25,10 @@ async function prepare(page: Page) {
 }
 
 async function captureSection(page: Page, id: string, path: string) {
-  await page.locator(`#${id}`).scrollIntoViewIfNeeded();
-  await page.waitForTimeout(250);
+  await page.locator(`#${id}`).evaluate((element, sectionId) => {
+    window.scrollTo({ top: sectionId === "find" ? 0 : element.getBoundingClientRect().top + window.scrollY - 92, behavior: "instant" });
+  }, id);
+  await page.waitForTimeout(1400);
   await page.screenshot({ path, animations: "disabled", timeout: 60000 });
 }
 

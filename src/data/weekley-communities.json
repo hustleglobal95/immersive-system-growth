@@ -1,0 +1,562 @@
+[
+  {
+    "id": "waterset",
+    "name": "Waterset",
+    "collection": "Tradition Series",
+    "fullName": "Waterset Tradition Series",
+    "market": "Tampa",
+    "city": "Apollo Beach",
+    "state": "FL",
+    "homeType": "Single-family",
+    "price": 418990,
+    "minSqft": 1722,
+    "maxSqft": 2815,
+    "minBeds": 3,
+    "maxBeds": 5,
+    "description": "More room for Florida living, with gathering spaces inside and an extensive network of trails, pools and parks outside.",
+    "amenities": [
+      "Clubhouse",
+      "Dog Park",
+      "Emergency",
+      "Entertainment",
+      "Fitness Center",
+      "Golf Course within 5 miles",
+      "Green Belts",
+      "Grocery",
+      "Home Owners Association",
+      "Lap Pool",
+      "Local Shopping",
+      "Master Planned",
+      "Multi-Purpose Field",
+      "Park",
+      "Playground",
+      "Pool",
+      "Sidewalks",
+      "Soccer",
+      "Splash Pad",
+      "Splash Pool",
+      "Trails"
+    ],
+    "image": "/assets/weekley/waterset.webp",
+    "detailImage": "/assets/weekley/waterset-detail.webp",
+    "url": "https://www.davidweekleyhomes.com/new-homes/fl/tampa/apollo-beach/waterset-tradition-series",
+    "plans": [
+      {
+        "name": "Arden",
+        "beds": 3,
+        "maxBeds": 3,
+        "sqft": 1722,
+        "price": 418990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/fl/tampa/apollo-beach/waterset-tradition-series/arden"
+      },
+      {
+        "name": "Benton",
+        "beds": 3,
+        "maxBeds": 3,
+        "sqft": 1953,
+        "price": 439990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/fl/tampa/apollo-beach/waterset-tradition-series/benton"
+      },
+      {
+        "name": "Sanborn",
+        "beds": 3,
+        "maxBeds": 3,
+        "sqft": 2123,
+        "price": 449990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/fl/tampa/apollo-beach/waterset-tradition-series/sanborn"
+      },
+      {
+        "name": "Gaspar",
+        "beds": 4,
+        "maxBeds": 4,
+        "sqft": 2317,
+        "price": 468990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/fl/tampa/apollo-beach/waterset-tradition-series/gaspar"
+      },
+      {
+        "name": "Zander",
+        "beds": 4,
+        "maxBeds": 5,
+        "sqft": 2414,
+        "price": 483990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/fl/tampa/apollo-beach/waterset-tradition-series/zander"
+      },
+      {
+        "name": "Bradson",
+        "beds": 4,
+        "maxBeds": 4,
+        "sqft": 2733,
+        "price": 505990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/fl/tampa/apollo-beach/waterset-tradition-series/bradson"
+      },
+      {
+        "name": "Burgert",
+        "beds": 4,
+        "maxBeds": 4,
+        "sqft": 2760,
+        "price": 505990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/fl/tampa/apollo-beach/waterset-tradition-series/burgert"
+      },
+      {
+        "name": "Danica",
+        "beds": 4,
+        "maxBeds": 5,
+        "sqft": 2804,
+        "price": 511990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/fl/tampa/apollo-beach/waterset-tradition-series/danica"
+      }
+    ],
+    "sourceDate": "2026-09-24"
+  },
+  {
+    "id": "waterset-townhomes",
+    "name": "Waterset",
+    "collection": "Townhomes",
+    "fullName": "Waterset Townhomes",
+    "market": "Tampa",
+    "city": "Apollo Beach",
+    "state": "FL",
+    "homeType": "Townhome",
+    "price": 294990,
+    "minSqft": 1619,
+    "maxSqft": 1791,
+    "minBeds": 3,
+    "maxBeds": 3,
+    "description": "An easy-to-care-for home in a connected Apollo Beach community, with recreation, trails and gathering places close by.",
+    "amenities": [
+      "Basketball",
+      "Beach within 5 miles",
+      "Clubhouse",
+      "Dog Park",
+      "Emergency",
+      "Fire Pit",
+      "Fitness Center",
+      "Golf Course within 5 miles",
+      "Green Belts",
+      "Grocery",
+      "Home Owners Association",
+      "Hospital",
+      "Lap Pool",
+      "Local Shopping",
+      "Low Maintenance",
+      "Master Planned",
+      "Multi-Purpose Field",
+      "Park",
+      "Pickleball",
+      "Playground",
+      "Pond",
+      "Pool",
+      "Sidewalks",
+      "Soccer",
+      "Splash Pad",
+      "Splash Pool",
+      "Tennis",
+      "Trails",
+      "Volleyball"
+    ],
+    "image": "/assets/weekley/waterset-townhomes.webp",
+    "detailImage": "/assets/weekley/waterset-townhomes-detail.webp",
+    "url": "https://www.davidweekleyhomes.com/new-homes/fl/tampa/apollo-beach/waterset-townhomes",
+    "plans": [
+      {
+        "name": "Cowden",
+        "beds": 3,
+        "maxBeds": 3,
+        "sqft": 1774,
+        "price": 0,
+        "url": "https://www.davidweekleyhomes.com/new-homes/fl/tampa/apollo-beach/waterset-townhomes/cowden"
+      },
+      {
+        "name": "Burney",
+        "beds": 3,
+        "maxBeds": 3,
+        "sqft": 1761,
+        "price": 0,
+        "url": "https://www.davidweekleyhomes.com/new-homes/fl/tampa/apollo-beach/waterset-townhomes/burney"
+      },
+      {
+        "name": "Creekbend",
+        "beds": 3,
+        "maxBeds": 3,
+        "sqft": 1619,
+        "price": 0,
+        "url": "https://www.davidweekleyhomes.com/new-homes/fl/tampa/apollo-beach/waterset-townhomes/creekbend"
+      },
+      {
+        "name": "Peppermill",
+        "beds": 3,
+        "maxBeds": 3,
+        "sqft": 1774,
+        "price": 0,
+        "url": "https://www.davidweekleyhomes.com/new-homes/fl/tampa/apollo-beach/waterset-townhomes/peppermill"
+      }
+    ],
+    "sourceDate": "2026-09-24"
+  },
+  {
+    "id": "goodnight",
+    "name": "Goodnight Ranch",
+    "collection": "Austin, Texas",
+    "fullName": "Goodnight Ranch",
+    "market": "Austin",
+    "city": "Austin",
+    "state": "TX",
+    "homeType": "Single-family",
+    "price": 409990,
+    "minSqft": 1723,
+    "maxSqft": 2809,
+    "minBeds": 3,
+    "maxBeds": 4,
+    "description": "Front porches, neighborhood parks and a connected trail system bring a sense of belonging to southeast Austin.",
+    "amenities": [
+      "Community Center",
+      "Dog Park",
+      "Home Owners Association",
+      "Local Shopping",
+      "Master Planned",
+      "Park",
+      "Playground",
+      "Pool",
+      "Sidewalks",
+      "Trails",
+      "Walk to Elementary School",
+      "Walk to Intermediate School"
+    ],
+    "image": "/assets/weekley/goodnight.webp",
+    "detailImage": "/assets/weekley/goodnight-detail.webp",
+    "url": "https://www.davidweekleyhomes.com/new-homes/tx/austin/austin/goodnight-ranch-40",
+    "plans": [
+      {
+        "name": "Panhandle",
+        "beds": 3,
+        "maxBeds": 3,
+        "sqft": 1723,
+        "price": 409990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/austin/austin/goodnight-ranch-40/panhandle"
+      },
+      {
+        "name": "Camacho",
+        "beds": 3,
+        "maxBeds": 3,
+        "sqft": 2127,
+        "price": 463990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/austin/austin/goodnight-ranch-40/camacho"
+      },
+      {
+        "name": "Sawgrass",
+        "beds": 3,
+        "maxBeds": 4,
+        "sqft": 2301,
+        "price": 478990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/austin/austin/goodnight-ranch-40/sawgrass"
+      },
+      {
+        "name": "Bellarmine",
+        "beds": 3,
+        "maxBeds": 4,
+        "sqft": 2340,
+        "price": 488990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/austin/austin/goodnight-ranch-40/bellarmine"
+      },
+      {
+        "name": "Settler",
+        "beds": 3,
+        "maxBeds": 4,
+        "sqft": 2436,
+        "price": 503990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/austin/austin/goodnight-ranch-40/settler"
+      },
+      {
+        "name": "Rainier",
+        "beds": 4,
+        "maxBeds": 4,
+        "sqft": 2498,
+        "price": 508990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/austin/austin/goodnight-ranch-40/rainier"
+      }
+    ],
+    "sourceDate": "2026-09-24"
+  },
+  {
+    "id": "twilight",
+    "name": "The Twilight",
+    "collection": "at Goodnight Ranch",
+    "fullName": "The Twilight at Goodnight Ranch",
+    "market": "Austin",
+    "city": "Austin",
+    "state": "TX",
+    "homeType": "Single-family",
+    "price": 352990,
+    "minSqft": 1684,
+    "maxSqft": 2697,
+    "minBeds": 2,
+    "maxBeds": 5,
+    "description": "Thoughtful homes and welcoming streets, with pools, parks and trails woven into everyday life.",
+    "amenities": [
+      "Community Center",
+      "Dog Park",
+      "Fire Pit",
+      "Fitness Center",
+      "Gated",
+      "Home Owners Association",
+      "Local Shopping",
+      "Master Planned",
+      "Park",
+      "Playground",
+      "Pool",
+      "Sidewalks",
+      "Trails",
+      "Walk to Elementary School",
+      "Walk to Middle School"
+    ],
+    "image": "/assets/weekley/twilight.webp",
+    "detailImage": "/assets/weekley/twilight-detail.webp",
+    "url": "https://www.davidweekleyhomes.com/new-homes/tx/austin/austin/the-twilight-at-goodnight-ranch",
+    "plans": [
+      {
+        "name": "Heeler",
+        "beds": 3,
+        "maxBeds": 4,
+        "sqft": 1684,
+        "price": 352990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/austin/austin/the-twilight-at-goodnight-ranch/heeler"
+      },
+      {
+        "name": "Elkhound",
+        "beds": 3,
+        "maxBeds": 4,
+        "sqft": 1713,
+        "price": 355990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/austin/austin/the-twilight-at-goodnight-ranch/elkhound"
+      },
+      {
+        "name": "Dane",
+        "beds": 2,
+        "maxBeds": 4,
+        "sqft": 1728,
+        "price": 357990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/austin/austin/the-twilight-at-goodnight-ranch/dane"
+      },
+      {
+        "name": "Fawn",
+        "beds": 3,
+        "maxBeds": 4,
+        "sqft": 1862,
+        "price": 367990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/austin/austin/the-twilight-at-goodnight-ranch/fawn"
+      },
+      {
+        "name": "Foxhound",
+        "beds": 3,
+        "maxBeds": 5,
+        "sqft": 2003,
+        "price": 392990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/austin/austin/the-twilight-at-goodnight-ranch/foxhound"
+      },
+      {
+        "name": "Robertson",
+        "beds": 3,
+        "maxBeds": 4,
+        "sqft": 2014,
+        "price": 392990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/austin/austin/the-twilight-at-goodnight-ranch/robertson"
+      }
+    ],
+    "sourceDate": "2026-09-24"
+  },
+  {
+    "id": "bridgeland",
+    "name": "Bridgeland Central",
+    "collection": "Emerald Heights \u00b7 Enclave Collection",
+    "fullName": "Bridgeland Central: Emerald Heights - Enclave Collection",
+    "market": "Houston",
+    "city": "Cypress",
+    "state": "TX",
+    "homeType": "Single-family",
+    "price": 494990,
+    "minSqft": 1989,
+    "maxSqft": 3197,
+    "minBeds": 3,
+    "maxBeds": 5,
+    "description": "Distinctive architecture meets the parks, trails and resort-style amenities of a thoughtfully planned Cypress community.",
+    "amenities": [
+      "Clubhouse",
+      "Community Center",
+      "Dog Park",
+      "Fishing",
+      "Fitness Center",
+      "Golf Course within 5 miles",
+      "Green Belts",
+      "Home Owners Association",
+      "Lap Pool",
+      "Master Planned",
+      "Olympic Pool",
+      "Park",
+      "Playground",
+      "Pool",
+      "Splash Pool",
+      "Tennis",
+      "Trails"
+    ],
+    "image": "/assets/weekley/bridgeland.webp",
+    "detailImage": "/assets/weekley/bridgeland-detail.webp",
+    "url": "https://www.davidweekleyhomes.com/new-homes/tx/houston/cypress/parkland-square-50-classic-series",
+    "plans": [
+      {
+        "name": "Tulip",
+        "beds": 3,
+        "maxBeds": 3,
+        "sqft": 1989,
+        "price": 494990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/houston/cypress/parkland-square-50-classic-series/tulip"
+      },
+      {
+        "name": "Rose",
+        "beds": 4,
+        "maxBeds": 4,
+        "sqft": 2206,
+        "price": 509990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/houston/cypress/parkland-square-50-classic-series/rose"
+      },
+      {
+        "name": "Magnolia",
+        "beds": 3,
+        "maxBeds": 4,
+        "sqft": 2273,
+        "price": 524990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/houston/cypress/parkland-square-50-classic-series/magnolia"
+      },
+      {
+        "name": "Violet",
+        "beds": 4,
+        "maxBeds": 5,
+        "sqft": 2486,
+        "price": 539990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/houston/cypress/parkland-square-50-classic-series/violet"
+      },
+      {
+        "name": "Azalea",
+        "beds": 4,
+        "maxBeds": 4,
+        "sqft": 2535,
+        "price": 549990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/houston/cypress/parkland-square-50-classic-series/azalea"
+      },
+      {
+        "name": "Bluebonnet",
+        "beds": 4,
+        "maxBeds": 5,
+        "sqft": 2605,
+        "price": 569990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/houston/cypress/parkland-square-50-classic-series/bluebonnet"
+      },
+      {
+        "name": "Lavender",
+        "beds": 4,
+        "maxBeds": 5,
+        "sqft": 2859,
+        "price": 584990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/houston/cypress/parkland-square-50-classic-series/lavender"
+      },
+      {
+        "name": "Primrose",
+        "beds": 5,
+        "maxBeds": 5,
+        "sqft": 3073,
+        "price": 604990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/houston/cypress/parkland-square-50-classic-series/primrose"
+      }
+    ],
+    "sourceDate": "2026-09-24"
+  },
+  {
+    "id": "bridgeland-row",
+    "name": "Bridgeland Central",
+    "collection": "Emerald Heights \u00b7 Enclave Row",
+    "fullName": "Bridgeland Central: Emerald Heights - Enclave Row Collection",
+    "market": "Houston",
+    "city": "Cypress",
+    "state": "TX",
+    "homeType": "Single-family",
+    "price": 471990,
+    "minSqft": 2188,
+    "maxSqft": 3723,
+    "minBeds": 3,
+    "maxBeds": 6,
+    "description": "Flexible spaces, distinctive curb appeal and access to an expansive network of green space and community amenities.",
+    "amenities": [
+      "Clubhouse",
+      "Community Center",
+      "Dog Park",
+      "Fishing",
+      "Fitness Center",
+      "Golf Course within 5 miles",
+      "Green Belts",
+      "Home Owners Association",
+      "Local Shopping",
+      "Master Planned",
+      "Olympic Pool",
+      "Park",
+      "Playground",
+      "Pool",
+      "Splash Pool",
+      "Tennis",
+      "Trails",
+      "Waterfront Lots"
+    ],
+    "image": "/assets/weekley/bridgeland-row.webp",
+    "detailImage": "/assets/weekley/bridgeland-row-detail.webp",
+    "url": "https://www.davidweekleyhomes.com/new-homes/tx/houston/cypress/lakeland-heights-50",
+    "plans": [
+      {
+        "name": "Fanning",
+        "beds": 3,
+        "maxBeds": 4,
+        "sqft": 2188,
+        "price": 471990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/houston/cypress/lakeland-heights-50/fanning"
+      },
+      {
+        "name": "Crowson",
+        "beds": 3,
+        "maxBeds": 5,
+        "sqft": 2322,
+        "price": 491990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/houston/cypress/lakeland-heights-50/crowson"
+      },
+      {
+        "name": "Moonglow",
+        "beds": 5,
+        "maxBeds": 6,
+        "sqft": 2880,
+        "price": 509990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/houston/cypress/lakeland-heights-50/moonglow"
+      },
+      {
+        "name": "Mcclaren",
+        "beds": 4,
+        "maxBeds": 4,
+        "sqft": 2972,
+        "price": 516990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/houston/cypress/lakeland-heights-50/mcclaren"
+      },
+      {
+        "name": "Wylie",
+        "beds": 4,
+        "maxBeds": 4,
+        "sqft": 2719,
+        "price": 526990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/houston/cypress/lakeland-heights-50/wylie"
+      },
+      {
+        "name": "Roosevelt",
+        "beds": 5,
+        "maxBeds": 5,
+        "sqft": 3141,
+        "price": 529990,
+        "url": "https://www.davidweekleyhomes.com/new-homes/tx/houston/cypress/lakeland-heights-50/roosevelt"
+      }
+    ],
+    "sourceDate": "2026-09-24"
+  }
+]

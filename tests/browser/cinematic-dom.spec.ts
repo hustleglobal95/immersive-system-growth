@@ -1,51 +1,68 @@
 import { test, expect } from "@playwright/test";
 
-test("marketplace search, comparison and personalization work across viewports", async ({ page }) => {
+test("community finder filters, sorts, saves, compares and opens details", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
-
-  await expect(page.locator("body")).toHaveAttribute("data-project", "weekley-marketplace");
-  await expect(page.getByRole("heading", { name: /Find the home your life fits into/i })).toBeVisible();
-  await expect(page.locator(".story-panel")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Life happens here." })).toBeVisible();
   await expect(page.locator(".telemetry-consent")).toHaveCount(0);
-  await page.getByRole("button", { name: "Show home image 2" }).click();
-  await expect(page.getByRole("button", { name: "Show home image 2" })).toHaveAttribute("aria-pressed", "true");
-
-  await page.locator(".dw-search select").first().selectOption("Houston");
-  await page.getByRole("button", { name: /Show my paths/i }).click();
-  await expect(page.getByText("Your Houston search")).toBeVisible();
-  await expect(page.getByRole("link", { name: /Explore new homes in Houston/i })).toHaveAttribute("href", "https://www.davidweekleyhomes.com/new-homes/tx/houston");
+  await page.getByLabel("Search location", { exact: true }).selectOption("Tampa");
+  await page.getByRole("button", { name: "Explore homes", exact: true }).click();
+  await expect(page.locator(".dw-market-card")).toHaveCount(2);
+  await page.getByLabel("Filter starting price", { exact: true }).selectOption("350000");
   await expect(page.locator(".dw-market-card")).toHaveCount(1);
-
-  await page.getByRole("button", { name: "Compare" }).click();
-  await expect(page.locator(".dw-compare")).toContainText("1 market selected");
-  await page.getByRole("button", { name: "Compare markets" }).click();
-  await expect(page.getByRole("dialog", { name: "Compare places to live." })).toBeVisible();
-  await expect(page.getByRole("dialog").getByRole("link", { name: "Homes ready soon" })).toHaveAttribute("href", "https://www.davidweekleyhomes.com/new-homes/tx/houston/homes-ready-soon");
+  await expect(page.locator(".dw-market-card")).toContainText("Townhomes");
+  await page.getByLabel("Filter bedrooms", { exact: true }).selectOption("5");
+  await expect(page.locator(".dw-market-card")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Clear all filters" })).toBeVisible();
+  await page.getByRole("button", { name: "Clear all filters" }).click();
+  await expect(page.locator(".dw-market-card")).toHaveCount(6);
+  await page.getByLabel("Sort communities").selectOption("price-low");
+  await expect(page.locator(".dw-market-card").first()).toContainText("$294,990");
+  await page.getByLabel("Search featured communities").fill("Waterset");
+  await expect(page.locator(".dw-market-card")).toHaveCount(2);
+  await page.getByRole("button", { name: "Save Waterset Townhomes", exact: true }).click();
+  await page.reload();
+  await page.getByRole("button", { name: "Saved places (1)", exact: true }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toContainText("Waterset Townhomes");
   await page.keyboard.press("Escape");
-  await expect(page.getByRole("dialog")).toHaveCount(0);
-
-  await page.locator('[data-forge-interaction="select-gallery"]').filter({ hasText: "Kitchen" }).click();
-  await expect(page.locator(".dw-gallery-label")).toContainText("Kitchen");
-  await expect(page.locator(".dw-personalize__visual")).toHaveAttribute("data-gallery", "kitchen");
-
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(page.locator(".dw-site")).toBeVisible();
-  await expect(page.locator(".dw-hero__content")).toBeVisible();
-
-  await page.setViewportSize({ width: 390, height: 844 });
-  const menu = page.getByRole("button", { name: /Menu/i });
-  await expect(menu).toBeVisible();
-  await menu.click();
-  await expect(page.locator("#dw-navigation")).toHaveClass(/is-open/);
-  await expect(page.locator("#dw-navigation").getByRole("link", { name: "Find a home" })).toBeVisible();
+  await expect(dialog).not.toBeVisible();
+  await page.locator(".dw-market-card").nth(0).getByLabel("Compare").check();
+  await page.locator(".dw-market-card").nth(1).getByLabel("Compare").check();
+  await page.getByRole("button", { name: "Compare communities", exact: true }).click();
+  await expect(dialog).toContainText("$418,990");
+  await expect(dialog).toContainText("$294,990");
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Clear comparison" }).click();
+  await page.locator(".dw-market-card").first().getByRole("button", { name: "View details" }).click();
+  await expect(dialog.getByRole("link", { name: "Current homes & availability" })).toHaveAttribute("href", /waterset-tradition-series$/);
+  await expect(dialog).toContainText("The Arden");
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".dw-market-card").first().getByRole("button", { name: "View details" })).toBeFocused();
 });
 
-test("mobile market cards end before the next section", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
+test("mobile navigation, gallery and all-location search remain usable", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
+  await page.getByRole("button", { name: "Menu", exact: true }).click();
+  await expect(page.locator("#dw-navigation")).toHaveClass(/is-open/);
+  await page.locator("#dw-navigation").getByRole("button", { name: "Where we build" }).click();
+  await page.getByLabel("Search all locations").fill("Florida");
+  await expect(page.getByRole("dialog").getByRole("link")).toHaveCount(4);
+  await page.getByLabel("Search all locations").fill("Atlantis");
+  await expect(page.getByRole("dialog")).toContainText("No locations match");
+  await page.getByRole("button", { name: "Close panel" }).click();
+  await page.locator('[data-forge-interaction="select-gallery"]').filter({ hasText: "Kitchen" }).click();
+  await expect(page.locator(".dw-gallery-label")).toContainText("Kitchen");
+  await page.getByRole("button", { name: "Enlarge room photography" }).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.getByRole("button", { name: "Next gallery image" }).click();
+  await expect(page.getByRole("dialog")).toContainText("Waterset");
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".dw-personalize__visual")).toHaveAttribute("data-gallery", "dining");
   const lastCardBottom = await page.locator(".dw-market-card").last().evaluate((element) => element.getBoundingClientRect().bottom);
   const nextSectionTop = await page.locator(".dw-plans").evaluate((element) => element.getBoundingClientRect().top);
   expect(lastCardBottom).toBeLessThanOrEqual(nextSectionTop);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
 });
