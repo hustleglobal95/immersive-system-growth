@@ -26,7 +26,7 @@ export function useWeekleySectionMotion(rootRef: RefObject<HTMLElement | null>, 
       const enter = (element: HTMLElement, id: string) => {
         const timeline = gsap.timeline({
           id: `weekley-${id}`,
-          defaults: { duration: 0.85, ease: "power3.out", clearProps: "transform,opacity,clipPath" },
+          defaults: { duration: 0.85, ease: "power3.out" },
           scrollTrigger: { trigger: element, start: "top 92%", once: true },
         });
         entrances.push({ element, timeline });
@@ -34,11 +34,13 @@ export function useWeekleySectionMotion(rootRef: RefObject<HTMLElement | null>, 
       };
       const reveal = (selector: string, from: gsap.TweenVars = {}, stagger = 0) => {
         select(selector).forEach((element, index) => enter(element, `${selector}-${index}`)
-          .from(element, { y: lift, opacity: 0, ...from, delay: stagger ? index * stagger : 0 }));
+          .from(element, { y: lift, opacity: 0, clearProps: "transform,opacity", ...from, delay: stagger ? index * stagger : 0 }));
       };
       const mask = (selector: string, from = "inset(0% 0% 100% 0%)") => {
         select(selector).forEach((element, index) => enter(element, `image-${index}-${selector}`)
-          .fromTo(element, { clipPath: from, y: desktop ? 24 : 12 }, { clipPath: "inset(0% 0% 0% 0%)", y: 0, duration: 1.15, ease: "power3.inOut" }));
+          // Keep clearProps on the destination tween. Timeline defaults also reach
+          // GSAP's zero-duration start state, which would erase this waiting mask.
+          .fromTo(element, { clipPath: from, y: desktop ? 24 : 12 }, { clipPath: "inset(0% 0% 0% 0%)", y: 0, duration: 1.15, ease: "power3.inOut", clearProps: "transform,clipPath" }));
       };
 
       // Arrival: one shared timeline keeps the copy and photograph in step.
