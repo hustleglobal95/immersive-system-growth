@@ -10,6 +10,8 @@ test("community finder filters, sorts, saves, compares and opens details", async
   await expect(page.locator(".dw-market-card")).toHaveCount(2);
   await page.getByLabel("Filter starting price", { exact: true }).selectOption("350000");
   await expect(page.locator(".dw-market-card")).toHaveCount(1);
+  await expect(page.getByRole("button", { name: "Remove Tampa filter" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Remove Up to $350,000 filter" })).toBeVisible();
   await expect(page.locator(".dw-market-card")).toContainText("Townhomes");
   await page.getByLabel("Filter bedrooms", { exact: true }).selectOption("5");
   await expect(page.locator(".dw-market-card")).toHaveCount(0);
@@ -37,6 +39,9 @@ test("community finder filters, sorts, saves, compares and opens details", async
   await page.locator(".dw-market-card").first().getByRole("button", { name: "View details" }).click();
   await expect(dialog.getByRole("link", { name: "Current homes & availability" })).toHaveAttribute("href", /waterset-tradition-series$/);
   await expect(dialog).toContainText("The Arden");
+  await dialog.getByRole("button", { name: "Show community photograph 2" }).click();
+  await expect(dialog.locator(".dw-detail-hero")).toHaveAttribute("src", "/assets/weekley/waterset-detail.webp");
+  await expect(dialog.getByRole("button", { name: "Show community photograph 2" })).toHaveAttribute("aria-pressed", "true");
   await page.keyboard.press("Escape");
   await expect(page.locator(".dw-market-card").first().getByRole("button", { name: "View details" })).toBeFocused();
 });
@@ -65,4 +70,37 @@ test("mobile navigation, gallery and all-location search remain usable", async (
   const nextSectionTop = await page.locator(".dw-plans").evaluate((element) => element.getBoundingClientRect().top);
   expect(lastCardBottom).toBeLessThanOrEqual(nextSectionTop);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+});
+
+test("section masks reveal on arrival and scroll depth respects reduced motion", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", error => errors.push(error.message));
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Life happens here." })).toBeVisible();
+  const buyingPhoto = page.locator(".dw-path-visual");
+  await expect.poll(() => buyingPhoto.evaluate(element => getComputedStyle(element).clipPath)).not.toBe("none");
+  await buyingPhoto.scrollIntoViewIfNeeded();
+  await expect(buyingPhoto).toHaveCSS("clip-path", "none");
+  await page.locator("#personalize").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("heading", { name: "Made for the everyday. And everything else." })).toBeVisible();
+  await expect(page.locator(".dw-personalize__visual")).toHaveCSS("clip-path", "none");
+
+  await page.locator("#life").evaluate(element => window.scrollTo({ top: element.getBoundingClientRect().top + window.scrollY - 400, behavior: "instant" }));
+  await page.waitForTimeout(1200);
+  const layer = page.locator(".dw-life__image");
+  const firstPosition = await layer.evaluate(element => getComputedStyle(element).transform);
+  await page.evaluate(() => window.scrollBy({ top: 300, behavior: "instant" }));
+  await expect.poll(() => layer.evaluate(element => getComputedStyle(element).transform)).not.toBe(firstPosition);
+
+  // Changing the preference mid-visit must restore visible, static content.
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(layer).toHaveCSS("transform", "none");
+  await expect(page.locator(".dw-life__title")).toHaveCSS("transform", "none");
+  await expect(page.locator(".dw-tour-image")).toHaveCSS("clip-path", "none");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator("#tour").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("link", { name: "Plan your visit" })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  expect(errors).toEqual([]);
 });

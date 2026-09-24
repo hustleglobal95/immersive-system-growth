@@ -18,14 +18,15 @@ All photography and the logo come from David Weekley's website. Local WebP image
 - Price/size sorting, grid/list views, and a useful empty state with filter reset.
 - Saved places persisted in browser storage, with in-memory fallback if storage is unavailable.
 - Comparison of two or three communities, including prices, bedrooms, size and home type.
-- Native modal detail panels with official floor plan links and current-availability handoff.
+- Native modal detail panels with a two-photo community gallery, official floor plan links and current-availability handoff.
+- Removable active-filter chips and larger save/view controls.
 - Searchable all-location directory, expandable buying paths, room gallery and image lightbox.
 - Sticky primary navigation, scroll progress and mobile navigation dock.
 
 ## FORGE integration
 
-The page remains inside ExperienceRuntime with FORGE's SystemProfile, ScrollController/Lenis, interaction graph and command controllers. It uses the shared CinematicTextReveal, ParallaxLayer and MagneticSurface components. GSAP coordinates the hero image reveal, result entrances, gallery masks and section motion. Reduced-motion mode removes the decorative movement. HELIOT and the protected runtime assets are not edited.
+The page remains inside ExperienceRuntime with FORGE's SystemProfile, ScrollController/Lenis, interaction graph and command controllers. It uses the shared CinematicTextReveal and MagneticSurface components, plus a scoped GSAP section choreography hook. ScrollTrigger coordinates hero arrival, search and filter entrances, staggered card masks, buying-path image wipes, line-masked section headings, the gallery panel, reversible neighborhood depth, company values and the visit section. SplitText masks adapt to font loading and responsive line breaks. Independent triggers accommodate tall mobile sections. Focus completes entrances for keyboard access; matchMedia cleans up motion when the preference changes. Reduced-motion mode removes the decorative movement. HELIOT and the protected runtime assets are not edited.
 
 ## Verification
 
-Browser coverage exercises combined filters, empty state, sorting, saved-state persistence after reload, comparison, official detail links, focus restoration, mobile navigation, location search, gallery/lightbox, reduced motion, and responsive overflow. Visual capture uses the actual public route and its section anchors.
+Browser coverage exercises combined filters, empty state, sorting, saved-state persistence after reload, comparison, official detail links, focus restoration, mobile navigation, location search, gallery/lightbox, reduced motion, and responsive overflow. Visual capture uses the actual public route and its section anchors, with recorded desktop/mobile walkthroughs. Browser coverage also checks completed mask reveals, scroll-driven image transforms and a live switch to reduced motion.
