@@ -59,6 +59,16 @@
       "path": "/models/reference/saas-low.glb",
       "bytes": 5360,
       "sha256": "a5a378edff4505e220ac85fb912f523abd20a62750e013ee170fdea0ee625ef9"
+    },
+    {
+      "path": "/models/nocturne/n01.glb",
+      "bytes": 2485928,
+      "sha256": "ff4534d38e8279d1fb44104de9e3fa69c4cca7b2ddcddcea92657fbb6cf199f7"
+    },
+    {
+      "path": "/models/nocturne/n01-low.glb",
+      "bytes": 1036020,
+      "sha256": "dd7905457f81cdf3f22580175a8c2d2cf8ab12f25751fbc33ff14477ab6d8622"
     }
   ],
   "textures": [

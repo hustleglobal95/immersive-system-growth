@@ -1,0 +1,691 @@
+{
+  "spec": "clients/nocturne/n01-spec.json",
+  "blender": "5.0.1",
+  "variants": {
+    "low": {
+      "errors": [],
+      "warnings": [],
+      "nodes": {
+        "GLASS_CORE": {
+          "triangles": 10204,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 9.2612,
+          "materials": [
+            "N01_Glass_Optical"
+          ],
+          "pivotWorld": [
+            0.0,
+            0.0,
+            -0.06
+          ],
+          "boundsMin": [
+            -0.4195,
+            -0.2753,
+            -0.1452
+          ],
+          "boundsMax": [
+            0.4656,
+            0.3026,
+            0.036
+          ]
+        },
+        "CEILING_MOUNT": {
+          "triangles": 1144,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 0.4968,
+          "materials": [
+            "N01_Suspension_Black"
+          ],
+          "pivotWorld": [
+            0.055,
+            -0.018,
+            1.6
+          ],
+          "boundsMin": [
+            -0.02,
+            -0.093,
+            1.586
+          ],
+          "boundsMax": [
+            0.13,
+            0.057,
+            1.628
+          ]
+        },
+        "SUSPENSION_CABLE": {
+          "triangles": 44,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 0.0073,
+          "materials": [
+            "N01_Cable"
+          ],
+          "pivotWorld": [
+            0.055,
+            -0.018,
+            1.586
+          ],
+          "boundsMin": [
+            0.0534,
+            -0.0196,
+            0.632
+          ],
+          "boundsMax": [
+            0.0566,
+            -0.0164,
+            1.586
+          ]
+        },
+        "SUSPENSION_ROD": {
+          "triangles": 504,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 0.0549,
+          "materials": [
+            "N01_Suspension_Black"
+          ],
+          "pivotWorld": [
+            0.055,
+            -0.018,
+            0.632
+          ],
+          "boundsMin": [
+            0.0465,
+            -0.0265,
+            0.195
+          ],
+          "boundsMax": [
+            0.0635,
+            -0.0095,
+            0.632
+          ]
+        },
+        "GRIP": {
+          "triangles": 1528,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 0.0998,
+          "materials": [
+            "N01_Suspension_Black"
+          ],
+          "pivotWorld": [
+            0.055,
+            -0.018,
+            0.1362
+          ],
+          "boundsMin": [
+            0.024,
+            -0.049,
+            0.1342
+          ],
+          "boundsMax": [
+            0.086,
+            0.013,
+            0.195
+          ]
+        },
+        "SHELL_TOP": {
+          "triangles": 13140,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 3.3894,
+          "materials": [
+            "N01_Steel_Blackened"
+          ],
+          "pivotWorld": [
+            0.055,
+            -0.018,
+            0.1362
+          ],
+          "boundsMin": [
+            -0.4409,
+            -0.2865,
+            -0.089
+          ],
+          "boundsMax": [
+            0.484,
+            0.3143,
+            0.135
+          ]
+        },
+        "SHELL_LOWER": {
+          "triangles": 7488,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 1.7118,
+          "materials": [
+            "N01_Steel_Blackened"
+          ],
+          "pivotWorld": [
+            -0.3913,
+            0.0007,
+            -0.089
+          ],
+          "boundsMin": [
+            -0.3913,
+            -0.2571,
+            -0.175
+          ],
+          "boundsMax": [
+            0.4343,
+            0.2821,
+            -0.089
+          ]
+        },
+        "SHELL_INNER": {
+          "triangles": 6048,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 0.6627,
+          "materials": [
+            "N01_Steel_Interior"
+          ],
+          "pivotWorld": [
+            0.055,
+            -0.018,
+            0.1362
+          ],
+          "boundsMin": [
+            -0.4098,
+            -0.2693,
+            0.0055
+          ],
+          "boundsMax": [
+            0.455,
+            0.2955,
+            0.0902
+          ]
+        },
+        "INTERNAL_FRAME": {
+          "triangles": 2004,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 1.2831,
+          "materials": [
+            "N01_Steel_Interior"
+          ],
+          "pivotWorld": [
+            0.0,
+            0.0,
+            0.034
+          ],
+          "boundsMin": [
+            -0.3052,
+            -0.2005,
+            0.02
+          ],
+          "boundsMax": [
+            0.3388,
+            0.22,
+            0.0768
+          ]
+        },
+        "LIGHT_SOURCE": {
+          "triangles": 2388,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 0.2128,
+          "materials": [
+            "N01_Emitter"
+          ],
+          "pivotWorld": [
+            0.0,
+            0.0,
+            -0.05
+          ],
+          "boundsMin": [
+            -0.2267,
+            -0.149,
+            -0.058
+          ],
+          "boundsMax": [
+            0.2517,
+            0.1635,
+            0.0011
+          ]
+        },
+        "LIGHT_DIFFUSER": {
+          "triangles": 3684,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 0.7459,
+          "materials": [
+            "N01_Diffuser"
+          ],
+          "pivotWorld": [
+            0.0,
+            0.0,
+            -0.085
+          ],
+          "boundsMin": [
+            -0.2442,
+            -0.1604,
+            -0.089
+          ],
+          "boundsMax": [
+            0.271,
+            0.176,
+            -0.0542
+          ]
+        },
+        "HEATSINK_RING": {
+          "triangles": 1728,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 2.1801,
+          "materials": [
+            "N01_Steel_Interior"
+          ],
+          "pivotWorld": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "boundsMin": [
+            -0.2442,
+            -0.1604,
+            0.0
+          ],
+          "boundsMax": [
+            0.271,
+            0.176,
+            0.104
+          ]
+        }
+      },
+      "clearance": {
+        "closed": [],
+        "anatomyOpen": []
+      },
+      "bodyDimensionsMm": {
+        "width": 924.9,
+        "depth": 600.8,
+        "height": 310.0,
+        "extentPlusX": 484.0,
+        "extentMinusX": 440.9,
+        "endExtension": 43.1
+      },
+      "glb": "public/models/nocturne/n01-low.glb",
+      "glbBytes": 1036020
+    },
+    "high": {
+      "errors": [],
+      "warnings": [],
+      "nodes": {
+        "GLASS_CORE": {
+          "triangles": 26044,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 9.2712,
+          "materials": [
+            "N01_Glass_Optical"
+          ],
+          "pivotWorld": [
+            0.0,
+            0.0,
+            -0.06
+          ],
+          "boundsMin": [
+            -0.4195,
+            -0.2754,
+            -0.1452
+          ],
+          "boundsMax": [
+            0.4656,
+            0.3027,
+            0.036
+          ]
+        },
+        "CEILING_MOUNT": {
+          "triangles": 1144,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 0.4968,
+          "materials": [
+            "N01_Suspension_Black"
+          ],
+          "pivotWorld": [
+            0.055,
+            -0.018,
+            1.6
+          ],
+          "boundsMin": [
+            -0.02,
+            -0.093,
+            1.586
+          ],
+          "boundsMax": [
+            0.13,
+            0.057,
+            1.628
+          ]
+        },
+        "SUSPENSION_CABLE": {
+          "triangles": 44,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 0.0073,
+          "materials": [
+            "N01_Cable"
+          ],
+          "pivotWorld": [
+            0.055,
+            -0.018,
+            1.586
+          ],
+          "boundsMin": [
+            0.0534,
+            -0.0196,
+            0.632
+          ],
+          "boundsMax": [
+            0.0566,
+            -0.0164,
+            1.586
+          ]
+        },
+        "SUSPENSION_ROD": {
+          "triangles": 504,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 0.0549,
+          "materials": [
+            "N01_Suspension_Black"
+          ],
+          "pivotWorld": [
+            0.055,
+            -0.018,
+            0.632
+          ],
+          "boundsMin": [
+            0.0465,
+            -0.0265,
+            0.195
+          ],
+          "boundsMax": [
+            0.0635,
+            -0.0095,
+            0.632
+          ]
+        },
+        "GRIP": {
+          "triangles": 1528,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 0.0998,
+          "materials": [
+            "N01_Suspension_Black"
+          ],
+          "pivotWorld": [
+            0.055,
+            -0.018,
+            0.1362
+          ],
+          "boundsMin": [
+            0.024,
+            -0.049,
+            0.1342
+          ],
+          "boundsMax": [
+            0.086,
+            0.013,
+            0.195
+          ]
+        },
+        "SHELL_TOP": {
+          "triangles": 33060,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 3.3931,
+          "materials": [
+            "N01_Steel_Blackened"
+          ],
+          "pivotWorld": [
+            0.055,
+            -0.018,
+            0.1362
+          ],
+          "boundsMin": [
+            -0.4409,
+            -0.2866,
+            -0.089
+          ],
+          "boundsMax": [
+            0.484,
+            0.3145,
+            0.135
+          ]
+        },
+        "SHELL_LOWER": {
+          "triangles": 19968,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 1.7137,
+          "materials": [
+            "N01_Steel_Blackened"
+          ],
+          "pivotWorld": [
+            -0.3913,
+            0.0007,
+            -0.089
+          ],
+          "boundsMin": [
+            -0.3913,
+            -0.2572,
+            -0.175
+          ],
+          "boundsMax": [
+            0.4343,
+            0.2822,
+            -0.089
+          ]
+        },
+        "SHELL_INNER": {
+          "triangles": 16128,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 0.6635,
+          "materials": [
+            "N01_Steel_Interior"
+          ],
+          "pivotWorld": [
+            0.055,
+            -0.018,
+            0.1362
+          ],
+          "boundsMin": [
+            -0.4098,
+            -0.2694,
+            0.0055
+          ],
+          "boundsMax": [
+            0.455,
+            0.2956,
+            0.0902
+          ]
+        },
+        "INTERNAL_FRAME": {
+          "triangles": 4884,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 1.2845,
+          "materials": [
+            "N01_Steel_Interior"
+          ],
+          "pivotWorld": [
+            0.0,
+            0.0,
+            0.034
+          ],
+          "boundsMin": [
+            -0.3052,
+            -0.2006,
+            0.02
+          ],
+          "boundsMax": [
+            0.3388,
+            0.2201,
+            0.0768
+          ]
+        },
+        "LIGHT_SOURCE": {
+          "triangles": 6228,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 0.213,
+          "materials": [
+            "N01_Emitter"
+          ],
+          "pivotWorld": [
+            0.0,
+            0.0,
+            -0.05
+          ],
+          "boundsMin": [
+            -0.2267,
+            -0.149,
+            -0.058
+          ],
+          "boundsMax": [
+            0.2517,
+            0.1635,
+            0.0011
+          ]
+        },
+        "LIGHT_DIFFUSER": {
+          "triangles": 9684,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 0.7467,
+          "materials": [
+            "N01_Diffuser"
+          ],
+          "pivotWorld": [
+            0.0,
+            0.0,
+            -0.085
+          ],
+          "boundsMin": [
+            -0.2442,
+            -0.1605,
+            -0.089
+          ],
+          "boundsMax": [
+            0.271,
+            0.1761,
+            -0.0542
+          ]
+        },
+        "HEATSINK_RING": {
+          "triangles": 3648,
+          "nonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "signedVolumeL": 2.1824,
+          "materials": [
+            "N01_Steel_Interior"
+          ],
+          "pivotWorld": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "boundsMin": [
+            -0.2442,
+            -0.1605,
+            0.0
+          ],
+          "boundsMax": [
+            0.271,
+            0.1761,
+            0.104
+          ]
+        }
+      },
+      "clearance": {
+        "closed": [],
+        "anatomyOpen": []
+      },
+      "bodyDimensionsMm": {
+        "width": 924.9,
+        "depth": 601.1,
+        "height": 310.0,
+        "extentPlusX": 484.0,
+        "extentMinusX": 440.9,
+        "endExtension": 43.1
+      },
+      "glb": "public/models/nocturne/n01.glb",
+      "glbBytes": 2485928
+    }
+  },
+  "renders": {
+    "dir": "test-results/nocturne/blockout-png",
+    "views": [
+      {
+        "file": "01-front-three-quarter.png",
+        "orthoScaleM": null,
+        "resolution": [
+          1600,
+          1000
+        ]
+      },
+      {
+        "file": "02-side-elevation.png",
+        "orthoScaleM": null,
+        "resolution": [
+          1600,
+          1000
+        ]
+      },
+      {
+        "file": "03-top-three-quarter.png",
+        "orthoScaleM": null,
+        "resolution": [
+          1600,
+          1000
+        ]
+      },
+      {
+        "file": "04-beneath.png",
+        "orthoScaleM": null,
+        "resolution": [
+          1600,
+          1000
+        ]
+      },
+      {
+        "file": "05-shell-open.png",
+        "orthoScaleM": null,
+        "resolution": [
+          1600,
+          1000
+        ]
+      },
+      {
+        "file": "06-plan-ortho.png",
+        "orthoScaleM": 1.2,
+        "resolution": [
+          1600,
+          1000
+        ]
+      },
+      {
+        "file": "07-elevation-ortho.png",
+        "orthoScaleM": 1.2,
+        "resolution": [
+          1600,
+          1000
+        ]
+      },
+      {
+        "file": "08-end-elevation-ortho.png",
+        "orthoScaleM": 1.2,
+        "resolution": [
+          1600,
+          1000
+        ]
+      }
+    ]
+  }
+}

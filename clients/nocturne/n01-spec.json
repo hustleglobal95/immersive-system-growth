@@ -1,0 +1,248 @@
+{
+  "$comment": "Canonical N01 geometry specification. Units: metres, Blender Z-up authoring space (glTF export converts to Y-up). Consumed by scripts/nocturne/build_n01.py and scripts/nocturne/validate-n01-glb.mjs. Dimensions are conceptual, not manufacturing data.",
+  "version": 1,
+  "product": "N01",
+  "brand": "Nocturne Objects (fictional portfolio brand)",
+  "stage": "blockout",
+  "targets": {
+    "bodyWidth": 0.92,
+    "bodyDepth": 0.6,
+    "bodyHeight": 0.31,
+    "toleranceM": 0.012,
+    "endExtensionRangeM": [
+      0.04,
+      0.055
+    ]
+  },
+  "plan": {
+    "halfWidth": 0.46,
+    "halfDepth": 0.3,
+    "superellipse": 2.0,
+    "endExtension": 0.048,
+    "depthSkew": 0.006,
+    "centerlineBow": 0.008,
+    "eggTaper": 0.06
+  },
+  "zones": {
+    "shellTopPeak": 0.135,
+    "seam": 0.0,
+    "lowerRim": -0.089,
+    "bodyBottom": -0.175
+  },
+  "shellTop": {
+    "wallThickness": 0.006,
+    "wallThicknessScale": 0.02,
+    "peakBiasTowardLongEnd": 0.035
+  },
+  "shellInner": {
+    "outerScale": 0.94,
+    "openingScale": 0.52,
+    "thickness": 0.0025
+  },
+  "shellLower": {
+    "wallThicknessScale": 0.02,
+    "plateThickness": 0.007,
+    "apertureScale": 0.42,
+    "bezelStep": 0.02,
+    "bezelDepth": 0.003
+  },
+  "glass": {
+    "lipScale": 0.64,
+    "equatorScale": 0.962,
+    "equatorZ": -0.04,
+    "lipZ": 0.034,
+    "bottomZ": -0.145,
+    "innerEquatorScale": 0.925,
+    "innerBottomZ": -0.125,
+    "surfaceNoiseM": 0.0012,
+    "thicknessNoiseM": 0.002,
+    "bubbles": 7,
+    "lowerExponent": 1.8
+  },
+  "internalFrame": {
+    "innerRing": [
+      0.565,
+      0.598
+    ],
+    "clampRing": [
+      0.61,
+      0.7
+    ],
+    "postScale": 0.66,
+    "postRadius": 0.005,
+    "postAngles": [
+      0.25,
+      2.45,
+      4.3
+    ]
+  },
+  "light": {
+    "sourceScale": 0.5,
+    "sourceZ": -0.05,
+    "sourceTubeRadius": 0.008,
+    "diffuserScale": 0.56,
+    "diffuserZ": -0.085,
+    "heatsinkInner": 0.4,
+    "heatsinkOuter": 0.56,
+    "heatsinkFins": 48
+  },
+  "suspension": {
+    "gripOffset": [
+      0.055,
+      -0.018
+    ],
+    "gripRadius": 0.021,
+    "gripTop": 0.195,
+    "rodRadius": 0.006,
+    "rodTop": 0.62,
+    "cableRadius": 0.0016,
+    "ceilingZ": 1.6,
+    "mountRadius": 0.075
+  },
+  "hierarchy": {
+    "N01_ROOT": [
+      "SUSPENSION",
+      "SHELL",
+      "GLASS_CORE",
+      "LIGHT_ASSEMBLY"
+    ],
+    "SUSPENSION": [
+      "CEILING_MOUNT",
+      "SUSPENSION_CABLE",
+      "SUSPENSION_ROD",
+      "GRIP"
+    ],
+    "SHELL": [
+      "SHELL_TOP",
+      "SHELL_LOWER",
+      "SHELL_INNER",
+      "INTERNAL_FRAME"
+    ],
+    "LIGHT_ASSEMBLY": [
+      "LIGHT_SOURCE",
+      "LIGHT_DIFFUSER",
+      "HEATSINK_RING"
+    ]
+  },
+  "materials": {
+    "SHELL_TOP": [
+      "N01_Steel_Blackened"
+    ],
+    "SHELL_LOWER": [
+      "N01_Steel_Blackened"
+    ],
+    "SHELL_INNER": [
+      "N01_Steel_Interior"
+    ],
+    "INTERNAL_FRAME": [
+      "N01_Steel_Interior"
+    ],
+    "GLASS_CORE": [
+      "N01_Glass_Optical"
+    ],
+    "LIGHT_SOURCE": [
+      "N01_Emitter"
+    ],
+    "LIGHT_DIFFUSER": [
+      "N01_Diffuser"
+    ],
+    "HEATSINK_RING": [
+      "N01_Steel_Interior"
+    ],
+    "CEILING_MOUNT": [
+      "N01_Suspension_Black"
+    ],
+    "SUSPENSION_CABLE": [
+      "N01_Cable"
+    ],
+    "SUSPENSION_ROD": [
+      "N01_Suspension_Black"
+    ],
+    "GRIP": [
+      "N01_Suspension_Black"
+    ]
+  },
+  "poses": {
+    "anatomyOpen": {
+      "SHELL_LOWER": {
+        "hingeRotationDeg": 10,
+        "translate": [
+          -0.004,
+          0,
+          -0.006
+        ]
+      },
+      "SHELL_TOP": {
+        "yawDeg": 2
+      },
+      "GLASS_CORE": {
+        "translate": [
+          0,
+          0,
+          0
+        ],
+        "note": "Glass stays seated; vertical travel would push it through its cradle band. Separation reads through the lower-shell aperture."
+      }
+    }
+  },
+  "allowedContacts": [
+    [
+      "GRIP",
+      "SHELL_TOP"
+    ],
+    [
+      "SUSPENSION_ROD",
+      "GRIP"
+    ],
+    [
+      "SUSPENSION_CABLE",
+      "SUSPENSION_ROD"
+    ],
+    [
+      "SUSPENSION_CABLE",
+      "CEILING_MOUNT"
+    ],
+    [
+      "INTERNAL_FRAME",
+      "SHELL_INNER"
+    ],
+    [
+      "LIGHT_SOURCE",
+      "HEATSINK_RING"
+    ],
+    [
+      "LIGHT_DIFFUSER",
+      "LIGHT_SOURCE"
+    ],
+    [
+      "GLASS_CORE",
+      "INTERNAL_FRAME"
+    ],
+    [
+      "SHELL_TOP",
+      "SHELL_LOWER"
+    ]
+  ],
+  "variants": {
+    "high": {
+      "segments": 192
+    },
+    "low": {
+      "segments": 72
+    }
+  },
+  "skin": {
+    "$comment": "One continuous river-stone silhouette shared by both shells; glass sits a few mm inside it at the widest height.",
+    "widestZ": 0.0,
+    "upperExponent": 2.2,
+    "lowerExponent": 1.6,
+    "baseScale": 0.55
+  },
+  "hingeSpine": {
+    "$comment": "Proposed structural addition: carries SHELL_LOWER's hinge; SHELL_TOP owns it.",
+    "width": 0.034,
+    "proud": 0.005,
+    "embedScale": 0.0,
+    "overlapTop": 0.0
+  }
+}
