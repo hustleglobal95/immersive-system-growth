@@ -68,18 +68,33 @@ export function classifyPromptUrls(prompt,options={}){
 export function inferPromptUrlRoles(prompt){
   const groups={business:[],reference:[],supporting:[]};
   for(const line of String(prompt||"").split(/\r?\n/)){
-    const urls=extractHttpUrls(line);
-    if(!urls.length) continue;
-    // Classify from the surrounding prose, never from tokens inside the URL.
-    // A hostname/path may contain words such as "example", "brand" or "reference".
-    const lower=line.replace(URL_PATTERN," ").toLowerCase();
-    let role=null;
-    if(/\b(reference|inspiration|inspo|precedent|benchmark|example|like this|love this)\b/.test(lower)) role="reference";
-    else if(/\b(business|client|company|brand|current site|existing site|their site)\b/.test(lower)) role="business";
-    else if(/\b(supporting|source|research|article|documentation)\b/.test(lower)) role="supporting";
-    if(role) groups[role].push(...urls);
+    const matches=[...line.matchAll(new RegExp(URL_PATTERN.source,"gi"))];
+    if(!matches.length) continue;
+    for(let index=0;index<matches.length;index++){
+      const match=matches[index];
+      const raw=match[0];
+      const url=normalizeReferenceUrl(cleanUrlToken(raw));
+      const matchStart=match.index??0;
+      const previousEnd=index===0 ? 0 : (matches[index-1].index??0)+matches[index-1][0].length;
+      const nextStart=index+1<matches.length ? (matches[index+1].index??line.length) : line.length;
+      const before=line.slice(previousEnd,matchStart);
+      const after=line.slice(matchStart+raw.length,nextStart);
+      const roleBefore=roleFromContext(before);
+      const roleAfter=roleFromContext(after);
+      const role=roleBefore ?? roleAfter;
+      if(role) groups[role].push(url);
+    }
   }
   return Object.fromEntries(Object.entries(groups).map(([key,values])=>[key,unique(values)]));
+}
+
+function roleFromContext(value){
+  const text=String(value||"").toLowerCase();
+  const hits=[];
+  if(/\b(reference|inspiration|inspo|precedent|benchmark|example|like this|love this)\b/.test(text)) hits.push("reference");
+  if(/\b(business|client|company|brand|current site|existing site|their site)\b/.test(text)) hits.push("business");
+  if(/\b(supporting|source|research|article|documentation)\b/.test(text)) hits.push("supporting");
+  return hits.length===1 ? hits[0] : null;
 }
 
 export async function loadReferenceAnalyses(paths,expectedUrls=[]){
