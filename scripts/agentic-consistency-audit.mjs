@@ -9,7 +9,7 @@ const checks=[
   [".claude/skills/forge-build/SKILL.md",["npm run forge:context","Signature Slice Gate"]],
   ["CLAUDE.md",["Creative State Graph","Context Capsule","Capability Router","Signature Slice Gate","forge:preflight","USE FORGE"]],
   ["AGENTS.md",["forge:preflight","USE FORGE","Full-system Forge execution"]],
-  ["config/forge-execution-policy.json",["forge-full-system-execution","reference-intelligence","signature-slice-gate","separatePullRequestRequired"]],
+  ["config/forge-execution-policy.json",["forge-full-system-execution","clean-baseline","state-provenance","reference-intelligence","signature-slice-gate","separatePullRequestRequired"]],
   ["scripts/forge-preflight.mjs",["FORGE FULL-SYSTEM PREFLIGHT PASS","rawPromptCommitted:false","requiredContextDomains"]],
   ["scripts/forge-execution-audit.mjs",["changed-file gate FAILED","separation-of-duties gate FAILED","required stage not PASS"]],
   [".github/workflows/ci.yml",["Exercise full-system Forge preflight","forge:execution:audit -- --changed"]],
