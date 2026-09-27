@@ -8,6 +8,24 @@ allowed-tools: Bash, Read, Grep, Glob, Edit, Write, WebFetch
 
 This is the default production workflow for substantial site creation. Do not jump from a short prompt directly into arbitrary code.
 
+## -1. Classify and study external references
+
+Before preflight, inspect the user's request for URLs. Classify each URL as business, reference, or supporting evidence. Do not leave URLs ambiguous.
+
+For every reference URL:
+
+```bash
+npm run forge:reference:capture -- --url="<reference>"
+```
+
+Visually inspect the captured desktop/mobile frames, complete the generated deconstruction with observed facts separated from hypotheses, map causal lessons to Forge-native systems, and validate it:
+
+```bash
+npm run forge:reference:validate -- --analysis="<analysis.json>" --url="<reference>"
+```
+
+Pass every validated analysis to preflight with `--reference-analysis`. If no completed analysis exists, preflight will capture evidence and stop production. Never build from URL familiarity, a remembered screenshot, or surface imitation.
+
 ## 0. Mandatory full-system preflight
 
 **USE FORGE** is an explicit execution directive. It means operate on the current checked-in Forge repository and invoke the complete relevant Forge decision and production pipeline; it never means imitate Forge styling, return standalone substitute code, or selectively use remembered capabilities.
