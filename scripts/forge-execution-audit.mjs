@@ -82,6 +82,14 @@ function enforceChangedFiles(validations){
   const mergeBase=git(["merge-base",baseRef,"HEAD"]);
   const changed=git(["diff","--name-only",mergeBase+"...HEAD"]).split("\n").filter(Boolean);
   const creative=changed.filter(isGoverned);
+  const governance=changed.filter((file)=>protectedGovernance.has(file));
+  if(creative.length&&governance.length&&policy.governanceChangeControl?.separatePullRequestRequired){
+    console.error("Forge governance separation-of-duties gate FAILED.");
+    console.error("Governance control-plane changes and governed creative production may not ship in the same change set.");
+    for(const file of governance) console.error("- governance: "+file);
+    for(const file of creative) console.error("- creative: "+file);
+    process.exit(1);
+  }
   if(!creative.length){
     console.log("No governed creative paths changed.");
     return;
