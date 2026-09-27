@@ -75,6 +75,7 @@ test("confidential prompt handling is supported end to end",()=>{
   assert.match(read("scripts/forge-build-packet.mjs"),/prompt-file/);
   assert.match(read("scripts/forge-context-capsule.mjs"),/prompt-file/);
   assert.match(read(".gitignore"),/\.forge\/execution\//);
+  assert.match(read(".gitignore"),/\.forge\/reference-captures\//);
   assert.match(read("docs/FORGE_EXECUTION_GOVERNANCE.md"),/no raw client prompt/i);
 });
 
