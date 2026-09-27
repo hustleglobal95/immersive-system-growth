@@ -6,6 +6,8 @@ const checks=[
   ["src/platform/agentic/capabilityRouter.ts",["routeVisualFinding","allowedRepairCommands","human-review","engineering-escalation"]],
   ["src/platform/autonomy/repairPlanner.ts",["routeVisualFinding","allowedRepairCommands.includes"]],
   ["src/platform/buildPacket.ts",["## CREATIVE STATE GRAPH","## SIGNATURE SLICE GATE","## EXTERNAL REFERENCE INTELLIGENCE","## AGENTIC EXECUTION MODEL"]],
+  ["src/platform/director-intelligence/orchestrator.ts",["externalReferenceSignals","buildConstructionDirectives(treatment,7,externalReferenceSignals)"]],
+  ["src/platform/director-intelligence/referenceCorpus.ts",["extraSignals","...extraSignals"]],
   [".claude/skills/forge-build/SKILL.md",["npm run forge:context","Signature Slice Gate"]],
   ["CLAUDE.md",["Creative State Graph","Context Capsule","Capability Router","Signature Slice Gate","forge:preflight","USE FORGE"]],
   ["AGENTS.md",["forge:preflight","USE FORGE","Full-system Forge execution"]],
