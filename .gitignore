@@ -19,3 +19,4 @@ public/decoders/basis/
 generated/
 
 .forge/local-vault/
+.forge/execution/
