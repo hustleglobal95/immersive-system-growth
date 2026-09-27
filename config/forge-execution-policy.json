@@ -105,7 +105,8 @@
       "package.json",
       "src/platform/director-intelligence/referenceCorpus.ts",
       "src/platform/director-intelligence/constructionKnowledge.ts",
-      "src/platform/director-intelligence/orchestrator.ts"
+      "src/platform/director-intelligence/orchestrator.ts",
+      ".gitignore"
     ]
   },
   "referenceDriven": {
