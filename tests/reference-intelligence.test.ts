@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
+// @ts-ignore -- runtime-tested ESM governance helper intentionally lives under scripts/.
 import {
   applyReferenceAnalysesToBrief,
   classifyPromptUrls,
@@ -35,7 +36,7 @@ test("validated reference intelligence is bound to hashed local visual evidence"
   const rows=await loadReferenceAnalyses([fixturePath],["https://reference.example/"]);
   assert.equal(rows.length,1);
   assert.equal(rows[0].analysis.reference.url,"https://reference.example/");
-  assert.ok(rows[0].analysis.evidence.sources.some((source:any)=>source.sha256));
+  assert.ok(rows[0].analysis.evidence.sources.some((source:{sha256?:string})=>source.sha256));
   assert.ok(rows[0].analysis.observedFacts.signatureMoment.length>0);
   assert.ok(rows[0].analysis.transferableLessons.length>=2);
 });
