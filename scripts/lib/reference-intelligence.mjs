@@ -51,15 +51,33 @@ export function normalizeReferenceUrl(value){
 
 export function classifyPromptUrls(prompt,options={}){
   const detected=extractHttpUrls(prompt);
+  const inferred=inferPromptUrlRoles(prompt);
   const groups={
-    business:normalizeList(options.businessUrls||[]),
-    reference:normalizeList(options.referenceUrls||[]),
-    supporting:normalizeList(options.supportingUrls||[]),
+    business:unique([...inferred.business,...normalizeList(options.businessUrls||[])]),
+    reference:unique([...inferred.reference,...normalizeList(options.referenceUrls||[])]),
+    supporting:unique([...inferred.supporting,...normalizeList(options.supportingUrls||[])]),
   };
+  const overlaps=findOverlaps(groups);
+  if(overlaps.length) throw new Error("A URL may have only one Forge role: "+overlaps.join(", "));
   const classified=new Set([...groups.business,...groups.reference,...groups.supporting]);
   const unclassified=detected.filter((url)=>!classified.has(url));
   const notInPrompt=[...classified].filter((url)=>!detected.includes(url));
   return {detected,groups,unclassified,notInPrompt};
+}
+
+export function inferPromptUrlRoles(prompt){
+  const groups={business:[],reference:[],supporting:[]};
+  for(const line of String(prompt||"").split(/\r?\n/)){
+    const urls=extractHttpUrls(line);
+    if(!urls.length) continue;
+    const lower=line.toLowerCase();
+    let role=null;
+    if(/\b(reference|inspiration|inspo|precedent|benchmark|example|like this|love this)\b/.test(lower)) role="reference";
+    else if(/\b(business|client|company|brand|current site|existing site|their site)\b/.test(lower)) role="business";
+    else if(/\b(supporting|source|research|article|documentation)\b/.test(lower)) role="supporting";
+    if(role) groups[role].push(...urls);
+  }
+  return Object.fromEntries(Object.entries(groups).map(([key,values])=>[key,unique(values)]));
 }
 
 export async function loadReferenceAnalyses(paths,expectedUrls=[]){
@@ -90,6 +108,7 @@ export async function loadReferenceAnalyses(paths,expectedUrls=[]){
 
 export function validateReferenceAnalysis(input){
   if(!input||typeof input!=="object") throw new Error("Reference analysis must be an object.");
+  rejectPlaceholders(input);
   if(input.version!==1) throw new Error("Reference analysis version must be 1.");
   const reference=requireObject(input.reference,"reference");
   const evidence=requireObject(input.evidence,"evidence");
@@ -200,6 +219,30 @@ export function sha256(value){
 
 function normalizeList(values){
   return unique(values.map(normalizeReferenceUrl));
+}
+function findOverlaps(groups){
+  const ownership=new Map();
+  for(const [role,urls] of Object.entries(groups)){
+    for(const url of urls){
+      const roles=ownership.get(url)||[];
+      roles.push(role);
+      ownership.set(url,roles);
+    }
+  }
+  return [...ownership.entries()].filter(([,roles])=>roles.length>1).map(([url,roles])=>url+" ("+roles.join("/")+")");
+}
+function rejectPlaceholders(value,pathLabel="analysis"){
+  if(typeof value==="string"){
+    if(/\b(REVIEW REQUIRED|TODO|TBD|FILL ME|PLACEHOLDER)\b/i.test(value)) throw new Error(pathLabel+" contains unresolved placeholder text.");
+    return;
+  }
+  if(Array.isArray(value)){
+    value.forEach((item,index)=>rejectPlaceholders(item,pathLabel+"["+index+"]"));
+    return;
+  }
+  if(value&&typeof value==="object"){
+    for(const [key,item] of Object.entries(value)) rejectPlaceholders(item,pathLabel+"."+key);
+  }
 }
 
 function requireObject(value,label){
