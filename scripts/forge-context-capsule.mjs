@@ -10,6 +10,7 @@ import { parseInteractionGraph } from "../src/lib/interactionGraph.ts";
 import { buildCreativeStateGraph, buildSignatureSliceGate } from "../src/platform/agentic/creativeStateGraph.ts";
 import { compileAgentContext } from "../src/platform/agentic/contextCompiler.ts";
 import { assertProductionOriginalityGate } from "../src/platform/director-intelligence/productionOriginalityGate.ts";
+import { applyReferenceAnalysesToBrief, classifyPromptUrls, loadReferenceAnalyses, parseDelimitedList } from "./lib/reference-intelligence.mjs";
 
 const options=Object.fromEntries(process.argv.slice(2).filter((arg)=>arg.startsWith("--")&&arg.includes("=")).map((arg)=>arg.slice(2).split(/=(.*)/s,2)));
 const domain=String(options.domain || "").trim();
@@ -26,6 +27,10 @@ if(!objective) {
 const promptFile=String(options["prompt-file"] || "").trim();
 const prompt=promptFile ? (await fs.readFile(path.resolve(promptFile),"utf8")).trim() : String(options.prompt || "").trim();
 const projectName=String(options.name || "Forge Project").trim().slice(0,100);
+const referenceAnalysisPaths=parseDelimitedList(options["reference-analysis"]);
+const businessUrls=parseDelimitedList(options["business-url"]);
+const referenceUrls=parseDelimitedList(options["reference-url"]);
+const supportingUrls=parseDelimitedList(options["supporting-url"]);
 const briefPath=String(options.brief || "config/director-brief.example.json");
 const output=String(options.output || "");
 const [briefRaw,experienceRaw,manifestRaw,graphRaw]=await Promise.all([
@@ -37,9 +42,17 @@ const [briefRaw,experienceRaw,manifestRaw,graphRaw]=await Promise.all([
 const experience=parseExperience(JSON.parse(experienceRaw));
 const assetManifest=parseAssetManifest(JSON.parse(manifestRaw));
 const interactionGraph=parseInteractionGraph(JSON.parse(graphRaw));
-const brief=prompt
+const inferredBrief=prompt
   ? inferPromptIntelligence({prompt,projectName,sceneCount:experience.scenes.length,manifest:assetManifest}).brief
   : parseDirectorBrief(JSON.parse(briefRaw));
+const urlClassification=prompt
+  ? classifyPromptUrls(prompt,{businessUrls,referenceUrls,supportingUrls})
+  : {detected:[],groups:{business:[],reference:[],supporting:[]},unclassified:[],notInPrompt:[]};
+if(urlClassification.unclassified.length) throw new Error("Unclassified URL(s) in Forge request: "+urlClassification.unclassified.join(", "));
+if(urlClassification.notInPrompt.length) throw new Error("Classified URL was not present in the request: "+urlClassification.notInPrompt.join(", "));
+if(urlClassification.groups.reference.length&&!referenceAnalysisPaths.length) throw new Error("Reference-driven Forge context is blocked until every reference URL has a validated deconstruction.");
+const referenceRows=await loadReferenceAnalyses(referenceAnalysisPaths,urlClassification.groups.reference);
+const brief=applyReferenceAnalysesToBrief(inferredBrief,referenceRows);
 const creativeContext=await loadCreativeContext(brief.projectName);
 const director=runDirectorIntelligence({
   brief,
