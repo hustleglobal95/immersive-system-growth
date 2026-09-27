@@ -13,6 +13,8 @@ test("Forge full-system execution policy is machine-readable and fail-closed",()
   assert.ok(policy.explicitTriggers.includes("USE FORGE"));
   for(const stage of [
     "operational-readiness",
+    "clean-baseline",
+    "state-provenance",
     "build-packet",
     "director-intelligence",
     "reference-intelligence",
@@ -38,6 +40,8 @@ test("repository scripts and canonical check gate enforce Forge execution govern
   assert.match(preflight,/rawPromptCommitted:false/);
   assert.match(preflight,/FORGE_EXECUTION_ATTESTATION_KEY/);
   assert.match(preflight,/requiredContextDomains/);
+  assert.match(preflight,/assertCleanCreativeBaseline/);
+  assert.match(preflight,/stateBaseline:stateEvidence/);
   assert.match(audit,/changed-file gate FAILED/);
   assert.match(audit,/separation-of-duties gate FAILED/);
   assert.match(audit,/required stage not PASS/);
