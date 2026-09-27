@@ -30,3 +30,6 @@
 /scripts/forge-build-packet.mjs @hustleglobal95
 /scripts/forge-context-capsule.mjs @hustleglobal95
 /tests/build-packet.test.ts @hustleglobal95
+/src/platform/director-intelligence/referenceCorpus.ts @hustleglobal95
+/src/platform/director-intelligence/constructionKnowledge.ts @hustleglobal95
+/src/platform/director-intelligence/orchestrator.ts @hustleglobal95
