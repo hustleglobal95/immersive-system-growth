@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "reference": {
+    "url": "https://reference.example/",
+    "name": "CI Reference",
+    "reviewedAt": "2026-09-27",
+    "medium": "Website",
+    "whyRelevant": "Exercises Forge's mandatory external-reference intelligence path.",
+    "problemSolved": "Demonstrates a reference-driven project without allowing surface imitation."
+  },
+  "evidence": {
+    "reviewMethod": "agent-visual-review",
+    "observedAt": "2026-09-27T12:00:00Z",
+    "sources": [
+      {
+        "type": "live-browser",
+        "locator": "https://reference.example/"
+      }
+    ]
+  },
+  "observedFacts": {
+    "composition": ["Primary subject dominates while interface copy occupies a protected negative-space region."],
+    "typography": ["Display typography remains subordinate to the subject during the main reveal."],
+    "depth": ["Foreground and background layers create depth without requiring every element to move."],
+    "scrollChoreography": ["Scroll progression is paced as discrete reveals rather than constant equal-intensity animation."],
+    "pointerTouchBehavior": [],
+    "transitionMechanics": ["Major transitions preserve one visual anchor so the experience reads as continuous."],
+    "persistentAnchors": ["A persistent subject carries continuity across chapters."],
+    "domWebglResponsibilities": ["Semantic copy remains independent from visual rendering responsibilities."],
+    "signatureMoment": ["The strongest moment changes the visitor's understanding of the subject rather than merely increasing effect intensity."],
+    "mobileTranslation": ["Mobile preserves narrative order and the signature reveal while reducing simultaneous spatial complexity."],
+    "performanceRisks": ["The persistent visual subject should be prewarmed before the signature reveal."]
+  },
+  "hypotheses": ["Exact implementation libraries are intentionally not inferred from appearance."],
+  "transferableLessons": [
+    {
+      "lesson": "Carry one meaningful subject across chapters so transitions feel causal rather than decorative.",
+      "causalReason": "Continuity works because the visitor can track one stable narrative object while the surrounding presentation changes.",
+      "forgeSystems": ["persistent scene architecture", "camera choreography", "motion tracks"],
+      "constructionPatternCandidates": ["persistent-visual-anchor"]
+    },
+    {
+      "lesson": "Reserve the largest visual transformation for a single signature beat.",
+      "causalReason": "Contrast between restrained chapters and one decisive reveal makes the peak feel intentional.",
+      "forgeSystems": ["Signature Slice Gate", "Director intensity arc"],
+      "constructionPatternCandidates": ["single-signature-peak"]
+    }
+  ],
+  "doNotCopy": [
+    "Exact composition",
+    "Typeface and palette bundle",
+    "Brand-owned imagery",
+    "Exact signature interaction"
+  ],
+  "implementationMap": {
+    "existingForgeSystems": [
+      "Director Intelligence",
+      "persistent scene architecture",
+      "camera choreography",
+      "deterministic motion tracks",
+      "mobile translation"
+    ],
+    "customWork": [],
+    "noNewDependency": ["No dependency should be added solely because the reference appears to use it."]
+  },
+  "confidence": 0.9
+}
