@@ -106,6 +106,11 @@ for(const domain of policy.fullBuild.requiredContextDomains){
   });
 }
 
+const contextFingerprints=new Set(contexts.map((item)=>item.creativeStateFingerprint).filter(Boolean));
+const signatureScenes=new Set(contexts.map((item)=>item.signaturePrimarySceneId).filter(Boolean));
+if(contextFingerprints.size!==1) fail("Context Capsules do not share one Creative State Graph fingerprint.");
+if(signatureScenes.size!==1) fail("Context Capsules do not share one Signature Slice primary scene.");
+
 const constructionSection=section(packet,"## CONSTRUCTION RESEARCH","## SCENE-BY-SCENE CONSTRUCTION PLAN");
 const acceptanceSection=section(packet,"## ACCEPTANCE CONTRACT","## DEFINITION OF DONE");
 const definitionSection=section(packet,"## DEFINITION OF DONE",null);
