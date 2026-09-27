@@ -44,6 +44,11 @@ const coreFiles=[
   "src/platform/director-intelligence/orchestrator.ts",
   "src/platform/buildPacket.ts",
   "scripts/forge-build-packet.mjs",
+  "scripts/forge-preflight.mjs",
+  "scripts/forge-execution-audit.mjs",
+  "config/forge-execution-policy.json",
+  "docs/FORGE_EXECUTION_GOVERNANCE.md",
+  "AGENTS.md",
   "config/experience.json",
 ];
 coreFiles.every(file)
