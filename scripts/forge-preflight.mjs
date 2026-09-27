@@ -346,7 +346,7 @@ function stable(value){
 }
 
 function assertPolicy(value){
-  if(!value||value.policyId!=="forge-full-system-execution"||value.version!==1) fail("Unsupported Forge execution policy.");
+  if(!value||value.policyId!=="forge-full-system-execution"||value.version!==2) fail("Unsupported Forge execution policy.");
   if(!Array.isArray(value.fullBuild?.requiredStages)||!value.fullBuild.requiredStages.length) fail("Forge execution policy has no required stages.");
   if(!Array.isArray(value.fullBuild?.requiredContextDomains)||!value.fullBuild.requiredContextDomains.length) fail("Forge execution policy has no Context Capsule domains.");
   if(!value.referenceDriven?.failOnUnclassifiedUrls) fail("Forge execution policy must fail closed on unclassified request URLs.");
