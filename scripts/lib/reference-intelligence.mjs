@@ -70,7 +70,9 @@ export function inferPromptUrlRoles(prompt){
   for(const line of String(prompt||"").split(/\r?\n/)){
     const urls=extractHttpUrls(line);
     if(!urls.length) continue;
-    const lower=line.toLowerCase();
+    // Classify from the surrounding prose, never from tokens inside the URL.
+    // A hostname/path may contain words such as "example", "brand" or "reference".
+    const lower=line.replace(URL_PATTERN," ").toLowerCase();
     let role=null;
     if(/\b(reference|inspiration|inspo|precedent|benchmark|example|like this|love this)\b/.test(lower)) role="reference";
     else if(/\b(business|client|company|brand|current site|existing site|their site)\b/.test(lower)) role="business";
