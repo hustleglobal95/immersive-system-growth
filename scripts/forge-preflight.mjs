@@ -15,6 +15,9 @@ const options=Object.fromEntries(process.argv.slice(2)
 const POLICY_PATH="config/forge-execution-policy.json";
 const policy=JSON.parse(await fsp.readFile(POLICY_PATH,"utf8"));
 assertPolicy(policy);
+const governedPatterns=policy.creativeChangeControl.governedPathPatterns.map((value)=>new RegExp(value));
+
+assertCleanCreativeBaseline();
 
 const name=String(options.name||"").trim();
 if(!name) fail("--name is required.");
@@ -25,6 +28,24 @@ const baseCommit=git(["rev-parse","HEAD"]);
 const branchName=git(["rev-parse","--abbrev-ref","HEAD"]);
 const policyBytes=await fsp.readFile(POLICY_PATH);
 const policySha256=sha256(policyBytes);
+const statePaths={
+  experience:path.resolve(String(options.experience||"config/experience.json")),
+  manifest:path.resolve(String(options.manifest||"config/asset-manifest.json")),
+  graph:path.resolve(String(options.graph||"config/interaction-graph.json")),
+  cinematic:path.resolve(String(options.cinematic||"config/cinematic-systems.json")),
+};
+const stateEvidence=await hashStateInputs(statePaths);
+const packetStateArgs=[
+  `--experience=${statePaths.experience}`,
+  `--manifest=${statePaths.manifest}`,
+  `--graph=${statePaths.graph}`,
+  `--cinematic=${statePaths.cinematic}`,
+];
+const contextStateArgs=[
+  `--experience=${statePaths.experience}`,
+  `--manifest=${statePaths.manifest}`,
+  `--graph=${statePaths.graph}`,
+];
 const runId=String(options.id||`${slug(name)}-${baseCommit.slice(0,8)}-${Date.now()}`);
 const artifactDir=path.resolve(String(options.artifacts||path.join(policy.creativeChangeControl.localArtifactDirectory,runId)));
 const defaultRecord=path.join(policy.creativeChangeControl.recordDirectory,runId+".json");
@@ -51,7 +72,7 @@ const readinessPath=path.join(artifactDir,"readiness.log");
 await fsp.writeFile(readinessPath,readinessLog,"utf8");
 
 const packetPath=path.join(artifactDir,"forge-build-packet.md");
-const packetArgs=["run","forge:build-packet","--",`--name=${name}`,`--output=${packetPath}`,...promptSource.cliArgs];
+const packetArgs=["run","forge:build-packet","--",`--name=${name}`,`--output=${packetPath}`,...packetStateArgs,...promptSource.cliArgs];
 runNpm(packetArgs,env);
 const packet=await fsp.readFile(packetPath,"utf8");
 const missingSections=policy.fullBuild.requiredPacketSections.filter((heading)=>!packet.includes(heading));
@@ -67,6 +88,7 @@ for(const domain of policy.fullBuild.requiredContextDomains){
     `--objective=${objective}`,
     `--name=${name}`,
     `--output=${contextPath}`,
+    ...contextStateArgs,
     ...promptSource.cliArgs,
   ],env);
   const raw=await fsp.readFile(contextPath,"utf8");
@@ -113,6 +135,7 @@ const baseRecord={
     path:POLICY_PATH,
     sha256:policySha256,
   },
+  stateBaseline:stateEvidence,
   stages,
   evidence:{
     readiness:{sha256:sha256(readinessLog),bytes:Buffer.byteLength(readinessLog)},
@@ -150,6 +173,8 @@ console.log("Attestation: "+attestation.algorithm);
 function stageEvidence(stage){
   const map={
     "operational-readiness":"Strict local readiness passed.",
+    "clean-baseline":"No governed creative production path was dirty before preflight.",
+    "state-provenance":"Exact baseline experience, asset manifest, interaction graph and cinematic-system inputs were hashed.",
     "build-packet":"Canonical Forge Build Packet compiled from current repo state.",
     "director-intelligence":"Build Packet compiled through Director Intelligence.",
     "reference-intelligence":"Construction Research section present and hashed.",
@@ -161,6 +186,33 @@ function stageEvidence(stage){
     "verification-plan":"Acceptance Contract and Definition of Done present and hashed.",
   };
   return map[stage]||"Policy-required stage completed.";
+}
+
+function assertCleanCreativeBaseline(){
+  const output=git(["status","--porcelain=v1","--untracked-files=all"]);
+  if(!output) return;
+  const dirty=output.split("\n").filter(Boolean).map((line)=>{
+    const raw=line.slice(3).trim();
+    const pathValue=raw.includes(" -> ")?raw.split(" -> ").at(-1):raw;
+    return String(pathValue||"").replace(/^"|"$/g,"");
+  });
+  const blocked=dirty.filter((file)=>governedPatterns.some((pattern)=>pattern.test(file)));
+  if(blocked.length) fail("Governed creative paths are already dirty before preflight: "+blocked.join(", "));
+}
+
+async function hashStateInputs(paths){
+  const evidence={};
+  for(const key of policy.fullBuild.requiredStateInputs||[]){
+    const target=paths[key];
+    if(!target) fail("Missing required state input mapping: "+key);
+    const bytes=await fsp.readFile(target);
+    evidence[key]={
+      path:path.relative(ROOT,target),
+      sha256:sha256(bytes),
+      bytes:bytes.length,
+    };
+  }
+  return evidence;
 }
 
 async function resolvePrompt(opts){
