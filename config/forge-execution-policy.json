@@ -85,7 +85,9 @@
       ".github/workflows/ci.yml",
       ".github/CODEOWNERS",
       ".github/PULL_REQUEST_TEMPLATE.md",
-      "tests/forge-execution-governance.test.ts"
+      "tests/forge-execution-governance.test.ts",
+      "scripts/forge-readiness.mjs",
+      "MANIFEST.md"
     ]
   }
 }
