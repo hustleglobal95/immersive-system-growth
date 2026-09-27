@@ -1,13 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-// @ts-ignore -- runtime-tested ESM governance helper intentionally lives under scripts/.
-import {
-  applyReferenceAnalysesToBrief,
-  classifyPromptUrls,
-  loadReferenceAnalyses,
-  validateReferenceAnalysis,
-} from "../scripts/lib/reference-intelligence.mjs";
+// @ts-expect-error -- runtime-tested ESM governance helper intentionally lives under scripts/.
+import { applyReferenceAnalysesToBrief, classifyPromptUrls, loadReferenceAnalyses, validateReferenceAnalysis } from "../scripts/lib/reference-intelligence.mjs";
 import { parseDirectorBrief } from "../src/platform/directorSchema";
 
 const fixturePath="tests/fixtures/reference-analysis.example.json";
