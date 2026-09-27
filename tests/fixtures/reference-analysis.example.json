@@ -13,8 +13,9 @@
     "observedAt": "2026-09-27T12:00:00Z",
     "sources": [
       {
-        "type": "live-browser",
-        "locator": "https://reference.example/"
+        "type": "provided-image",
+        "locator": "tests/fixtures/reference-evidence.svg",
+        "sha256": "3264e6fadc8933ad14f4ba626e186f8066d32e1ac4c247f435d1cb5801e735c9"
       }
     ]
   },
