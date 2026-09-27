@@ -66,3 +66,22 @@ test("Forge Build Packet hard-stops Signature work that collides with prior Forg
     repoContract:"Test contract",
   }),/portfolio collision|anti-repeat/i);
 });
+
+test("Forge Build Packet carries evidence-backed external reference intelligence as a separate contract",()=>{
+  const director=runDirectorIntelligence({brief:parseDirectorBrief(rawBrief)});
+  const packet=buildForgeBuildPacket({
+    director,
+    currentState:{experience:rawExperience,assetManifest:rawManifest,interactionGraph:rawGraph,cinematicSystems:rawCinematic},
+    repoContract:"Test contract",
+    externalReferenceIntelligence:[{
+      url:"https://reference.example/",
+      observedFacts:{signatureMoment:["A subject persists through a scale-changing reveal."]},
+      transferableLessons:[{lesson:"Preserve one causal anchor across the reveal."}],
+      doNotCopy:["Exact composition"],
+    }],
+  });
+  assert.match(packet,/## EXTERNAL REFERENCE INTELLIGENCE/);
+  assert.match(packet,/Preserve one causal anchor across the reveal/);
+  assert.match(packet,/Transfer causal principles only/i);
+});
+
