@@ -50,7 +50,7 @@ jobs:
 
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
@@ -81,6 +81,16 @@ jobs:
         env:
           FORGE_EXECUTION_ATTESTATION_KEY: ${{ secrets.FORGE_EXECUTION_ATTESTATION_KEY }}
         run: npm run forge:execution:audit -- --record=test-results/forge-execution-record.json
+      - name: Exercise reference-driven Forge preflight
+        run: |
+          cat > test-results/ci-reference-request.txt <<'EOF'
+          Business: https://business.example/
+          Reference: https://reference.example/
+          Create a cinematic brand experience using the reference only for transferable construction principles, not surface copying.
+          EOF
+          npm run forge:preflight -- --name="CI Reference Project" --prompt-file=test-results/ci-reference-request.txt --reference-analysis=tests/fixtures/reference-analysis.example.json --artifacts=test-results/forge-reference-execution --record=test-results/forge-reference-execution-record.json
+      - name: Validate reference-driven execution record
+        run: npm run forge:execution:audit -- --record=test-results/forge-reference-execution-record.json
       - name: Enforce Forge preflight on governed creative PR changes
         if: github.event_name == 'pull_request'
         env:
