@@ -97,7 +97,12 @@
       "tests/reference-intelligence.test.ts",
       "tests/fixtures/reference-analysis.example.json",
       "tests/fixtures/reference-evidence.svg",
-      "scripts/forge-reference-validate.mjs"
+      "scripts/forge-reference-validate.mjs",
+      "src/platform/buildPacket.ts",
+      "scripts/forge-build-packet.mjs",
+      "scripts/forge-context-capsule.mjs",
+      "tests/build-packet.test.ts",
+      "package.json"
     ]
   },
   "referenceDriven": {
