@@ -58,5 +58,22 @@
       "^config/(?:experience|interaction-graph|cinematic-systems|asset-manifest)\\.json$",
       "^public/(?:models|textures|videos|images)/"
     ]
+  },
+  "governanceChangeControl": {
+    "separatePullRequestRequired": true,
+    "protectedPaths": [
+      "config/forge-execution-policy.json",
+      "docs/FORGE_EXECUTION_GOVERNANCE.md",
+      "scripts/forge-preflight.mjs",
+      "scripts/forge-execution-audit.mjs",
+      "scripts/agentic-consistency-audit.mjs",
+      "CLAUDE.md",
+      "AGENTS.md",
+      ".claude/skills/forge-build/SKILL.md",
+      ".github/workflows/ci.yml",
+      ".github/CODEOWNERS",
+      ".github/PULL_REQUEST_TEMPLATE.md",
+      "tests/forge-execution-governance.test.ts"
+    ]
   }
 }
