@@ -11,7 +11,8 @@ import { loadCreativeContext } from "./lib/creative-context.mjs";
 const options=Object.fromEntries(process.argv.slice(2).filter((arg)=>arg.startsWith("--")&&arg.includes("=")).map((arg)=>arg.slice(2).split(/=(.*)/s,2)));
 const briefPath=String(options.brief || "config/director-brief.example.json");
 const output=String(options.output || "");
-const prompt=String(options.prompt || "").trim();
+const promptFile=String(options["prompt-file"] || "").trim();
+const prompt=promptFile ? (await fs.readFile(path.resolve(promptFile),"utf8")).trim() : String(options.prompt || "").trim();
 const projectName=String(options.name || "Forge Project").trim().slice(0,100);
 const [briefRaw,experience,assetManifest,interactionGraph,cinematicSystems,repoContract]=await Promise.all([
   prompt ? Promise.resolve("") : fs.readFile(briefPath,"utf8"),

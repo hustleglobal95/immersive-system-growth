@@ -5,3 +5,19 @@
 /clients/heliot/ @hustleglobal95
 /public/models/heliot/ @hustleglobal95
 /config/project-integrity-lock.json @hustleglobal95
+
+# Forge full-system execution governance control plane.
+/config/forge-execution-policy.json @hustleglobal95
+/docs/FORGE_EXECUTION_GOVERNANCE.md @hustleglobal95
+/scripts/forge-preflight.mjs @hustleglobal95
+/scripts/forge-execution-audit.mjs @hustleglobal95
+/scripts/agentic-consistency-audit.mjs @hustleglobal95
+/CLAUDE.md @hustleglobal95
+/AGENTS.md @hustleglobal95
+/.claude/skills/forge-build/SKILL.md @hustleglobal95
+/.github/workflows/ci.yml @hustleglobal95
+/.github/CODEOWNERS @hustleglobal95
+/.github/PULL_REQUEST_TEMPLATE.md @hustleglobal95
+/tests/forge-execution-governance.test.ts @hustleglobal95
+/scripts/forge-readiness.mjs @hustleglobal95
+/MANIFEST.md @hustleglobal95

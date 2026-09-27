@@ -20,3 +20,9 @@
 - [ ] `npm run project:integrity`
 - [ ] `npm run check`
 - [ ] `npm run build`
+
+## Forge full-system execution governance
+- [ ] This PR does not change governed creative production, or a current Forge execution record was generated before the creative changes.
+- [ ] `npm run forge:execution:audit -- --changed` passes for governed creative changes.
+- [ ] Full Build Packet / Context Capsules remain in ignored local evidence storage; no raw client prompt was committed.
+- [ ] Governance control-plane changes are isolated from governed creative production changes.

@@ -65,3 +65,19 @@ For HELIOT specifically:
 Forge Director, automation, AI agents, and deployment tooling assist human creative authority; they do not silently override it.
 
 If there is any conflict between speed and preservation of existing creative work, preserve the existing work.
+
+## Full-system Forge execution
+
+Substantial build, redesign, immersive-reference and major creative chapter work automatically invokes the full Forge production system. The user does not need to enumerate Forge capabilities or repeat this requirement.
+
+**USE FORGE** is an explicit execution directive. It means operate on the current repository and use the relevant Director/reference intelligence, Creative State Graph, originality controls, Capability Router, Signature Slice Gate, Context Capsules and verification systems. It never means merely imitating Forge style or returning standalone code.
+
+Before governed creative production changes, run:
+
+```bash
+npm run forge:preflight -- --name="<project name>" --prompt-file="<local ignored request file>"
+```
+
+No governed creative edit may precede a passing preflight. The generated public-safe execution record is versioned; raw client prompts, Build Packets and Context Capsules remain under ignored `.forge/execution/` storage. Run `npm run forge:execution:audit -- --changed` for pull-request enforcement.
+
+Governance control-plane changes must remain separate from governed creative production changes. If governance and creative production are mixed, stop rather than weakening the gate.

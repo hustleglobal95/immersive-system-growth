@@ -23,7 +23,8 @@ if(!objective) {
   console.error("--objective is required so the capsule remains task-scoped.");
   process.exit(2);
 }
-const prompt=String(options.prompt || "").trim();
+const promptFile=String(options["prompt-file"] || "").trim();
+const prompt=promptFile ? (await fs.readFile(path.resolve(promptFile),"utf8")).trim() : String(options.prompt || "").trim();
 const projectName=String(options.name || "Forge Project").trim().slice(0,100);
 const briefPath=String(options.brief || "config/director-brief.example.json");
 const output=String(options.output || "");
