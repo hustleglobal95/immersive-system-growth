@@ -53,6 +53,25 @@ function validateRecord(file){
   for(const stage of policy.fullBuild.requiredStages){
     if(record.stages?.[stage]?.status!=="PASS") reasons.push("required stage not PASS: "+stage);
   }
+  const classification=record.referenceClassification;
+  if(!classification||!Number.isInteger(classification.detectedCount)) reasons.push("missing reference URL classification evidence");
+  else {
+    const roleTotal=(classification.businessCount||0)+(classification.referenceCount||0)+(classification.supportingCount||0);
+    if(roleTotal!==classification.detectedCount) reasons.push("reference URL classification counts do not reconcile");
+    for(const key of ["businessUrlSha256","referenceUrlSha256","supportingUrlSha256"]){
+      if(!Array.isArray(classification[key])||classification[key].some((hash)=>!/^[a-f0-9]{64}$/.test(hash||""))) reasons.push("invalid URL fingerprint evidence: "+key);
+    }
+    const external=record.evidence?.externalReferences||[];
+    if(external.length!==(classification.referenceCount||0)) reasons.push("external reference evidence count does not match classified reference URLs");
+    for(const item of external){
+      if(!/^[a-f0-9]{64}$/.test(item.urlSha256||"")) reasons.push("invalid external reference URL fingerprint");
+      if(!/^[a-f0-9]{64}$/.test(item.analysisSha256||"")) reasons.push("invalid external reference analysis fingerprint");
+      if(!Array.isArray(item.evidenceArtifacts)||!item.evidenceArtifacts.length) reasons.push("external reference lacks hashed visual evidence");
+      else if(item.evidenceArtifacts.some((artifact)=>!/^[a-f0-9]{64}$/.test(artifact.sha256||""))) reasons.push("invalid external reference visual evidence fingerprint");
+    }
+    if((classification.referenceCount||0)>0&&!/^[a-f0-9]{64}$/.test(record.evidence?.externalReferenceSection?.sha256||"")) reasons.push("missing External Reference Intelligence packet evidence");
+  }
+
   for(const key of policy.fullBuild.requiredStateInputs||[]){
     const state=record.stateBaseline?.[key];
     if(!state||typeof state.path!=="string"||!/^[a-f0-9]{64}$/.test(state.sha256||"")) reasons.push("invalid state provenance: "+key);
