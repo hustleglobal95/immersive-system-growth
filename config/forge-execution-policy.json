@@ -8,6 +8,8 @@
   "fullBuild": {
     "requiredStages": [
       "operational-readiness",
+      "clean-baseline",
+      "state-provenance",
       "build-packet",
       "director-intelligence",
       "reference-intelligence",
@@ -31,7 +33,11 @@
       "## CURRENT VALIDATED PROJECT STATE",
       "## AGENTIC EXECUTION MODEL",
       "## ACCEPTANCE CONTRACT",
-      "## DEFINITION OF DONE"
+      "## DEFINITION OF DONE",
+      "## HIERARCHY CONTRACT",
+      "## ASSET REALITY",
+      "## BLOCKERS / UNKNOWNS",
+      "## REPOSITORY OPERATING CONTRACT"
     ],
     "requiredContextDomains": [
       "director",
@@ -44,6 +50,12 @@
       "mobile",
       "performance",
       "engineering"
+    ],
+    "requiredStateInputs": [
+      "experience",
+      "manifest",
+      "graph",
+      "cinematic"
     ]
   },
   "creativeChangeControl": {
