@@ -53,6 +53,18 @@ function validateRecord(file){
   for(const stage of policy.fullBuild.requiredStages){
     if(record.stages?.[stage]?.status!=="PASS") reasons.push("required stage not PASS: "+stage);
   }
+  for(const key of policy.fullBuild.requiredStateInputs||[]){
+    const state=record.stateBaseline?.[key];
+    if(!state||typeof state.path!=="string"||!/^[a-f0-9]{64}$/.test(state.sha256||"")) reasons.push("invalid state provenance: "+key);
+  }
+  if(!/^[a-f0-9]{64}$/.test(record.evidence?.buildPacket?.sha256||"")||record.evidence?.buildPacket?.requiredSectionsVerified!==true) reasons.push("invalid Build Packet evidence");
+  if(!/^[a-f0-9]{64}$/.test(record.evidence?.constructionResearch?.sha256||"")) reasons.push("invalid construction research evidence");
+  if(!/^[a-f0-9]{64}$/.test(record.evidence?.acceptanceContract?.sha256||"")) reasons.push("invalid acceptance evidence");
+  const contextRows=record.evidence?.contexts||[];
+  const fingerprints=new Set(contextRows.map((item)=>item.creativeStateFingerprint).filter(Boolean));
+  const signatureScenes=new Set(contextRows.map((item)=>item.signaturePrimarySceneId).filter(Boolean));
+  if(fingerprints.size!==1) reasons.push("Context Capsules do not share one Creative State Graph fingerprint");
+  if(signatureScenes.size!==1) reasons.push("Context Capsules do not share one Signature Slice primary scene");
   const domains=new Set((record.evidence?.contexts||[]).map((item)=>item.domain));
   for(const domain of policy.fullBuild.requiredContextDomains){
     if(!domains.has(domain)) reasons.push("missing Context Capsule evidence: "+domain);
