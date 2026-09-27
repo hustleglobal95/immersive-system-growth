@@ -10,6 +10,9 @@ This is the default production workflow for substantial site creation. Do not ju
 
 ## 0. Mandatory full-system preflight
 
+**USE FORGE** is an explicit execution directive. It means operate on the current checked-in Forge repository and invoke the complete relevant Forge decision and production pipeline; it never means imitate Forge styling, return standalone substitute code, or selectively use remembered capabilities.
+
+
 Before any production edit, place the user's complete request in an ignored local request file and run:
 
 ```bash
