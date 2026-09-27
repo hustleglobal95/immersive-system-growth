@@ -45,6 +45,8 @@ test("repository scripts and canonical check gate enforce Forge execution govern
   assert.match(audit,/changed-file gate FAILED/);
   assert.match(audit,/separation-of-duties gate FAILED/);
   assert.match(audit,/required stage not PASS/);
+  assert.match(audit,/invalid state provenance/);
+  assert.match(audit,/do not share one Creative State Graph fingerprint/);
   assert.match(audit,/preflight base was not established before governed creative changes/);
 });
 
