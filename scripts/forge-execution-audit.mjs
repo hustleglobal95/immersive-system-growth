@@ -14,7 +14,8 @@ const policyPath="config/forge-execution-policy.json";
 const policy=JSON.parse(fs.readFileSync(policyPath,"utf8"));
 const policySha256=sha256(fs.readFileSync(policyPath));
 const governed=policy.creativeChangeControl.governedPathPatterns.map((value)=>new RegExp(value));
-const recordDir=policy.creativeChangeControl.recordDirectory;\nconst protectedGovernance=new Set(policy.governanceChangeControl?.protectedPaths||[]);
+const recordDir=policy.creativeChangeControl.recordDirectory;
+const protectedGovernance=new Set(policy.governanceChangeControl?.protectedPaths||[]);
 
 const explicitRecord=options.record?path.resolve(String(options.record)):null;
 const recordFiles=explicitRecord
