@@ -8,7 +8,7 @@ const packageJson=JSON.parse(read("package.json"));
 
 test("Forge full-system execution policy is machine-readable and fail-closed",()=>{
   assert.equal(policy.policyId,"forge-full-system-execution");
-  assert.equal(policy.version,1);
+  assert.equal(policy.version,2);
   assert.equal(policy.automaticForSubstantialCreativeWork,true);
   assert.ok(policy.explicitTriggers.includes("USE FORGE"));
   for(const stage of [
