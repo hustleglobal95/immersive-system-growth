@@ -15,6 +15,8 @@ test("Forge full-system execution policy is machine-readable and fail-closed",()
     "operational-readiness",
     "clean-baseline",
     "state-provenance",
+    "reference-classification",
+    "external-reference-intelligence",
     "build-packet",
     "director-intelligence",
     "reference-intelligence",
@@ -27,6 +29,9 @@ test("Forge full-system execution policy is machine-readable and fail-closed",()
   ]) assert.ok(policy.fullBuild.requiredStages.includes(stage),stage+" must remain mandatory");
   assert.ok(policy.fullBuild.requiredContextDomains.length>=10);
   assert.equal(policy.governanceChangeControl.separatePullRequestRequired,true);
+  assert.equal(policy.referenceDriven.failOnUnclassifiedUrls,true);
+  assert.equal(policy.referenceDriven.requireValidatedAnalysisForReferenceUrls,true);
+  assert.equal(policy.referenceDriven.requireHashedLocalVisualEvidence,true);
   assert.ok(policy.creativeChangeControl.governedPathPatterns.length>=6);
   for(const pattern of policy.creativeChangeControl.governedPathPatterns) assert.doesNotThrow(()=>new RegExp(pattern));
 });
@@ -34,6 +39,7 @@ test("Forge full-system execution policy is machine-readable and fail-closed",()
 test("repository scripts and canonical check gate enforce Forge execution governance",()=>{
   assert.equal(packageJson.scripts["forge:preflight"],"node scripts/forge-preflight.mjs");
   assert.equal(packageJson.scripts["forge:execution:audit"],"node scripts/forge-execution-audit.mjs");
+  assert.equal(packageJson.scripts["forge:reference:capture"],"node scripts/forge-reference-capture.mjs");
   assert.match(packageJson.scripts.check,/forge:execution:audit/);
   const preflight=read("scripts/forge-preflight.mjs");
   const audit=read("scripts/forge-execution-audit.mjs");
@@ -42,12 +48,17 @@ test("repository scripts and canonical check gate enforce Forge execution govern
   assert.match(preflight,/requiredContextDomains/);
   assert.match(preflight,/assertCleanCreativeBaseline/);
   assert.match(preflight,/stateBaseline:stateEvidence/);
+  assert.match(preflight,/classifyPromptUrls/);
+  assert.match(preflight,/Reference-driven production is blocked pending visual deconstruction/);
+  assert.match(preflight,/externalReferences:referenceRows/);
   assert.match(audit,/changed-file gate FAILED/);
   assert.match(audit,/separation-of-duties gate FAILED/);
   assert.match(audit,/required stage not PASS/);
   assert.match(audit,/invalid state provenance/);
   assert.match(audit,/do not share one Creative State Graph fingerprint/);
   assert.match(audit,/preflight base was not established before governed creative changes/);
+  assert.match(audit,/external reference evidence count does not match classified reference URLs/);
+  assert.match(audit,/external reference lacks hashed visual evidence/);
 });
 
 test("agent contracts make USE FORGE a durable execution directive",()=>{
