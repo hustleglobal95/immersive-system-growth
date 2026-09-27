@@ -8,6 +8,18 @@ allowed-tools: Bash, Read, Grep, Glob, Edit, Write, WebFetch
 
 This is the default production workflow for substantial site creation. Do not jump from a short prompt directly into arbitrary code.
 
+## 0. Mandatory full-system preflight
+
+Before any production edit, place the user's complete request in an ignored local request file and run:
+
+```bash
+npm run forge:preflight -- --name="<project name>" --prompt-file="<local ignored request file>"
+```
+
+Do not edit governed creative production paths before this passes. The preflight is the auditable proof that the current repository, Director/reference intelligence, originality gate, Creative State Graph, Signature Slice Gate, Capability Router boundary, policy-required Context Capsules and verification contract were actually invoked.
+
+Read the generated Build Packet in full. Keep the raw prompt, Build Packet and Context Capsules in `.forge/execution/`; only the public-safe execution record belongs in version control. If preflight fails, fix the upstream blocker instead of bypassing the system.
+
 ## 1. Establish operational state
 
 Run:
