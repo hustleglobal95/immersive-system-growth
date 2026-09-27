@@ -26,3 +26,7 @@
 /scripts/lib/reference-intelligence.mjs @hustleglobal95
 /.claude/commands/study-reference.md @hustleglobal95
 /tests/reference-intelligence.test.ts @hustleglobal95
+/src/platform/buildPacket.ts @hustleglobal95
+/scripts/forge-build-packet.mjs @hustleglobal95
+/scripts/forge-context-capsule.mjs @hustleglobal95
+/tests/build-packet.test.ts @hustleglobal95
