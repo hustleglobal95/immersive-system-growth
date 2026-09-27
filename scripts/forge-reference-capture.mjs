@@ -18,6 +18,7 @@ const output=path.resolve(String(options.output||path.join(".forge","reference-c
 await fs.mkdir(output,{recursive:true});
 
 const browser=await chromium.launch({headless:true});
+const destinationCache=new Map();
 try{
   const desktop=await captureViewport(browser,url,{width:1440,height:1000},"desktop",output);
   const mobile=await captureViewport(browser,url,{width:390,height:844},"mobile",output);
@@ -94,9 +95,23 @@ try{
 }
 
 async function captureViewport(browser,url,viewport,label,output){
-  const context=await browser.newContext({viewport,deviceScaleFactor:1,reducedMotion:"no-preference"});
+  const context=await browser.newContext({viewport,deviceScaleFactor:1,reducedMotion:"no-preference",serviceWorkers:"block"});
+  await context.route("**/*",async(route)=>{
+    const requestUrl=route.request().url();
+    if(requestUrl.startsWith("data:")||requestUrl.startsWith("blob:")||requestUrl==="about:blank") return route.continue();
+    let parsed;
+    try{parsed=new URL(requestUrl);}catch{return route.abort("blockedbyclient");}
+    if(!["http:","https:"].includes(parsed.protocol)) return route.abort("blockedbyclient");
+    try{
+      await assertPublicDestinationCached(parsed.toString());
+      return route.continue();
+    }catch{
+      return route.abort("blockedbyclient");
+    }
+  });
   const page=await context.newPage();
   const response=await page.goto(url,{waitUntil:"domcontentloaded",timeout:45000});
+  await assertPublicDestinationCached(page.url());
   await page.waitForTimeout(1200);
   const status=response?.status()??null;
   const machineFacts=await page.evaluate(()=> {
@@ -152,6 +167,21 @@ async function captureViewport(browser,url,viewport,label,output){
   return {viewport,status,machineFacts,screenshots};
 }
 
+async function assertPublicDestinationCached(value){
+  const url=new URL(value);
+  const key=url.hostname.toLowerCase();
+  if(destinationCache.has(key)){
+    if(destinationCache.get(key)!==true) throw new Error("Destination blocked by Forge reference capture policy.");
+    return;
+  }
+  try{
+    await assertPublicDestination(value);
+    destinationCache.set(key,true);
+  }catch(error){
+    destinationCache.set(key,false);
+    throw error;
+  }
+}
 async function assertPublicDestination(value){
   const url=new URL(value);
   const host=url.hostname.toLowerCase();
