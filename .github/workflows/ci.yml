@@ -50,9 +50,11 @@ jobs:
 
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
@@ -64,10 +66,27 @@ jobs:
           FORGE_LOCAL_STORAGE_ENABLED: "true"
           NODE_ENV: development
         run: npm run forge:readiness -- --profile=local --strict
-      - name: Compile representative Claude Build Packet from one-line prompt
-        run: npm run forge:build-packet -- --name="CI Signature Product" --prompt="Create a premium cinematic interactive 3D product launch with one unforgettable assembly reveal, restrained typography, strong mobile translation and excellent first-use performance." --output=test-results/forge-build-packet.md
-      - name: Compile representative task-scoped Context Capsule
-        run: npm run forge:context -- --domain=camera --objective="Refine the signature-scene framing without changing the approved creative thesis." --name="CI Signature Product" --prompt="Create a premium cinematic interactive 3D product launch with one unforgettable assembly reveal, restrained typography, strong mobile translation and excellent first-use performance." --output=test-results/forge-context.json
+      - name: Write representative Forge request
+        run: |
+          mkdir -p test-results
+          cat > test-results/ci-forge-request.txt <<'EOF'
+          Create a premium cinematic interactive 3D product launch with one unforgettable assembly reveal, restrained typography, strong mobile translation and excellent first-use performance.
+          EOF
+      - name: Exercise full-system Forge preflight
+        env:
+          FORGE_EXECUTION_ATTESTATION_KEY: ${{ secrets.FORGE_EXECUTION_ATTESTATION_KEY }}
+          FORGE_EXECUTION_ATTESTATION_KEY_ID: github-actions
+        run: npm run forge:preflight -- --name="CI Signature Product" --prompt-file=test-results/ci-forge-request.txt --artifacts=test-results/forge-execution --record=test-results/forge-execution-record.json
+      - name: Validate representative execution record
+        env:
+          FORGE_EXECUTION_ATTESTATION_KEY: ${{ secrets.FORGE_EXECUTION_ATTESTATION_KEY }}
+        run: npm run forge:execution:audit -- --record=test-results/forge-execution-record.json
+      - name: Enforce Forge preflight on governed creative PR changes
+        if: github.event_name == 'pull_request'
+        env:
+          FORGE_EXECUTION_BASE_REF: origin/${{ github.base_ref }}
+          FORGE_EXECUTION_ATTESTATION_KEY: ${{ secrets.FORGE_EXECUTION_ATTESTATION_KEY }}
+        run: npm run forge:execution:audit -- --changed
       - run: npm run check
       - run: npm run bank:validate
       - run: npm run build
