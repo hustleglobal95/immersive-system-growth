@@ -160,12 +160,12 @@ function stageEvidence(stage){
 async function resolvePrompt(opts){
   const provided=[Boolean(opts.prompt),Boolean(opts["prompt-file"]),Boolean(opts.brief)].filter(Boolean).length;
   if(provided!==1) fail("Provide exactly one of --prompt, --prompt-file, or --brief.");
-  if(opts.prompt) return {kind:"inline",content:String(opts.prompt),cliArgs:[`--prompt=${String(opts.prompt)}`]};
+  if(opts.prompt) return {kind:"inline",content:String(opts.prompt),cliArgs:[]};
   if(opts["prompt-file"]){
     const target=path.resolve(String(opts["prompt-file"]));
     const content=await fsp.readFile(target,"utf8");
     if(!content.trim()) fail("Prompt file is empty.");
-    return {kind:"file",content,cliArgs:[`--prompt=${content.trim()}`]};
+    return {kind:"file",content,cliArgs:[]};
   }
   const target=path.resolve(String(opts.brief));
   const content=await fsp.readFile(target,"utf8");
