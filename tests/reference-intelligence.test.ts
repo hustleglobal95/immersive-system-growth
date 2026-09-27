@@ -21,6 +21,15 @@ test("Forge classifies labeled business and reference URLs from a request",()=>{
   assert.deepEqual(result.groups.supporting,["https://docs.example/report"]);
 });
 
+test("business and reference URLs can be classified independently on the same line",()=>{
+  const result=classifyPromptUrls(
+    "Business: https://business.example/ Reference: https://reference.example/"
+  );
+  assert.deepEqual(result.groups.business,["https://business.example/"]);
+  assert.deepEqual(result.groups.reference,["https://reference.example/"]);
+  assert.deepEqual(result.unclassified,[]);
+});
+
 test("URL host/path tokens cannot override an explicit business/reference label",()=>{
   const prompt=[
     "Business: https://reference-brand.example/",
