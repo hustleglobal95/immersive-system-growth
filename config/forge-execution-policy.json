@@ -102,7 +102,10 @@
       "scripts/forge-build-packet.mjs",
       "scripts/forge-context-capsule.mjs",
       "tests/build-packet.test.ts",
-      "package.json"
+      "package.json",
+      "src/platform/director-intelligence/referenceCorpus.ts",
+      "src/platform/director-intelligence/constructionKnowledge.ts",
+      "src/platform/director-intelligence/orchestrator.ts"
     ]
   },
   "referenceDriven": {
