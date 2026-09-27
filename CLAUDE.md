@@ -64,8 +64,21 @@ For any request to show, preview, open, capture, share, or deploy an existing pr
 40. Full-site construction must not expand past the Signature Slice Gate while the protected signature slice has blockers or loses comparative rendered review.
 41. Autonomous visual repair must prefer domain-specific bounded commands (lighting, subject framing, media framing, authored-material, camera, motion). The legacy broad presentation repair remains compatibility-only; do not use it to bypass Capability Router ownership.
 42. Project Learning may be created only from a human-promoted Loop winner with hard gates clear and comparative candidate-win evidence. Cross-project patterns remain hypotheses until independently repeated; even review-ready patterns require explicit human promotion before entering Director Creative Memory.
+43. Full-system Forge execution is automatic for substantial build, redesign, immersive-reference and major creative chapter work even when the user does not literally say "USE FORGE". Start from current repository state and route the task through the complete relevant Forge decision pipeline before production edits.
+44. "USE FORGE" is an explicit execution directive, never a style request. It requires the real repository, Director/reference intelligence, Creative State Graph, originality/anti-repeat controls, Capability Router, Signature Slice Gate, task-scoped Context Capsules and the applicable verification systems. Do not represent conceptual planning or standalone code as using Forge.
+45. Before modifying governed creative production paths, run `npm run forge:preflight` and preserve its public-safe execution record. Full Build Packets, prompts and Context Capsules remain in ignored `.forge/execution/` evidence storage; never commit raw client prompts. If preflight fails, creative implementation is blocked.
+46. Forge governance control-plane changes and governed creative production changes must not ship in the same change set. Keep governance modifications independently reviewable and fail closed when the execution audit reports mixed authority.
 
 ## Before implementation
+
+For substantial creative work, the first command boundary is the full-system preflight. Run it before production edits:
+
+```bash
+npm run forge:preflight -- --name="<project name>" --prompt-file="<local ignored request file>"
+```
+
+The preflight runs strict readiness, compiles the Build Packet through Director/reference intelligence, verifies the originality gate, establishes the Creative State Graph and Signature Slice Gate, compiles policy-required Context Capsules, and writes a public-safe execution record. Read the generated Build Packet completely before editing. The raw request and full artifacts remain local and ignored.
+
 
 For substantial build/redesign work, run the `forge-build` skill first. Compile the user request into a Forge Build Packet with `npm run forge:build-packet`, read it completely, and treat its Creative State Graph, Signature Slice Gate, current-state, asset, hierarchy, mobile and acceptance contracts as required production context.
 
