@@ -125,7 +125,9 @@
     "learning:promote": "node --import tsx scripts/project-learning-promote.mjs",
     "render:governor:audit": "node scripts/render-governor-audit.mjs",
     "forge:preflight": "node scripts/forge-preflight.mjs",
-    "forge:execution:audit": "node scripts/forge-execution-audit.mjs"
+    "forge:execution:audit": "node scripts/forge-execution-audit.mjs",
+    "forge:reference:capture": "node scripts/forge-reference-capture.mjs",
+    "forge:reference:validate": "node --import tsx --test tests/reference-intelligence.test.ts"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "5.3.0",
