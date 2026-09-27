@@ -4,6 +4,7 @@ import fsp from "node:fs/promises";
 import path from "node:path";
 import { execFileSync, spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { classifyPromptUrls, loadReferenceAnalyses, parseDelimitedList } from "./lib/reference-intelligence.mjs";
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 process.chdir(ROOT);
@@ -24,6 +25,23 @@ if(!name) fail("--name is required.");
 
 const promptSource=await resolvePrompt(options);
 const promptFingerprint=sha256(promptSource.content);
+const referenceAnalysisPaths=parseDelimitedList(options["reference-analysis"]);
+const explicitBusinessUrls=parseDelimitedList(options["business-url"]);
+const explicitReferenceUrls=parseDelimitedList(options["reference-url"]);
+const explicitSupportingUrls=parseDelimitedList(options["supporting-url"]);
+const urlClassification=promptSource.kind==="brief"
+  ? {detected:[],groups:{business:[],reference:[],supporting:[]},unclassified:[],notInPrompt:[]}
+  : classifyPromptUrls(promptSource.content,{
+      businessUrls:explicitBusinessUrls,
+      referenceUrls:explicitReferenceUrls,
+      supportingUrls:explicitSupportingUrls,
+    });
+if(urlClassification.unclassified.length) {
+  fail("Unclassified URL(s) in Forge request: "+urlClassification.unclassified.join(", ")+". Label each URL as business/reference/supporting or pass an explicit URL-role option.");
+}
+if(urlClassification.notInPrompt.length) {
+  fail("Classified URL was not present in the Forge request: "+urlClassification.notInPrompt.join(", "));
+}
 const baseCommit=git(["rev-parse","HEAD"]);
 const branchName=git(["rev-parse","--abbrev-ref","HEAD"]);
 const policyBytes=await fsp.readFile(POLICY_PATH);
@@ -67,12 +85,38 @@ const env={
   NODE_ENV:process.env.NODE_ENV||"development",
 };
 
+if(!urlClassification.groups.reference.length&&referenceAnalysisPaths.length) {
+  fail("Reference analysis files were supplied but no reference URL was classified in the Forge request.");
+}
+if(urlClassification.groups.reference.length&&!referenceAnalysisPaths.length) {
+  const captureRoot=path.join(artifactDir,"reference-captures");
+  await fsp.mkdir(captureRoot,{recursive:true});
+  const templates=[];
+  for(const [index,url] of urlClassification.groups.reference.entries()){
+    const target=path.join(captureRoot,String(index+1).padStart(2,"0"));
+    runNpm(["run","forge:reference:capture","--",`--url=${url}`,`--output=${target}`],env);
+    templates.push(path.join(target,"analysis.template.json"));
+  }
+  fail(
+    "Reference-driven production is blocked pending visual deconstruction. Forge captured desktop/mobile evidence. Review and complete: "+
+    templates.map((item)=>path.relative(ROOT,item)).join(", ")+
+    ". Then rerun preflight with --reference-analysis=<file[;file]>."
+  );
+}
+const referenceRows=await loadReferenceAnalyses(referenceAnalysisPaths,urlClassification.groups.reference);
+const referenceArgs=[
+  ...(urlClassification.groups.business.length?[`--business-url=${urlClassification.groups.business.join(";")}`]:[]),
+  ...(urlClassification.groups.reference.length?[`--reference-url=${urlClassification.groups.reference.join(";")}`]:[]),
+  ...(urlClassification.groups.supporting.length?[`--supporting-url=${urlClassification.groups.supporting.join(";")}`]:[]),
+  ...(referenceAnalysisPaths.length?[`--reference-analysis=${referenceAnalysisPaths.join(";")}`]:[]),
+];
+
 const readinessLog=runNpm(["run","forge:readiness","--","--profile=local","--strict"],env);
 const readinessPath=path.join(artifactDir,"readiness.log");
 await fsp.writeFile(readinessPath,readinessLog,"utf8");
 
 const packetPath=path.join(artifactDir,"forge-build-packet.md");
-const packetArgs=["run","forge:build-packet","--",`--name=${name}`,`--output=${packetPath}`,...packetStateArgs,...promptSource.cliArgs];
+const packetArgs=["run","forge:build-packet","--",`--name=${name}`,`--output=${packetPath}`,...packetStateArgs,...referenceArgs,...promptSource.cliArgs];
 runNpm(packetArgs,env);
 const packet=await fsp.readFile(packetPath,"utf8");
 const missingSections=policy.fullBuild.requiredPacketSections.filter((heading)=>!packet.includes(heading));
@@ -89,6 +133,7 @@ for(const domain of policy.fullBuild.requiredContextDomains){
     `--name=${name}`,
     `--output=${contextPath}`,
     ...contextStateArgs,
+    ...referenceArgs,
     ...promptSource.cliArgs,
   ],env);
   const raw=await fsp.readFile(contextPath,"utf8");
@@ -111,7 +156,9 @@ const signatureScenes=new Set(contexts.map((item)=>item.signaturePrimarySceneId)
 if(contextFingerprints.size!==1) fail("Context Capsules do not share one Creative State Graph fingerprint.");
 if(signatureScenes.size!==1) fail("Context Capsules do not share one Signature Slice primary scene.");
 
+const externalReferenceSection=section(packet,"## EXTERNAL REFERENCE INTELLIGENCE","## CONSTRUCTION RESEARCH");
 const constructionSection=section(packet,"## CONSTRUCTION RESEARCH","## SCENE-BY-SCENE CONSTRUCTION PLAN");
+if(urlClassification.groups.reference.length&&!externalReferenceSection.trim()) fail("External Reference Intelligence is missing from the Build Packet.");
 const acceptanceSection=section(packet,"## ACCEPTANCE CONTRACT","## DEFINITION OF DONE");
 const definitionSection=section(packet,"## DEFINITION OF DONE",null);
 if(!constructionSection.trim()) fail("Construction Research evidence is empty.");
@@ -141,10 +188,29 @@ const baseRecord={
     sha256:policySha256,
   },
   stateBaseline:stateEvidence,
+  referenceClassification:{
+    detectedCount:urlClassification.detected.length,
+    businessCount:urlClassification.groups.business.length,
+    referenceCount:urlClassification.groups.reference.length,
+    supportingCount:urlClassification.groups.supporting.length,
+    businessUrlSha256:urlClassification.groups.business.map(sha256),
+    referenceUrlSha256:urlClassification.groups.reference.map(sha256),
+    supportingUrlSha256:urlClassification.groups.supporting.map(sha256),
+  },
   stages,
   evidence:{
     readiness:{sha256:sha256(readinessLog),bytes:Buffer.byteLength(readinessLog)},
     buildPacket:{sha256:sha256(packet),bytes:Buffer.byteLength(packet),requiredSectionsVerified:true},
+    externalReferences:referenceRows.map((row)=>({
+      urlSha256:sha256(row.analysis.reference.url),
+      analysisSha256:row.sha256,
+      analysisBytes:row.bytes,
+      confidence:row.analysis.confidence,
+      evidenceArtifacts:row.analysis.evidence.sources
+        .filter((source)=>source.sha256)
+        .map((source)=>({type:source.type,sha256:source.sha256})),
+    })),
+    externalReferenceSection:{sha256:sha256(externalReferenceSection),bytes:Buffer.byteLength(externalReferenceSection)},
     constructionResearch:{sha256:sha256(constructionSection),bytes:Buffer.byteLength(constructionSection)},
     acceptanceContract:{sha256:sha256(acceptanceSection+definitionSection),bytes:Buffer.byteLength(acceptanceSection+definitionSection)},
     contexts,
@@ -180,6 +246,10 @@ function stageEvidence(stage){
     "operational-readiness":"Strict local readiness passed.",
     "clean-baseline":"No governed creative production path was dirty before preflight.",
     "state-provenance":"Exact baseline experience, asset manifest, interaction graph and cinematic-system inputs were hashed.",
+    "reference-classification":"Every URL in the Forge request was assigned a business, reference or supporting role; ambiguous URLs fail closed.",
+    "external-reference-intelligence":urlClassification.groups.reference.length
+      ? "Every external reference has validated, hashed visual evidence and an evidence-backed deconstruction."
+      : "No external reference URL was supplied for this project.",
     "build-packet":"Canonical Forge Build Packet compiled from current repo state.",
     "director-intelligence":"Build Packet compiled through Director Intelligence.",
     "reference-intelligence":"Construction Research section present and hashed.",
@@ -276,9 +346,10 @@ function stable(value){
 }
 
 function assertPolicy(value){
-  if(!value||value.policyId!=="forge-full-system-execution"||value.version!==1) fail("Unsupported Forge execution policy.");
+  if(!value||value.policyId!=="forge-full-system-execution"||value.version!==2) fail("Unsupported Forge execution policy.");
   if(!Array.isArray(value.fullBuild?.requiredStages)||!value.fullBuild.requiredStages.length) fail("Forge execution policy has no required stages.");
   if(!Array.isArray(value.fullBuild?.requiredContextDomains)||!value.fullBuild.requiredContextDomains.length) fail("Forge execution policy has no Context Capsule domains.");
+  if(!value.referenceDriven?.failOnUnclassifiedUrls) fail("Forge execution policy must fail closed on unclassified request URLs.");
 }
 
 function fail(message){

@@ -26,3 +26,9 @@
 - [ ] `npm run forge:execution:audit -- --changed` passes for governed creative changes.
 - [ ] Full Build Packet / Context Capsules remain in ignored local evidence storage; no raw client prompt was committed.
 - [ ] Governance control-plane changes are isolated from governed creative production changes.
+
+## Reference intelligence
+- [ ] No external reference was used, or every reference URL has a validated evidence-backed deconstruction.
+- [ ] Reference observations are separated from hypotheses and include hashed local visual evidence.
+- [ ] Transferable principles are mapped to Forge systems; exact branded composition/assets/type/palette are not copied.
+

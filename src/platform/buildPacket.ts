@@ -13,6 +13,7 @@ export interface ForgeBuildPacketInput {
     cinematicSystems?:unknown;
   };
   repoContract:string;
+  externalReferenceIntelligence?:unknown[];
 }
 
 export function buildForgeBuildPacket(input:ForgeBuildPacketInput) {
@@ -77,6 +78,10 @@ export function buildForgeBuildPacket(input:ForgeBuildPacketInput) {
     "## ASSET REALITY",
     json(report.assetGap),
     "",
+    "## EXTERNAL REFERENCE INTELLIGENCE",
+    "These records are evidence-backed deconstructions of references supplied for this project. Transfer causal principles only; never reproduce the reference as a bundled style.",
+    json(input.externalReferenceIntelligence ?? []),
+    "",
     "## CONSTRUCTION RESEARCH",
     json({
       references:director.construction.referenceIds,
@@ -129,6 +134,7 @@ export function buildForgeBuildPacket(input:ForgeBuildPacketInput) {
     "",
     "## NON-NEGOTIABLES",
     "- Do not invent client facts, metrics, materials, dimensions, awards, testimonials or asset availability.",
+    "- Do not implement a supplied external reference from URL familiarity or surface resemblance. Use only the evidence-backed deconstruction in EXTERNAL REFERENCE INTELLIGENCE and transform its causal lessons into the project-specific Creative DNA.",
     "- Do not add a new animation clock.",
     "- Do not create a second competing WebGL architecture when the persistent Forge Canvas can own the effect.",
     "- Do not flatten the signature moment on mobile; reduce simultaneous complexity while preserving meaning.",

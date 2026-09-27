@@ -20,3 +20,4 @@ generated/
 
 .forge/local-vault/
 .forge/execution/
+.forge/reference-captures/

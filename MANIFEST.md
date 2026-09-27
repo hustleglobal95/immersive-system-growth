@@ -100,6 +100,7 @@ Immersive Site Forge 6.1 is organized as a multi-project production platform rat
 - policy-as-code full-system execution governance with mandatory preflight evidence, clean-baseline provenance, prompt-safe audit records, changed-file enforcement and governance/creative separation of duties
 - immersive construction intelligence backed by 236 evidence-graded references and 108 reusable construction patterns for composition, motion, camera, interaction, mobile translation and first-use performance
 - 25 primary-source technical doctrines for shader/texture prewarm, demand rendering, video-frame sync, worker canvas isolation, shared GSAP timing, hot-path setters and refresh-rate-independent motion
+- mandatory evidence-backed reference-ingestion pipeline with URL role classification, SSRF-hardened desktop/mobile browser capture, hashed local visual evidence, validated deconstruction, anti-copy boundaries and Director/Build Packet injection
 - reference-deconstruction workflow that maps immersive precedents onto existing Forge systems before new dependencies
 - evidence-weighted, source-diverse precedent retrieval plus a reference corpus integrity audit
 - eight-layer hierarchy intelligence spanning strategy, narrative, section, information, visual, interaction, motion/spatial and semantic/accessibility priority

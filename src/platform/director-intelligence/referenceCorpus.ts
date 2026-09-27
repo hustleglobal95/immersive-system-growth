@@ -886,6 +886,7 @@ export interface RetrievedImmersiveReference {
 export function retrieveImmersiveReferences(
   treatment: DirectorTreatment,
   limit = 6,
+  extraSignals: string[] = [],
 ): RetrievedImmersiveReference[] {
   const territory = treatment.territories.find(
     (candidate) => candidate.id === treatment.selectedTerritoryId,
@@ -901,6 +902,7 @@ export function retrieveImmersiveReferences(
     ...treatment.grammar.interaction,
     ...treatment.grammar.transitions,
     ...treatment.grammar.spatial,
+    ...extraSignals,
   ]
     .join(" ")
     .toLowerCase();

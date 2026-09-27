@@ -2548,12 +2548,13 @@ export function selectConstructionPatterns(
 export function buildConstructionDirectives(
   treatment: DirectorTreatment,
   limit = 7,
+  extraSignals: string[] = [],
 ): ImmersiveConstructionDirectives {
   const referenceLimit =
     treatment.tier === "flagship" ? 10 :
     treatment.tier === "signature" ? 9 :
     treatment.tier === "immersive" ? 8 : 6;
-  const references = retrieveImmersiveReferences(treatment, referenceLimit);
+  const references = retrieveImmersiveReferences(treatment, referenceLimit, extraSignals);
   const basePatterns = selectConstructionPatterns(treatment, limit);
   const patternEvidence = rankPatternEvidence(references);
   const referencedPatterns = patternEvidence

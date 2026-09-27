@@ -140,3 +140,22 @@ The canonical release gate remains:
 ```bash
 npm run verify
 ```
+## External reference intelligence
+
+Reference-driven production is fail-closed under policy v2.
+
+Every URL in a substantial prompt is classified as **business**, **reference**, or **supporting**. Ambiguous URLs block preflight. A URL classified as a reference cannot enter production from familiarity or surface resemblance alone.
+
+For each reference, Forge requires:
+
+- browser or supplied-media evidence;
+- at least one hashed local visual artifact;
+- observed facts across the deconstruction lenses;
+- observations separated from hypotheses;
+- explicit signature-moment and mobile findings;
+- at least two causal transferable lessons mapped to Forge systems;
+- explicit do-not-copy boundaries;
+- URL-matched validation before Build Packet generation.
+
+When analysis is missing, `forge:preflight` runs `forge:reference:capture` to collect desktop/mobile evidence and then stops. Production resumes only after the deconstruction is completed and validated. The validated lessons are injected into the Director brief and the Build Packet's **EXTERNAL REFERENCE INTELLIGENCE** section, while the versioned execution record stores only fingerprints/evidence hashes rather than the raw client prompt.
+

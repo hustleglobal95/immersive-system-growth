@@ -89,7 +89,8 @@ export function runDirectorIntelligence(input: DirectorIntelligenceInput & { app
   const stress = stressByTerritory.get(selectedTerritory.id)!;
   const cliches = clicheByTerritory.get(selectedTerritory.id)!;
   const selectedTaste = tasteByTerritory.get(selectedTerritory.id)!;
-  const construction = buildConstructionDirectives(treatment);
+  const externalReferenceSignals=brief.references.flatMap((reference)=>[reference.label,reference.lesson]);
+  const construction = buildConstructionDirectives(treatment,7,externalReferenceSignals);
   const constructionPlan = planImmersiveConstruction(treatment, construction);
   const assetGap = analyzeAssetGap(brief, treatment);
   const ceiling = estimateCreativeCeiling(brief, treatment, selectedEvaluation, assetGap, stress);

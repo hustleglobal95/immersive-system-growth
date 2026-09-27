@@ -4,6 +4,23 @@ Use this document when studying a high-quality immersive website, film title seq
 
 The goal is to extract **construction knowledge**, not copy surface styling.
 
+
+## Machine-enforced workflow
+
+For URL references, begin with:
+
+```bash
+npm run forge:reference:capture -- --url="<reference>"
+```
+
+Review the resulting desktop/mobile evidence and complete the generated analysis JSON. Then validate it:
+
+```bash
+npm run forge:reference:validate -- --analysis="<analysis.json>" --url="<reference>"
+```
+
+A valid analysis requires hashed local visual evidence. Forge rejects unresolved placeholders, URL mismatches, and deconstructions that do not separate observed facts from hypotheses. Pass the validated analysis to `forge:preflight` using `--reference-analysis`.
+
 ## Reference
 
 - Name:

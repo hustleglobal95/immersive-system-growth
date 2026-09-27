@@ -68,6 +68,8 @@ For any request to show, preview, open, capture, share, or deploy an existing pr
 44. "USE FORGE" is an explicit execution directive, never a style request. It requires the real repository, Director/reference intelligence, Creative State Graph, originality/anti-repeat controls, Capability Router, Signature Slice Gate, task-scoped Context Capsules and the applicable verification systems. Do not represent conceptual planning or standalone code as using Forge.
 45. Before modifying governed creative production paths, run `npm run forge:preflight` and preserve its public-safe execution record. Full Build Packets, prompts and Context Capsules remain in ignored `.forge/execution/` evidence storage; never commit raw client prompts. If preflight fails, creative implementation is blocked.
 46. Forge governance control-plane changes and governed creative production changes must not ship in the same change set. Keep governance modifications independently reviewable and fail closed when the execution audit reports mixed authority.
+47. Every URL in a substantial Forge request must be classified as business, reference, or supporting evidence. Unclassified URLs block preflight. A reference URL additionally requires evidence-backed deconstruction with hashed local visual evidence before Build Packet generation; URL familiarity, screenshots remembered from prior work, and surface imitation do not satisfy this rule.
+48. When a reference URL is supplied, run Forge reference capture/deconstruction before creative production. Separate observed facts from hypotheses, map transferable causal principles to Forge systems, state what must not be copied, and inject the validated analysis into Director/Build Packet context. If capture or evidence review cannot be completed, stop rather than improvising from the reference.
 
 ## Before implementation
 
@@ -84,7 +86,7 @@ For substantial build/redesign work, run the `forge-build` skill first. Compile 
 
 Before a specialist camera, motion, composition, typography, interaction, asset, mobile, performance or engineering task, compile a task-scoped Context Capsule with `npm run forge:context`. Use the capsule's allowed systems/capabilities and denied actions as the mutation boundary.
 
-If a reference site, recording or screenshot set is supplied, deconstruct it first using `docs/IMMERSIVE_REFERENCE_DECONSTRUCTION_TEMPLATE.md`. Transfer construction principles, not proprietary surface styling.
+If a reference site, recording or screenshot set is supplied, deconstruct it before preflight using `docs/IMMERSIVE_REFERENCE_DECONSTRUCTION_TEMPLATE.md`. For a URL, run `npm run forge:reference:capture -- --url="<reference>"`, visually review the captured desktop/mobile evidence, complete the generated analysis, validate it with `npm run forge:reference:validate -- --analysis="<analysis.json>" --url="<reference>"`, then pass it to `forge:preflight` with `--reference-analysis`. Transfer construction principles, not proprietary surface styling.
 
 Produce a scene plan containing:
 

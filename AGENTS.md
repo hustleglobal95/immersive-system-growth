@@ -81,3 +81,16 @@ npm run forge:preflight -- --name="<project name>" --prompt-file="<local ignored
 No governed creative edit may precede a passing preflight. The generated public-safe execution record is versioned; raw client prompts, Build Packets and Context Capsules remain under ignored `.forge/execution/` storage. Run `npm run forge:execution:audit -- --changed` for pull-request enforcement.
 
 Governance control-plane changes must remain separate from governed creative production changes. If governance and creative production are mixed, stop rather than weakening the gate.
+
+## External reference intelligence
+
+Every URL in a substantial Forge request must be classified as **business**, **reference**, or **supporting**. An unclassified URL blocks preflight.
+
+A reference URL is not permission to imitate a site. Before governed creative edits:
+
+1. capture evidence with `npm run forge:reference:capture -- --url="<reference>"`;
+2. visually review desktop/mobile evidence and complete the generated deconstruction;
+3. validate it with `npm run forge:reference:validate -- --analysis="<analysis.json>" --url="<reference>"`;
+4. run `forge:preflight` with the validated `--reference-analysis` artifact.
+
+Forge requires hashed local visual evidence, separates observations from hypotheses, maps transferable lessons to Forge systems, and records explicit do-not-copy boundaries. If the reference cannot be inspected, stop rather than build from memory or surface resemblance.

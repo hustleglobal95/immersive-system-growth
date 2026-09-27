@@ -1,6 +1,6 @@
 {
   "policyId": "forge-full-system-execution",
-  "version": 1,
+  "version": 2,
   "automaticForSubstantialCreativeWork": true,
   "explicitTriggers": [
     "USE FORGE"
@@ -10,6 +10,8 @@
       "operational-readiness",
       "clean-baseline",
       "state-provenance",
+      "reference-classification",
+      "external-reference-intelligence",
       "build-packet",
       "director-intelligence",
       "reference-intelligence",
@@ -28,6 +30,7 @@
       "## SIGNATURE SLICE GATE",
       "## CREATIVE DNA",
       "## ART DIRECTION",
+      "## EXTERNAL REFERENCE INTELLIGENCE",
       "## CONSTRUCTION RESEARCH",
       "## SCENE-BY-SCENE CONSTRUCTION PLAN",
       "## CURRENT VALIDATED PROJECT STATE",
@@ -87,7 +90,31 @@
       ".github/PULL_REQUEST_TEMPLATE.md",
       "tests/forge-execution-governance.test.ts",
       "scripts/forge-readiness.mjs",
-      "MANIFEST.md"
+      "MANIFEST.md",
+      "scripts/lib/reference-intelligence.mjs",
+      "scripts/forge-reference-capture.mjs",
+      ".claude/commands/study-reference.md",
+      "tests/reference-intelligence.test.ts",
+      "tests/fixtures/reference-analysis.example.json",
+      "tests/fixtures/reference-evidence.svg",
+      "scripts/forge-reference-validate.mjs",
+      "src/platform/buildPacket.ts",
+      "scripts/forge-build-packet.mjs",
+      "scripts/forge-context-capsule.mjs",
+      "tests/build-packet.test.ts",
+      "package.json",
+      "src/platform/director-intelligence/referenceCorpus.ts",
+      "src/platform/director-intelligence/constructionKnowledge.ts",
+      "src/platform/director-intelligence/orchestrator.ts",
+      ".gitignore"
     ]
+  },
+  "referenceDriven": {
+    "failOnUnclassifiedUrls": true,
+    "requireValidatedAnalysisForReferenceUrls": true,
+    "autoCaptureEvidenceWhenAnalysisMissing": true,
+    "requireHashedLocalVisualEvidence": true,
+    "separateObservedFactsFromHypotheses": true,
+    "injectIntoBuildPacketAndDirector": true
   }
 }

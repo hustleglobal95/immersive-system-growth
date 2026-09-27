@@ -272,3 +272,20 @@ test("construction evidence exposes global pattern maturity", () => {
     ),
   );
 });
+
+test("external reference signals measurably influence internal corpus retrieval scoring", () => {
+  const treatment = directProject(brief);
+  const baseline = retrieveImmersiveReferences(treatment, immersiveReferenceCorpus.length);
+  const signaled = retrieveImmersiveReferences(
+    treatment,
+    immersiveReferenceCorpus.length,
+    ["The Turn of the Screw Trailer"],
+  );
+  const targetId = "lusion-turn-of-the-screw";
+  const baselineScore = baseline.find(({ reference }) => reference.id === targetId)?.score;
+  const signaledScore = signaled.find(({ reference }) => reference.id === targetId)?.score;
+  assert.ok(typeof baselineScore === "number");
+  assert.ok(typeof signaledScore === "number");
+  assert.ok(signaledScore > baselineScore, "External evidence signals must change internal precedent scoring.");
+});
+
