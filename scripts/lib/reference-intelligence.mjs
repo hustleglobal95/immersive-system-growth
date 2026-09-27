@@ -87,6 +87,7 @@ export async function loadReferenceAnalyses(paths,expectedUrls=[]){
     const raw=await fs.readFile(absolute,"utf8");
     const parsed=JSON.parse(raw);
     const analysis=validateReferenceAnalysis(parsed);
+    await verifyEvidenceFiles(analysis);
     rows.push({
       path:absolute,
       sha256:sha256(raw),
@@ -194,6 +195,21 @@ export function applyReferenceAnalysesToBrief(brief,rows){
     });
   }
   return {...brief,references:references.slice(0,20)};
+}
+
+async function verifyEvidenceFiles(analysis){
+  const visualTypes=new Set(["desktop-screenshot","mobile-screenshot","video","provided-image"]);
+  const localVisuals=analysis.evidence.sources.filter((source)=>visualTypes.has(source.type)&&source.sha256);
+  if(!localVisuals.length) throw new Error("Reference analysis requires at least one hashed local visual evidence artifact.");
+  for(const source of localVisuals){
+    const locator=String(source.locator);
+    if(/^https?:\/\//i.test(locator)) throw new Error("Hashed visual evidence must use a local artifact path, not a remote URL.");
+    const target=path.resolve(locator);
+    const bytes=await fs.readFile(target).catch(()=>null);
+    if(!bytes) throw new Error("Reference evidence artifact is missing: "+locator);
+    const digest=sha256(bytes);
+    if(digest!==source.sha256) throw new Error("Reference evidence artifact hash mismatch: "+locator);
+  }
 }
 
 export function summarizeReferenceAnalyses(rows){
