@@ -1,6 +1,6 @@
 {
   "policyId": "forge-full-system-execution",
-  "version": 1,
+  "version": 2,
   "automaticForSubstantialCreativeWork": true,
   "explicitTriggers": [
     "USE FORGE"
