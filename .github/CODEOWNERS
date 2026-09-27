@@ -21,3 +21,8 @@
 /tests/forge-execution-governance.test.ts @hustleglobal95
 /scripts/forge-readiness.mjs @hustleglobal95
 /MANIFEST.md @hustleglobal95
+/scripts/forge-reference-capture.mjs @hustleglobal95
+/scripts/forge-reference-validate.mjs @hustleglobal95
+/scripts/lib/reference-intelligence.mjs @hustleglobal95
+/.claude/commands/study-reference.md @hustleglobal95
+/tests/reference-intelligence.test.ts @hustleglobal95
