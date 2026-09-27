@@ -96,7 +96,8 @@
       ".claude/commands/study-reference.md",
       "tests/reference-intelligence.test.ts",
       "tests/fixtures/reference-analysis.example.json",
-      "tests/fixtures/reference-evidence.svg"
+      "tests/fixtures/reference-evidence.svg",
+      "scripts/forge-reference-validate.mjs"
     ]
   },
   "referenceDriven": {
