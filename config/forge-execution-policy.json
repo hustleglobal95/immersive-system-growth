@@ -1,0 +1,62 @@
+{
+  "policyId": "forge-full-system-execution",
+  "version": 1,
+  "automaticForSubstantialCreativeWork": true,
+  "explicitTriggers": [
+    "USE FORGE"
+  ],
+  "fullBuild": {
+    "requiredStages": [
+      "operational-readiness",
+      "build-packet",
+      "director-intelligence",
+      "reference-intelligence",
+      "creative-state-graph",
+      "originality-gate",
+      "capability-routing",
+      "signature-slice-gate",
+      "context-capsules",
+      "verification-plan"
+    ],
+    "requiredPacketSections": [
+      "## PROJECT BRIEF",
+      "## CONTROLLING THESIS",
+      "## PRIMARY SIGNATURE MOMENT",
+      "## CREATIVE STATE GRAPH",
+      "## SIGNATURE SLICE GATE",
+      "## CREATIVE DNA",
+      "## ART DIRECTION",
+      "## CONSTRUCTION RESEARCH",
+      "## SCENE-BY-SCENE CONSTRUCTION PLAN",
+      "## CURRENT VALIDATED PROJECT STATE",
+      "## AGENTIC EXECUTION MODEL",
+      "## ACCEPTANCE CONTRACT",
+      "## DEFINITION OF DONE"
+    ],
+    "requiredContextDomains": [
+      "director",
+      "composition",
+      "camera",
+      "motion",
+      "typography",
+      "interaction",
+      "asset",
+      "mobile",
+      "performance",
+      "engineering"
+    ]
+  },
+  "creativeChangeControl": {
+    "recordDirectory": "forge-intelligence/execution-records",
+    "localArtifactDirectory": ".forge/execution",
+    "governedPathPatterns": [
+      "^app/(?!api/|studio/|director/|type-vault/).*(?:page|layout)\\.tsx$",
+      "^src/experiences/",
+      "^clients/",
+      "^showcases/",
+      "^draft-scenes/",
+      "^config/(?:experience|interaction-graph|cinematic-systems|asset-manifest)\\.json$",
+      "^public/(?:models|textures|videos|images)/"
+    ]
+  }
+}
