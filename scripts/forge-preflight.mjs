@@ -33,6 +33,12 @@ const recordPath=path.resolve(String(options.record||defaultRecord));
 await fsp.mkdir(artifactDir,{recursive:true});
 await fsp.mkdir(path.dirname(recordPath),{recursive:true});
 
+if(promptSource.kind!=="brief"){
+  const requestPath=path.join(artifactDir,"request.txt");
+  await fsp.writeFile(requestPath,promptSource.content,"utf8");
+  promptSource.cliArgs=[`--prompt-file=${requestPath}`];
+}
+
 const env={
   ...process.env,
   STUDIO_AUTH_ENABLED:process.env.STUDIO_AUTH_ENABLED||"false",
