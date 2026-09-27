@@ -33,4 +33,6 @@ console.log("- canonical Creative State Graph");
 console.log("- task-scoped Context Compiler");
 console.log("- capability-routed mutation ownership");
 console.log("- signature-slice gating");
-console.log("- Claude execution contract wiring");\nconsole.log("- full-system Forge preflight governance");\nconsole.log("- governed creative change enforcement");
+console.log("- Claude execution contract wiring");
+console.log("- full-system Forge preflight governance");
+console.log("- governed creative change enforcement");
