@@ -43,6 +43,8 @@ npm run forge:preflight -- --name="<project>" --prompt="<user request>"
 The preflight:
 
 - runs strict local Forge readiness;
+- refuses retroactive attestation when governed creative paths are already dirty;
+- hashes the exact experience, asset-manifest, interaction-graph and cinematic-system baseline used for planning;
 - compiles the Build Packet through the real Director/Creative pipeline;
 - compiles Context Capsules for every policy-required domain;
 - fails closed if the originality gate or any upstream Forge contract fails;
