@@ -19,3 +19,5 @@
 /.github/CODEOWNERS @hustleglobal95
 /.github/PULL_REQUEST_TEMPLATE.md @hustleglobal95
 /tests/forge-execution-governance.test.ts @hustleglobal95
+/scripts/forge-readiness.mjs @hustleglobal95
+/MANIFEST.md @hustleglobal95
