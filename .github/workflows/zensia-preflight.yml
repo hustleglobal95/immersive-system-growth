@@ -23,23 +23,45 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Create local Zensia request
+      - name: Create structured Zensia Director brief
         run: |
           mkdir -p .forge/execution/zensia-coffee
-          cat > .forge/execution/zensia-coffee/request.txt <<'EOF'
-          Business: https://www.zensiacoffee.com/
-
-          Build a significantly better website for Zensia Coffee with the full Forge system.
-
-          Zensia is a Colombian specialty-coffee and hospitality brand in Clayton / St. Louis. Preserve its real themes: calm intentional pauses, Colombian coffee, community, ordering, menu, visit and rewards. Do not invent awards, farms, prices, sourcing facts, statistics, testimonials or events.
-
-          Creative objective: make the site feel like entering a deliberate pause. The experience should move from outside noise into calm, then reveal Colombian origin, coffee ritual and the physical/social atmosphere of Zensia while keeping conversion frictionless.
-
-          Thesis candidate: NOISE -> THRESHOLD -> ORIGIN -> RITUAL -> PAUSE.
-
-          Avoid generic beige cafe luxury, floating beans in dark WebGL, giant-serif-only art direction, card-wall structure, constant motion, mediocre full-cafe 3D, and signatures copied from prior Forge projects.
-
-          Desired language: tactile, calm, Colombian, contemporary, warm, spatial, editorial, restrained, sensorial and commercially usable. Favor one protected signature peak, visual silence, threshold/arrival grammar, selective frost/refraction, subtle camera behavior, mobile-specific composition and semantic commerce actions.
+          cat > .forge/execution/zensia-coffee/brief.json <<'EOF'
+          {
+            "projectName": "Zensia Coffee",
+            "projectType": "hospitality",
+            "tier": "signature",
+            "client": "Zensia Coffee",
+            "audience": "Coffee drinkers, design-aware locals, remote workers and visitors looking for a calm Colombian specialty-coffee experience in Clayton and St. Louis.",
+            "objective": "Make Zensia feel like a deliberate pause from the city: communicate Colombian origin, coffee ritual, hospitality and community, then convert interest into visits, menu exploration, online orders and rewards signups.",
+            "primaryAction": "Visit Zensia",
+            "brandTruth": "Zensia is a Colombian specialty-coffee hospitality brand built around calm, lingering and intentional pauses. Its strongest story is the contrast between city noise and a warm, serene place where coffee origin, preparation and human connection matter.",
+            "differentiators": [
+              "Colombian specialty-coffee point of view",
+              "A physical space intentionally designed for lingering and calm",
+              "Coffee ritual and origin as part of the guest experience",
+              "Community and repeat-visit behavior through Calm Club"
+            ],
+            "constraints": [
+              "Keep Order Online, Menu, Visit and Calm Club actions obvious and semantic",
+              "Do not invent awards, farms, prices, sourcing statistics, testimonials or events",
+              "Do not use third-party editorial photography as production art without confirmed rights",
+              "Avoid generic beige cafe luxury, floating coffee beans, constant motion and card-wall structure",
+              "Do not reuse prior Forge project signatures or reconstruct the entire cafe in mediocre 3D",
+              "Mobile must preserve the threshold-to-pause narrative rather than hiding it"
+            ],
+            "existingAssets": [],
+            "references": [
+              {
+                "label": "Zensia existing public website",
+                "lesson": "Preserve the brand's calm, Colombian coffee, ordering, rewards and community truths while replacing the current utility-heavy content stack with a stronger spatial hospitality narrative."
+              },
+              {
+                "label": "Forge hospitality construction intelligence",
+                "lesson": "Use atmosphere first, a motivated arrival threshold, tactile intimacy, density rhythm and visual silence, with one protected signature peak and clear conversion utility."
+              }
+            ]
+          }
           EOF
       - name: Run full Forge preflight
         env:
@@ -49,8 +71,7 @@ jobs:
         run: |
           npm run forge:preflight -- \
             --name="Zensia Coffee" \
-            --prompt-file=.forge/execution/zensia-coffee/request.txt \
-            --business-url=https://www.zensiacoffee.com/ \
+            --brief=.forge/execution/zensia-coffee/brief.json \
             --artifacts=.forge/execution/zensia-coffee/artifacts \
             --record=forge-intelligence/execution-records/zensia-coffee.json
       - name: Validate execution evidence
