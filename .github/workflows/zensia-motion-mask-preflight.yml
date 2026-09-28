@@ -23,11 +23,41 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Write request
+      - name: Write structured request
         run: |
           mkdir -p .forge/execution/zensia-motion-masks
-          cat > .forge/execution/zensia-motion-masks/request.txt <<'EOF'
-          Upgrade the current Zensia Coffee website with substantially stronger GSAP motion and Forge-native mask reveals. Preserve the Brewns-inspired product-first art direction and real Zensia assets. Add cinematic but controlled scroll choreography, masked typography/media entrances, product-stage motion, image reveals, parallax/countermotion, section handoffs and mobile reductions. Use Forge's existing Reveal Engine / mask utilities and GSAP systems first. Do not reintroduce the old pace-slider concept, generic WebGL spectacle, effect soup, fake facts or unrelated redesigns. Preserve semantic commerce actions and reduced-motion behavior.
+          cat > .forge/execution/zensia-motion-masks/brief.json <<'EOF'
+          {
+            "projectName": "Zensia Coffee Motion Masks",
+            "projectType": "hospitality",
+            "tier": "signature",
+            "client": "Zensia Coffee",
+            "audience": "Coffee drinkers, design-aware locals, remote workers and visitors considering Zensia in Clayton and St. Louis.",
+            "objective": "Strengthen the current Zensia website with controlled GSAP choreography and Forge-native mask reveals while preserving its product-first Brewns-inspired direction.",
+            "primaryAction": "Order online",
+            "brandTruth": "Zensia is Colombian specialty coffee presented through calm hospitality, real product, community and a physical place designed to slow the day down.",
+            "differentiators": [
+              "Colombian specialty-coffee identity",
+              "Real Zen at Home coffee products",
+              "Calm Club rewards and direct ordering",
+              "A physical café centered on lingering and community"
+            ],
+            "constraints": [
+              "Use Forge Reveal Engine and GSAP systems before new primitives",
+              "Add masked media entrances, product motion, parallax, countermotion and section handoffs",
+              "Preserve current commerce actions and real Zensia assets",
+              "Do not reintroduce the pace slider, generic WebGL spectacle or effect soup",
+              "Reduced motion must preserve every content and conversion outcome",
+              "Mobile must keep the concept with lower amplitude and fewer simultaneous effects"
+            ],
+            "existingAssets": [],
+            "references": [
+              {
+                "label": "Brewns — Forge hospitality precedent",
+                "lesson": "Keep packaging as hero, typography environmental, and motion subordinate to coffee/product hierarchy."
+              }
+            ]
+          }
           EOF
       - name: Run Forge preflight
         env:
@@ -37,7 +67,7 @@ jobs:
         run: |
           npm run forge:preflight -- \
             --name="Zensia Coffee Motion Masks" \
-            --prompt-file=.forge/execution/zensia-motion-masks/request.txt \
+            --brief=.forge/execution/zensia-motion-masks/brief.json \
             --artifacts=.forge/execution/zensia-motion-masks/artifacts \
             --record=forge-intelligence/execution-records/zensia-motion-masks.json
       - name: Compile motion context
