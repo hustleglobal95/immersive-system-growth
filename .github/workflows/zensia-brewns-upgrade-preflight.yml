@@ -1,0 +1,89 @@
+name: Zensia Brewns Upgrade Preflight
+
+on:
+  push:
+    branches:
+      - project/zensia-brewns-upgrade
+    paths:
+      - .github/workflows/zensia-brewns-upgrade-preflight.yml
+
+permissions:
+  contents: write
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Write structured Zensia upgrade brief
+        run: |
+          mkdir -p .forge/execution/zensia-brewns-upgrade
+          cat > .forge/execution/zensia-brewns-upgrade/brief.json <<'EOF'
+          {
+            "projectName": "Zensia Coffee — Brewns Upgrade",
+            "projectType": "hospitality",
+            "tier": "signature",
+            "client": "Zensia Coffee",
+            "audience": "Coffee drinkers, design-aware locals, remote workers and visitors evaluating Zensia as a premium Colombian specialty-coffee destination in Clayton and St. Louis.",
+            "objective": "Replace the existing Zensia concept with a polished, brand-authentic website that makes real coffee product, Colombian identity, café atmosphere and commerce feel premium immediately.",
+            "primaryAction": "Order online",
+            "brandTruth": "Zensia is a Colombian specialty-coffee brand and physical café built around calm, quality, community and a deliberate pause in the day.",
+            "differentiators": [
+              "Colombian specialty-coffee identity",
+              "A physical café designed around calm and lingering",
+              "Zen at Home retail coffee products",
+              "Calm Club rewards and direct online ordering"
+            ],
+            "constraints": [
+              "Use Brewns as the primary Forge website precedent",
+              "Transfer its staged coffee-product composition, packaging-as-hero scale, oversized typography and edge utility without copying exact branding",
+              "Use Zensia's existing public brand/product imagery where available",
+              "Remove the current abstract green procedural look and pace-slider gimmick",
+              "Do not use floating beans, generic dark-luxury WebGL, giant-serif-only art direction or fake 3D café reconstruction",
+              "Keep Menu, Order Online, Visit and Calm Club obvious and semantic",
+              "Mobile must remain deliberately composed and commerce-first",
+              "Do not invent awards, farms, sourcing statistics, testimonials or unverified events"
+            ],
+            "existingAssets": [],
+            "references": [
+              {
+                "label": "Brewns — Forge hospitality reference",
+                "lesson": "Use a coffee-product stage with oversized packaging as the dominant object, huge brand typography as environmental identity, and restrained commerce utility around the edges. Treat packaging graphics and page typography as one visual system."
+              },
+              {
+                "label": "Zensia existing public website",
+                "lesson": "Preserve Zensia's real Colombian coffee, Calm Club, menu, ordering, gift-card, community and Zen at Home product truths while replacing the current utility-heavy visual presentation."
+              }
+            ]
+          }
+          EOF
+      - name: Run full Forge preflight
+        env:
+          STUDIO_AUTH_ENABLED: "false"
+          FORGE_LOCAL_STORAGE_ENABLED: "true"
+          NODE_ENV: development
+        run: |
+          npm run forge:preflight -- \
+            --name="Zensia Coffee Brewns Upgrade" \
+            --brief=.forge/execution/zensia-brewns-upgrade/brief.json \
+            --artifacts=.forge/execution/zensia-brewns-upgrade/artifacts \
+            --record=forge-intelligence/execution-records/zensia-brewns-upgrade.json
+      - name: Validate execution evidence
+        run: npm run forge:execution:audit -- --record=forge-intelligence/execution-records/zensia-brewns-upgrade.json
+      - name: Print packet
+        run: cat .forge/execution/zensia-brewns-upgrade/artifacts/forge-build-packet.md
+      - name: Commit public-safe record
+        run: |
+          git config user.name "forge-preflight"
+          git config user.email "actions@users.noreply.github.com"
+          git add forge-intelligence/execution-records/zensia-brewns-upgrade.json
+          git commit -m "Record Zensia Brewns upgrade preflight [forge-preflight-record]"
+          git push origin HEAD:project/zensia-brewns-upgrade
