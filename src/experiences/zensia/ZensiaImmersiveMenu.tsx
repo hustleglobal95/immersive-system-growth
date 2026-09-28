@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
+import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
@@ -16,36 +16,6 @@ type ZensiaImmersiveMenuProps = {
   orderUrl: string;
 };
 
-const MENU_SPLASH_URL =
-  "https://d2ol7oe51mr4n9.cloudfront.net/user_3FugzGV89ehMBrUoVdwLJxFujO5/ef1ed3e5-a0c5-4055-a347-5ab30d2c3454.webp";
-
-const ZENSIA_PHOTO_POOLS = {
-  hot: [
-    "https://static.wixstatic.com/media/859566_90db78bfbd21470fafaf59bd0646b4ba~mv2.jpg",
-    "https://static.wixstatic.com/media/859566_dda43df0514841eea1663f508724fcef~mv2.jpg",
-  ],
-  espresso: [
-    "https://static.wixstatic.com/media/859566_b618d3f2dc39473fa45047c95e676872~mv2.jpg",
-    "https://static.wixstatic.com/media/859566_dda43df0514841eea1663f508724fcef~mv2.jpg",
-  ],
-  cold: [
-    "https://static.wixstatic.com/media/859566_26ddc1aef049454db886a6bd9d84b5b6~mv2.jpg",
-    "https://static.wixstatic.com/media/859566_90db78bfbd21470fafaf59bd0646b4ba~mv2.jpg",
-  ],
-  bread: [
-    "https://static.wixstatic.com/media/859566_c2dd3549ae574e75a12c2e5289b11818~mv2.jpg",
-    "https://static.wixstatic.com/media/859566_761b30b4c55b495585b40ade4794d23b~mv2.png",
-  ],
-  empanada: [
-    "https://static.wixstatic.com/media/859566_761b30b4c55b495585b40ade4794d23b~mv2.png",
-    "https://static.wixstatic.com/media/859566_1cd86dfed64f4c40a53270c8feeb4e68~mv2.jpg",
-  ],
-  dessert: [
-    "https://static.wixstatic.com/media/859566_761b30b4c55b495585b40ade4794d23b~mv2.png",
-    "https://static.wixstatic.com/media/859566_1cd86dfed64f4c40a53270c8feeb4e68~mv2.jpg",
-  ],
-} as const;
-
 const ZENSIA_ITEM_PHOTOS: Partial<Record<string, string>> = {
   "regular-espresso": "https://static.wixstatic.com/media/859566_b618d3f2dc39473fa45047c95e676872~mv2.jpg",
   "latte": "https://static.wixstatic.com/media/859566_90db78bfbd21470fafaf59bd0646b4ba~mv2.jpg",
@@ -59,11 +29,8 @@ const ZENSIA_ITEM_PHOTOS: Partial<Record<string, string>> = {
   "pandebono-guava-cheese": "https://static.wixstatic.com/media/859566_c2dd3549ae574e75a12c2e5289b11818~mv2.jpg",
 };
 
-function photoForItem(item: ZensiaMenuItem, kind: keyof typeof ZENSIA_PHOTO_POOLS, index: number) {
-  const exact = ZENSIA_ITEM_PHOTOS[item.id];
-  if (exact) return { src: exact, exact: true };
-  const pool = ZENSIA_PHOTO_POOLS[kind];
-  return { src: pool[index % pool.length], exact: false };
+function photoForItem(item: ZensiaMenuItem) {
+  return ZENSIA_ITEM_PHOTOS[item.id] ?? null;
 }
 
 function normalize(value: string) {
@@ -72,7 +39,6 @@ function normalize(value: string) {
 
 export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
   const root = useRef<HTMLElement>(null);
-  const stage = useRef<HTMLDivElement>(null);
   const firstCategory = ZENSIA_MENU_CATEGORIES[0];
   const firstItem = ZENSIA_MENU_ITEMS[0];
 
@@ -144,20 +110,6 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
         },
       );
 
-      gsap.fromTo(
-        ".zim-menu__media-splash",
-        { opacity: 0, scale: 0.74, xPercent: 12, rotate: -5 },
-        {
-          opacity: 0.94,
-          scale: 1,
-          xPercent: 0,
-          rotate: 0,
-          duration: 1.15,
-          ease: "power4.out",
-          scrollTrigger: { trigger: ".zim-menu__stage", start: "top 84%", once: true },
-        },
-      );
-
       const mm = gsap.matchMedia();
       mm.add("(min-width: 981px)", () => {
         gsap.to(".zim-menu__ghost", {
@@ -173,18 +125,6 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
             yPercent: 2,
             ease: "none",
             scrollTrigger: { trigger: element, start: "top bottom", end: "bottom top", scrub: 0.85 },
-          },
-        );
-        gsap.fromTo(
-          ".zim-menu__media-splash",
-          { xPercent: 12, yPercent: -8, rotateZ: -5, scale: 0.9 },
-          {
-            xPercent: -11,
-            yPercent: 9,
-            rotateZ: 6,
-            scale: 1.08,
-            ease: "none",
-            scrollTrigger: { trigger: element, start: "top bottom", end: "bottom top", scrub: 0.82 },
           },
         );
       });
@@ -204,36 +144,13 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
     timeline
       .fromTo(".zim-menu__active-index", { y: -10, opacity: 0 }, { y: 0, opacity: 0.62, duration: 0.32 }, 0)
       .fromTo(".zim-menu__active-name", { y: 26, opacity: 0, clipPath: "inset(0 0 100% 0)" }, { y: 0, opacity: 1, clipPath: "inset(0 0 0% 0)", duration: 0.58 }, 0.03)
-      .fromTo(".zim-menu__photo", { scale: 1.12, clipPath: "inset(0 0 100% 0)" }, { scale: 1, clipPath: "inset(0 0 0% 0)", duration: 0.72, ease: "power4.out" }, 0.04)
+      .fromTo(".zim-menu__photo, .zim-menu__fallback", { scale: 1.045, clipPath: "inset(0 0 100% 0)" }, { scale: 1, clipPath: "inset(0 0 0% 0)", duration: 0.72, ease: "power4.out" }, 0.04)
       .fromTo(".zim-menu__photo-caption", { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.42 }, 0.22)
-      .fromTo(".zim-menu__media-splash", { scale: 0.91, opacity: 0.55 }, { scale: 1, opacity: 0.94, duration: 0.52 }, 0.04)
       .fromTo(".zim-menu__variant-row > *", { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.42, stagger: 0.045 }, 0.16);
 
     return () => { timeline.kill(); };
   }, [activeItemId, activeVariant]);
 
-  const moveStage = (event: PointerEvent<HTMLDivElement>) => {
-    const node = stage.current;
-    if (!node || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width - 0.5;
-    const y = (event.clientY - rect.top) / rect.height - 0.5;
-    gsap.to(node, {
-      rotateY: x * 7,
-      rotateX: y * -5,
-      x: x * 9,
-      y: y * 7,
-      duration: 0.45,
-      ease: "power2.out",
-      transformPerspective: 1000,
-    });
-  };
-
-  const resetStage = () => {
-    const node = stage.current;
-    if (!node) return;
-    gsap.to(node, { rotateY: 0, rotateX: 0, x: 0, y: 0, duration: 0.7, ease: "power3.out" });
-  };
 
   const categoryStyle = {
     "--zim-tone": activeCategory.tone,
@@ -243,8 +160,8 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
 
   const categoryItems = menuItemsForCategory(activeCategory.id);
   const categoryIndex = Math.max(0, categoryItems.findIndex((item) => item.id === activeItem.id));
-  const activePhoto = photoForItem(activeItem, activeCategory.kind, categoryIndex);
-  const showCoffeeSplash = activeCategory.kind === "hot" || activeCategory.kind === "espresso" || activeCategory.kind === "cold";
+  const activePhoto = photoForItem(activeItem);
+  const longActiveName = activeItem.name.length > 20;
 
   return (
     <section
@@ -261,8 +178,8 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
         <div>
           <p className="zim-menu__eyebrow">THE FULL MENU</p>
           <h2 id="zi-menu-title" className="zim-menu__heading">
-            Everything,
-            <span>inside the experience.</span>
+            Find your pause.
+            <span>The full Zensia menu.</span>
           </h2>
         </div>
         <div className="zim-menu__header-note">
@@ -292,12 +209,8 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
       </div>
 
       <div className="zim-menu__shell">
-        <div
-          className="zim-menu__stage"
-          onPointerMove={moveStage}
-          onPointerLeave={resetStage}
-        >
-          <div ref={stage} className="zim-menu__stage-inner">
+        <div className="zim-menu__stage">
+          <div className="zim-menu__stage-inner" data-has-photo={activePhoto ? "true" : "false"}>
             <div className="zim-menu__stage-meta">
               <span className="zim-menu__active-index">
                 {String(categoryIndex + 1).padStart(2, "0")} / {String(categoryItems.length).padStart(2, "0")}
@@ -305,57 +218,53 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
               <span>{activeCategory.label}</span>
             </div>
 
-            <div className="zim-menu__photo-stage" aria-hidden="true">
-              <Image
-                key={`${activeItem.id}-${activePhoto.src}`}
-                src={activePhoto.src}
-                alt=""
-                fill
-                sizes="(max-width: 980px) 100vw, 58vw"
-                className="zim-menu__photo"
-              />
-              <div className="zim-menu__photo-shade" />
-              <div className="zim-menu__photo-caption">
-                <span>FROM ZENSIA</span>
-                <b>{activeCategory.shortLabel}</b>
-              </div>
-            </div>
-
-            {showCoffeeSplash ? (
-              <div
-                className="zim-menu__media-splash"
-                aria-hidden="true"
-                data-source="uploaded-zensia-coffee-splash"
-                style={{ backgroundImage: `url("${MENU_SPLASH_URL}")` }}
-              />
-            ) : null}
-
-            <div className="zim-menu__stage-copy" aria-live="polite">
-              <h3 className="zim-menu__active-name">{activeItem.name}</h3>
-              {activeVariant ? <p className="zim-menu__selected-variant">{activeVariant}</p> : null}
-            </div>
-
-            {activeItem.variants?.length ? (
-              <div className="zim-menu__variant-block">
-                <span>Choose a listed flavor</span>
-                <div className="zim-menu__variant-row">
-                  {activeItem.variants.map((variant) => (
-                    <button
-                      key={variant}
-                      type="button"
-                      aria-pressed={activeVariant === variant}
-                      onClick={() => setActiveVariant(variant)}
-                    >
-                      {variant}
-                    </button>
-                  ))}
+            {activePhoto ? (
+              <div className="zim-menu__photo-stage" aria-hidden="true">
+                <Image
+                  key={`${activeItem.id}-${activePhoto}`}
+                  src={activePhoto}
+                  alt=""
+                  fill
+                  sizes="(max-width: 980px) 100vw, 58vw"
+                  className="zim-menu__photo"
+                />
+                <div className="zim-menu__photo-shade" />
+                <div className="zim-menu__photo-caption">
+                  <span>ZENSIA</span>
+                  <b>{activeCategory.shortLabel}</b>
                 </div>
               </div>
             ) : (
-              <div className="zim-menu__variant-block zim-menu__variant-block--empty">
-                <span>Current Zensia menu item</span>
+              <div className="zim-menu__fallback" aria-hidden="true">
+                <span>{activeCategory.shortLabel}</span>
+                <strong>{activeItem.name}</strong>
+                <i />
               </div>
             )}
+
+            <div className="zim-menu__stage-copy" aria-live="polite">
+              <h3 className="zim-menu__active-name" data-long={longActiveName ? "true" : "false"}>{activeItem.name}</h3>
+              {activeVariant ? <p className="zim-menu__selected-variant">{activeVariant}</p> : null}
+              {activeItem.variants?.length ? (
+                <div className="zim-menu__variant-block">
+                  <span>Choose a listed flavor</span>
+                  <div className="zim-menu__variant-row">
+                    {activeItem.variants.map((variant) => (
+                      <button
+                        key={variant}
+                        type="button"
+                        aria-pressed={activeVariant === variant}
+                        onClick={() => setActiveVariant(variant)}
+                      >
+                        {variant}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="zim-menu__current-item">Current Zensia menu item</p>
+              )}
+            </div>
 
             <a className="zim-menu__order" href={orderUrl} target="_blank" rel="noreferrer">
               Order online <span aria-hidden="true">↗</span>
@@ -384,8 +293,7 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
             {visibleItems.map((item, index) => {
               const itemCategory = ZENSIA_MENU_CATEGORIES.find((entry) => entry.id === item.category);
               const selected = item.id === activeItem.id;
-              const categoryItemIndex = Math.max(0, menuItemsForCategory(item.category).findIndex((entry) => entry.id === item.id));
-              const itemPhoto = photoForItem(item, itemCategory?.kind ?? activeCategory.kind, categoryItemIndex);
+              const itemPhoto = photoForItem(item);
               return (
                 <button
                   key={item.id}
@@ -397,9 +305,13 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
                   onClick={() => selectItem(item)}
                 >
                   <span className="zim-menu__item-number">{String(index + 1).padStart(2, "0")}</span>
-                  <span className="zim-menu__item-thumb" aria-hidden="true">
-                    <Image src={itemPhoto.src} alt="" fill sizes="56px" />
-                  </span>
+                  {itemPhoto ? (
+                    <span className="zim-menu__item-thumb" aria-hidden="true">
+                      <Image src={itemPhoto} alt="" fill sizes="56px" />
+                    </span>
+                  ) : (
+                    <span className="zim-menu__item-mark" aria-hidden="true">{itemCategory?.shortLabel.slice(0, 1)}</span>
+                  )}
                   <span className="zim-menu__item-name">{item.name}</span>
                   {query ? <span className="zim-menu__item-category">{itemCategory?.shortLabel}</span> : null}
                   {item.variants?.length ? <span className="zim-menu__item-variants">{item.variants.length} flavors</span> : null}
