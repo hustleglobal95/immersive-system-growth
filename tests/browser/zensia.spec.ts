@@ -23,6 +23,24 @@ test("Zensia imagination pass renders the kinetic hero and commerce path",async(
   await expect(page.locator(".zi-kinetic__tile")).toHaveCount(2);
   await page.screenshot({path:"test-results/zensia-imagination/desktop-kinetic.png",fullPage:false});
 
+  await page.locator("#zi-menu").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("heading",{name:/Everything,/i})).toBeVisible();
+  const categories=page.getByRole("group",{name:"Menu categories"}).getByRole("button");
+  await expect(categories).toHaveCount(6);
+  await expect(page.locator(".zim-menu__item")).toHaveCount(7);
+
+  await page.getByRole("button",{name:"Cold Beverages: 13 items"}).click();
+  await expect(page.locator(".zim-menu__item")).toHaveCount(13);
+  await page.getByRole("button",{name:"Fruit Slush/Juice"}).click();
+  await expect(page.locator(".zim-menu__variant-row").getByRole("button")).toHaveCount(7);
+  await page.getByRole("button",{name:"Passion Fruit"}).click();
+  await expect(page.getByText("Passion Fruit",{exact:true})).toBeVisible();
+  await page.screenshot({path:"test-results/zensia-imagination/desktop-full-menu.png",fullPage:false});
+
+  await page.getByRole("button",{name:"Specialty Desserts: 7 items"}).click();
+  await expect(page.locator(".zim-menu__item")).toHaveCount(7);
+  await expect(page.getByRole("button",{name:"Passion Fruit Delight"})).toBeVisible();
+
   await page.locator("#zi-visit").scrollIntoViewIfNeeded();
   await expect(page.getByRole("link",{name:/Order online/i}).first()).toHaveAttribute("href","https://zensia-coffee-llc.square.site/");
   expect(errors).toEqual([]);
@@ -40,6 +58,13 @@ test("Zensia imagination pass keeps the kinetic language on mobile without overf
   await expect(page.getByRole("heading",{name:/A cup can/i})).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 
+  await page.locator("#zi-menu").scrollIntoViewIfNeeded();
+  await page.getByRole("button",{name:"Empanadas: 6 items"}).click();
+  await expect(page.locator(".zim-menu__item")).toHaveCount(6);
+  await expect(page.getByRole("button",{name:"Corn Spinach"})).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  await page.screenshot({path:"test-results/zensia-imagination/mobile-full-menu.png",fullPage:false});
+
   await page.locator("#zi-visit").scrollIntoViewIfNeeded();
   await expect(page.getByRole("link",{name:/Order online/i}).first()).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
@@ -51,5 +76,6 @@ test("Zensia imagination pass remains readable without JavaScript",async({browse
   await page.goto("/zensia");
   await expect(page.getByRole("heading",{level:1})).toBeVisible();
   await expect(page.getByRole("link",{name:/Order online/i}).first()).toBeVisible();
+  await expect(page.getByText("Passion Fruit Delight",{exact:true})).toBeVisible();
   await context.close();
 });
