@@ -327,7 +327,7 @@ export function ZensiaImaginationExperience(){
 
       <main id="zi-main">
         <section className="zi-hero" aria-labelledby="zi-hero-title">
-          <div className="zi-hero__ghost" aria-hidden="true">Zensia</div>
+          <div className="zi-hero__ghost" aria-hidden="true">ZENSIA</div>
 
           <div className="zi-hero__copy">
             <p className="zi-eyebrow zi-hero__eyebrow">COLOMBIA → ST. LOUIS</p>
