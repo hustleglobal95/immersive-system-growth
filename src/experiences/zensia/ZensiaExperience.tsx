@@ -1,13 +1,13 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useLayoutEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
+import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type MutableRefObject } from "react";
 import * as THREE from "three";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 type ProgressRef = MutableRefObject<number>;
-type CalmRef = MutableRefObject<boolean>;
+type PaceRef = MutableRefObject<number>;
 
 const ORDER_URL = "https://zensia-coffee-llc.square.site/";
 const MENU_URL = "https://www.zensiacoffee.com/actual-menu";
@@ -52,7 +52,7 @@ function Steam({ x, delay }: { x:number; delay:number }) {
   return <mesh ref={mesh} geometry={geometry}><meshBasicMaterial color="#f0e8d7" transparent opacity={0.22} /></mesh>;
 }
 
-function World({ progress, calm }: { progress:ProgressRef; calm:CalmRef }) {
+function World({ progress, pace }: { progress:ProgressRef; pace:PaceRef }) {
   const root = useRef<THREE.Group>(null);
   const glassLeft = useRef<THREE.Mesh>(null);
   const glassRight = useRef<THREE.Mesh>(null);
@@ -60,37 +60,71 @@ function World({ progress, calm }: { progress:ProgressRef; calm:CalmRef }) {
   const cup = useRef<THREE.Group>(null);
   const light = useRef<THREE.PointLight>(null);
   const color = useMemo(() => new THREE.Color(), []);
+  const cityColor = useMemo(() => new THREE.Color("#111312"), []);
+  const calmColor = useMemo(() => new THREE.Color("#191a12"), []);
 
-  useFrame(({scene, pointer}, delta) => {
+  useFrame(({scene, pointer, camera}, delta) => {
     const p = progress.current;
-    const isCalm = calm.current;
+    const paceAmount = THREE.MathUtils.clamp(pace.current / 100, 0, 1);
+    const signatureIn = THREE.MathUtils.smoothstep(p, 0.46, 0.58);
+    const signatureOut = 1 - THREE.MathUtils.smoothstep(p, 0.76, 0.86);
+    const signaturePace = paceAmount * signatureIn * signatureOut;
+
     if (root.current) {
-      root.current.rotation.y = THREE.MathUtils.damp(root.current.rotation.y, pointer.x * 0.12 + p * 0.16, 4, delta);
+      root.current.rotation.y = THREE.MathUtils.damp(
+        root.current.rotation.y,
+        pointer.x * (0.12 - signaturePace * 0.08) + p * 0.16 - signaturePace * 0.08,
+        4,
+        delta,
+      );
+      root.current.position.x = THREE.MathUtils.damp(root.current.position.x, signaturePace * 0.9, 3.2, delta);
       root.current.position.y = THREE.MathUtils.damp(root.current.position.y, p < 0.22 ? -0.12 : p < 0.63 ? 0.10 : -0.05, 4, delta);
     }
+
     const opening = THREE.MathUtils.smoothstep(p, 0.08, 0.25);
     if (glassLeft.current) {
-      glassLeft.current.position.x = THREE.MathUtils.damp(glassLeft.current.position.x, -1.35 - opening * 1.8, 5, delta);
-      glassLeft.current.rotation.y = THREE.MathUtils.damp(glassLeft.current.rotation.y, opening * -0.22, 5, delta);
+      glassLeft.current.position.x = THREE.MathUtils.damp(glassLeft.current.position.x, -1.35 - opening * 1.8 - signaturePace * 1.1, 5, delta);
+      glassLeft.current.rotation.y = THREE.MathUtils.damp(glassLeft.current.rotation.y, opening * -0.22 - signaturePace * 0.08, 5, delta);
     }
     if (glassRight.current) {
-      glassRight.current.position.x = THREE.MathUtils.damp(glassRight.current.position.x, 1.35 + opening * 1.8, 5, delta);
-      glassRight.current.rotation.y = THREE.MathUtils.damp(glassRight.current.rotation.y, opening * 0.22, 5, delta);
+      glassRight.current.position.x = THREE.MathUtils.damp(glassRight.current.position.x, 1.35 + opening * 1.8 + signaturePace * 1.1, 5, delta);
+      glassRight.current.rotation.y = THREE.MathUtils.damp(glassRight.current.rotation.y, opening * 0.22 + signaturePace * 0.08, 5, delta);
     }
+
     const origin = THREE.MathUtils.smoothstep(p, 0.22, 0.48);
     if (orb.current) {
-      const s = THREE.MathUtils.lerp(0.65, 1.15, origin);
-      orb.current.scale.setScalar(THREE.MathUtils.damp(orb.current.scale.x, s, 4, delta));
+      const baseScale = THREE.MathUtils.lerp(0.65, 1.15, origin);
+      const targetScale = baseScale * THREE.MathUtils.lerp(1, 0.72, signaturePace);
+      orb.current.scale.setScalar(THREE.MathUtils.damp(orb.current.scale.x, targetScale, 4, delta));
+      orb.current.position.x = THREE.MathUtils.damp(orb.current.position.x, signaturePace * 1.05, 3.4, delta);
+      orb.current.position.y = THREE.MathUtils.damp(orb.current.position.y, 0.35 + signaturePace * 0.42, 3.4, delta);
       orb.current.position.z = THREE.MathUtils.damp(orb.current.position.z, THREE.MathUtils.lerp(-1.2, -0.15, origin), 4, delta);
-      orb.current.rotation.y += delta * (isCalm ? 0.05 : 0.14);
+      orb.current.rotation.y += delta * THREE.MathUtils.lerp(0.14, 0.025, paceAmount);
     }
+
     const ritual = THREE.MathUtils.smoothstep(p, 0.46, 0.68);
     if (cup.current) {
-      cup.current.position.y = THREE.MathUtils.damp(cup.current.position.y, THREE.MathUtils.lerp(-2.1, -0.45, ritual), 4, delta);
+      cup.current.position.x = THREE.MathUtils.damp(cup.current.position.x, signaturePace * 0.88, 3.4, delta);
+      cup.current.position.y = THREE.MathUtils.damp(cup.current.position.y, THREE.MathUtils.lerp(-2.1, -0.45, ritual) - signaturePace * 0.2, 4, delta);
       cup.current.rotation.x = THREE.MathUtils.damp(cup.current.rotation.x, THREE.MathUtils.lerp(1.28, 1.52, ritual), 4, delta);
     }
-    if (light.current) light.current.intensity = THREE.MathUtils.damp(light.current.intensity, 2.2 + ritual * 5 + (isCalm ? 2 : 0), 4, delta);
-    color.set(p > 0.68 || isCalm ? "#14140f" : p > 0.28 ? "#10130d" : "#111312");
+
+    camera.position.x = THREE.MathUtils.damp(camera.position.x, -signaturePace * 0.58, 2.8, delta);
+    camera.position.z = THREE.MathUtils.damp(camera.position.z, 7.2 + signaturePace * 1.35, 2.8, delta);
+    if (camera instanceof THREE.PerspectiveCamera) {
+      const nextFov = THREE.MathUtils.damp(camera.fov, 42 + signaturePace * 5, 2.8, delta);
+      if (Math.abs(nextFov - camera.fov) > 0.001) {
+        camera.fov = nextFov;
+        camera.updateProjectionMatrix();
+      }
+    }
+
+    if (light.current) {
+      light.current.intensity = THREE.MathUtils.damp(light.current.intensity, 2.2 + ritual * 5 + signaturePace * 3.4, 4, delta);
+      light.current.position.x = THREE.MathUtils.damp(light.current.position.x, signaturePace * 1.1, 3, delta);
+    }
+
+    color.lerpColors(cityColor, calmColor, THREE.MathUtils.clamp(paceAmount * 0.9 + signaturePace * 0.1, 0, 1));
     scene.background = color;
   });
 
@@ -145,14 +179,24 @@ const chapters = [
 export function ZensiaExperience() {
   const root = useRef<HTMLDivElement>(null);
   const progress = useRef(0);
-  const calmRef = useRef(false);
-  const [calm, setCalm] = useState(false);
+  const paceRef = useRef(18);
+  const [pace, setPace] = useState(18);
   const [menuOpen, setMenuOpen] = useState(false);
+  const calm = pace >= 72;
+  const paceZone = calm ? "stay" : pace >= 42 ? "arrive" : "rush";
 
-  const setCalmMode = (next:boolean) => {
-    calmRef.current = next;
-    setCalm(next);
+  const setPaceValue = (next:number) => {
+    const bounded = Math.max(0, Math.min(100, next));
+    paceRef.current = bounded;
+    setPace(bounded);
   };
+
+  const paceStyle = {
+    "--z-pace": String(pace / 100),
+    "--z-pace-pct": `${pace}%`,
+    "--z-copy-drift": `${Math.round(pace * -0.42)}px`,
+    "--z-calm-alpha": String(Math.max(0, Math.min(1, (pace - 52) / 48))),
+  } as CSSProperties;
 
   useLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -181,11 +225,11 @@ export function ZensiaExperience() {
     event.currentTarget.style.setProperty("--my", `${event.clientY-rect.top}px`);
   };
 
-  return <div ref={root} className="zensia" data-calm={calm ? "true" : "false"}>
+  return <div ref={root} className="zensia" data-calm={calm ? "true" : "false"} data-pace-zone={paceZone} style={paceStyle}>
     <a className="zensia-skip" href="#zensia-story">Skip to the story</a>
     <div className="zensia-canvas" aria-hidden="true">
       <Canvas camera={{position:[0,0.2,7.2],fov:42}} dpr={[1,1.5]} gl={{antialias:true,alpha:false,powerPreference:"high-performance"}}>
-        <World progress={progress} calm={calmRef} />
+        <World progress={progress} pace={paceRef} />
       </Canvas>
     </div>
     <div className="zensia-grain" aria-hidden="true" />
@@ -244,13 +288,43 @@ export function ZensiaExperience() {
       </section>
 
       <section id="zensia-pause" className="zensia-scene zensia-pause">
+        <div className="zensia-pause__aperture" aria-hidden="true"><span/><span/></div>
         <div className="zensia-pause__inner" data-z-reveal>
           <p className="zensia-kicker">04 / THE SIGNATURE</p>
-          <h2>Don’t scroll faster.<br/><em>Stay longer.</em></h2>
-          <p>This is the point of the brand. Change the pace of the interface and the rest of the experience reorganizes around calm.</p>
-          <button type="button" className="zensia-calm-toggle" onClick={()=>setCalmMode(!calm)} aria-pressed={calm}>
-            <span>{calm ? "Return to city pace" : "Enter calm mode"}</span><i aria-hidden="true">{calm ? "—" : "○"}</i>
-          </button>
+          <h2>
+            <span className="zensia-pause__lead">Don’t scroll faster.</span>
+            <em className="zensia-pause__answer">Stay longer.</em>
+          </h2>
+          <p className="zensia-pause__body">Change the pace. The room clears, the frame opens and the interface gives the coffee more time.</p>
+
+          <div className="zensia-pace-control" role="group" aria-labelledby="zensia-pace-label">
+            <div className="zensia-pace-control__head">
+              <span id="zensia-pace-label">YOUR PACE</span>
+              <output htmlFor="zensia-pace">{String(pace).padStart(2,"0")}</output>
+            </div>
+            <input
+              id="zensia-pace"
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value={pace}
+              aria-label="Change the pace from city rush to stay"
+              onChange={(event)=>setPaceValue(Number(event.target.value))}
+            />
+            <div className="zensia-pace-control__labels" aria-hidden="true"><span>CITY</span><span>ARRIVE</span><span>STAY</span></div>
+            <p className="zensia-pace-control__status" role="status" aria-live="polite">
+              {paceZone === "rush" && "The outside still has the room."}
+              {paceZone === "arrive" && "The threshold is opening."}
+              {paceZone === "stay" && "The room has changed pace."}
+            </p>
+          </div>
+        </div>
+
+        <div className="zensia-pause__calm-field" aria-hidden={pace < 58}>
+          <span>THE ROOM HAS CHANGED PACE</span>
+          <strong>COLOMBIA<br/>IN THE ROOM.</strong>
+          <small>ORIGIN · RITUAL · TIME · COMMUNITY</small>
         </div>
         <div className="zensia-breath" aria-hidden="true"><span>BREATHE IN</span><i/><span>LET GO</span></div>
       </section>
