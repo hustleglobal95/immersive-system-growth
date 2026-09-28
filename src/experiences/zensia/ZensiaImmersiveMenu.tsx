@@ -297,7 +297,7 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
             <b>{String(visibleItems.length).padStart(2, "0")}</b>
           </div>
 
-          <div className="zim-menu__items" role="list">
+          <div className="zim-menu__items">
             {visibleItems.map((item, index) => {
               const itemCategory = ZENSIA_MENU_CATEGORIES.find((entry) => entry.id === item.category);
               const selected = item.id === activeItem.id;
@@ -305,7 +305,6 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
                 <button
                   key={item.id}
                   type="button"
-                  role="listitem"
                   className="zim-menu__item"
                   aria-pressed={selected}
                   onMouseEnter={() => selectItem(item)}
