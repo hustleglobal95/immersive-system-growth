@@ -33,7 +33,7 @@ function Ridge({ y, z, width, lift, opacity }: { y:number; z:number; width:numbe
   return <primitive object={line} />;
 }
 
-function Steam({ x, delay }: { x:number; delay:number }) {
+function Steam({ x, phase, progress, calm }: { x:number; phase:number; progress:ProgressRef; calm:CalmRef }) {
   const mesh = useRef<THREE.Mesh>(null);
   const curve = useMemo(() => new THREE.CatmullRomCurve3([
     new THREE.Vector3(x,-0.45,0.1),
@@ -43,64 +43,118 @@ function Steam({ x, delay }: { x:number; delay:number }) {
     new THREE.Vector3(x-0.04,1.55,0.02),
   ]), [x]);
   const geometry = useMemo(() => new THREE.TubeGeometry(curve, 54, 0.012, 7, false), [curve]);
-  useFrame(({clock}) => {
+  useFrame((_, delta) => {
     if (!mesh.current) return;
-    const t = clock.elapsedTime * 0.22 + delay;
-    mesh.current.position.y = Math.sin(t) * 0.07;
-    mesh.current.rotation.z = Math.sin(t * 0.7) * 0.05;
+    const ritual = THREE.MathUtils.smoothstep(progress.current, 0.46, 0.72);
+    const t = ritual * 6.2 + phase + (calm.current ? 0.6 : 0);
+    const amplitude = calm.current ? 0.022 : 0.06;
+    mesh.current.position.y = THREE.MathUtils.damp(mesh.current.position.y, Math.sin(t) * amplitude, 5, delta);
+    mesh.current.rotation.z = THREE.MathUtils.damp(mesh.current.rotation.z, Math.sin(t * 0.72) * amplitude * 0.7, 5, delta);
+    const targetScale = calm.current ? 0.82 : 0.92 + ritual * 0.08;
+    mesh.current.scale.y = THREE.MathUtils.damp(mesh.current.scale.y, targetScale, 5, delta);
   });
   return <mesh ref={mesh} geometry={geometry}><meshBasicMaterial color="#f0e8d7" transparent opacity={0.22} /></mesh>;
 }
 
 function World({ progress, calm }: { progress:ProgressRef; calm:CalmRef }) {
   const root = useRef<THREE.Group>(null);
+  const ridges = useRef<THREE.Group>(null);
   const glassLeft = useRef<THREE.Mesh>(null);
   const glassRight = useRef<THREE.Mesh>(null);
   const orb = useRef<THREE.Mesh>(null);
   const cup = useRef<THREE.Group>(null);
   const light = useRef<THREE.PointLight>(null);
-  const color = useMemo(() => new THREE.Color(), []);
+  const fog = useRef<THREE.Fog>(null);
+  const color = useMemo(() => new THREE.Color("#111312"), []);
+  const cityColor = useMemo(() => new THREE.Color("#111312"), []);
+  const originColor = useMemo(() => new THREE.Color("#10130d"), []);
+  const calmColor = useMemo(() => new THREE.Color("#20261b"), []);
+  const fogCity = useMemo(() => new THREE.Color("#11120e"), []);
+  const fogCalm = useMemo(() => new THREE.Color("#22281d"), []);
 
-  useFrame(({scene, pointer}, delta) => {
+  useFrame(({scene, pointer, camera, size}, delta) => {
     const p = progress.current;
     const isCalm = calm.current;
+    const mobile = size.width < 700;
+    const calmAmount = isCalm ? 1 : 0;
+    const easing = 1 - Math.exp(-delta * 2.8);
+
     if (root.current) {
-      root.current.rotation.y = THREE.MathUtils.damp(root.current.rotation.y, pointer.x * 0.12 + p * 0.16, 4, delta);
+      const pointerWeight = isCalm ? 0.035 : 0.12;
+      root.current.rotation.y = THREE.MathUtils.damp(root.current.rotation.y, pointer.x * pointerWeight + p * 0.11, 4, delta);
       root.current.position.y = THREE.MathUtils.damp(root.current.position.y, p < 0.22 ? -0.12 : p < 0.63 ? 0.10 : -0.05, 4, delta);
     }
+
     const opening = THREE.MathUtils.smoothstep(p, 0.08, 0.25);
-    if (glassLeft.current) {
-      glassLeft.current.position.x = THREE.MathUtils.damp(glassLeft.current.position.x, -1.35 - opening * 1.8, 5, delta);
-      glassLeft.current.rotation.y = THREE.MathUtils.damp(glassLeft.current.rotation.y, opening * -0.22, 5, delta);
+    const calmOpening = calmAmount * (mobile ? 1.2 : 2.3);
+    for (const [mesh, sign] of [[glassLeft.current,-1],[glassRight.current,1]] as const) {
+      if (!mesh) continue;
+      mesh.position.x = THREE.MathUtils.damp(mesh.position.x, sign * (1.35 + opening * 1.8 + calmOpening), 4.5, delta);
+      mesh.rotation.y = THREE.MathUtils.damp(mesh.rotation.y, sign * (opening * 0.22 + calmAmount * 0.18), 4.5, delta);
+      const material = mesh.material as THREE.MeshPhysicalMaterial;
+      material.opacity = THREE.MathUtils.damp(material.opacity, isCalm ? 0.16 : 0.64, 4.5, delta);
     }
-    if (glassRight.current) {
-      glassRight.current.position.x = THREE.MathUtils.damp(glassRight.current.position.x, 1.35 + opening * 1.8, 5, delta);
-      glassRight.current.rotation.y = THREE.MathUtils.damp(glassRight.current.rotation.y, opening * 0.22, 5, delta);
+
+    if (ridges.current) {
+      const ridgeScale = isCalm ? (mobile ? 1.06 : 1.2) : 1;
+      ridges.current.scale.x = THREE.MathUtils.damp(ridges.current.scale.x, ridgeScale, 3.5, delta);
+      ridges.current.scale.y = THREE.MathUtils.damp(ridges.current.scale.y, ridgeScale, 3.5, delta);
+      ridges.current.position.z = THREE.MathUtils.damp(ridges.current.position.z, isCalm ? -1.2 : -1.8, 3.5, delta);
+      ridges.current.position.y = THREE.MathUtils.damp(ridges.current.position.y, isCalm ? -0.72 : -0.55, 3.5, delta);
     }
+
     const origin = THREE.MathUtils.smoothstep(p, 0.22, 0.48);
     if (orb.current) {
-      const s = THREE.MathUtils.lerp(0.65, 1.15, origin);
-      orb.current.scale.setScalar(THREE.MathUtils.damp(orb.current.scale.x, s, 4, delta));
-      orb.current.position.z = THREE.MathUtils.damp(orb.current.position.z, THREE.MathUtils.lerp(-1.2, -0.15, origin), 4, delta);
-      orb.current.rotation.y += delta * (isCalm ? 0.05 : 0.14);
+      const baseScale = THREE.MathUtils.lerp(0.65, 1.15, origin);
+      const calmScale = mobile ? 0.48 : 0.56;
+      const targetScale = isCalm ? baseScale * calmScale : baseScale;
+      orb.current.scale.setScalar(THREE.MathUtils.damp(orb.current.scale.x, targetScale, 3.2, delta));
+      orb.current.position.x = THREE.MathUtils.damp(orb.current.position.x, isCalm ? (mobile ? 1.05 : 2.05) : 0, 3.2, delta);
+      orb.current.position.y = THREE.MathUtils.damp(orb.current.position.y, isCalm ? (mobile ? 1.75 : 1.18) : 0.35, 3.2, delta);
+      orb.current.position.z = THREE.MathUtils.damp(orb.current.position.z, isCalm ? -1.05 : THREE.MathUtils.lerp(-1.2, -0.15, origin), 3.2, delta);
+      orb.current.rotation.y = THREE.MathUtils.damp(orb.current.rotation.y, p * 0.72 + calmAmount * 0.16, 3.2, delta);
     }
+
     const ritual = THREE.MathUtils.smoothstep(p, 0.46, 0.68);
     if (cup.current) {
-      cup.current.position.y = THREE.MathUtils.damp(cup.current.position.y, THREE.MathUtils.lerp(-2.1, -0.45, ritual), 4, delta);
-      cup.current.rotation.x = THREE.MathUtils.damp(cup.current.rotation.x, THREE.MathUtils.lerp(1.28, 1.52, ritual), 4, delta);
+      const baseY = THREE.MathUtils.lerp(-2.1, -0.45, ritual);
+      cup.current.position.x = THREE.MathUtils.damp(cup.current.position.x, isCalm ? (mobile ? 0.65 : 1.55) : 0, 3.2, delta);
+      cup.current.position.y = THREE.MathUtils.damp(cup.current.position.y, isCalm ? (mobile ? -2.62 : -1.55) : baseY, 3.2, delta);
+      cup.current.position.z = THREE.MathUtils.damp(cup.current.position.z, isCalm ? -0.35 : 0.1, 3.2, delta);
+      cup.current.rotation.x = THREE.MathUtils.damp(cup.current.rotation.x, isCalm ? 1.43 : THREE.MathUtils.lerp(1.28, 1.52, ritual), 3.2, delta);
+      const cupScale = isCalm ? (mobile ? 0.9 : 1.34) : 1;
+      cup.current.scale.setScalar(THREE.MathUtils.damp(cup.current.scale.x, cupScale, 3.2, delta));
     }
-    if (light.current) light.current.intensity = THREE.MathUtils.damp(light.current.intensity, 2.2 + ritual * 5 + (isCalm ? 2 : 0), 4, delta);
-    color.set(p > 0.68 || isCalm ? "#14140f" : p > 0.28 ? "#10130d" : "#111312");
+
+    const perspective = camera as THREE.PerspectiveCamera;
+    camera.position.x = THREE.MathUtils.damp(camera.position.x, isCalm ? (mobile ? -0.08 : -0.56) : 0, 2.6, delta);
+    camera.position.y = THREE.MathUtils.damp(camera.position.y, isCalm ? (mobile ? 0.34 : 0.42) : 0.2, 2.6, delta);
+    const fovTarget = isCalm ? (mobile ? 44 : 39) : 42;
+    const nextFov = THREE.MathUtils.damp(perspective.fov, fovTarget, 2.6, delta);
+    if (Math.abs(nextFov - perspective.fov) > 0.001) {
+      perspective.fov = nextFov;
+      perspective.updateProjectionMatrix();
+    }
+
+    if (light.current) {
+      light.current.position.x = THREE.MathUtils.damp(light.current.position.x, isCalm ? 1.25 : 0, 3.2, delta);
+      light.current.position.y = THREE.MathUtils.damp(light.current.position.y, isCalm ? 1.7 : 0.6, 3.2, delta);
+      light.current.intensity = THREE.MathUtils.damp(light.current.intensity, isCalm ? 8.5 : 2.2 + ritual * 5, 3.2, delta);
+    }
+
+    const targetBackground = isCalm ? calmColor : p > 0.28 ? originColor : cityColor;
+    color.lerp(targetBackground, easing);
     scene.background = color;
+    if (fog.current) fog.current.color.lerp(isCalm ? fogCalm : fogCity, easing);
   });
 
   return <>
-    <fog attach="fog" args={["#11120e", 4.5, 13]} />
+    <fog ref={fog} attach="fog" args={["#11120e", 4.5, 13]} />
     <ambientLight intensity={0.55} color="#c9d3bd" />
     <directionalLight position={[-4,5,4]} intensity={2.1} color="#dce2d1" />
     <pointLight ref={light} position={[0,0.6,2.5]} intensity={2.2} color="#d8a16c" distance={9} />
     <group ref={root}>
-      <group position={[0,-0.55,-1.8]}>
+      <group ref={ridges} position={[0,-0.55,-1.8]}>
         {[0,1,2,3,4,5,6].map(i => <Ridge key={i} y={-1.3+i*0.17} z={-2-i*0.34} width={9+i*0.8} lift={0.5+i*0.06} opacity={0.2+i*0.035} />)}
       </group>
 
@@ -118,7 +172,9 @@ function World({ progress, calm }: { progress:ProgressRef; calm:CalmRef }) {
           <circleGeometry args={[1.07,96]} />
           <meshPhysicalMaterial color="#321b13" roughness={0.38} clearcoat={0.5} />
         </mesh>
-        <Steam x={-0.24} delay={0} /><Steam x={0.08} delay={1.2} /><Steam x={0.32} delay={2.4} />
+        <Steam x={-0.24} phase={0} progress={progress} calm={calm} />
+        <Steam x={0.08} phase={1.2} progress={progress} calm={calm} />
+        <Steam x={0.32} phase={2.4} progress={progress} calm={calm} />
       </group>
 
       <mesh ref={glassLeft} position={[-1.35,0,2.25]}>
@@ -243,15 +299,24 @@ export function ZensiaExperience() {
         </div>
       </section>
 
-      <section id="zensia-pause" className="zensia-scene zensia-pause">
-        <div className="zensia-pause__inner" data-z-reveal>
-          <p className="zensia-kicker">04 / THE SIGNATURE</p>
-          <h2>Don’t scroll faster.<br/><em>Stay longer.</em></h2>
-          <p>This is the point of the brand. Change the pace of the interface and the rest of the experience reorganizes around calm.</p>
-          <button type="button" className="zensia-calm-toggle" onClick={()=>setCalmMode(!calm)} aria-pressed={calm}>
-            <span>{calm ? "Return to city pace" : "Enter calm mode"}</span><i aria-hidden="true">{calm ? "—" : "○"}</i>
-          </button>
+      <section id="zensia-pause" className="zensia-scene zensia-pause" data-signature-state={calm ? "stay" : "rush"}>
+        <div className="zensia-pause__interface">
+          <div className="zensia-pause__inner" data-z-reveal>
+            <p className="zensia-kicker">04 / THE SIGNATURE</p>
+            <h2><span className="zensia-pause__directive">Don’t scroll faster.</span><em>Stay longer.</em></h2>
+            <p>Change the pace once. The glass opens, the coffee recedes into a horizon, origin comes forward and the interface gives the room back to you.</p>
+            <button type="button" className="zensia-calm-toggle" onClick={()=>setCalmMode(!calm)} aria-pressed={calm}>
+              <span>{calm ? "Return to city pace" : "Enter calm mode"}</span><i aria-hidden="true">{calm ? "—" : "○"}</i>
+            </button>
+          </div>
+          <aside className="zensia-calm-proof" aria-hidden={!calm}>
+            <span>PACE / STAY</span>
+            <strong>COLOMBIA</strong>
+            <p>Origin becomes the horizon.</p>
+            <small>LESS NOISE · MORE ROOM</small>
+          </aside>
         </div>
+        <div className="zensia-pause__horizon" aria-hidden="true"><span /><b>ORIGIN / RITUAL / ROOM</b></div>
         <div className="zensia-breath" aria-hidden="true"><span>BREATHE IN</span><i/><span>LET GO</span></div>
       </section>
 

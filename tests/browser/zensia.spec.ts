@@ -16,9 +16,22 @@ test("Zensia preserves one spatial canvas, clear conversion actions and the calm
 
   const calm=page.getByRole("button",{name:"Enter calm mode"});
   await calm.scrollIntoViewIfNeeded();
+  const signatureTitle=page.locator(".zensia-pause h2");
+  const beforeBox=await signatureTitle.boundingBox();
+  await page.screenshot({path:"test-results/zensia-candidate/desktop-signature-before.png",fullPage:false});
   await calm.click();
   await expect(page.locator(".zensia")).toHaveAttribute("data-calm","true");
   await expect(page.getByRole("button",{name:"Return to city pace"})).toHaveAttribute("aria-pressed","true");
+  await expect(page.locator(".zensia-calm-proof")).toHaveAttribute("aria-hidden","false");
+  await page.waitForTimeout(1300);
+  const afterBox=await signatureTitle.boundingBox();
+  expect(beforeBox).not.toBeNull();
+  expect(afterBox).not.toBeNull();
+  expect(
+    Math.abs((afterBox?.x ?? 0)-(beforeBox?.x ?? 0)) > 12 ||
+    (afterBox?.width ?? 0) < (beforeBox?.width ?? 0)-24,
+  ).toBe(true);
+  await page.screenshot({path:"test-results/zensia-candidate/desktop-signature-calm.png",fullPage:false});
 
   await page.locator("#zensia-visit").scrollIntoViewIfNeeded();
   await expect(page.getByRole("link",{name:"Order online"})).toHaveAttribute("href","https://zensia-coffee-llc.square.site/");
@@ -36,6 +49,19 @@ test("Zensia mobile and reduced-motion modes preserve the narrative and avoid ho
     await expect(page.locator(`#${id}`)).toBeInViewport();
     expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   }
+  await page.locator("#zensia-pause").scrollIntoViewIfNeeded();
+  const calm=page.getByRole("button",{name:"Enter calm mode"});
+  await calm.scrollIntoViewIfNeeded();
+  await page.screenshot({path:"test-results/zensia-candidate/mobile-signature-before.png",fullPage:false});
+  await calm.click();
+  await expect(page.locator(".zensia")).toHaveAttribute("data-calm","true");
+  await expect(page.locator(".zensia-calm-proof")).toHaveAttribute("aria-hidden","false");
+  const titleBox=await page.locator(".zensia-pause h2").boundingBox();
+  expect(titleBox).not.toBeNull();
+  expect((titleBox?.x ?? -1) >= 0).toBe(true);
+  expect((titleBox?.x ?? 0)+(titleBox?.width ?? 0) <= 390).toBe(true);
+  await page.screenshot({path:"test-results/zensia-candidate/mobile-signature-calm.png",fullPage:false});
+  await page.locator("#zensia-visit").scrollIntoViewIfNeeded();
   await expect(page.getByRole("link",{name:"Order online"})).toBeVisible();
 });
 
