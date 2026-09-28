@@ -28,7 +28,7 @@ test("Zensia imagination pass preserves Forge masks, motion and commerce",()=>{
   assert.match(component,/createMaskReveal/);
   assert.match(component,/ScrollTrigger/);
   assert.match(component,/https:\/\/zensia-coffee-llc\.square\.site\//);
-  assert.match(component,/https:\/\/www\.zensiacoffee\.com\/actual-menu/);
+  assert.match(component,/ZensiaImmersiveMenu/);
   assert.match(component,/profile\.squareup\.com\/loyalty\/MLX5PRMQ9XZ02/);
   assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
 });
