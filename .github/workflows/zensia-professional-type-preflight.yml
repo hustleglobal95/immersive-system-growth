@@ -1,0 +1,95 @@
+name: Zensia Professional Type Preflight
+
+on:
+  push:
+    branches:
+      - project/zensia-professional-type
+    paths:
+      - .github/workflows/zensia-professional-type-preflight.yml
+
+permissions:
+  contents: write
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Write structured type brief
+        run: |
+          mkdir -p .forge/execution/zensia-professional-type
+          cat > .forge/execution/zensia-professional-type/brief.json <<'EOF'
+          {
+            "projectName": "Zensia Coffee Professional Type Pass",
+            "projectType": "hospitality",
+            "tier": "signature",
+            "client": "Zensia Coffee",
+            "audience": "Design-aware coffee customers and local visitors evaluating a premium Colombian specialty-coffee brand.",
+            "objective": "Replace the current decorative Cormorant-led typography with a cleaner, more professional architectural sans system while preserving the kinetic Zensia experience.",
+            "primaryAction": "Order online",
+            "brandTruth": "Zensia is calm, contemporary Colombian specialty coffee with a physical hospitality experience that should feel polished, confident and modern rather than fashion-editorial.",
+            "differentiators": [
+              "Colombian specialty coffee",
+              "Real Zen at Home product packaging",
+              "Calm hospitality and community",
+              "Kinetic product-first web presentation"
+            ],
+            "constraints": [
+              "Remove Cormorant Garamond from the Zensia route",
+              "Use existing production-safe Manrope for display and interface, with DM Sans for supporting body copy",
+              "No italic fashion-editorial styling",
+              "Tighten hierarchy, line-height, weight and tracking across hero, kinetic section, origin, Calm Club and visit",
+              "Preserve all current motion, masks, assets and commerce behavior",
+              "Do not redesign the site beyond typography and necessary spacing corrections",
+              "Keep mobile typography deliberately composed"
+            ],
+            "existingAssets": [],
+            "references": [
+              {
+                "label": "Forge Type Vault — Modern Architecture",
+                "lesson": "Use Manrope display with DM Sans body for a minimal, professional and structurally confident system."
+              },
+              {
+                "label": "Brewns — Forge hospitality precedent",
+                "lesson": "Typography should behave as a strong environmental graphic system around product, not as decorative editorial styling."
+              }
+            ]
+          }
+          EOF
+      - name: Run Forge preflight
+        env:
+          STUDIO_AUTH_ENABLED: "false"
+          FORGE_LOCAL_STORAGE_ENABLED: "true"
+          NODE_ENV: development
+        run: |
+          npm run forge:preflight -- \
+            --name="Zensia Coffee Professional Type Pass" \
+            --brief=.forge/execution/zensia-professional-type/brief.json \
+            --artifacts=.forge/execution/zensia-professional-type/artifacts \
+            --record=forge-intelligence/execution-records/zensia-professional-type.json
+      - name: Compile typography context
+        run: |
+          npm run forge:context -- \
+            --domain="typography" \
+            --scene="hero" \
+            --objective="Replace decorative editorial typography with a professional Manrope and DM Sans system" \
+            --prompt="Remove Cormorant from Zensia and use Manrope display plus DM Sans body with tighter hierarchy." \
+            --name="Zensia Coffee Professional Type Pass" \
+            --output=.forge/execution/zensia-professional-type/type-context.json
+      - name: Validate execution evidence
+        run: npm run forge:execution:audit -- --record=forge-intelligence/execution-records/zensia-professional-type.json
+      - name: Commit public-safe record
+        run: |
+          git config user.name "forge-preflight"
+          git config user.email "actions@users.noreply.github.com"
+          git add forge-intelligence/execution-records/zensia-professional-type.json
+          git commit -m "Record Zensia professional type preflight [forge-preflight-record]"
+          git push origin HEAD:project/zensia-professional-type
