@@ -48,3 +48,10 @@ test("Zensia immersive menu is interaction-first and preserves ordering",()=>{
   assert.match(component,/Order online/);
   assert.match(component,/<noscript>/);
 });
+
+
+test("Zensia immersive menu includes the uploaded coffee splash motion asset",()=>{
+  assert.match(component,/uploaded-zensia-coffee-splash/);
+  assert.match(component,/ef1ed3e5-a0c5-4055-a347-5ab30d2c3454\.webp/);
+  assert.match(component,/zim-menu__media-splash/);
+});
