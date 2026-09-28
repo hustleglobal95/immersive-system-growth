@@ -51,10 +51,23 @@ test("Zensia immersive menu is interaction-first and preserves ordering",()=>{
 });
 
 
-test("Zensia immersive menu includes the uploaded coffee splash motion asset",()=>{
+test("Zensia immersive menu is photo-first and removes synthetic product geometry",()=>{
+  assert.match(component,/next\/image/);
+  assert.match(component,/AUTHENTIC ZENSIA PHOTOGRAPHY/);
+  assert.match(component,/Real Zensia imagery\. No synthetic menu render\./);
+  assert.match(component,/static\.wixstatic\.com\/media/);
+  assert.doesNotMatch(component,/zim-menu__vessel/);
+  assert.doesNotMatch(component,/zim-menu__orbit/);
+  assert.doesNotMatch(component,/zim-menu__steam/);
+  assert.doesNotMatch(css,/\.zim-menu__vessel/);
+  assert.doesNotMatch(css,/\.zim-menu__orbit/);
+  assert.doesNotMatch(css,/\.zim-menu__steam/);
+});
+
+test("Zensia immersive menu keeps the uploaded splash as connective motion only",()=>{
   assert.match(component,/uploaded-zensia-coffee-splash/);
+  assert.match(component,/showCoffeeSplash/);
   assert.match(component,/ef1ed3e5-a0c5-4055-a347-5ab30d2c3454\.webp/);
-  assert.match(component,/zim-menu__media-splash/);
   assert.match(css,/prefers-reduced-motion/);
   assert.match(css,/\.zim-menu__media-splash\{display:none!important\}/);
 });
