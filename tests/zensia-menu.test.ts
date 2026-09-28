@@ -45,7 +45,7 @@ test("Zensia immersive menu is interaction-first and preserves ordering",()=>{
   assert.match(component,/Menu categories/);
   assert.match(component,/aria-pressed/);
   assert.match(component,/ScrollTrigger/);
-  assert.match(component,/repeat: -1/);
+  assert.match(component,/zim-menu__photo/);
   assert.match(component,/Order online/);
   assert.match(component,/<noscript>/);
 });
