@@ -6,9 +6,9 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { createCssMaskStyle, createMaskReveal } from "@/src/lib/maskReveal";
 import type { MaskRevealDefinition } from "@/src/types/experience";
+import { ZensiaImmersiveMenu } from "./ZensiaImmersiveMenu";
 
 const ORDER_URL="https://zensia-coffee-llc.square.site/";
-const MENU_URL="https://www.zensiacoffee.com/actual-menu";
 const CALM_URL="https://profile.squareup.com/loyalty/MLX5PRMQ9XZ02";
 const MAP_URL="https://www.google.com/maps/search/?api=1&query=8121+Maryland+Avenue+Saint+Louis+MO+63105";
 
@@ -318,7 +318,7 @@ export function ZensiaImaginationExperience(){
         <a href="#zi-main" className="zi-brand" aria-label="Zensia Coffee home">ZENSIA <span>COFFEE</span></a>
         <p className="zi-origin-line">COLOMBIAN SPECIALTY COFFEE · CLAYTON, ST. LOUIS</p>
         <nav className="zi-nav" aria-label="Primary">
-          <a href={MENU_URL} target="_blank" rel="noreferrer">Menu</a>
+          <a href="#zi-menu">Menu</a>
           <a href="#zi-coffee">Coffee</a>
           <a href="#zi-visit">Visit</a>
           <a className="zi-nav__order" href={ORDER_URL} target="_blank" rel="noreferrer">Order online</a>
@@ -335,7 +335,7 @@ export function ZensiaImaginationExperience(){
             <p className="zi-hero__body">Colombian specialty coffee, prepared with intention and served in a space made for slowing down.</p>
             <div className="zi-hero__actions">
               <a href={ORDER_URL} target="_blank" rel="noreferrer">Order online <span aria-hidden="true">↗</span></a>
-              <a href={MENU_URL} target="_blank" rel="noreferrer">View menu</a>
+              <a href="#zi-menu">View menu</a>
             </div>
           </div>
 
@@ -417,6 +417,8 @@ export function ZensiaImaginationExperience(){
           </div>
         </section>
 
+        <ZensiaImmersiveMenu orderUrl={ORDER_URL} />
+
         <section className="zi-origin-story">
           <div className="zi-origin-story__media" data-zi-mask="origin">
             <Image src="https://static.wixstatic.com/media/859566_6b7702b0813d4b9388ff1a8752200691~mv2.png" alt="Zensia Coffee" fill sizes="(max-width:900px) 100vw,58vw" />
@@ -458,7 +460,7 @@ export function ZensiaImaginationExperience(){
             </a>
             <div className="zi-visit__links">
               <a href={ORDER_URL} target="_blank" rel="noreferrer"><span>Order online</span><b>↗</b></a>
-              <a href={MENU_URL} target="_blank" rel="noreferrer"><span>View menu</span><b>↗</b></a>
+              <a href="#zi-menu"><span>View menu</span><b>↑</b></a>
               <a href={CALM_URL} target="_blank" rel="noreferrer"><span>Join Calm Club</span><b>↗</b></a>
             </div>
           </div>
