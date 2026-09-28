@@ -1,0 +1,75 @@
+name: Zensia Signature Repair Review
+on:
+  push:
+    branches:
+      - review/zensia-signature-repair-evidence
+    paths:
+      - .github/workflows/zensia-signature-repair-review.yml
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Start production server
+        run: |
+          npm run start -- --hostname 127.0.0.1 --port 3000 > /tmp/zensia-repair-review.log 2>&1 &
+          echo $! > /tmp/zensia-repair-review.pid
+          for i in {1..40}; do
+            curl --fail --silent http://127.0.0.1:3000/zensia >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/zensia-repair-review.log
+          exit 1
+      - name: Capture repair comparison
+        run: |
+          mkdir -p test-results/zensia-repair-review
+          node --input-type=module <<'NODE'
+          import { chromium } from '@playwright/test';
+          const browser=await chromium.launch({headless:true});
+
+          const desktop=await browser.newPage({viewport:{width:1440,height:1000},deviceScaleFactor:1});
+          await desktop.goto('http://127.0.0.1:3000/zensia',{waitUntil:'networkidle'});
+          await desktop.locator('#zensia-pause').scrollIntoViewIfNeeded();
+          await desktop.waitForTimeout(600);
+          const desktopPace=desktop.getByRole('slider',{name:'Change the pace from city rush to stay'});
+          await desktopPace.fill('0');
+          await desktop.waitForTimeout(250);
+          await desktop.screenshot({path:'test-results/zensia-repair-review/01-desktop-rush.png'});
+          await desktopPace.fill('100');
+          await desktop.waitForTimeout(1700);
+          await desktop.screenshot({path:'test-results/zensia-repair-review/02-desktop-stay.png'});
+
+          const mobile=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});
+          await mobile.goto('http://127.0.0.1:3000/zensia',{waitUntil:'networkidle'});
+          await mobile.locator('#zensia-pause').scrollIntoViewIfNeeded();
+          await mobile.waitForTimeout(500);
+          const mobilePace=mobile.getByRole('slider',{name:'Change the pace from city rush to stay'});
+          await mobilePace.fill('0');
+          await mobile.waitForTimeout(200);
+          await mobile.screenshot({path:'test-results/zensia-repair-review/03-mobile-rush.png'});
+          await mobilePace.fill('100');
+          await mobile.waitForTimeout(300);
+          await mobile.screenshot({path:'test-results/zensia-repair-review/04-mobile-stay-reduced-motion-safe.png'});
+
+          await browser.close();
+          NODE
+      - name: Stop server
+        if: always()
+        run: |
+          if [ -f /tmp/zensia-repair-review.pid ]; then kill "$(cat /tmp/zensia-repair-review.pid)" || true; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zensia-signature-repair-review
+          path: test-results/zensia-repair-review/
+          retention-days: 14
