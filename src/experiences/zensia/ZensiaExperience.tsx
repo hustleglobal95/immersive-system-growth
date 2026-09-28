@@ -283,7 +283,7 @@ export function ZensiaExperience() {
               scale: 1.02,
               yPercent: index % 2 === 0 ? 5 : -5,
               ease: "none",
-              scrollTrigger: { trigger: image.closest(".z2-profile"), start: "top bottom", end: "bottom top", scrub: 0.75 },
+              scrollTrigger: { trigger: image.closest(".z2-profile") ?? image, start: "top bottom", end: "bottom top", scrub: 0.75 },
             },
           );
         });
@@ -363,7 +363,7 @@ export function ZensiaExperience() {
             {
               scale: 1.01,
               ease: "none",
-              scrollTrigger: { trigger: image.closest(".z2-profile"), start: "top bottom", end: "bottom top", scrub: 0.5 },
+              scrollTrigger: { trigger: image.closest(".z2-profile") ?? image, start: "top bottom", end: "bottom top", scrub: 0.5 },
             },
           );
         });
