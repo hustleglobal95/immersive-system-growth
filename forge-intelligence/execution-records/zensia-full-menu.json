@@ -2,18 +2,18 @@
   "schemaVersion": 1,
   "policyId": "forge-full-system-execution",
   "policyVersion": 2,
-  "runId": "zensia-coffee-full-immersive-menu-6a4c3f0b-1790627716206",
-  "projectName": "Zensia Coffee Full Immersive Menu",
-  "createdAt": "2026-09-28T20:35:23.839Z",
+  "runId": "zensia-emergency-menu-repair-3c02b2f4-1790639614019",
+  "projectName": "Zensia Emergency Menu Repair",
+  "createdAt": "2026-09-28T23:53:41.525Z",
   "generator": "scripts/forge-preflight.mjs",
   "repository": {
-    "baseCommit": "6a4c3f0b36d0ce99c0e1960ecd4361c8ea7848da",
-    "branch": "project/zensia-full-immersive-menu"
+    "baseCommit": "3c02b2f46f79a8e7791947b007c438af90480380",
+    "branch": "project/zensia-emergency-menu-final"
   },
   "confidentiality": {
     "rawPromptCommitted": false,
     "promptFingerprintAlgorithm": "sha256",
-    "promptSha256": "b9b62dec3180ac49137442e280e632fadbbfa16a8825f641fcc6430a18747618",
+    "promptSha256": "e0dd3ff2c81a8462b6179c024c7ca02310fe66f7ca2593992447875914c9f4ca",
     "promptSource": "brief"
   },
   "policy": {
@@ -115,8 +115,8 @@
       "bytes": 2842
     },
     "buildPacket": {
-      "sha256": "e436333f634e6f469d837d85590871647622443cff4440ef780736adcf55b676",
-      "bytes": 342992,
+      "sha256": "0fd00d611d77e3146f4bcb346e4191024d0a3b1468c8042941aa46698ea16f1f",
+      "bytes": 345432,
       "requiredSectionsVerified": true
     },
     "externalReferences": [],
@@ -125,8 +125,8 @@
       "bytes": 179
     },
     "constructionResearch": {
-      "sha256": "a3923eeb51b4a5f4ff866a24e4d5f74340771397d50f9554b5be8eb1686fa784",
-      "bytes": 19888
+      "sha256": "5de38773f6d9570b035dad4b8baf2a6d0cc71237e9b9b6b25afbf67963728e56",
+      "bytes": 19862
     },
     "acceptanceContract": {
       "sha256": "e6240d4f38f4d0e12bbe0e6d89755eb0ea97d104b2196c52562c9f45767caa14",
@@ -135,77 +135,77 @@
     "contexts": [
       {
         "domain": "director",
-        "sha256": "1f4beba04696849cd87c81c2a4056949e6ab482bfd6a8592dd894271bccfd75c",
-        "bytes": 42906,
-        "creativeStateFingerprint": "forge1:994354d53cb96001",
+        "sha256": "72dbcfd6adf2d2b10a642e2d066d38faeccd3d8d79177ac49048fcb7fc6a5993",
+        "bytes": 43301,
+        "creativeStateFingerprint": "forge1:4f5953ba948058c6",
         "signaturePrimarySceneId": "signature"
       },
       {
         "domain": "composition",
-        "sha256": "dd5004a7fe403d76e301e5e9386d9c0d314bde2f486fef54ae69fc67ef083a38",
-        "bytes": 30461,
-        "creativeStateFingerprint": "forge1:994354d53cb96001",
+        "sha256": "6ebfdbfdd57dea8224693651532af804bf9e051cc0a5c99e0765ef60cd0c81e8",
+        "bytes": 30851,
+        "creativeStateFingerprint": "forge1:4f5953ba948058c6",
         "signaturePrimarySceneId": "signature"
       },
       {
         "domain": "camera",
-        "sha256": "0298e2b0cacced394db9193b0e6f4926e2c0068c1947fab089cff1a18b79e23e",
-        "bytes": 30353,
-        "creativeStateFingerprint": "forge1:994354d53cb96001",
+        "sha256": "67fcc26ca101106a0d2273b9f87e50b681b69d99e84d2310cac9d16dedfc2944",
+        "bytes": 30748,
+        "creativeStateFingerprint": "forge1:4f5953ba948058c6",
         "signaturePrimarySceneId": "signature"
       },
       {
         "domain": "motion",
-        "sha256": "f1fa57b3f3902e91c1eb47923b30e25d496086233bec68527364af78ac7215b6",
-        "bytes": 30548,
-        "creativeStateFingerprint": "forge1:994354d53cb96001",
+        "sha256": "12314e4ebda31fac527a540367980b8b4fa7a5e1d9721134c0dd1437ce55b5da",
+        "bytes": 30938,
+        "creativeStateFingerprint": "forge1:4f5953ba948058c6",
         "signaturePrimarySceneId": "signature"
       },
       {
         "domain": "typography",
-        "sha256": "1e488dd034d382472482a626491cb34c02bbf2ba657d0e780798e852295c8a89",
-        "bytes": 30259,
-        "creativeStateFingerprint": "forge1:994354d53cb96001",
+        "sha256": "7ade568424be41bb31725287929b1f8e8bb93b2c2962ad0258f419b5ca56e299",
+        "bytes": 30654,
+        "creativeStateFingerprint": "forge1:4f5953ba948058c6",
         "signaturePrimarySceneId": "signature"
       },
       {
         "domain": "interaction",
-        "sha256": "9f2a9a0a717fdd5e0c66e0cc60da175db002c491b16139427bed186f025230d8",
-        "bytes": 36938,
-        "creativeStateFingerprint": "forge1:994354d53cb96001",
+        "sha256": "fd3752c42d5ed94ea239e2f3e07cd0e76126e5a940229e8acef848cb3aebb134",
+        "bytes": 37333,
+        "creativeStateFingerprint": "forge1:4f5953ba948058c6",
         "signaturePrimarySceneId": "signature"
       },
       {
         "domain": "asset",
-        "sha256": "434b5c92531f14c617574d2281e85c464c4bb19a93512ab872dbbda5038ced07",
-        "bytes": 35774,
-        "creativeStateFingerprint": "forge1:994354d53cb96001",
+        "sha256": "f98b5ddc3535f6931e7c4930456716fee50f13185b096229d97aa0eaa7067bb6",
+        "bytes": 36169,
+        "creativeStateFingerprint": "forge1:4f5953ba948058c6",
         "signaturePrimarySceneId": "signature"
       },
       {
         "domain": "mobile",
-        "sha256": "52eb8c4be2dbc6c0112c167aa6dd2fc5c8f241758bee54b4924a1ca6a83d8389",
-        "bytes": 37221,
-        "creativeStateFingerprint": "forge1:994354d53cb96001",
+        "sha256": "f143586bfbc15bb99306f9000c3e54506e1b27be1f658585efd3880a3be7d8c3",
+        "bytes": 37616,
+        "creativeStateFingerprint": "forge1:4f5953ba948058c6",
         "signaturePrimarySceneId": "signature"
       },
       {
         "domain": "performance",
-        "sha256": "d427fe636eb07cb613e9c8805d4d2dc18795dc81425d9451f3bfafb1f5a4a15e",
-        "bytes": 36263,
-        "creativeStateFingerprint": "forge1:994354d53cb96001",
+        "sha256": "91987ebf4ca7e1e0774f9d481b6e3dea2ac3cd63c6396040e59d01756bc16fd2",
+        "bytes": 36658,
+        "creativeStateFingerprint": "forge1:4f5953ba948058c6",
         "signaturePrimarySceneId": "signature"
       },
       {
         "domain": "engineering",
-        "sha256": "0e8f10dcfd2413b041307d6398b6b0bcdfb3654e6ca7411438bc02c2af05e22e",
-        "bytes": 42197,
-        "creativeStateFingerprint": "forge1:994354d53cb96001",
+        "sha256": "00184d5edfbb3916eea44e6aac0ea4db6f84448309917165dc12f5542ea142af",
+        "bytes": 42592,
+        "creativeStateFingerprint": "forge1:4f5953ba948058c6",
         "signaturePrimarySceneId": "signature"
       }
     ]
   },
-  "selfHash": "b5442c528149ae64e1b914cafbd43f649c11fe66f7b17baf7e0826e2061a0456",
+  "selfHash": "b4000a9267bbe3057fa88fbe71db6738430c0ab6c6098a01ecd02a05488413d8",
   "attestation": {
     "algorithm": "none",
     "keyId": null,
