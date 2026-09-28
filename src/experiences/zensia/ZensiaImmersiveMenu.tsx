@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -17,6 +18,38 @@ type ZensiaImmersiveMenuProps = {
 
 const MENU_SPLASH_URL =
   "https://d2ol7oe51mr4n9.cloudfront.net/user_3FugzGV89ehMBrUoVdwLJxFujO5/ef1ed3e5-a0c5-4055-a347-5ab30d2c3454.webp";
+
+const ZENSIA_PHOTO_POOLS = {
+  hot: [
+    "https://static.wixstatic.com/media/859566_90db78bfbd21470fafaf59bd0646b4ba~mv2.jpg",
+    "https://static.wixstatic.com/media/859566_dda43df0514841eea1663f508724fcef~mv2.jpg",
+  ],
+  espresso: [
+    "https://static.wixstatic.com/media/859566_b618d3f2dc39473fa45047c95e676872~mv2.jpg",
+    "https://static.wixstatic.com/media/859566_dda43df0514841eea1663f508724fcef~mv2.jpg",
+  ],
+  cold: [
+    "https://static.wixstatic.com/media/859566_26ddc1aef049454db886a6bd9d84b5b6~mv2.jpg",
+    "https://static.wixstatic.com/media/859566_90db78bfbd21470fafaf59bd0646b4ba~mv2.jpg",
+  ],
+  bread: [
+    "https://static.wixstatic.com/media/859566_6b7702b0813d4b9388ff1a8752200691~mv2.png",
+    "https://static.wixstatic.com/media/859566_dbb60c0fa9a444e589c870551afbcb7b~mv2.png",
+  ],
+  empanada: [
+    "https://static.wixstatic.com/media/859566_dbb60c0fa9a444e589c870551afbcb7b~mv2.png",
+    "https://static.wixstatic.com/media/859566_6b7702b0813d4b9388ff1a8752200691~mv2.png",
+  ],
+  dessert: [
+    "https://static.wixstatic.com/media/859566_90db78bfbd21470fafaf59bd0646b4ba~mv2.jpg",
+    "https://static.wixstatic.com/media/859566_dbb60c0fa9a444e589c870551afbcb7b~mv2.png",
+  ],
+} as const;
+
+function photoForItem(kind: keyof typeof ZENSIA_PHOTO_POOLS, index: number) {
+  const pool = ZENSIA_PHOTO_POOLS[kind];
+  return pool[index % pool.length];
+}
 
 function normalize(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
@@ -96,11 +129,6 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
         },
       );
 
-      gsap.to(".zim-menu__orbit--outer", { rotate: 360, duration: 32, repeat: -1, ease: "none" });
-      gsap.to(".zim-menu__orbit--inner", { rotate: -360, duration: 19, repeat: -1, ease: "none" });
-      gsap.to(".zim-menu__steam--a", { y: -24, x: 7, rotate: 5, duration: 3.4, repeat: -1, yoyo: true, ease: "sine.inOut" });
-      gsap.to(".zim-menu__steam--b", { y: -34, x: -8, rotate: -7, duration: 4.2, repeat: -1, yoyo: true, ease: "sine.inOut" });
-      gsap.to(".zim-menu__steam--c", { y: -18, x: 4, rotate: 3, duration: 3.8, repeat: -1, yoyo: true, ease: "sine.inOut" });
       gsap.fromTo(
         ".zim-menu__media-splash",
         { opacity: 0, scale: 0.74, xPercent: 12, rotate: -5 },
@@ -123,11 +151,11 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
           scrollTrigger: { trigger: element, start: "top bottom", end: "bottom top", scrub: 0.8 },
         });
         gsap.fromTo(
-          ".zim-menu__stage-object",
-          { rotateZ: -7, scale: 0.9 },
+          ".zim-menu__photo",
+          { scale: 1.08, yPercent: -2 },
           {
-            rotateZ: 7,
-            scale: 1.05,
+            scale: 1.01,
+            yPercent: 2,
             ease: "none",
             scrollTrigger: { trigger: element, start: "top bottom", end: "bottom top", scrub: 0.85 },
           },
@@ -161,7 +189,8 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
     timeline
       .fromTo(".zim-menu__active-index", { y: -10, opacity: 0 }, { y: 0, opacity: 0.62, duration: 0.32 }, 0)
       .fromTo(".zim-menu__active-name", { y: 26, opacity: 0, clipPath: "inset(0 0 100% 0)" }, { y: 0, opacity: 1, clipPath: "inset(0 0 0% 0)", duration: 0.58 }, 0.03)
-      .fromTo(".zim-menu__stage-object", { scale: 0.78, rotateZ: -8 }, { scale: 1, rotateZ: 0, duration: 0.62, ease: "back.out(1.3)" }, 0.06)
+      .fromTo(".zim-menu__photo", { scale: 1.12, clipPath: "inset(0 0 100% 0)" }, { scale: 1, clipPath: "inset(0 0 0% 0)", duration: 0.72, ease: "power4.out" }, 0.04)
+      .fromTo(".zim-menu__photo-caption", { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.42 }, 0.22)
       .fromTo(".zim-menu__media-splash", { scale: 0.91, opacity: 0.55 }, { scale: 1, opacity: 0.94, duration: 0.52 }, 0.04)
       .fromTo(".zim-menu__variant-row > *", { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.42, stagger: 0.045 }, 0.16);
 
@@ -199,6 +228,8 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
 
   const categoryItems = menuItemsForCategory(activeCategory.id);
   const categoryIndex = Math.max(0, categoryItems.findIndex((item) => item.id === activeItem.id));
+  const activePhoto = photoForItem(activeCategory.kind, categoryIndex);
+  const showCoffeeSplash = activeCategory.kind === "hot" || activeCategory.kind === "espresso" || activeCategory.kind === "cold";
 
   return (
     <section
@@ -259,33 +290,35 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
               <span>{activeCategory.label}</span>
             </div>
 
-            <div
-              className="zim-menu__media-splash"
-              aria-hidden="true"
-              data-source="uploaded-zensia-coffee-splash"
-              style={{ backgroundImage: `url("${MENU_SPLASH_URL}")` }}
-            />
+            <div className="zim-menu__photo-stage" aria-hidden="true">
+              <Image
+                key={`${activeItem.id}-${activePhoto}`}
+                src={activePhoto}
+                alt=""
+                fill
+                sizes="(max-width: 980px) 100vw, 58vw"
+                className="zim-menu__photo"
+              />
+              <div className="zim-menu__photo-shade" />
+              <div className="zim-menu__photo-caption">
+                <span>AUTHENTIC ZENSIA PHOTOGRAPHY</span>
+                <b>{activeCategory.shortLabel}</b>
+              </div>
+            </div>
+
+            {showCoffeeSplash ? (
+              <div
+                className="zim-menu__media-splash"
+                aria-hidden="true"
+                data-source="uploaded-zensia-coffee-splash"
+                style={{ backgroundImage: `url("${MENU_SPLASH_URL}")` }}
+              />
+            ) : null}
 
             <div className="zim-menu__stage-copy" aria-live="polite">
               <h3 className="zim-menu__active-name">{activeItem.name}</h3>
+              <p className="zim-menu__photo-note">Real Zensia imagery. No synthetic menu render.</p>
               {activeVariant ? <p className="zim-menu__selected-variant">{activeVariant}</p> : null}
-            </div>
-
-            <div className="zim-menu__stage-object" aria-hidden="true">
-              <div className="zim-menu__orbit zim-menu__orbit--outer">
-                <span>COLOMBIA</span>
-                <span>ZENSIA</span>
-                <span>ST. LOUIS</span>
-              </div>
-              <div className="zim-menu__orbit zim-menu__orbit--inner" />
-              <div className="zim-menu__vessel">
-                <i />
-                <b />
-                <em />
-              </div>
-              <div className="zim-menu__steam zim-menu__steam--a" />
-              <div className="zim-menu__steam zim-menu__steam--b" />
-              <div className="zim-menu__steam zim-menu__steam--c" />
             </div>
 
             {activeItem.variants?.length ? (
