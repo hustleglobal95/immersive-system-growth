@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { createCssMaskStyle, createMaskReveal } from "@/src/lib/maskReveal";
+import type { MaskRevealDefinition } from "@/src/types/experience";
 
 const ORDER_URL = "https://zensia-coffee-llc.square.site/";
 const MENU_URL = "https://www.zensiacoffee.com/actual-menu";
@@ -68,6 +70,49 @@ const COFFEE_PROFILES = [
   },
 ] as const;
 
+const HERO_PRODUCT_MASK = createMaskReveal("diagonal-cut", {
+  renderer: "dom",
+  direction: "up",
+  softness: 9,
+  rotation: -7,
+});
+const ORIGIN_MASK = createMaskReveal("ink-spread", {
+  renderer: "dom",
+  origin: [46, 52],
+  softness: 15,
+  scale: 1.04,
+  intensity: 1.18,
+  seed: 607,
+});
+const CLUB_MASK = createMaskReveal("radial-iris", {
+  renderer: "dom",
+  origin: [52, 48],
+  softness: 12,
+  scale: 1.05,
+});
+const VISIT_MASK = createMaskReveal("diagonal-cut", {
+  renderer: "dom",
+  direction: "right",
+  softness: 10,
+  rotation: -8,
+});
+
+function applyMaskProgress(node: HTMLElement, progress: number, mask: MaskRevealDefinition) {
+  const style = createCssMaskStyle(progress, mask);
+  const set = (property: string, value: unknown) => {
+    if (value === undefined || value === null) node.style.removeProperty(property);
+    else node.style.setProperty(property, String(value));
+  };
+  set("-webkit-mask-image", style.WebkitMaskImage);
+  set("mask-image", style.maskImage);
+  set("-webkit-mask-size", style.WebkitMaskSize);
+  set("mask-size", style.maskSize);
+  set("-webkit-mask-repeat", style.WebkitMaskRepeat);
+  set("mask-repeat", style.maskRepeat);
+  set("-webkit-mask-position", style.WebkitMaskPosition);
+  set("mask-position", style.maskPosition);
+}
+
 export function ZensiaExperience() {
   const root = useRef<HTMLDivElement>(null);
   const productStage = useRef<HTMLDivElement>(null);
@@ -83,42 +128,89 @@ export function ZensiaExperience() {
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduced) return;
 
-      gsap.fromTo(
-        ".z2-hero__copy > *",
-        { y: 28, opacity: 0 },
-        { y: 0, opacity: 1, stagger: 0.08, duration: 0.9, ease: "power3.out", delay: 0.1 },
-      );
+      const animateMask = (
+        node: HTMLElement,
+        mask: MaskRevealDefinition,
+        startAt = "top 92%",
+        endAt = "top 48%",
+      ) => {
+        applyMaskProgress(node, 0, mask);
+        ScrollTrigger.create({
+          trigger: node,
+          start: startAt,
+          end: endAt,
+          onRefresh: (self) => applyMaskProgress(node, self.progress, mask),
+          onUpdate: (self) => applyMaskProgress(node, self.progress, mask),
+        });
+      };
 
-      gsap.fromTo(
-        ".z2-product-stage",
-        { xPercent: 10, rotate: 3, opacity: 0 },
-        { xPercent: 0, rotate: 0, opacity: 1, duration: 1.15, ease: "power3.out", delay: 0.16 },
-      );
+      const heroTimeline = gsap.timeline({ defaults: { ease: "power3.out" } });
+      heroTimeline
+        .fromTo(".z2-header", { yPercent: -105 }, { yPercent: 0, duration: 0.75 }, 0)
+        .fromTo(
+          ".z2-hero__copy .z2-eyebrow",
+          { y: 22, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.7 },
+          0.08,
+        )
+        .fromTo(
+          ".z2-hero__copy h1",
+          { clipPath: "inset(0 0 100% 0)", yPercent: 8 },
+          { clipPath: "inset(0 0 0% 0)", yPercent: 0, duration: 1.05, ease: "expo.out" },
+          0.14,
+        )
+        .fromTo(
+          ".z2-hero__body",
+          { y: 28, opacity: 0 },
+          { y: 0, opacity: 0.72, duration: 0.8 },
+          0.32,
+        )
+        .fromTo(
+          ".z2-hero__actions a",
+          { y: 18, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.65, stagger: 0.08 },
+          0.44,
+        )
+        .fromTo(
+          ".z2-product-stage",
+          { xPercent: 11, rotateZ: 3.2, scale: 0.93, opacity: 0 },
+          { xPercent: 0, rotateZ: 0, scale: 1, opacity: 1, duration: 1.2, ease: "power4.out" },
+          0.16,
+        )
+        .fromTo(
+          ".z2-product-switcher",
+          { scaleX: 0, transformOrigin: "left center" },
+          { scaleX: 1, duration: 0.95, ease: "expo.out" },
+          0.42,
+        )
+        .fromTo(
+          ".z2-product-switcher button",
+          { y: 16, opacity: 0 },
+          { y: 0, opacity: 0.46, duration: 0.65, stagger: 0.06 },
+          0.52,
+        );
 
-      gsap.to(".z2-hero__word", {
-        xPercent: -10,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".z2-hero",
-          start: "top top",
-          end: "bottom top",
-          scrub: 0.6,
-        },
+      gsap.to(".z2-product-switcher button[aria-pressed='true']", { opacity: 1, duration: 0.2 });
+
+      gsap.utils.toArray<HTMLElement>("[data-z2-mask='profile']").forEach((node, index) => {
+        const direction = index % 2 === 0 ? "up" : "right";
+        animateMask(
+          node,
+          createMaskReveal("linear-soft", {
+            renderer: "dom",
+            direction,
+            softness: 9 + index * 1.5,
+          }),
+          "top 94%",
+          "top 54%",
+        );
       });
-
-      gsap.to(".z2-product-stage", {
-        yPercent: 8,
-        scale: 0.94,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".z2-hero",
-          start: "top top",
-          end: "bottom top",
-          scrub: 0.7,
-        },
-      });
+      gsap.utils.toArray<HTMLElement>("[data-z2-mask='origin']").forEach((node) => animateMask(node, ORIGIN_MASK, "top 94%", "top 38%"));
+      gsap.utils.toArray<HTMLElement>("[data-z2-mask='club']").forEach((node) => animateMask(node, CLUB_MASK, "top 94%", "top 48%"));
+      gsap.utils.toArray<HTMLElement>("[data-z2-mask='visit']").forEach((node) => animateMask(node, VISIT_MASK, "top 96%", "top 56%"));
 
       gsap.utils.toArray<HTMLElement>("[data-z2-reveal]").forEach((node) => {
+        if (node.matches("[data-z2-mask]")) return;
         gsap.fromTo(
           node,
           { y: 34, opacity: 0 },
@@ -127,14 +219,218 @@ export function ZensiaExperience() {
             opacity: 1,
             duration: 0.85,
             ease: "power3.out",
-            scrollTrigger: { trigger: node, start: "top 86%", once: true },
+            scrollTrigger: { trigger: node, start: "top 88%", once: true },
           },
         );
       });
+
+      gsap.utils.toArray<HTMLElement>(".z2 h2").forEach((heading) => {
+        gsap.fromTo(
+          heading,
+          { clipPath: "inset(0 0 100% 0)", yPercent: 10 },
+          {
+            clipPath: "inset(0 0 0% 0)",
+            yPercent: 0,
+            duration: 1.05,
+            ease: "expo.out",
+            scrollTrigger: { trigger: heading, start: "top 90%", once: true },
+          },
+        );
+      });
+
+      const mm = gsap.matchMedia();
+
+      mm.add("(min-width: 981px)", () => {
+        gsap.to(".z2-hero__word", {
+          xPercent: -14,
+          ease: "none",
+          scrollTrigger: { trigger: ".z2-hero", start: "top top", end: "bottom top", scrub: 0.7 },
+        });
+        gsap.to(".z2-hero__copy", {
+          yPercent: -10,
+          ease: "none",
+          scrollTrigger: { trigger: ".z2-hero", start: "top top", end: "bottom top", scrub: 0.8 },
+        });
+        gsap.to(".z2-product-stage", {
+          yPercent: 14,
+          scale: 0.91,
+          rotateZ: -1.6,
+          ease: "none",
+          scrollTrigger: { trigger: ".z2-hero", start: "top top", end: "bottom top", scrub: 0.8 },
+        });
+        gsap.to(".z2-product-stage__label", {
+          yPercent: -22,
+          ease: "none",
+          scrollTrigger: { trigger: ".z2-hero", start: "top 22%", end: "bottom top", scrub: 0.7 },
+        });
+
+        gsap.to(".z2-intro__copy h2", {
+          xPercent: -4,
+          ease: "none",
+          scrollTrigger: { trigger: ".z2-intro", start: "top 80%", end: "bottom 20%", scrub: 0.8 },
+        });
+        gsap.to(".z2-intro__copy > p:last-child", {
+          yPercent: -16,
+          ease: "none",
+          scrollTrigger: { trigger: ".z2-intro", start: "top 75%", end: "bottom 25%", scrub: 0.8 },
+        });
+
+        gsap.utils.toArray<HTMLElement>(".z2-profile__image img").forEach((image, index) => {
+          gsap.fromTo(
+            image,
+            { scale: 1.14, yPercent: index % 2 === 0 ? -4 : 4 },
+            {
+              scale: 1.02,
+              yPercent: index % 2 === 0 ? 5 : -5,
+              ease: "none",
+              scrollTrigger: { trigger: image.closest(".z2-profile") ?? image, start: "top bottom", end: "bottom top", scrub: 0.75 },
+            },
+          );
+        });
+
+        gsap.fromTo(
+          ".z2-origin-story__media img",
+          { scale: 1.13, yPercent: -4 },
+          {
+            scale: 1.02,
+            yPercent: 5,
+            ease: "none",
+            scrollTrigger: { trigger: ".z2-origin-story", start: "top bottom", end: "bottom top", scrub: 0.85 },
+          },
+        );
+        gsap.fromTo(
+          ".z2-origin-story__copy",
+          { yPercent: 8 },
+          {
+            yPercent: -8,
+            ease: "none",
+            scrollTrigger: { trigger: ".z2-origin-story", start: "top bottom", end: "bottom top", scrub: 0.9 },
+          },
+        );
+        gsap.to(".z2-origin-story__stamp", {
+          xPercent: 22,
+          ease: "none",
+          scrollTrigger: { trigger: ".z2-origin-story", start: "top 70%", end: "bottom 20%", scrub: 0.75 },
+        });
+
+        gsap.fromTo(
+          ".z2-club__visual",
+          { yPercent: 8, rotateZ: -2.5 },
+          {
+            yPercent: -8,
+            rotateZ: 2.5,
+            ease: "none",
+            scrollTrigger: { trigger: ".z2-club", start: "top bottom", end: "bottom top", scrub: 0.8 },
+          },
+        );
+        gsap.fromTo(
+          ".z2-club__copy",
+          { yPercent: -5 },
+          {
+            yPercent: 6,
+            ease: "none",
+            scrollTrigger: { trigger: ".z2-club", start: "top bottom", end: "bottom top", scrub: 0.9 },
+          },
+        );
+
+        gsap.fromTo(
+          ".z2-visit__top h2",
+          { xPercent: -5 },
+          {
+            xPercent: 0,
+            ease: "none",
+            scrollTrigger: { trigger: ".z2-visit", start: "top 82%", end: "top 34%", scrub: 0.7 },
+          },
+        );
+      });
+
+      mm.add("(max-width: 980px)", () => {
+        gsap.to(".z2-hero__word", {
+          xPercent: -5,
+          ease: "none",
+          scrollTrigger: { trigger: ".z2-hero", start: "top top", end: "bottom top", scrub: 0.55 },
+        });
+        gsap.to(".z2-product-stage", {
+          yPercent: 5,
+          scale: 0.97,
+          ease: "none",
+          scrollTrigger: { trigger: ".z2-hero", start: "top top", end: "bottom top", scrub: 0.55 },
+        });
+        gsap.utils.toArray<HTMLElement>(".z2-profile__image img").forEach((image) => {
+          gsap.fromTo(
+            image,
+            { scale: 1.08 },
+            {
+              scale: 1.01,
+              ease: "none",
+              scrollTrigger: { trigger: image.closest(".z2-profile") ?? image, start: "top bottom", end: "bottom top", scrub: 0.5 },
+            },
+          );
+        });
+        gsap.fromTo(
+          ".z2-origin-story__media img",
+          { scale: 1.08 },
+          {
+            scale: 1.01,
+            ease: "none",
+            scrollTrigger: { trigger: ".z2-origin-story", start: "top bottom", end: "bottom top", scrub: 0.55 },
+          },
+        );
+      });
+
+      gsap.fromTo(
+        ".z2-visit__links a",
+        { x: 32, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.72,
+          stagger: 0.08,
+          ease: "power3.out",
+          scrollTrigger: { trigger: ".z2-visit__links", start: "top 86%", once: true },
+        },
+      );
+
+      return () => mm.revert();
     }, element);
 
     return () => context.revert();
   }, []);
+
+  useLayoutEffect(() => {
+    const element = root.current;
+    const image = element?.querySelector<HTMLElement>(".z2-product-stage__image");
+    const label = element?.querySelector<HTMLElement>(".z2-product-stage__label");
+    if (!image) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      applyMaskProgress(image, 1, HERO_PRODUCT_MASK);
+      return;
+    }
+
+    const state = { progress: 0 };
+    applyMaskProgress(image, 0, HERO_PRODUCT_MASK);
+    const reveal = gsap.to(state, {
+      progress: 1,
+      duration: 0.82,
+      ease: "power3.inOut",
+      onUpdate: () => applyMaskProgress(image, state.progress, HERO_PRODUCT_MASK),
+    });
+    const imageMotion = gsap.fromTo(
+      image,
+      { y: 26, rotateZ: 1.8, scale: 1.035 },
+      { y: 0, rotateZ: 0, scale: 1, duration: 0.86, ease: "power3.out" },
+    );
+    const labelMotion = label
+      ? gsap.fromTo(label, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.62, ease: "power3.out", delay: 0.16 })
+      : null;
+
+    return () => {
+      reveal.kill();
+      imageMotion.kill();
+      labelMotion?.kill();
+    };
+  }, [activeProduct]);
 
   const onProductMove = (event: React.PointerEvent<HTMLDivElement>) => {
     if (!productStage.current) return;
@@ -214,7 +510,7 @@ export function ZensiaExperience() {
             onPointerMove={onProductMove}
             onPointerLeave={resetProduct}
           >
-            <div ref={productStage} className="z2-product-stage" aria-live="polite">
+            <div ref={productStage} className="z2-product-stage" aria-live="polite" data-z2-motion="product-stage">
               <div className="z2-product-stage__halo" aria-hidden="true" />
               <Image
                 key={product.image}
@@ -224,6 +520,7 @@ export function ZensiaExperience() {
                 priority
                 sizes="(max-width: 900px) 74vw, 44vw"
                 className="z2-product-stage__image"
+                data-z2-mask="hero-product"
               />
               <div className="z2-product-stage__label">
                 <span>{product.id}</span>
@@ -263,7 +560,7 @@ export function ZensiaExperience() {
           <div className="z2-profile-grid">
             {COFFEE_PROFILES.map((item, index) => (
               <article key={item.label} className="z2-profile" data-z2-reveal>
-                <div className="z2-profile__image">
+                <div className="z2-profile__image" data-z2-mask="profile">
                   <Image
                     src={item.image}
                     alt={item.label}
@@ -281,7 +578,7 @@ export function ZensiaExperience() {
         </section>
 
         <section className="z2-origin-story">
-          <div className="z2-origin-story__media" data-z2-reveal>
+          <div className="z2-origin-story__media" data-z2-reveal data-z2-mask="origin">
             <Image
               src="https://static.wixstatic.com/media/859566_6b7702b0813d4b9388ff1a8752200691~mv2.png"
               alt="Zensia Coffee"
@@ -305,7 +602,7 @@ export function ZensiaExperience() {
         </section>
 
         <section className="z2-club">
-          <div className="z2-club__visual" data-z2-reveal>
+          <div className="z2-club__visual" data-z2-reveal data-z2-mask="club">
             <Image
               src="https://static.wixstatic.com/media/859566_dbb60c0fa9a444e589c870551afbcb7b~mv2.png"
               alt="Zensia Calm Club rewards"
@@ -330,7 +627,7 @@ export function ZensiaExperience() {
           </div>
 
           <div className="z2-visit__grid">
-            <a className="z2-visit__primary" href={MAP_URL} target="_blank" rel="noreferrer" data-z2-reveal>
+            <a className="z2-visit__primary" href={MAP_URL} target="_blank" rel="noreferrer" data-z2-reveal data-z2-mask="visit">
               <span>VISIT ZENSIA</span>
               <strong>8121 Maryland Avenue</strong>
               <small>Saint Louis, MO 63105</small>

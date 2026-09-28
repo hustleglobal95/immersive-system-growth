@@ -10,7 +10,13 @@ test("Zensia upgrade uses a real coffee-product hero, commerce actions and respo
   await expect(page.getByRole("heading",{level:1})).toContainText("Coffee");
   await expect(page.getByText("with room to stay.")).toBeVisible();
   await expect(page.getByAltText("Zensia Zen at Home Colombian coffee")).toBeVisible();
-  await page.screenshot({path:"test-results/zensia-brewns/desktop-hero.png",fullPage:false});
+  await page.waitForTimeout(950);
+  const heroMask=await page.getByAltText("Zensia Zen at Home Colombian coffee").evaluate((node)=>{
+    const style=getComputedStyle(node);
+    return style.maskImage || style.getPropertyValue("-webkit-mask-image");
+  });
+  expect(heroMask).toContain("gradient");
+  await page.screenshot({path:"test-results/zensia-motion/desktop-hero.png",fullPage:false});
 
   const selectors=page.getByRole("group",{name:"Choose a Zensia coffee product"}).getByRole("button");
   await expect(selectors).toHaveCount(4);
@@ -20,6 +26,13 @@ test("Zensia upgrade uses a real coffee-product hero, commerce actions and respo
   await page.locator("#z2-coffee").scrollIntoViewIfNeeded();
   await expect(page.getByRole("heading",{name:/One origin/i})).toBeVisible();
   await expect(page.locator(".z2-profile")).toHaveCount(4);
+  await page.waitForTimeout(450);
+  const profileMask=await page.locator("[data-z2-mask='profile']").first().evaluate((node)=>{
+    const style=getComputedStyle(node);
+    return style.maskImage || style.getPropertyValue("-webkit-mask-image");
+  });
+  expect(profileMask).toContain("gradient");
+  await page.screenshot({path:"test-results/zensia-motion/desktop-coffee-masks.png",fullPage:false});
 
   await page.locator("#z2-visit").scrollIntoViewIfNeeded();
   await page.screenshot({path:"test-results/zensia-brewns/desktop-visit.png",fullPage:false});
@@ -34,7 +47,7 @@ test("Zensia upgrade is deliberately composed on mobile without horizontal overf
   await page.goto("/zensia");
 
   await expect(page.getByRole("heading",{level:1})).toBeVisible();
-  await page.screenshot({path:"test-results/zensia-brewns/mobile-hero.png",fullPage:false});
+  await page.screenshot({path:"test-results/zensia-motion/mobile-hero.png",fullPage:false});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
 
   await page.locator("#z2-coffee").scrollIntoViewIfNeeded();
