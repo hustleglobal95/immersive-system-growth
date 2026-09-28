@@ -1,0 +1,89 @@
+name: Zensia Full Menu Preflight
+
+on:
+  push:
+    branches:
+      - project/zensia-full-immersive-menu
+    paths:
+      - .github/workflows/zensia-full-menu-preflight.yml
+
+permissions:
+  contents: write
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Write structured menu brief
+        run: |
+          mkdir -p .forge/execution/zensia-full-menu
+          cat > .forge/execution/zensia-full-menu/brief.json <<'EOF'
+          {
+            "projectName": "Zensia Coffee Full Immersive Menu",
+            "projectType": "hospitality",
+            "tier": "signature",
+            "client": "Zensia Coffee",
+            "audience": "Visitors deciding what to order before or during a Zensia visit.",
+            "objective": "Integrate Zensia's complete current public menu into the existing immersive website as a first-class interactive experience, with every listed menu item and every listed flavor variant represented.",
+            "primaryAction": "Order online",
+            "brandTruth": "The menu itself should feel like part of the Zensia experience, not a detached PDF or utility page.",
+            "differentiators": [
+              "Colombian specialty coffee and café hospitality",
+              "A broad menu spanning coffee, cold drinks, Colombian breads, empanadas and desserts",
+              "Real online ordering",
+              "Existing kinetic GSAP and Forge mask language"
+            ],
+            "constraints": [
+              "Use the current public Actual Menu as the factual source",
+              "Represent every listed core menu item across Hot Beverages, Espresso Drinks, Cold Beverages, Breads, Empanadas and Specialty Desserts",
+              "Represent every listed Fruit Slush/Juice flavor and ZenEnergy flavor",
+              "Do not invent prices, sizes, ingredients or availability",
+              "Keep every item accessible by keyboard and touch",
+              "Use Forge GSAP and mask systems for category transitions and active-item choreography",
+              "Preserve Order Online, Menu, Visit and Calm Club conversion paths",
+              "Mobile must provide the full menu without horizontal page overflow"
+            ],
+            "existingAssets": [],
+            "references": [
+              {
+                "label": "Zensia Actual Menu",
+                "lesson": "This is the authoritative current menu content. Preserve names and category grouping without fabricating prices or details."
+              },
+              {
+                "label": "Current Zensia Forge build",
+                "lesson": "Extend the existing kinetic object and mask-reveal language into the menu rather than creating a disconnected menu page."
+              }
+            ]
+          }
+          EOF
+      - name: Run Forge preflight
+        env:
+          STUDIO_AUTH_ENABLED: "false"
+          FORGE_LOCAL_STORAGE_ENABLED: "true"
+          NODE_ENV: development
+        run: |
+          npm run forge:preflight --             --name="Zensia Coffee Full Immersive Menu"             --brief=.forge/execution/zensia-full-menu/brief.json             --artifacts=.forge/execution/zensia-full-menu/artifacts             --record=forge-intelligence/execution-records/zensia-full-menu.json
+      - name: Compile interaction context
+        run: |
+          npm run forge:context --             --domain="interaction"             --scene="menu"             --objective="Build a complete touch and keyboard accessible immersive menu with category and active-item interaction"             --prompt="Integrate every current Zensia menu item and every listed flavor variant into the immersive site."             --name="Zensia Coffee Full Immersive Menu"             --output=.forge/execution/zensia-full-menu/interaction-context.json
+      - name: Compile motion context
+        run: |
+          npm run forge:context --             --domain="motion"             --scene="menu"             --objective="Use GSAP and Forge masks to make menu browsing spatial and cinematic without hiding content"             --prompt="Integrate every current Zensia menu item and every listed flavor variant into the immersive site."             --name="Zensia Coffee Full Immersive Menu"             --output=.forge/execution/zensia-full-menu/motion-context.json
+      - name: Validate execution evidence
+        run: npm run forge:execution:audit -- --record=forge-intelligence/execution-records/zensia-full-menu.json
+      - name: Commit public-safe record
+        run: |
+          git config user.name "forge-preflight"
+          git config user.email "actions@users.noreply.github.com"
+          git add forge-intelligence/execution-records/zensia-full-menu.json
+          git commit -m "Record Zensia full menu preflight [forge-preflight-record]"
+          git push origin HEAD:project/zensia-full-immersive-menu
