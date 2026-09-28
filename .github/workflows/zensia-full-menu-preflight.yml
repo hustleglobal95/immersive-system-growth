@@ -89,4 +89,4 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add forge-intelligence/execution-records/zensia-full-menu.json
           git commit -m "Record Zensia full menu preflight [forge-preflight-record]"
-          git push origin HEAD:project/zensia-full-immersive-menu
+          git push origin HEAD:project/zensia-emergency-menu-repair
