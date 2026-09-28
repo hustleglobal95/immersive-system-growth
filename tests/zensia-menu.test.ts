@@ -45,16 +45,31 @@ test("Zensia immersive menu is interaction-first and preserves ordering",()=>{
   assert.match(component,/Menu categories/);
   assert.match(component,/aria-pressed/);
   assert.match(component,/ScrollTrigger/);
-  assert.match(component,/repeat: -1/);
+  assert.match(component,/zim-menu__photo/);
   assert.match(component,/Order online/);
   assert.match(component,/<noscript>/);
 });
 
 
-test("Zensia immersive menu includes the uploaded coffee splash motion asset",()=>{
+test("Zensia immersive menu is photo-first and removes synthetic product geometry",()=>{
+  assert.match(component,/next\/image/);
+  assert.match(component,/FROM ZENSIA/);
+  assert.match(component,/zim-menu__item-thumb/);
+  assert.match(component,/820771_5c658f32b08d47f7ae25fc6045590669/);
+  assert.match(component,/859566_c6c1ece55ef84a9e8f18b65b712bffd2/);
+  assert.match(component,/859566_c2dd3549ae574e75a12c2e5289b11818/);
+  assert.doesNotMatch(component,/zim-menu__vessel/);
+  assert.doesNotMatch(component,/zim-menu__orbit/);
+  assert.doesNotMatch(component,/zim-menu__steam/);
+  assert.doesNotMatch(css,/\.zim-menu__vessel/);
+  assert.doesNotMatch(css,/\.zim-menu__orbit/);
+  assert.doesNotMatch(css,/\.zim-menu__steam/);
+});
+
+test("Zensia immersive menu keeps the uploaded splash as connective motion only",()=>{
   assert.match(component,/uploaded-zensia-coffee-splash/);
+  assert.match(component,/showCoffeeSplash/);
   assert.match(component,/ef1ed3e5-a0c5-4055-a347-5ab30d2c3454\.webp/);
-  assert.match(component,/zim-menu__media-splash/);
   assert.match(css,/prefers-reduced-motion/);
   assert.match(css,/\.zim-menu__media-splash\{display:none!important\}/);
 });
