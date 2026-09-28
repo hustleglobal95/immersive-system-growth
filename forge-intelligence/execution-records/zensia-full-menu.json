@@ -2,13 +2,13 @@
   "schemaVersion": 1,
   "policyId": "forge-full-system-execution",
   "policyVersion": 2,
-  "runId": "zensia-coffee-full-immersive-menu-6a4c3f0b-1790627716206",
+  "runId": "zensia-coffee-full-immersive-menu-61f7a74c-1790635616981",
   "projectName": "Zensia Coffee Full Immersive Menu",
-  "createdAt": "2026-09-28T20:35:23.839Z",
+  "createdAt": "2026-09-28T22:47:03.378Z",
   "generator": "scripts/forge-preflight.mjs",
   "repository": {
-    "baseCommit": "6a4c3f0b36d0ce99c0e1960ecd4361c8ea7848da",
-    "branch": "project/zensia-full-immersive-menu"
+    "baseCommit": "61f7a74c0d22d80fc87528989579997c0c4ddcac",
+    "branch": "project/zensia-photo-menu-repair"
   },
   "confidentiality": {
     "rawPromptCommitted": false,
@@ -205,7 +205,7 @@
       }
     ]
   },
-  "selfHash": "b5442c528149ae64e1b914cafbd43f649c11fe66f7b17baf7e0826e2061a0456",
+  "selfHash": "36190398d26352bdb522c2f9f078b09334f24e57432de7ce299fd1dd8a989bd8",
   "attestation": {
     "algorithm": "none",
     "keyId": null,
