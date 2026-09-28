@@ -82,10 +82,21 @@ jobs:
           cat .forge/execution/zensia-signature-repair/artifacts/forge-build-packet.md
           echo '===== ARTIFACT INDEX ====='
           find .forge/execution/zensia-signature-repair/artifacts -maxdepth 2 -type f -print | sort
+      - name: Upload repair Context Capsules
+        uses: actions/upload-artifact@v4
+        with:
+          name: zensia-repair-context
+          path: |
+            .forge/execution/zensia-signature-repair/artifacts/context-composition.json
+            .forge/execution/zensia-signature-repair/artifacts/context-interaction.json
+            .forge/execution/zensia-signature-repair/artifacts/context-motion.json
+            .forge/execution/zensia-signature-repair/artifacts/context-mobile.json
+            .forge/execution/zensia-signature-repair/artifacts/context-camera.json
+          retention-days: 14
       - name: Commit public-safe repair record
         run: |
           git config user.name "forge-preflight"
           git config user.email "actions@users.noreply.github.com"
           git add forge-intelligence/execution-records/zensia-signature-repair.json
-          git commit -m "Record Zensia signature repair preflight [forge-preflight-record]"
+          git commit -m "Record Zensia signature repair preflight [forge-preflight-record]" || true
           git push origin HEAD:project/zensia-signature-repair
