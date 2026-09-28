@@ -53,9 +53,13 @@ test("Zensia immersive menu is interaction-first and preserves ordering",()=>{
 
 test("Zensia immersive menu is photo-first and removes synthetic product geometry",()=>{
   assert.match(component,/next\/image/);
-  assert.match(component,/AUTHENTIC ZENSIA PHOTOGRAPHY/);
-  assert.match(component,/Real Zensia imagery\. No synthetic menu render\./);
-  assert.match(component,/static\.wixstatic\.com\/media/);
+  assert.match(component,/ZENSIA PRODUCT PHOTOGRAPHY/);
+  assert.match(component,/ZENSIA CATEGORY PHOTOGRAPHY/);
+  assert.match(component,/Published Zensia product image\./);
+  assert.match(component,/Real Zensia imagery used as a category fallback\./);
+  assert.match(component,/820771_5c658f32b08d47f7ae25fc6045590669/);
+  assert.match(component,/859566_c6c1ece55ef84a9e8f18b65b712bffd2/);
+  assert.match(component,/859566_c2dd3549ae574e75a12c2e5289b11818/);
   assert.doesNotMatch(component,/zim-menu__vessel/);
   assert.doesNotMatch(component,/zim-menu__orbit/);
   assert.doesNotMatch(component,/zim-menu__steam/);
