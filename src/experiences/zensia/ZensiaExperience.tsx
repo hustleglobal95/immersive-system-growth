@@ -1,359 +1,357 @@
 "use client";
 
-import { Canvas, useFrame } from "@react-three/fiber";
-import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type MutableRefObject } from "react";
-import * as THREE from "three";
+import Image from "next/image";
+import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-type ProgressRef = MutableRefObject<number>;
-type PaceRef = MutableRefObject<number>;
 
 const ORDER_URL = "https://zensia-coffee-llc.square.site/";
 const MENU_URL = "https://www.zensiacoffee.com/actual-menu";
 const CALM_URL = "https://profile.squareup.com/loyalty/MLX5PRMQ9XZ02";
+const MAP_URL = "https://www.google.com/maps/search/?api=1&query=8121+Maryland+Avenue+Saint+Louis+MO+63105";
 
-function Ridge({ y, z, width, lift, opacity }: { y:number; z:number; width:number; lift:number; opacity:number }) {
-  const geometry = useMemo(() => {
-    const points: THREE.Vector3[] = [];
-    const count = 80;
-    for (let i = 0; i < count; i++) {
-      const t = i / (count - 1);
-      const x = (t - 0.5) * width;
-      const wave = Math.sin(t * Math.PI * 2.2) * 0.18 + Math.sin(t * Math.PI * 5.1 + z) * 0.07;
-      const peak = Math.exp(-Math.pow((t - 0.54) * 4.2, 2)) * lift;
-      points.push(new THREE.Vector3(x, y + wave + peak, z));
-    }
-    return new THREE.BufferGeometry().setFromPoints(points);
-  }, [y,z,width,lift]);
-  const line = useMemo(
-    () => new THREE.Line(geometry, new THREE.LineBasicMaterial({ color:"#82906d", transparent:true, opacity })),
-    [geometry, opacity],
-  );
-  return <primitive object={line} />;
-}
+const PRODUCTS = [
+  {
+    id: "01",
+    label: "Zen at Home",
+    descriptor: "Colombian coffee for the kitchen ritual.",
+    image: "https://static.wixstatic.com/media/820771_22ed744817524376bb36445174684e6f~mv2.png",
+    tone: "#4a271d",
+    ink: "#f3ead8",
+    accent: "#e0b878",
+  },
+  {
+    id: "02",
+    label: "Zen at Home",
+    descriptor: "Small-batch Colombian coffee, brought home.",
+    image: "https://static.wixstatic.com/media/820771_bf96a54cf492498799ce6d63f802a93e~mv2.jpeg",
+    tone: "#253326",
+    ink: "#f1eadc",
+    accent: "#b7c08f",
+  },
+  {
+    id: "03",
+    label: "Zen at Home",
+    descriptor: "A quieter cup, wherever the day starts.",
+    image: "https://static.wixstatic.com/media/820771_21b52780336c46bbb34cb3f00829da60~mv2.jpg",
+    tone: "#6d4029",
+    ink: "#f7ecd6",
+    accent: "#e2c17d",
+  },
+  {
+    id: "04",
+    label: "Zen at Home",
+    descriptor: "Colombian origin, prepared your way.",
+    image: "https://static.wixstatic.com/media/820771_3db723033b014dd9a51fb2b01ed1fb95~mv2.jpg",
+    tone: "#35231e",
+    ink: "#f2e6d4",
+    accent: "#cc8f64",
+  },
+] as const;
 
-function Steam({ x, delay }: { x:number; delay:number }) {
-  const mesh = useRef<THREE.Mesh>(null);
-  const curve = useMemo(() => new THREE.CatmullRomCurve3([
-    new THREE.Vector3(x,-0.45,0.1),
-    new THREE.Vector3(x+0.10,0.05,0.05),
-    new THREE.Vector3(x-0.08,0.55,-0.04),
-    new THREE.Vector3(x+0.06,1.08,0.08),
-    new THREE.Vector3(x-0.04,1.55,0.02),
-  ]), [x]);
-  const geometry = useMemo(() => new THREE.TubeGeometry(curve, 54, 0.012, 7, false), [curve]);
-  useFrame(({clock}) => {
-    if (!mesh.current) return;
-    const t = clock.elapsedTime * 0.22 + delay;
-    mesh.current.position.y = Math.sin(t) * 0.07;
-    mesh.current.rotation.z = Math.sin(t * 0.7) * 0.05;
-  });
-  return <mesh ref={mesh} geometry={geometry}><meshBasicMaterial color="#f0e8d7" transparent opacity={0.22} /></mesh>;
-}
-
-function World({ progress, pace }: { progress:ProgressRef; pace:PaceRef }) {
-  const root = useRef<THREE.Group>(null);
-  const glassLeft = useRef<THREE.Mesh>(null);
-  const glassRight = useRef<THREE.Mesh>(null);
-  const orb = useRef<THREE.Mesh>(null);
-  const cup = useRef<THREE.Group>(null);
-  const light = useRef<THREE.PointLight>(null);
-  const color = useMemo(() => new THREE.Color(), []);
-  const cityColor = useMemo(() => new THREE.Color("#111312"), []);
-  const calmColor = useMemo(() => new THREE.Color("#191a12"), []);
-
-  useFrame(({scene, pointer, camera}, delta) => {
-    const p = progress.current;
-    const paceAmount = THREE.MathUtils.clamp(pace.current / 100, 0, 1);
-    const signatureIn = THREE.MathUtils.smoothstep(p, 0.46, 0.58);
-    const signatureOut = 1 - THREE.MathUtils.smoothstep(p, 0.76, 0.86);
-    const signaturePace = paceAmount * signatureIn * signatureOut;
-
-    if (root.current) {
-      root.current.rotation.y = THREE.MathUtils.damp(
-        root.current.rotation.y,
-        pointer.x * (0.12 - signaturePace * 0.08) + p * 0.16 - signaturePace * 0.08,
-        4,
-        delta,
-      );
-      root.current.position.x = THREE.MathUtils.damp(root.current.position.x, signaturePace * 0.9, 3.2, delta);
-      root.current.position.y = THREE.MathUtils.damp(root.current.position.y, p < 0.22 ? -0.12 : p < 0.63 ? 0.10 : -0.05, 4, delta);
-    }
-
-    const opening = THREE.MathUtils.smoothstep(p, 0.08, 0.25);
-    if (glassLeft.current) {
-      glassLeft.current.position.x = THREE.MathUtils.damp(glassLeft.current.position.x, -1.35 - opening * 1.8 - signaturePace * 1.1, 5, delta);
-      glassLeft.current.rotation.y = THREE.MathUtils.damp(glassLeft.current.rotation.y, opening * -0.22 - signaturePace * 0.08, 5, delta);
-    }
-    if (glassRight.current) {
-      glassRight.current.position.x = THREE.MathUtils.damp(glassRight.current.position.x, 1.35 + opening * 1.8 + signaturePace * 1.1, 5, delta);
-      glassRight.current.rotation.y = THREE.MathUtils.damp(glassRight.current.rotation.y, opening * 0.22 + signaturePace * 0.08, 5, delta);
-    }
-
-    const origin = THREE.MathUtils.smoothstep(p, 0.22, 0.48);
-    if (orb.current) {
-      const baseScale = THREE.MathUtils.lerp(0.65, 1.15, origin);
-      const targetScale = baseScale * THREE.MathUtils.lerp(1, 0.72, signaturePace);
-      orb.current.scale.setScalar(THREE.MathUtils.damp(orb.current.scale.x, targetScale, 4, delta));
-      orb.current.position.x = THREE.MathUtils.damp(orb.current.position.x, signaturePace * 1.05, 3.4, delta);
-      orb.current.position.y = THREE.MathUtils.damp(orb.current.position.y, 0.35 + signaturePace * 0.42, 3.4, delta);
-      orb.current.position.z = THREE.MathUtils.damp(orb.current.position.z, THREE.MathUtils.lerp(-1.2, -0.15, origin), 4, delta);
-      orb.current.rotation.y += delta * THREE.MathUtils.lerp(0.14, 0.025, paceAmount);
-    }
-
-    const ritual = THREE.MathUtils.smoothstep(p, 0.46, 0.68);
-    if (cup.current) {
-      cup.current.position.x = THREE.MathUtils.damp(cup.current.position.x, signaturePace * 0.88, 3.4, delta);
-      cup.current.position.y = THREE.MathUtils.damp(cup.current.position.y, THREE.MathUtils.lerp(-2.1, -0.45, ritual) - signaturePace * 0.2, 4, delta);
-      cup.current.rotation.x = THREE.MathUtils.damp(cup.current.rotation.x, THREE.MathUtils.lerp(1.28, 1.52, ritual), 4, delta);
-    }
-
-    camera.position.x = THREE.MathUtils.damp(camera.position.x, -signaturePace * 0.58, 2.8, delta);
-    camera.position.z = THREE.MathUtils.damp(camera.position.z, 7.2 + signaturePace * 1.35, 2.8, delta);
-    if (camera instanceof THREE.PerspectiveCamera) {
-      const nextFov = THREE.MathUtils.damp(camera.fov, 42 + signaturePace * 5, 2.8, delta);
-      if (Math.abs(nextFov - camera.fov) > 0.001) {
-        camera.fov = nextFov;
-        camera.updateProjectionMatrix();
-      }
-    }
-
-    if (light.current) {
-      light.current.intensity = THREE.MathUtils.damp(light.current.intensity, 2.2 + ritual * 5 + signaturePace * 3.4, 4, delta);
-      light.current.position.x = THREE.MathUtils.damp(light.current.position.x, signaturePace * 1.1, 3, delta);
-    }
-
-    color.lerpColors(cityColor, calmColor, THREE.MathUtils.clamp(paceAmount * 0.9 + signaturePace * 0.1, 0, 1));
-    scene.background = color;
-  });
-
-  return <>
-    <fog attach="fog" args={["#11120e", 4.5, 13]} />
-    <ambientLight intensity={0.55} color="#c9d3bd" />
-    <directionalLight position={[-4,5,4]} intensity={2.1} color="#dce2d1" />
-    <pointLight ref={light} position={[0,0.6,2.5]} intensity={2.2} color="#d8a16c" distance={9} />
-    <group ref={root}>
-      <group position={[0,-0.55,-1.8]}>
-        {[0,1,2,3,4,5,6].map(i => <Ridge key={i} y={-1.3+i*0.17} z={-2-i*0.34} width={9+i*0.8} lift={0.5+i*0.06} opacity={0.2+i*0.035} />)}
-      </group>
-
-      <mesh ref={orb} position={[0,0.35,-1.2]}>
-        <sphereGeometry args={[0.76,64,64]} />
-        <meshPhysicalMaterial color="#713728" roughness={0.42} metalness={0.02} clearcoat={0.35} clearcoatRoughness={0.28} />
-      </mesh>
-
-      <group ref={cup} position={[0,-2.1,0.1]} rotation={[1.28,0,0]}>
-        <mesh>
-          <torusGeometry args={[1.12,0.055,20,100]} />
-          <meshStandardMaterial color="#d8c9ad" roughness={0.36} />
-        </mesh>
-        <mesh position={[0,0,-0.08]}>
-          <circleGeometry args={[1.07,96]} />
-          <meshPhysicalMaterial color="#321b13" roughness={0.38} clearcoat={0.5} />
-        </mesh>
-        <Steam x={-0.24} delay={0} /><Steam x={0.08} delay={1.2} /><Steam x={0.32} delay={2.4} />
-      </group>
-
-      <mesh ref={glassLeft} position={[-1.35,0,2.25]}>
-        <boxGeometry args={[2.7,5.8,0.08]} />
-        <meshPhysicalMaterial color="#dce2d9" roughness={0.55} transmission={0.4} transparent opacity={0.64} thickness={0.7} />
-      </mesh>
-      <mesh ref={glassRight} position={[1.35,0,2.25]}>
-        <boxGeometry args={[2.7,5.8,0.08]} />
-        <meshPhysicalMaterial color="#dce2d9" roughness={0.55} transmission={0.4} transparent opacity={0.64} thickness={0.7} />
-      </mesh>
-    </group>
-  </>;
-}
-
-const chapters = [
-  ["01","Threshold","Leave the city outside."],
-  ["02","Origin","Colombia is not a flavor. It is a place."],
-  ["03","Ritual","Preparation is part of the experience."],
-  ["04","Pause","Let the interface breathe."],
-  ["05","Stay","Coffee becomes time together."],
-  ["06","Visit","Your pause starts here."],
-];
+const COFFEE_PROFILES = [
+  {
+    label: "Intense & flavorful",
+    image: "https://static.wixstatic.com/media/859566_b618d3f2dc39473fa45047c95e676872~mv2.jpg",
+  },
+  {
+    label: "Creamy & smooth",
+    image: "https://static.wixstatic.com/media/859566_90db78bfbd21470fafaf59bd0646b4ba~mv2.jpg",
+  },
+  {
+    label: "Robust & aromatic",
+    image: "https://static.wixstatic.com/media/859566_dda43df0514841eea1663f508724fcef~mv2.jpg",
+  },
+  {
+    label: "Refreshing & bold",
+    image: "https://static.wixstatic.com/media/859566_26ddc1aef049454db886a6bd9d84b5b6~mv2.jpg",
+  },
+] as const;
 
 export function ZensiaExperience() {
   const root = useRef<HTMLDivElement>(null);
-  const progress = useRef(0);
-  const paceRef = useRef(18);
-  const [pace, setPace] = useState(18);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const calm = pace >= 72;
-  const paceZone = calm ? "stay" : pace >= 42 ? "arrive" : "rush";
-
-  const setPaceValue = (next:number) => {
-    const bounded = Math.max(0, Math.min(100, next));
-    paceRef.current = bounded;
-    setPace(bounded);
-  };
-
-  const paceStyle = {
-    "--z-pace": String(pace / 100),
-    "--z-pace-pct": `${pace}%`,
-    "--z-copy-drift": `${Math.round(pace * -0.42)}px`,
-    "--z-calm-alpha": String(Math.max(0, Math.min(1, (pace - 52) / 48))),
-  } as CSSProperties;
+  const productStage = useRef<HTMLDivElement>(null);
+  const [activeProduct, setActiveProduct] = useState(0);
+  const product = PRODUCTS[activeProduct];
 
   useLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
+    const element = root.current;
+    if (!element) return;
+
     const context = gsap.context(() => {
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      ScrollTrigger.create({
-        trigger: root.current,
-        start: "top top",
-        end: "bottom bottom",
-        onUpdate: self => { progress.current = self.progress; },
+      if (reduced) return;
+
+      gsap.fromTo(
+        ".z2-hero__copy > *",
+        { y: 28, opacity: 0 },
+        { y: 0, opacity: 1, stagger: 0.08, duration: 0.9, ease: "power3.out", delay: 0.1 },
+      );
+
+      gsap.fromTo(
+        ".z2-product-stage",
+        { xPercent: 10, rotate: 3, opacity: 0 },
+        { xPercent: 0, rotate: 0, opacity: 1, duration: 1.15, ease: "power3.out", delay: 0.16 },
+      );
+
+      gsap.to(".z2-hero__word", {
+        xPercent: -10,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".z2-hero",
+          start: "top top",
+          end: "bottom top",
+          scrub: 0.6,
+        },
       });
-      if (!reduced) {
-        gsap.utils.toArray<HTMLElement>("[data-z-reveal]").forEach(el => {
-          gsap.fromTo(el,{y:50,opacity:0},{y:0,opacity:1,duration:1.1,ease:"power3.out",scrollTrigger:{trigger:el,start:"top 84%",once:true}});
-        });
-        gsap.to(".zensia-noise__track",{yPercent:-34,ease:"none",scrollTrigger:{trigger:"#zensia-threshold",start:"top bottom",end:"bottom top",scrub:true}});
-        gsap.to(".zensia-origin__line",{scaleX:1,ease:"none",scrollTrigger:{trigger:"#zensia-origin",start:"top 75%",end:"bottom 60%",scrub:true}});
-      }
-    }, root);
+
+      gsap.to(".z2-product-stage", {
+        yPercent: 8,
+        scale: 0.94,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".z2-hero",
+          start: "top top",
+          end: "bottom top",
+          scrub: 0.7,
+        },
+      });
+
+      gsap.utils.toArray<HTMLElement>("[data-z2-reveal]").forEach((node) => {
+        gsap.fromTo(
+          node,
+          { y: 34, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.85,
+            ease: "power3.out",
+            scrollTrigger: { trigger: node, start: "top 86%", once: true },
+          },
+        );
+      });
+    }, element);
+
     return () => context.revert();
   }, []);
 
-  const moveFrost = (event: React.PointerEvent<HTMLDivElement>) => {
+  const onProductMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!productStage.current) return;
     const rect = event.currentTarget.getBoundingClientRect();
-    event.currentTarget.style.setProperty("--mx", `${event.clientX-rect.left}px`);
-    event.currentTarget.style.setProperty("--my", `${event.clientY-rect.top}px`);
+    const px = (event.clientX - rect.left) / rect.width - 0.5;
+    const py = (event.clientY - rect.top) / rect.height - 0.5;
+    gsap.to(productStage.current, {
+      rotateY: px * 7,
+      rotateX: py * -5,
+      x: px * 9,
+      y: py * 7,
+      duration: 0.5,
+      ease: "power2.out",
+      transformPerspective: 1000,
+    });
   };
 
-  return <div ref={root} className="zensia" data-calm={calm ? "true" : "false"} data-pace-zone={paceZone} style={paceStyle}>
-    <a className="zensia-skip" href="#zensia-story">Skip to the story</a>
-    <div className="zensia-canvas" aria-hidden="true">
-      <Canvas camera={{position:[0,0.2,7.2],fov:42}} dpr={[1,1.5]} gl={{antialias:true,alpha:false,powerPreference:"high-performance"}}>
-        <World progress={progress} pace={paceRef} />
-      </Canvas>
-    </div>
-    <div className="zensia-grain" aria-hidden="true" />
+  const resetProduct = () => {
+    if (!productStage.current) return;
+    gsap.to(productStage.current, {
+      rotateY: 0,
+      rotateX: 0,
+      x: 0,
+      y: 0,
+      duration: 0.7,
+      ease: "power3.out",
+    });
+  };
 
-    <header className="zensia-header">
-      <a href="#zensia-threshold" className="zensia-wordmark" aria-label="Zensia Coffee home">ZENSIA<span>COFFEE</span></a>
-      <p className="zensia-header__origin">COLOMBIAN SPECIALTY COFFEE<br/>CLAYTON · ST. LOUIS</p>
-      <nav className="zensia-nav" aria-label="Primary">
-        <a href={MENU_URL} target="_blank" rel="noreferrer">Menu</a>
-        <a href={ORDER_URL} target="_blank" rel="noreferrer">Order</a>
-        <button type="button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="zensia-index">{menuOpen ? "Close" : "Index"}</button>
-      </nav>
-    </header>
+  return (
+    <div
+      ref={root}
+      className="z2"
+      style={{
+        "--z2-tone": product.tone,
+        "--z2-ink": product.ink,
+        "--z2-accent": product.accent,
+      } as React.CSSProperties}
+    >
+      <a className="z2-skip" href="#z2-main">Skip to content</a>
 
-    {menuOpen && <nav id="zensia-index" className="zensia-index" aria-label="Experience chapters">
-      {chapters.map(([n,label,desc],i)=><a key={label} href={`#zensia-${["threshold","origin","ritual","pause","stay","visit"][i]}`} onClick={()=>setMenuOpen(false)}><span>{n}</span><b>{label}</b><small>{desc}</small></a>)}
-    </nav>}
+      <header className="z2-header">
+        <a href="#z2-main" className="z2-brand" aria-label="Zensia Coffee home">
+          ZENSIA
+          <span>COFFEE</span>
+        </a>
+        <p className="z2-origin">COLOMBIAN SPECIALTY COFFEE · CLAYTON, ST. LOUIS</p>
+        <nav className="z2-nav" aria-label="Primary">
+          <a href={MENU_URL} target="_blank" rel="noreferrer">Menu</a>
+          <a href="#z2-coffee">Coffee</a>
+          <a href="#z2-visit">Visit</a>
+          <a className="z2-nav__order" href={ORDER_URL} target="_blank" rel="noreferrer">Order online</a>
+        </nav>
+      </header>
 
-    <main id="zensia-story">
-      <section id="zensia-threshold" className="zensia-scene zensia-hero" onPointerMove={moveFrost}>
-        <div className="zensia-noise" aria-hidden="true"><div className="zensia-noise__track">TRAFFIC · DEADLINES · MEETINGS · NOTIFICATIONS · TRAFFIC · DEADLINES · MEETINGS · NOTIFICATIONS ·</div></div>
-        <div className="zensia-frost" aria-hidden="true" />
-        <div className="zensia-hero__copy" data-z-reveal>
-          <p className="zensia-kicker">01 / THRESHOLD</p>
-          <h1><span>When the city shouts,</span><em>we whisper coffee.</em></h1>
-          <p>A Colombian coffee house designed around a simple luxury: enough room to stay.</p>
-          <a href="#zensia-origin" className="zensia-enter"><span>Enter the pause</span><i aria-hidden="true">↓</i></a>
-        </div>
-        <aside className="zensia-hero__aside" aria-hidden="true"><span>MOVE TO CLEAR THE GLASS</span><i /></aside>
-      </section>
+      <main id="z2-main">
+        <section className="z2-hero" aria-labelledby="z2-hero-title">
+          <div className="z2-hero__word" aria-hidden="true">ZENSIA</div>
 
-      <section id="zensia-origin" className="zensia-scene zensia-origin">
-        <div className="zensia-origin__meta" data-z-reveal><p>02 / ORIGIN</p><span>COLOMBIA → ST. LOUIS</span></div>
-        <div className="zensia-origin__copy" data-z-reveal>
-          <p className="zensia-kicker">COFFEE BEGINS BEFORE THE CUP</p>
-          <h2>One country.<br/><em>Many expressions.</em></h2>
-          <p>Zensia was created by Colombians in St. Louis to share the coffee experience they felt was missing here: origin, freshness, preparation and time.</p>
-        </div>
-        <div className="zensia-origin__proof" data-z-reveal>
-          <div><strong>4–6</strong><span>WEEKS<br/>HARVEST TO CUP*</span></div>
-          <p>*As described by Zensia’s founders in St. Louis Magazine. Roasted in Colombia and air-freighted to St. Louis.</p>
-        </div>
-        <div className="zensia-origin__line" aria-hidden="true" />
-      </section>
-
-      <section id="zensia-ritual" className="zensia-scene zensia-ritual">
-        <div className="zensia-ritual__copy" data-z-reveal>
-          <p className="zensia-kicker">03 / RITUAL</p>
-          <h2>The cup is<br/><em>the final step.</em></h2>
-          <p>Balance is adjusted every day through grind, extraction and preparation. The interface slows down here for the same reason: attention changes the result.</p>
-        </div>
-        <div className="zensia-ritual__dial" data-z-reveal aria-label="Coffee preparation variables">
-          {["GRIND","WATER","PRESSURE","TIME"].map((label,i)=><div key={label} style={{"--i":i} as React.CSSProperties}><span>0{i+1}</span><b>{label}</b></div>)}
-          <i aria-hidden="true" />
-        </div>
-      </section>
-
-      <section id="zensia-pause" className="zensia-scene zensia-pause">
-        <div className="zensia-pause__aperture" aria-hidden="true"><span/><span/></div>
-        <div className="zensia-pause__inner" data-z-reveal>
-          <p className="zensia-kicker">04 / THE SIGNATURE</p>
-          <h2>
-            <span className="zensia-pause__lead">Don’t scroll faster.</span>
-            <em className="zensia-pause__answer">Stay longer.</em>
-          </h2>
-          <p className="zensia-pause__body">Change the pace. The room clears, the frame opens and the interface gives the coffee more time.</p>
-
-          <div className="zensia-pace-control" role="group" aria-labelledby="zensia-pace-label">
-            <div className="zensia-pace-control__head">
-              <span id="zensia-pace-label">YOUR PACE</span>
-              <output htmlFor="zensia-pace">{String(pace).padStart(2,"0")}</output>
+          <div className="z2-hero__copy">
+            <p className="z2-eyebrow">COLOMBIA → ST. LOUIS</p>
+            <h1 id="z2-hero-title">
+              Coffee,
+              <span>with room to stay.</span>
+            </h1>
+            <p className="z2-hero__body">
+              Colombian specialty coffee, prepared with intention and served in a space made for slowing down.
+            </p>
+            <div className="z2-hero__actions">
+              <a href={ORDER_URL} target="_blank" rel="noreferrer">Order online <span aria-hidden="true">↗</span></a>
+              <a href={MENU_URL} target="_blank" rel="noreferrer">View menu</a>
             </div>
-            <input
-              id="zensia-pace"
-              type="range"
-              min="0"
-              max="100"
-              step="1"
-              value={pace}
-              aria-label="Change the pace from city rush to stay"
-              onChange={(event)=>setPaceValue(Number(event.target.value))}
-            />
-            <div className="zensia-pace-control__labels" aria-hidden="true"><span>CITY</span><span>ARRIVE</span><span>STAY</span></div>
-            <p className="zensia-pace-control__status" role="status" aria-live="polite">
-              {paceZone === "rush" && "The outside still has the room."}
-              {paceZone === "arrive" && "The threshold is opening."}
-              {paceZone === "stay" && "The room has changed pace."}
+          </div>
+
+          <div
+            className="z2-product-wrap"
+            onPointerMove={onProductMove}
+            onPointerLeave={resetProduct}
+          >
+            <div ref={productStage} className="z2-product-stage" aria-live="polite">
+              <div className="z2-product-stage__halo" aria-hidden="true" />
+              <Image
+                key={product.image}
+                src={product.image}
+                alt="Zensia Zen at Home Colombian coffee"
+                fill
+                priority
+                sizes="(max-width: 900px) 74vw, 44vw"
+                className="z2-product-stage__image"
+              />
+              <div className="z2-product-stage__label">
+                <span>{product.id}</span>
+                <strong>{product.label}</strong>
+                <p>{product.descriptor}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="z2-product-switcher" role="group" aria-label="Choose a Zensia coffee product">
+            {PRODUCTS.map((item, index) => (
+              <button
+                key={item.id}
+                type="button"
+                aria-pressed={activeProduct === index}
+                onClick={() => setActiveProduct(index)}
+              >
+                <span>{item.id}</span>
+                <b>{item.label}</b>
+              </button>
+            ))}
+          </div>
+
+          <p className="z2-hero__edge" aria-hidden="true">SPECIALTY / COLOMBIAN / COFFEE</p>
+        </section>
+
+        <section id="z2-coffee" className="z2-intro">
+          <div className="z2-intro__copy" data-z2-reveal>
+            <p className="z2-eyebrow">THE COFFEE</p>
+            <h2>One origin.<br /><em>More than one mood.</em></h2>
+            <p>
+              Zensia&apos;s public menu moves across bold espresso, creamy milk drinks, aromatic classics and cold coffee.
+              The new site gives those choices the same visual weight as the café itself.
             </p>
           </div>
-        </div>
 
-        <div className="zensia-pause__calm-field" aria-hidden={pace < 58}>
-          <span>THE ROOM HAS CHANGED PACE</span>
-          <strong>COLOMBIA<br/>IN THE ROOM.</strong>
-          <small>ORIGIN · RITUAL · TIME · COMMUNITY</small>
-        </div>
-        <div className="zensia-breath" aria-hidden="true"><span>BREATHE IN</span><i/><span>LET GO</span></div>
-      </section>
+          <div className="z2-profile-grid">
+            {COFFEE_PROFILES.map((item, index) => (
+              <article key={item.label} className="z2-profile" data-z2-reveal>
+                <div className="z2-profile__image">
+                  <Image
+                    src={item.image}
+                    alt={item.label}
+                    fill
+                    sizes="(max-width: 700px) 88vw, 24vw"
+                  />
+                </div>
+                <div className="z2-profile__meta">
+                  <span>0{index + 1}</span>
+                  <h3>{item.label}</h3>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
 
-      <section id="zensia-stay" className="zensia-scene zensia-stay">
-        <div className="zensia-stay__headline" data-z-reveal><p className="zensia-kicker">05 / STAY</p><h2>Coffee is<br/>only half<br/><em>the reason.</em></h2></div>
-        <div className="zensia-stay__grid" data-z-reveal>
-          <article><span>01</span><h3>Colombian table</h3><p>Coffee, breads, empanadas and desserts place the menu inside a larger cultural experience.</p></article>
-          <article><span>02</span><h3>Room to linger</h3><p>The physical café was intentionally designed as the opposite of a fast-turn coffee shop.</p></article>
-          <article><span>03</span><h3>Community</h3><p>Zensia’s public voice centers connection, culture and the everyday relationships built across the counter.</p></article>
-        </div>
-      </section>
+        <section className="z2-origin-story">
+          <div className="z2-origin-story__media" data-z2-reveal>
+            <Image
+              src="https://static.wixstatic.com/media/859566_6b7702b0813d4b9388ff1a8752200691~mv2.png"
+              alt="Zensia Coffee"
+              fill
+              sizes="(max-width: 900px) 100vw, 58vw"
+            />
+          </div>
+          <div className="z2-origin-story__copy" data-z2-reveal>
+            <p className="z2-eyebrow">FROM COLOMBIA</p>
+            <h2>Origin is part of the experience.</h2>
+            <p>
+              Zensia was created to share Colombian coffee through more than flavor alone — preparation, atmosphere,
+              hospitality and the time you give the cup all matter.
+            </p>
+            <a href="#z2-visit">Find your pause <span aria-hidden="true">↓</span></a>
+          </div>
+          <div className="z2-origin-story__stamp" aria-hidden="true">
+            <span>COLOMBIA</span>
+            <span>ST. LOUIS</span>
+          </div>
+        </section>
 
-      <section id="zensia-visit" className="zensia-scene zensia-visit">
-        <div className="zensia-visit__copy" data-z-reveal>
-          <p className="zensia-kicker">06 / YOUR PAUSE</p>
-          <h2>Come in.<br/><em>Take your time.</em></h2>
-          <p>8121 Maryland Avenue<br/>St. Louis, MO 63105</p>
-        </div>
-        <div className="zensia-actions" data-z-reveal>
-          <a href={ORDER_URL} target="_blank" rel="noreferrer"><span>Order online</span><b>↗</b></a>
-          <a href={MENU_URL} target="_blank" rel="noreferrer"><span>View menu</span><b>↗</b></a>
-          <a href={CALM_URL} target="_blank" rel="noreferrer"><span>Join Calm Club</span><b>↗</b></a>
-        </div>
-        <footer className="zensia-footer">
-          <span>ZENSIA COFFEE</span>
-          <p>Concept experience built in Forge · Brand facts grounded in public Zensia sources · Third-party editorial imagery intentionally not reused.</p>
-        </footer>
-      </section>
-    </main>
-  </div>;
+        <section className="z2-club">
+          <div className="z2-club__visual" data-z2-reveal>
+            <Image
+              src="https://static.wixstatic.com/media/859566_dbb60c0fa9a444e589c870551afbcb7b~mv2.png"
+              alt="Zensia Calm Club rewards"
+              fill
+              sizes="(max-width: 900px) 88vw, 42vw"
+            />
+          </div>
+          <div className="z2-club__copy" data-z2-reveal>
+            <p className="z2-eyebrow">CALM CLUB</p>
+            <h2>Good coffee.<br />Good calm.<br /><em>Rewards too.</em></h2>
+            <p>
+              Earn Zen when you visit and redeem it for treats, perks and future pauses.
+            </p>
+            <a href={CALM_URL} target="_blank" rel="noreferrer">Join Calm Club <span aria-hidden="true">↗</span></a>
+          </div>
+        </section>
+
+        <section id="z2-visit" className="z2-visit">
+          <div className="z2-visit__top">
+            <p className="z2-eyebrow">YOUR PAUSE STARTS HERE</p>
+            <h2>Come for the coffee.<br /><em>Stay for the room.</em></h2>
+          </div>
+
+          <div className="z2-visit__grid">
+            <a className="z2-visit__primary" href={MAP_URL} target="_blank" rel="noreferrer" data-z2-reveal>
+              <span>VISIT ZENSIA</span>
+              <strong>8121 Maryland Avenue</strong>
+              <small>Saint Louis, MO 63105</small>
+              <b aria-hidden="true">↗</b>
+            </a>
+
+            <div className="z2-visit__links" data-z2-reveal>
+              <a href={ORDER_URL} target="_blank" rel="noreferrer"><span>Order online</span><b>↗</b></a>
+              <a href={MENU_URL} target="_blank" rel="noreferrer"><span>View menu</span><b>↗</b></a>
+              <a href={CALM_URL} target="_blank" rel="noreferrer"><span>Join Calm Club</span><b>↗</b></a>
+              <a href="https://www.zensiacoffee.com/" target="_blank" rel="noreferrer"><span>Current Zensia site</span><b>↗</b></a>
+            </div>
+          </div>
+
+          <footer className="z2-footer">
+            <a href="#z2-main" className="z2-footer__brand">ZENSIA COFFEE</a>
+            <p>COLOMBIAN SPECIALTY COFFEE · CLAYTON, ST. LOUIS</p>
+            <span>CONCEPT EXPERIENCE / FORGE</span>
+          </footer>
+        </section>
+      </main>
+    </div>
+  );
 }

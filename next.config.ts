@@ -7,6 +7,15 @@ const nextConfig: NextConfig = {
   async redirects() {
     return process.env.NODE_ENV === "production" ? [] : [{ source: "/", destination: "/forge", permanent: false }];
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "static.wixstatic.com",
+        pathname: "/media/**",
+      },
+    ],
+  },
   outputFileTracingIncludes: {
     "/api/asset-bank": ["./catalog/asset-bank/**/*.json", "./recipes/*.json"],
   },
