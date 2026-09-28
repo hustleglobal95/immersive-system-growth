@@ -316,7 +316,7 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
               />
               <div className="zim-menu__photo-shade" />
               <div className="zim-menu__photo-caption">
-                <span>{activePhoto.exact ? "ZENSIA PRODUCT PHOTOGRAPHY" : "ZENSIA CATEGORY PHOTOGRAPHY"}</span>
+                <span>FROM ZENSIA</span>
                 <b>{activeCategory.shortLabel}</b>
               </div>
             </div>
@@ -332,7 +332,6 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
 
             <div className="zim-menu__stage-copy" aria-live="polite">
               <h3 className="zim-menu__active-name">{activeItem.name}</h3>
-              <p className="zim-menu__photo-note">{activePhoto.exact ? "Published Zensia product image." : "Real Zensia imagery used as a category fallback."}</p>
               {activeVariant ? <p className="zim-menu__selected-variant">{activeVariant}</p> : null}
             </div>
 
@@ -385,6 +384,8 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
             {visibleItems.map((item, index) => {
               const itemCategory = ZENSIA_MENU_CATEGORIES.find((entry) => entry.id === item.category);
               const selected = item.id === activeItem.id;
+              const categoryItemIndex = Math.max(0, menuItemsForCategory(item.category).findIndex((entry) => entry.id === item.id));
+              const itemPhoto = photoForItem(item, itemCategory?.kind ?? activeCategory.kind, categoryItemIndex);
               return (
                 <button
                   key={item.id}
@@ -396,6 +397,9 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
                   onClick={() => selectItem(item)}
                 >
                   <span className="zim-menu__item-number">{String(index + 1).padStart(2, "0")}</span>
+                  <span className="zim-menu__item-thumb" aria-hidden="true">
+                    <Image src={itemPhoto.src} alt="" fill sizes="56px" />
+                  </span>
                   <span className="zim-menu__item-name">{item.name}</span>
                   {query ? <span className="zim-menu__item-category">{itemCategory?.shortLabel}</span> : null}
                   {item.variants?.length ? <span className="zim-menu__item-variants">{item.variants.length} flavors</span> : null}
