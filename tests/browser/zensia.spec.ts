@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.setTimeout(120000);
 
-test("Zensia preserves one spatial canvas, clear conversion actions and the calm-mode signature interaction", async ({ page }) => {
+test("Zensia preserves one spatial canvas, clear conversion actions and a reversible pace-controlled signature interaction", async ({ page }) => {
   const errors:string[]=[];
   page.on("pageerror", error => errors.push(error.message));
   await page.goto("/zensia");
@@ -14,11 +14,20 @@ test("Zensia preserves one spatial canvas, clear conversion actions and the calm
   await expect(page.getByRole("navigation",{name:"Experience chapters"}).getByRole("link")).toHaveCount(6);
   await page.getByRole("link",{name:/04 Pause/}).click();
 
-  const calm=page.getByRole("button",{name:"Enter calm mode"});
-  await calm.scrollIntoViewIfNeeded();
-  await calm.click();
+  const pace=page.getByRole("slider",{name:"Change the pace from city rush to stay"});
+  await pace.scrollIntoViewIfNeeded();
+  await page.screenshot({path:"test-results/zensia-repair/desktop-signature-before.png",fullPage:false});
+  await pace.fill("100");
   await expect(page.locator(".zensia")).toHaveAttribute("data-calm","true");
-  await expect(page.getByRole("button",{name:"Return to city pace"})).toHaveAttribute("aria-pressed","true");
+  await expect(page.locator(".zensia")).toHaveAttribute("data-pace-zone","stay");
+  await expect(page.getByText("The room has changed pace.")).toBeVisible();
+  await page.waitForTimeout(1450);
+  await page.screenshot({path:"test-results/zensia-repair/desktop-signature-after.png",fullPage:false});
+  await pace.fill("0");
+  await expect(page.locator(".zensia")).toHaveAttribute("data-calm","false");
+  await expect(page.locator(".zensia")).toHaveAttribute("data-pace-zone","rush");
+  await pace.fill("100");
+  await expect(page.locator(".zensia")).toHaveAttribute("data-pace-zone","stay");
 
   await page.locator("#zensia-visit").scrollIntoViewIfNeeded();
   await expect(page.getByRole("link",{name:"Order online"})).toHaveAttribute("href","https://zensia-coffee-llc.square.site/");
@@ -35,6 +44,13 @@ test("Zensia mobile and reduced-motion modes preserve the narrative and avoid ho
     await page.evaluate(id => document.getElementById(id)!.scrollIntoView({behavior:"instant"}),id);
     await expect(page.locator(`#${id}`)).toBeInViewport();
     expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    if(id==="zensia-pause"){
+      const pace=page.getByRole("slider",{name:"Change the pace from city rush to stay"});
+      await page.screenshot({path:"test-results/zensia-repair/mobile-signature-before.png",fullPage:false});
+      await pace.fill("100");
+      await expect(page.locator(".zensia")).toHaveAttribute("data-pace-zone","stay");
+      await page.screenshot({path:"test-results/zensia-repair/mobile-signature-after.png",fullPage:false});
+    }
   }
   await expect(page.getByRole("link",{name:"Order online"})).toBeVisible();
 });
