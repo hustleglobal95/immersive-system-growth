@@ -1,0 +1,80 @@
+name: Zensia Splash Final Preflight
+
+on:
+  push:
+    branches:
+      - project/zensia-uploaded-splash-final
+    paths:
+      - .github/workflows/zensia-splash-final-preflight.yml
+
+permissions:
+  contents: write
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Write structured splash brief
+        run: |
+          mkdir -p .forge/execution/zensia-splash-final
+          cat > .forge/execution/zensia-splash-final/brief.json <<'EOF'
+          {
+            "projectName": "Zensia Uploaded Coffee Splash Final",
+            "projectType": "hospitality",
+            "tier": "signature",
+            "client": "Zensia Coffee",
+            "audience": "Visitors browsing the full immersive Zensia menu.",
+            "objective": "Integrate the user-supplied coffee splash animation into the already-merged full Zensia menu as a transparent kinetic media object.",
+            "primaryAction": "Order online",
+            "brandTruth": "The menu is part of the Zensia experience and the supplied coffee motion should reinforce coffee ritual without reducing usability.",
+            "differentiators": [
+              "Complete current Zensia menu",
+              "User-supplied coffee splash motion",
+              "GSAP spatial menu stage",
+              "Direct ordering"
+            ],
+            "constraints": [
+              "Use the processed transparent splash asset as decorative motion only",
+              "Keep all menu text, controls and order actions readable and interactive",
+              "Disable the splash under prefers-reduced-motion",
+              "Preserve all current menu items and variants",
+              "No invented menu facts or pricing"
+            ],
+            "existingAssets": [],
+            "references": [
+              {
+                "label": "User-supplied coffee splash animation",
+                "lesson": "Use as a kinetic accent inside the menu stage, not as a generic fullscreen background."
+              }
+            ]
+          }
+          EOF
+      - name: Run Forge preflight
+        env:
+          STUDIO_AUTH_ENABLED: "false"
+          FORGE_LOCAL_STORAGE_ENABLED: "true"
+          NODE_ENV: development
+        run: |
+          npm run forge:preflight -- \
+            --name="Zensia Uploaded Coffee Splash Final" \
+            --brief=.forge/execution/zensia-splash-final/brief.json \
+            --artifacts=.forge/execution/zensia-splash-final/artifacts \
+            --record=forge-intelligence/execution-records/zensia-splash-final.json
+      - name: Validate execution evidence
+        run: npm run forge:execution:audit -- --record=forge-intelligence/execution-records/zensia-splash-final.json
+      - name: Commit public-safe record
+        run: |
+          git config user.name "forge-preflight"
+          git config user.email "actions@users.noreply.github.com"
+          git add forge-intelligence/execution-records/zensia-splash-final.json
+          git commit -m "Record Zensia splash preflight [forge-preflight-record]"
+          git push origin HEAD:project/zensia-uploaded-splash-final

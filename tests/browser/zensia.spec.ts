@@ -25,6 +25,7 @@ test("Zensia imagination pass renders the kinetic hero and commerce path",async(
 
   await page.locator("#zi-menu").scrollIntoViewIfNeeded();
   await expect(page.getByRole("heading",{name:/Everything,/i})).toBeVisible();
+  await expect(page.locator("[data-source='uploaded-zensia-coffee-splash']")).toBeVisible();
   const categories=page.getByRole("group",{name:"Menu categories"}).getByRole("button");
   await expect(categories).toHaveCount(6);
   await expect(page.locator(".zim-menu__item")).toHaveCount(7);
@@ -35,6 +36,7 @@ test("Zensia imagination pass renders the kinetic hero and commerce path",async(
   await expect(page.locator(".zim-menu__variant-row").getByRole("button")).toHaveCount(7);
   await page.getByRole("button",{name:"Passion Fruit",exact:true}).click();
   await expect(page.locator(".zim-menu__selected-variant")).toHaveText("Passion Fruit");
+  await page.waitForTimeout(700);
   await page.screenshot({path:"test-results/zensia-imagination/desktop-full-menu.png",fullPage:false});
 
   await page.getByRole("button",{name:"Specialty Desserts: 7 items"}).click();
