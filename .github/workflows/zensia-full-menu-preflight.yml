@@ -13,7 +13,7 @@ permissions:
 jobs:
   preflight:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
@@ -23,44 +23,50 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Write structured menu brief
+      - name: Write structured photo-first menu repair brief
         run: |
-          mkdir -p .forge/execution/zensia-full-menu
-          cat > .forge/execution/zensia-full-menu/brief.json <<'EOF'
+          mkdir -p .forge/execution/zensia-photo-menu-repair
+          cat > .forge/execution/zensia-photo-menu-repair/brief.json <<'EOF'
           {
-            "projectName": "Zensia Coffee Full Immersive Menu",
+            "projectName": "Zensia Photo-First Immersive Menu Repair",
             "projectType": "hospitality",
             "tier": "signature",
             "client": "Zensia Coffee",
             "audience": "Visitors deciding what to order before or during a Zensia visit.",
-            "objective": "Integrate Zensia's complete current public menu into the existing immersive website as a first-class interactive experience, with every listed menu item and every listed flavor variant represented.",
+            "objective": "Replace the synthetic menu centerpiece with an authentic photo-first interactive menu where real Zensia product photography drives selection, motion, hierarchy and ordering.",
             "primaryAction": "Order online",
-            "brandTruth": "The menu itself should feel like part of the Zensia experience, not a detached PDF or utility page.",
+            "brandTruth": "The products are the experience. The menu should feel editorial, tactile and calm without fake procedural food or decorative UI spectacle.",
             "differentiators": [
+              "Real Zensia product photography",
               "Colombian specialty coffee and café hospitality",
-              "A broad menu spanning coffee, cold drinks, Colombian breads, empanadas and desserts",
-              "Real online ordering",
-              "Existing kinetic GSAP and Forge mask language"
+              "A broad menu spanning hot drinks, espresso, cold drinks, Colombian breads, empanadas and desserts",
+              "Existing GSAP and Forge mask language"
             ],
             "constraints": [
-              "Use the current public Actual Menu as the factual source",
-              "Represent every listed core menu item across Hot Beverages, Espresso Drinks, Cold Beverages, Breads, Empanadas and Specialty Desserts",
-              "Represent every listed Fruit Slush/Juice flavor and ZenEnergy flavor",
+              "Remove the fake procedural vessel, orbit and steam representation from the menu",
+              "Use real Zensia product photography where authentic imagery exists",
+              "Never synthesize a missing menu item image",
+              "Use an intentional editorial fallback for menu items without authentic photography",
+              "Keep all 44 core menu items and all 11 listed flavor variants",
               "Do not invent prices, sizes, ingredients or availability",
               "Keep every item accessible by keyboard and touch",
-              "Use Forge GSAP and mask systems for category transitions and active-item choreography",
-              "Preserve Order Online, Menu, Visit and Calm Club conversion paths",
-              "Mobile must provide the full menu without horizontal page overflow"
+              "Use GSAP and Forge mask transitions for category and active-item choreography",
+              "Preserve Order Online and the full menu search",
+              "Mobile must provide the full menu without horizontal page overflow",
+              "The uploaded coffee splash is connective motion, not the primary representation of every product"
             ],
-            "existingAssets": [],
+            "existingAssets": [
+              "Current Zensia product photography already referenced by the checked-in experience",
+              "Uploaded Zensia coffee splash asset already integrated in the checked-in menu"
+            ],
             "references": [
               {
-                "label": "Zensia Actual Menu",
-                "lesson": "This is the authoritative current menu content. Preserve names and category grouping without fabricating prices or details."
+                "label": "Photo-first editorial product browsing",
+                "lesson": "The selected product must dominate the stage while navigation remains fast and legible."
               },
               {
                 "label": "Current Zensia Forge build",
-                "lesson": "Extend the existing kinetic object and mask-reveal language into the menu rather than creating a disconnected menu page."
+                "lesson": "Preserve the strongest GSAP and mask language but remove synthetic product representations."
               }
             ]
           }
@@ -71,19 +77,21 @@ jobs:
           FORGE_LOCAL_STORAGE_ENABLED: "true"
           NODE_ENV: development
         run: |
-          npm run forge:preflight --             --name="Zensia Coffee Full Immersive Menu"             --brief=.forge/execution/zensia-full-menu/brief.json             --artifacts=.forge/execution/zensia-full-menu/artifacts             --record=forge-intelligence/execution-records/zensia-full-menu.json
-      - name: Compile interaction context
-        run: |
-          npm run forge:context --             --domain="interaction"             --scene="menu"             --objective="Build a complete touch and keyboard accessible immersive menu with category and active-item interaction"             --prompt="Integrate every current Zensia menu item and every listed flavor variant into the immersive site."             --name="Zensia Coffee Full Immersive Menu"             --output=.forge/execution/zensia-full-menu/interaction-context.json
-      - name: Compile motion context
-        run: |
-          npm run forge:context --             --domain="motion"             --scene="menu"             --objective="Use GSAP and Forge masks to make menu browsing spatial and cinematic without hiding content"             --prompt="Integrate every current Zensia menu item and every listed flavor variant into the immersive site."             --name="Zensia Coffee Full Immersive Menu"             --output=.forge/execution/zensia-full-menu/motion-context.json
+          npm run forge:preflight -- \
+            --name="Zensia Photo-First Immersive Menu Repair" \
+            --brief=.forge/execution/zensia-photo-menu-repair/brief.json \
+            --artifacts=.forge/execution/zensia-photo-menu-repair/artifacts \
+            --record=forge-intelligence/execution-records/zensia-photo-menu-repair.json
       - name: Validate execution evidence
-        run: npm run forge:execution:audit -- --record=forge-intelligence/execution-records/zensia-full-menu.json
+        run: npm run forge:execution:audit -- --record=forge-intelligence/execution-records/zensia-photo-menu-repair.json
+      - name: Print build packet
+        run: |
+          echo '===== BUILD PACKET ====='
+          cat .forge/execution/zensia-photo-menu-repair/artifacts/forge-build-packet.md
       - name: Commit public-safe record
         run: |
           git config user.name "forge-preflight"
           git config user.email "actions@users.noreply.github.com"
-          git add forge-intelligence/execution-records/zensia-full-menu.json
-          git commit -m "Record Zensia full menu preflight [forge-preflight-record]"
+          git add forge-intelligence/execution-records/zensia-photo-menu-repair.json
+          git commit -m "Record Zensia photo menu repair preflight [forge-preflight-record]" || true
           git push origin HEAD:project/zensia-photo-menu-repair
