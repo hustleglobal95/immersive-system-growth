@@ -185,3 +185,24 @@
 @media(prefers-reduced-motion:reduce){
   .z2 *{scroll-behavior:auto!important;transition-duration:.001ms!important}
 }
+
+
+/* Forge motion + reveal upgrade */
+.z2 [data-z2-mask]{will-change:transform,-webkit-mask-image,mask-image}
+.z2-product-stage__image{will-change:transform,-webkit-mask-image,mask-image}
+.z2-hero__copy h1,.z2 h2{will-change:transform,clip-path}
+.z2-product-switcher{will-change:transform}
+.z2-profile__image,.z2-origin-story__media,.z2-club__visual,.z2-visit__primary{
+  -webkit-mask-position:center;
+  mask-position:center;
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+}
+.z2-profile__image img,.z2-origin-story__media img,.z2-club__visual img{will-change:transform}
+@media(prefers-reduced-motion:reduce){
+  .z2 [data-z2-mask],.z2-product-stage__image{
+    -webkit-mask-image:linear-gradient(#000,#000)!important;
+    mask-image:linear-gradient(#000,#000)!important;
+    transform:none!important;
+  }
+}
