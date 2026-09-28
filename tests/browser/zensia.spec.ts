@@ -7,6 +7,7 @@ test("Zensia preserves one spatial canvas, clear conversion actions and the calm
   page.on("pageerror", error => errors.push(error.message));
   await page.goto("/zensia");
   await expect(page.getByRole("heading",{level:1})).toContainText("When the city shouts");
+  await page.screenshot({path:"test-results/zensia/desktop-threshold.png",fullPage:false});
   await expect(page.locator(".zensia-scene")).toHaveCount(6);
   await expect(page.locator("canvas")).toHaveCount(1);
 
@@ -19,8 +20,10 @@ test("Zensia preserves one spatial canvas, clear conversion actions and the calm
   await calm.click();
   await expect(page.locator(".zensia")).toHaveAttribute("data-calm","true");
   await expect(page.getByRole("button",{name:"Return to city pace"})).toHaveAttribute("aria-pressed","true");
+  await page.screenshot({path:"test-results/zensia/desktop-signature-calm.png",fullPage:false});
 
   await page.locator("#zensia-visit").scrollIntoViewIfNeeded();
+  await page.screenshot({path:"test-results/zensia/desktop-visit.png",fullPage:false});
   await expect(page.getByRole("link",{name:"Order online"})).toHaveAttribute("href","https://zensia-coffee-llc.square.site/");
   await expect(page.getByRole("link",{name:"View menu"})).toHaveAttribute("href","https://www.zensiacoffee.com/actual-menu");
   await expect(page.getByRole("link",{name:"Join Calm Club"})).toHaveAttribute("href","https://profile.squareup.com/loyalty/MLX5PRMQ9XZ02");
@@ -31,10 +34,13 @@ test("Zensia mobile and reduced-motion modes preserve the narrative and avoid ho
   await page.setViewportSize({width:390,height:844});
   await page.emulateMedia({reducedMotion:"reduce"});
   await page.goto("/zensia");
+  await page.screenshot({path:"test-results/zensia/mobile-threshold.png",fullPage:false});
   for(const id of ["zensia-threshold","zensia-origin","zensia-ritual","zensia-pause","zensia-stay","zensia-visit"]){
     await page.evaluate(id => document.getElementById(id)!.scrollIntoView({behavior:"instant"}),id);
     await expect(page.locator(`#${id}`)).toBeInViewport();
     expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    if(id==="zensia-pause") await page.screenshot({path:"test-results/zensia/mobile-signature-reduced-motion.png",fullPage:false});
+    if(id==="zensia-visit") await page.screenshot({path:"test-results/zensia/mobile-visit.png",fullPage:false});
   }
   await expect(page.getByRole("link",{name:"Order online"})).toBeVisible();
 });
