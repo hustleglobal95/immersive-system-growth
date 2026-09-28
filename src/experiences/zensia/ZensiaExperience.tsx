@@ -26,7 +26,11 @@ function Ridge({ y, z, width, lift, opacity }: { y:number; z:number; width:numbe
     }
     return new THREE.BufferGeometry().setFromPoints(points);
   }, [y,z,width,lift]);
-  return <line geometry={geometry}><lineBasicMaterial color="#82906d" transparent opacity={opacity} /></line>;
+  const line = useMemo(
+    () => new THREE.Line(geometry, new THREE.LineBasicMaterial({ color:"#82906d", transparent:true, opacity })),
+    [geometry, opacity],
+  );
+  return <primitive object={line} />;
 }
 
 function Steam({ x, delay }: { x:number; delay:number }) {
