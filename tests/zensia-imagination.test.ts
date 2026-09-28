@@ -5,11 +5,13 @@ import fs from "node:fs";
 const component=fs.readFileSync("src/experiences/zensia/ZensiaImaginationExperience.tsx","utf8");
 const css=fs.readFileSync("app/zensia/zensia-imagination.css","utf8");
 
-test("Zensia imagination pass uses a Type Vault editorial display system",()=>{
-  assert.match(css,/--font-cormorant/);
+test("Zensia professional type pass uses Manrope display with DM Sans support",()=>{
   assert.match(css,/--font-manrope/);
-  assert.match(css,/font-style:italic/);
+  assert.match(css,/--font-dm-sans/);
+  assert.doesNotMatch(css,/--font-cormorant/);
+  assert.doesNotMatch(css,/font-style:italic/);
   assert.match(component,/A cup can/);
+  assert.match(component,/>ZENSIA<\/div>/);
 });
 
 test("Zensia imagination pass adds a real kinetic object language",()=>{
