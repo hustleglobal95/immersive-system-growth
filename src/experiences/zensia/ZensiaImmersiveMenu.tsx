@@ -136,7 +136,7 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
       .fromTo(".zim-menu__stage-object", { scale: 0.78, rotateZ: -8 }, { scale: 1, rotateZ: 0, duration: 0.62, ease: "back.out(1.3)" }, 0.06)
       .fromTo(".zim-menu__variant-row > *", { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.42, stagger: 0.045 }, 0.16);
 
-    return () => timeline.kill();
+    return () => { timeline.kill(); };
   }, [activeItemId, activeVariant]);
 
   const moveStage = (event: PointerEvent<HTMLDivElement>) => {
