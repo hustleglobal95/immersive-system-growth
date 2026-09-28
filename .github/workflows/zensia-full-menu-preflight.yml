@@ -56,8 +56,8 @@ jobs:
               "The uploaded coffee splash is connective motion, not the primary representation of every product"
             ],
             "existingAssets": [
-              "Current Zensia product photography already referenced by the checked-in experience",
-              "Uploaded Zensia coffee splash asset already integrated in the checked-in menu"
+              {"id":"zensia-product-photography","label":"Current Zensia product photography","type":"image","notes":"Authentic Zensia photography already referenced by the checked-in experience."},
+              {"id":"zensia-coffee-splash","label":"Uploaded Zensia coffee splash","type":"image","notes":"Existing connective motion asset already integrated in the checked-in menu."}
             ],
             "references": [
               {
