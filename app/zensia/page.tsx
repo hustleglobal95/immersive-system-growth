@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { ZensiaExperience } from "@/src/experiences/zensia/ZensiaExperience";
-import "./zensia.css";
+import { ZensiaImaginationExperience } from "@/src/experiences/zensia/ZensiaImaginationExperience";
+import "./zensia-imagination.css";
 
 export const metadata: Metadata = {
   title: "Zensia Coffee — Colombian Specialty Coffee in St. Louis",
@@ -18,6 +18,6 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ZensiaPage() {
-  return <ZensiaExperience />;
+export default function ZensiaPage(){
+  return <ZensiaImaginationExperience />;
 }

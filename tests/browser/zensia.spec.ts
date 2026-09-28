@@ -2,69 +2,54 @@ import { test, expect } from "@playwright/test";
 
 test.setTimeout(120000);
 
-test("Zensia upgrade uses a real coffee-product hero, commerce actions and responsive product switching", async ({ page }) => {
+test("Zensia imagination pass renders the kinetic hero and commerce path",async({page})=>{
   const errors:string[]=[];
-  page.on("pageerror", error => errors.push(error.message));
+  page.on("pageerror",error=>errors.push(error.message));
   await page.goto("/zensia");
-
   await expect(page.getByRole("heading",{level:1})).toContainText("Coffee");
-  await expect(page.getByText("with room to stay.")).toBeVisible();
   await expect(page.getByAltText("Zensia Zen at Home Colombian coffee")).toBeVisible();
-  await page.waitForTimeout(950);
-  const heroMask=await page.getByAltText("Zensia Zen at Home Colombian coffee").evaluate((node)=>{
-    const style=getComputedStyle(node);
-    return style.maskImage || style.getPropertyValue("-webkit-mask-image");
-  });
-  expect(heroMask).toContain("gradient");
-  await page.screenshot({path:"test-results/zensia-motion/desktop-hero.png",fullPage:false});
+  await expect(page.locator(".zi-object-field")).toBeVisible();
+  await expect(page.locator(".zi-orbit--outer")).toBeVisible();
+  await expect(page.locator(".zi-seal")).toBeVisible();
+  await page.screenshot({path:"test-results/zensia-imagination/desktop-hero.png",fullPage:false});
 
   const selectors=page.getByRole("group",{name:"Choose a Zensia coffee product"}).getByRole("button");
   await expect(selectors).toHaveCount(4);
-  await selectors.nth(2).click();
-  await expect(selectors.nth(2)).toHaveAttribute("aria-pressed","true");
+  await selectors.nth(1).click();
+  await expect(selectors.nth(1)).toHaveAttribute("aria-pressed","true");
 
-  await page.locator("#z2-coffee").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("heading",{name:/One origin/i})).toBeVisible();
-  await expect(page.locator(".z2-profile")).toHaveCount(4);
-  await page.waitForTimeout(450);
-  const profileMask=await page.locator("[data-z2-mask='profile']").first().evaluate((node)=>{
-    const style=getComputedStyle(node);
-    return style.maskImage || style.getPropertyValue("-webkit-mask-image");
-  });
-  expect(profileMask).toContain("gradient");
-  await page.screenshot({path:"test-results/zensia-motion/desktop-coffee-masks.png",fullPage:false});
+  await page.locator(".zi-kinetic").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("heading",{name:/A cup can/i})).toBeVisible();
+  await expect(page.locator(".zi-kinetic__tile")).toHaveCount(2);
+  await page.screenshot({path:"test-results/zensia-imagination/desktop-kinetic.png",fullPage:false});
 
-  await page.locator("#z2-visit").scrollIntoViewIfNeeded();
-  await page.screenshot({path:"test-results/zensia-brewns/desktop-visit.png",fullPage:false});
+  await page.locator("#zi-visit").scrollIntoViewIfNeeded();
   await expect(page.getByRole("link",{name:/Order online/i}).first()).toHaveAttribute("href","https://zensia-coffee-llc.square.site/");
-  await expect(page.getByRole("link",{name:/View menu/i}).first()).toHaveAttribute("href","https://www.zensiacoffee.com/actual-menu");
-  await expect(page.getByRole("link",{name:/Join Calm Club/i}).first()).toHaveAttribute("href","https://profile.squareup.com/loyalty/MLX5PRMQ9XZ02");
   expect(errors).toEqual([]);
 });
 
-test("Zensia upgrade is deliberately composed on mobile without horizontal overflow", async ({ page }) => {
+test("Zensia imagination pass keeps the kinetic language on mobile without overflow",async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto("/zensia");
-
   await expect(page.getByRole("heading",{level:1})).toBeVisible();
-  await page.screenshot({path:"test-results/zensia-motion/mobile-hero.png",fullPage:false});
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  await expect(page.locator(".zi-object-field")).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  await page.screenshot({path:"test-results/zensia-imagination/mobile-hero.png",fullPage:false});
 
-  await page.locator("#z2-coffee").scrollIntoViewIfNeeded();
-  await expect(page.locator(".z2-profile")).toHaveCount(4);
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  await page.locator(".zi-kinetic").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("heading",{name:/A cup can/i})).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 
-  await page.locator("#z2-visit").scrollIntoViewIfNeeded();
+  await page.locator("#zi-visit").scrollIntoViewIfNeeded();
   await expect(page.getByRole("link",{name:/Order online/i}).first()).toBeVisible();
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });
 
-test("Zensia upgrade keeps the essential story readable without JavaScript", async ({ browser }) => {
+test("Zensia imagination pass remains readable without JavaScript",async({browser})=>{
   const context=await browser.newContext({javaScriptEnabled:false});
   const page=await context.newPage();
   await page.goto("/zensia");
   await expect(page.getByRole("heading",{level:1})).toBeVisible();
   await expect(page.getByRole("link",{name:/Order online/i}).first()).toBeVisible();
-  await expect(page.locator(".z2-profile")).toHaveCount(4);
   await context.close();
 });
