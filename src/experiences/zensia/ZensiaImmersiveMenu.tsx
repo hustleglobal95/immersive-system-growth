@@ -46,9 +46,24 @@ const ZENSIA_PHOTO_POOLS = {
   ],
 } as const;
 
-function photoForItem(kind: keyof typeof ZENSIA_PHOTO_POOLS, index: number) {
+const ZENSIA_ITEM_PHOTOS: Partial<Record<string, string>> = {
+  "regular-espresso": "https://static.wixstatic.com/media/859566_b618d3f2dc39473fa45047c95e676872~mv2.jpg",
+  "latte": "https://static.wixstatic.com/media/859566_90db78bfbd21470fafaf59bd0646b4ba~mv2.jpg",
+  "cappuccino": "https://static.wixstatic.com/media/859566_dda43df0514841eea1663f508724fcef~mv2.jpg",
+  "cold-brew": "https://static.wixstatic.com/media/820771_5c658f32b08d47f7ae25fc6045590669~mv2.jpg",
+  "iced-latte": "https://static.wixstatic.com/media/859566_c6c1ece55ef84a9e8f18b65b712bffd2~mv2.png",
+  "iced-matcha-sweet": "https://static.wixstatic.com/media/859566_7859c9e3e46947c7a006e921b2e80d44~mv2.png",
+  "iced-matcha-unsweet": "https://static.wixstatic.com/media/859566_7859c9e3e46947c7a006e921b2e80d44~mv2.png",
+  "fruit-slush-juice": "https://static.wixstatic.com/media/859566_1454d24fcd8646b094c02ab87892711c~mv2.png",
+  "pandebono-cheese": "https://static.wixstatic.com/media/859566_c2dd3549ae574e75a12c2e5289b11818~mv2.jpg",
+  "pandebono-guava-cheese": "https://static.wixstatic.com/media/859566_c2dd3549ae574e75a12c2e5289b11818~mv2.jpg",
+};
+
+function photoForItem(item: ZensiaMenuItem, kind: keyof typeof ZENSIA_PHOTO_POOLS, index: number) {
+  const exact = ZENSIA_ITEM_PHOTOS[item.id];
+  if (exact) return { src: exact, exact: true };
   const pool = ZENSIA_PHOTO_POOLS[kind];
-  return pool[index % pool.length];
+  return { src: pool[index % pool.length], exact: false };
 }
 
 function normalize(value: string) {
@@ -228,7 +243,7 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
 
   const categoryItems = menuItemsForCategory(activeCategory.id);
   const categoryIndex = Math.max(0, categoryItems.findIndex((item) => item.id === activeItem.id));
-  const activePhoto = photoForItem(activeCategory.kind, categoryIndex);
+  const activePhoto = photoForItem(activeItem, activeCategory.kind, categoryIndex);
   const showCoffeeSplash = activeCategory.kind === "hot" || activeCategory.kind === "espresso" || activeCategory.kind === "cold";
 
   return (
@@ -292,8 +307,8 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
 
             <div className="zim-menu__photo-stage" aria-hidden="true">
               <Image
-                key={`${activeItem.id}-${activePhoto}`}
-                src={activePhoto}
+                key={`${activeItem.id}-${activePhoto.src}`}
+                src={activePhoto.src}
                 alt=""
                 fill
                 sizes="(max-width: 980px) 100vw, 58vw"
@@ -301,7 +316,7 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
               />
               <div className="zim-menu__photo-shade" />
               <div className="zim-menu__photo-caption">
-                <span>AUTHENTIC ZENSIA PHOTOGRAPHY</span>
+                <span>{activePhoto.exact ? "ZENSIA PRODUCT PHOTOGRAPHY" : "ZENSIA CATEGORY PHOTOGRAPHY"}</span>
                 <b>{activeCategory.shortLabel}</b>
               </div>
             </div>
@@ -317,7 +332,7 @@ export function ZensiaImmersiveMenu({ orderUrl }: ZensiaImmersiveMenuProps) {
 
             <div className="zim-menu__stage-copy" aria-live="polite">
               <h3 className="zim-menu__active-name">{activeItem.name}</h3>
-              <p className="zim-menu__photo-note">Real Zensia imagery. No synthetic menu render.</p>
+              <p className="zim-menu__photo-note">{activePhoto.exact ? "Published Zensia product image." : "Real Zensia imagery used as a category fallback."}</p>
               {activeVariant ? <p className="zim-menu__selected-variant">{activeVariant}</p> : null}
             </div>
 
