@@ -1,0 +1,89 @@
+name: Zensia Imagination Pass Preflight
+
+on:
+  push:
+    branches:
+      - project/zensia-imagination-pass
+    paths:
+      - .github/workflows/zensia-imagination-preflight.yml
+
+permissions:
+  contents: write
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Write structured creative brief
+        run: |
+          mkdir -p .forge/execution/zensia-imagination
+          cat > .forge/execution/zensia-imagination/brief.json <<'EOF'
+          {
+            "projectName": "Zensia Coffee Imagination Pass",
+            "projectType": "hospitality",
+            "tier": "signature",
+            "client": "Zensia Coffee",
+            "audience": "Design-aware coffee drinkers, local regulars, remote workers and visitors evaluating Zensia as a premium Colombian specialty-coffee destination.",
+            "objective": "Elevate the current Zensia website with a more distinctive typography system and a richer field of moving visual objects while preserving the strong Brewns-inspired product-first foundation.",
+            "primaryAction": "Order online",
+            "brandTruth": "Zensia is Colombian specialty coffee expressed through calm hospitality, real product, tactile ritual and a physical place designed to let people stay.",
+            "differentiators": [
+              "Colombian specialty-coffee identity",
+              "Real Zen at Home product packaging",
+              "Calm, linger-friendly hospitality",
+              "Calm Club and direct ordering"
+            ],
+            "constraints": [
+              "Use Cormorant Garamond as the primary editorial display voice and Manrope for UI labels",
+              "Add more motion objects without turning the site into effect soup",
+              "Motion objects should feel related to coffee ritual, packaging, origin and sensory atmosphere",
+              "Use real Zensia imagery and product packaging as focal content",
+              "Preserve Forge mask reveals and GSAP motion systems",
+              "Do not invent coffee facts, farm names, altitudes, awards or sourcing statistics",
+              "Do not reintroduce the old pace-slider concept or generic WebGL bean spectacle",
+              "Mobile must keep the object language with fewer simultaneous layers and lower amplitude"
+            ],
+            "existingAssets": [],
+            "references": [
+              {
+                "label": "Brewns — Forge hospitality precedent",
+                "lesson": "Keep packaging as hero and let oversized typography plus edge utility act as an environment, while adding more object choreography than the current build."
+              },
+              {
+                "label": "Forge Type Vault — Hospitality / Editorial",
+                "lesson": "Use one expressive editorial display family and one restrained grotesk UI family; avoid a generic all-sans system."
+              }
+            ]
+          }
+          EOF
+      - name: Run Forge preflight
+        env:
+          STUDIO_AUTH_ENABLED: "false"
+          FORGE_LOCAL_STORAGE_ENABLED: "true"
+          NODE_ENV: development
+        run: |
+          npm run forge:preflight --             --name="Zensia Coffee Imagination Pass"             --brief=.forge/execution/zensia-imagination/brief.json             --artifacts=.forge/execution/zensia-imagination/artifacts             --record=forge-intelligence/execution-records/zensia-imagination.json
+      - name: Compile typography context
+        run: |
+          npm run forge:context --             --domain="typography"             --scene="hero"             --objective="Create a more distinctive editorial type system for Zensia using bundled production-safe fonts"             --prompt="Use Cormorant Garamond for editorial display and Manrope for interface labels."             --name="Zensia Coffee Imagination Pass"             --output=.forge/execution/zensia-imagination/type-context.json
+      - name: Compile motion context
+        run: |
+          npm run forge:context --             --domain="motion"             --scene="hero"             --objective="Add a richer kinetic object field around the Zensia product stage without effect soup"             --prompt="Add coffee-ritual, packaging and origin-related motion objects with GSAP and existing Forge systems."             --name="Zensia Coffee Imagination Pass"             --output=.forge/execution/zensia-imagination/motion-context.json
+      - name: Validate execution evidence
+        run: npm run forge:execution:audit -- --record=forge-intelligence/execution-records/zensia-imagination.json
+      - name: Commit public-safe record
+        run: |
+          git config user.name "forge-preflight"
+          git config user.email "actions@users.noreply.github.com"
+          git add forge-intelligence/execution-records/zensia-imagination.json
+          git commit -m "Record Zensia imagination preflight [forge-preflight-record]"
+          git push origin HEAD:project/zensia-imagination-pass
