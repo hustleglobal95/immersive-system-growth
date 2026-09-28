@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "policyId": "forge-full-system-execution",
   "policyVersion": 2,
-  "runId": "zensia-signature-repair-b6faa248-1790607376822",
+  "runId": "zensia-signature-repair-e6af4689-1790607491422",
   "projectName": "Zensia Signature Repair",
-  "createdAt": "2026-09-28T14:56:24.394Z",
+  "createdAt": "2026-09-28T14:58:18.860Z",
   "generator": "scripts/forge-preflight.mjs",
   "repository": {
-    "baseCommit": "b6faa248bf807b36f3c6addfe3ba30112da13e9a",
+    "baseCommit": "e6af4689a07622c154a28ef560b71a031a9b4a9e",
     "branch": "project/zensia-signature-repair"
   },
   "confidentiality": {
@@ -205,7 +205,7 @@
       }
     ]
   },
-  "selfHash": "b91c2edbb6cc20d6f57583b79eff96e3ceb973ce2b6e6d8058e0d6e5f5732dc0",
+  "selfHash": "58595225f0ae103c7482e235f22ac5f30e82bbf0fac0a48b45cb1eb569eaa057",
   "attestation": {
     "algorithm": "none",
     "keyId": null,
