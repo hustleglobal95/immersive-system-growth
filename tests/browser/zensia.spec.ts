@@ -33,8 +33,8 @@ test("Zensia imagination pass renders the kinetic hero and commerce path",async(
   await expect(page.locator(".zim-menu__item")).toHaveCount(13);
   await page.getByRole("button",{name:"Fruit Slush/Juice"}).click();
   await expect(page.locator(".zim-menu__variant-row").getByRole("button")).toHaveCount(7);
-  await page.getByRole("button",{name:"Passion Fruit"}).click();
-  await expect(page.getByText("Passion Fruit",{exact:true})).toBeVisible();
+  await page.getByRole("button",{name:"Passion Fruit",exact:true}).click();
+  await expect(page.locator(".zim-menu__selected-variant")).toHaveText("Passion Fruit");
   await page.screenshot({path:"test-results/zensia-imagination/desktop-full-menu.png",fullPage:false});
 
   await page.getByRole("button",{name:"Specialty Desserts: 7 items"}).click();
