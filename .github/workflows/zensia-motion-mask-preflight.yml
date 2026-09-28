@@ -1,0 +1,65 @@
+name: Zensia Motion Mask Preflight
+
+on:
+  push:
+    branches:
+      - project/zensia-motion-masks
+    paths:
+      - .github/workflows/zensia-motion-mask-preflight.yml
+
+permissions:
+  contents: write
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Write request
+        run: |
+          mkdir -p .forge/execution/zensia-motion-masks
+          cat > .forge/execution/zensia-motion-masks/request.txt <<'EOF'
+          Upgrade the current Zensia Coffee website with substantially stronger GSAP motion and Forge-native mask reveals. Preserve the Brewns-inspired product-first art direction and real Zensia assets. Add cinematic but controlled scroll choreography, masked typography/media entrances, product-stage motion, image reveals, parallax/countermotion, section handoffs and mobile reductions. Use Forge's existing Reveal Engine / mask utilities and GSAP systems first. Do not reintroduce the old pace-slider concept, generic WebGL spectacle, effect soup, fake facts or unrelated redesigns. Preserve semantic commerce actions and reduced-motion behavior.
+          EOF
+      - name: Run Forge preflight
+        env:
+          STUDIO_AUTH_ENABLED: "false"
+          FORGE_LOCAL_STORAGE_ENABLED: "true"
+          NODE_ENV: development
+        run: |
+          npm run forge:preflight -- \
+            --name="Zensia Coffee Motion Masks" \
+            --prompt-file=.forge/execution/zensia-motion-masks/request.txt \
+            --artifacts=.forge/execution/zensia-motion-masks/artifacts \
+            --record=forge-intelligence/execution-records/zensia-motion-masks.json
+      - name: Compile motion context
+        run: |
+          npm run forge:context -- \
+            --domain="motion" \
+            --scene="signature" \
+            --objective="Strengthen Zensia with controlled GSAP choreography and deterministic Forge-native mask reveals" \
+            --prompt="Upgrade the current Zensia Coffee website with substantially stronger GSAP motion and Forge-native mask reveals." \
+            --name="Zensia Coffee Motion Masks" \
+            --output=.forge/execution/zensia-motion-masks/motion-context.json
+      - name: Validate execution evidence
+        run: npm run forge:execution:audit -- --record=forge-intelligence/execution-records/zensia-motion-masks.json
+      - name: Print packet and motion context
+        run: |
+          cat .forge/execution/zensia-motion-masks/artifacts/forge-build-packet.md
+          echo "===== MOTION CONTEXT ====="
+          cat .forge/execution/zensia-motion-masks/motion-context.json
+      - name: Commit public-safe record
+        run: |
+          git config user.name "forge-preflight"
+          git config user.email "actions@users.noreply.github.com"
+          git add forge-intelligence/execution-records/zensia-motion-masks.json
+          git commit -m "Record Zensia motion mask preflight [forge-preflight-record]"
+          git push origin HEAD:project/zensia-motion-masks
