@@ -40,7 +40,7 @@ jobs:
           const desktop=await browser.newPage({viewport:{width:1440,height:1000},deviceScaleFactor:1});
           await desktop.goto('http://127.0.0.1:3000/zensia',{waitUntil:'networkidle'});
           await desktop.locator('#zensia-pause').scrollIntoViewIfNeeded();
-          await desktop.waitForTimeout(600);
+          await desktop.waitForTimeout(1600);
           const desktopPace=desktop.getByRole('slider',{name:'Change the pace from city rush to stay'});
           await desktopPace.fill('0');
           await desktop.waitForTimeout(250);
@@ -52,7 +52,7 @@ jobs:
           const mobile=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});
           await mobile.goto('http://127.0.0.1:3000/zensia',{waitUntil:'networkidle'});
           await mobile.locator('#zensia-pause').scrollIntoViewIfNeeded();
-          await mobile.waitForTimeout(500);
+          await mobile.waitForTimeout(1600);
           const mobilePace=mobile.getByRole('slider',{name:'Change the pace from city rush to stay'});
           await mobilePace.fill('0');
           await mobile.waitForTimeout(200);
