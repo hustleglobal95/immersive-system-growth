@@ -110,6 +110,22 @@
   transform-style:preserve-3d;
   transition:background .55s cubic-bezier(.2,.8,.2,1),color .55s ease;
 }
+.zim-menu__media-splash{
+  position:absolute;
+  z-index:3;
+  top:8%;
+  right:-18%;
+  width:min(88%,720px);
+  aspect-ratio:788/512;
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:contain;
+  pointer-events:none;
+  opacity:.94;
+  filter:drop-shadow(0 34px 42px rgba(0,0,0,.28)) saturate(1.04);
+  transform-origin:58% 54%;
+  will-change:transform,opacity;
+}
 .zim-menu__stage-meta{
   position:relative;
   z-index:8;
@@ -350,6 +366,7 @@
   .zim-menu__stage{position:relative;top:auto;min-height:590px}
   .zim-menu__stage-inner{min-height:590px}
   .zim-menu__stage-object{top:15%;right:0;width:min(58%,360px)}
+  .zim-menu__media-splash{top:10%;right:-15%;width:min(82%,520px)}
   .zim-menu__active-name{font-size:clamp(2.7rem,9vw,4.8rem);max-width:10ch}
   .zim-menu__item{min-height:64px}
 }
@@ -360,6 +377,7 @@
   .zim-menu__stage-meta{font-size:7px}
   .zim-menu__stage-copy{left:20px;right:20px;bottom:174px}
   .zim-menu__stage-object{top:14%;right:-9%;width:74%}
+  .zim-menu__media-splash{top:12%;right:-28%;width:100%;opacity:.82}
   .zim-menu__variant-block{left:20px;right:20px;bottom:74px}
   .zim-menu__order{right:20px;bottom:24px}
   .zim-menu__item{grid-template-columns:28px minmax(0,1fr) auto 18px;gap:8px}
@@ -370,4 +388,5 @@
 @media(prefers-reduced-motion:reduce){
   .zim-menu *{scroll-behavior:auto!important;transition-duration:.001ms!important}
   .zim-menu__stage-object,.zim-menu__orbit,.zim-menu__steam{transform:none!important}
+  .zim-menu__media-splash{display:none!important}
 }
