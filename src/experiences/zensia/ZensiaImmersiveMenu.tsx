@@ -33,16 +33,16 @@ const ZENSIA_PHOTO_POOLS = {
     "https://static.wixstatic.com/media/859566_90db78bfbd21470fafaf59bd0646b4ba~mv2.jpg",
   ],
   bread: [
-    "https://static.wixstatic.com/media/859566_6b7702b0813d4b9388ff1a8752200691~mv2.png",
-    "https://static.wixstatic.com/media/859566_dbb60c0fa9a444e589c870551afbcb7b~mv2.png",
+    "https://static.wixstatic.com/media/859566_c2dd3549ae574e75a12c2e5289b11818~mv2.jpg",
+    "https://static.wixstatic.com/media/859566_761b30b4c55b495585b40ade4794d23b~mv2.png",
   ],
   empanada: [
-    "https://static.wixstatic.com/media/859566_dbb60c0fa9a444e589c870551afbcb7b~mv2.png",
-    "https://static.wixstatic.com/media/859566_6b7702b0813d4b9388ff1a8752200691~mv2.png",
+    "https://static.wixstatic.com/media/859566_761b30b4c55b495585b40ade4794d23b~mv2.png",
+    "https://static.wixstatic.com/media/859566_1cd86dfed64f4c40a53270c8feeb4e68~mv2.jpg",
   ],
   dessert: [
-    "https://static.wixstatic.com/media/859566_90db78bfbd21470fafaf59bd0646b4ba~mv2.jpg",
-    "https://static.wixstatic.com/media/859566_dbb60c0fa9a444e589c870551afbcb7b~mv2.png",
+    "https://static.wixstatic.com/media/859566_761b30b4c55b495585b40ade4794d23b~mv2.png",
+    "https://static.wixstatic.com/media/859566_1cd86dfed64f4c40a53270c8feeb4e68~mv2.jpg",
   ],
 } as const;
 
