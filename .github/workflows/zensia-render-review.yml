@@ -1,0 +1,72 @@
+name: Zensia Candidate Render Review
+on:
+  push:
+    branches:
+      - review/zensia-signature-candidate
+    paths:
+      - .github/workflows/zensia-render-review.yml
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Start production server
+        run: |
+          npm run start -- --hostname 127.0.0.1 --port 3000 > /tmp/zensia-review.log 2>&1 &
+          echo $! > /tmp/zensia-review.pid
+          for i in {1..40}; do
+            curl --fail --silent http://127.0.0.1:3000/zensia >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/zensia-review.log
+          exit 1
+      - name: Capture Zensia review frames
+        run: |
+          mkdir -p test-results/zensia-review
+          node --input-type=module <<'NODE'
+          import { chromium } from '@playwright/test';
+          const browser=await chromium.launch({headless:true});
+          const desktop=await browser.newPage({viewport:{width:1440,height:1000},deviceScaleFactor:1});
+          await desktop.goto('http://127.0.0.1:3000/zensia',{waitUntil:'networkidle'});
+          await desktop.screenshot({path:'test-results/zensia-review/01-desktop-threshold.png'});
+          await desktop.locator('#zensia-pause').scrollIntoViewIfNeeded();
+          await desktop.waitForTimeout(500);
+          await desktop.screenshot({path:'test-results/zensia-review/02-desktop-signature-before.png'});
+          await desktop.getByRole('button',{name:'Enter calm mode'}).click();
+          await desktop.waitForTimeout(1600);
+          await desktop.screenshot({path:'test-results/zensia-review/03-desktop-signature-calm.png'});
+          await desktop.locator('#zensia-visit').scrollIntoViewIfNeeded();
+          await desktop.waitForTimeout(500);
+          await desktop.screenshot({path:'test-results/zensia-review/04-desktop-visit.png'});
+
+          const mobile=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});
+          await mobile.goto('http://127.0.0.1:3000/zensia',{waitUntil:'networkidle'});
+          await mobile.screenshot({path:'test-results/zensia-review/05-mobile-threshold.png'});
+          await mobile.locator('#zensia-pause').scrollIntoViewIfNeeded();
+          await mobile.waitForTimeout(450);
+          await mobile.screenshot({path:'test-results/zensia-review/06-mobile-signature-before.png'});
+          await mobile.getByRole('button',{name:'Enter calm mode'}).click();
+          await mobile.waitForTimeout(1600);
+          await mobile.screenshot({path:'test-results/zensia-review/07-mobile-signature-calm.png'});
+          await browser.close();
+          NODE
+      - name: Stop server
+        if: always()
+        run: |
+          if [ -f /tmp/zensia-review.pid ]; then kill "$(cat /tmp/zensia-review.pid)" || true; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zensia-render-review
+          path: test-results/zensia-review/
+          retention-days: 14
