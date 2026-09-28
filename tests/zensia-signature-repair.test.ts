@@ -30,3 +30,16 @@ test("Zensia upgrade has authored desktop, mobile and reduced-motion composition
   assert.match(css,/@media\(max-width:560px\)/);
   assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
 });
+
+
+test("Zensia motion upgrade uses Forge Reveal Engine and GSAP scroll choreography",()=>{
+  assert.match(component,/createCssMaskStyle/);
+  assert.match(component,/createMaskReveal/);
+  assert.match(component,/ScrollTrigger\.create/);
+  assert.match(component,/scrub:/);
+  assert.match(component,/data-z2-mask="profile"/);
+  assert.match(component,/data-z2-mask="origin"/);
+  assert.match(component,/data-z2-mask="club"/);
+  assert.match(component,/data-z2-mask="visit"/);
+  assert.match(component,/prefers-reduced-motion/);
+});
