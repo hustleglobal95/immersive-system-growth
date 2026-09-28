@@ -29,35 +29,17 @@ jobs:
           cat > .forge/execution/zensia-coffee/request.txt <<'EOF'
           Business: https://www.zensiacoffee.com/
 
-          Build a significantly better website for Zensia Coffee using the full Forge system.
+          Build a significantly better website for Zensia Coffee with the full Forge system.
 
-          Business truth to preserve:
-          - Zensia is a specialty Colombian coffee brand and physical cafe in Clayton / St. Louis.
-          - The existing public site positions the brand around calm, intentional pauses, Colombian coffee, community, digital ordering, gift cards and Calm Club rewards.
-          - The current website under-expresses the brand: it behaves like a long utility/content stack rather than a memorable hospitality experience.
-          - Primary commercial actions must remain obvious and semantic: Order Online, View Menu, Visit, Calm Club / Rewards.
-          - Do not invent awards, farm names, prices, sourcing claims, statistics, testimonials, events or product facts that are not verified.
-          - Existing third-party editorial photography may be used only as research reference unless reuse rights are confirmed.
+          Zensia is a Colombian specialty-coffee and hospitality brand in Clayton / St. Louis. Preserve its real themes: calm intentional pauses, Colombian coffee, community, ordering, menu, visit and rewards. Do not invent awards, farms, prices, sourcing facts, statistics, testimonials or events.
 
-          Creative objective:
-          Turn Zensia into a culturally grounded, sensory hospitality brand experience rather than a generic coffee-shop landing page. The experience should feel like entering a deliberate pause: outside noise gives way to calm, Colombian origin and coffee ritual become tangible, and conversion remains frictionless.
+          Creative objective: make the site feel like entering a deliberate pause. The experience should move from outside noise into calm, then reveal Colombian origin, coffee ritual and the physical/social atmosphere of Zensia while keeping conversion frictionless.
 
-          Initial thesis candidate:
-          NOISE -> THRESHOLD -> ORIGIN -> RITUAL -> PAUSE.
+          Thesis candidate: NOISE -> THRESHOLD -> ORIGIN -> RITUAL -> PAUSE.
 
-          Anti-cliches:
-          - no floating coffee beans in a dark WebGL void
-          - no generic beige luxury cafe template
-          - no giant-serif-only art direction
-          - no coffee-card wall as the primary experience
-          - no constant maximum motion
-          - no copying Atelier Maris, Heliot, Nocturne or other prior Forge project signatures
-          - no full cafe reconstruction in mediocre 3D merely to say the site is 3D
+          Avoid generic beige cafe luxury, floating beans in dark WebGL, giant-serif-only art direction, card-wall structure, constant motion, mediocre full-cafe 3D, and signatures copied from prior Forge projects.
 
-          Desired qualities:
-          tactile, calm, Colombian, contemporary, warm, spatial, editorial, restrained, sensorial, community-aware, commercially usable.
-
-          Explore Forge-native solutions including threshold/arrival grammar, visual silence, selective refractive/frosted-glass interaction, material continuity, subtle camera movement, semantic DOM commerce actions, mobile-specific art direction, and a single protected signature peak.
+          Desired language: tactile, calm, Colombian, contemporary, warm, spatial, editorial, restrained, sensorial and commercially usable. Favor one protected signature peak, visual silence, threshold/arrival grammar, selective frost/refraction, subtle camera behavior, mobile-specific composition and semantic commerce actions.
           EOF
       - name: Run full Forge preflight
         env:
