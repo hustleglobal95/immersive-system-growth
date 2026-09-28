@@ -1,0 +1,100 @@
+name: Zensia Signature Repair Preflight
+
+on:
+  push:
+    branches:
+      - fix/zensia-signature-gate
+    paths:
+      - .github/workflows/zensia-signature-repair-preflight.yml
+
+permissions:
+  contents: write
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Create structured Zensia repair brief
+        run: |
+          mkdir -p .forge/execution/zensia-signature-repair
+          cat > .forge/execution/zensia-signature-repair/brief.json <<'EOF'
+          {
+            "projectName": "Zensia Coffee",
+            "projectType": "hospitality",
+            "tier": "signature",
+            "client": "Zensia Coffee",
+            "audience": "Coffee drinkers, design-aware locals, remote workers and visitors looking for a calm Colombian specialty-coffee experience in Clayton and St. Louis.",
+            "objective": "Repair the protected Zensia signature slice without changing the approved thesis. The current Calm Mode fails rendered review because before/after desktop frames are nearly identical and the mobile calm frame creates headline/cup overlap. Make the interaction visibly reorganize spatial hierarchy, tempo and atmosphere while preserving conversion clarity.",
+            "primaryAction": "Visit Zensia",
+            "brandTruth": "Zensia is a Colombian specialty-coffee hospitality brand built around calm, lingering and intentional pauses. The website should make the change from city pace to a slower, warmer stay physically legible.",
+            "differentiators": [
+              "Colombian specialty-coffee point of view",
+              "A physical space intentionally designed for lingering and calm",
+              "Coffee ritual and origin as part of the guest experience",
+              "Community and repeat-visit behavior through Calm Club"
+            ],
+            "constraints": [
+              "Preserve the controlling thesis and memory promise from the approved Zensia Build Packet",
+              "Repair only the signature slice and systems required to prove it before further full-site expansion",
+              "Calm Mode must materially change composition, spatial state, motion tempo and atmosphere, not just color or spacing",
+              "Mobile must preserve the same transformation without subject/type collision",
+              "Keep Menu, Order Online, Visit and Calm Club actions semantic and obvious",
+              "Do not invent business facts or add unlicensed third-party imagery",
+              "Avoid generic giant-serif luxury, floating beans and unrelated decorative effects",
+              "Remove independent decorative playback clocks where scroll/state can deterministically own motion"
+            ],
+            "existingAssets": [],
+            "references": [
+              {
+                "label": "Rejected Zensia incumbent rendered review",
+                "lesson": "The threshold language is promising, but Calm Mode currently reads as a near-identical frame on desktop and creates mobile overlap. The repaired candidate needs a decisive state transformation."
+              },
+              {
+                "label": "Forge threshold-passage",
+                "lesson": "Make the boundary legible, change atmosphere before destination, and use a real spatial handoff rather than a fade."
+              },
+              {
+                "label": "Forge continuous-visual-anchor",
+                "lesson": "Carry one persistent visual anchor through the state change without resetting it."
+              },
+              {
+                "label": "Forge density-rhythm-and-silence",
+                "lesson": "Protect stillness and reduce simultaneous motion around the signature peak."
+              }
+            ]
+          }
+          EOF
+      - name: Run full Forge repair preflight
+        env:
+          STUDIO_AUTH_ENABLED: "false"
+          FORGE_LOCAL_STORAGE_ENABLED: "true"
+          NODE_ENV: development
+        run: |
+          npm run forge:preflight -- \
+            --name="Zensia Coffee" \
+            --brief=.forge/execution/zensia-signature-repair/brief.json \
+            --artifacts=.forge/execution/zensia-signature-repair/artifacts \
+            --record=forge-intelligence/execution-records/zensia-coffee.json
+      - name: Validate repair evidence
+        run: npm run forge:execution:audit -- --record=forge-intelligence/execution-records/zensia-coffee.json
+      - name: Print repair Build Packet
+        run: |
+          echo '===== ZENSIA REPAIR BUILD PACKET ====='
+          cat .forge/execution/zensia-signature-repair/artifacts/forge-build-packet.md
+          echo '===== END ZENSIA REPAIR BUILD PACKET ====='
+      - name: Commit public-safe repair preflight record
+        run: |
+          git config user.name "forge-preflight"
+          git config user.email "actions@users.noreply.github.com"
+          git add forge-intelligence/execution-records/zensia-coffee.json
+          git commit -m "Record Zensia signature repair preflight"
+          git push origin HEAD:fix/zensia-signature-gate
