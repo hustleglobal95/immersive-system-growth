@@ -1,24 +1,23 @@
 import type { Metadata } from "next";
-import { ZensiaImaginationExperience } from "@/src/experiences/zensia/ZensiaImaginationExperience";
-import "./zensia-imagination.css";
-import "./zensia-menu.css";
+import { ZensiaCoffeeExperience } from "@/src/experiences/zensia/ZensiaCoffeeExperience";
+import "./zensia-coffee-experience.css";
 
 export const metadata: Metadata = {
-  title: "Zensia Coffee — Colombian Specialty Coffee in St. Louis",
-  description: "A reimagined Zensia Coffee experience built around Colombian specialty coffee, Zen at Home, Calm Club, online ordering and the Clayton café.",
+  title: "Zensia Coffee — A Full Coffee Shop Experience",
+  description: "A cinematic Zensia Coffee experience built around an interactive coffee cup, live steam, scroll-driven pouring, packaged coffee, the Zensia coffee rack, classic coffee recipes, café story and online ordering.",
   openGraph: {
-    title: "Zensia Coffee — Colombian Specialty Coffee in St. Louis",
-    description: "Colombian specialty coffee, a room to stay, and Zensia's calm approach to the everyday coffee ritual.",
+    title: "Zensia Coffee — A Full Coffee Shop Experience",
+    description: "Interactive cup, live steam, cinematic coffee, Zensia products, recipes and the café.",
     siteName: "Zensia Coffee",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Zensia Coffee — Colombian Specialty Coffee in St. Louis",
-    description: "Colombian specialty coffee, a room to stay, and Zensia's calm approach to the everyday coffee ritual.",
+    title: "Zensia Coffee — A Full Coffee Shop Experience",
+    description: "Interactive cup, live steam, cinematic coffee, Zensia products, recipes and the café.",
   },
 };
 
 export default function ZensiaPage(){
-  return <ZensiaImaginationExperience />;
+  return <ZensiaCoffeeExperience />;
 }
