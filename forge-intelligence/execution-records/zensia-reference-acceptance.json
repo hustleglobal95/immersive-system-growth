@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "policyId": "forge-full-system-execution",
+  "policyVersion": 2,
+  "runId": "zensia-reference-acceptance-a96e830e-1790721050227",
+  "projectName": "Zensia Reference Acceptance",
+  "createdAt": "2026-09-29T22:30:57.662Z",
+  "generator": "scripts/forge-preflight.mjs",
+  "repository": {
+    "baseCommit": "a96e830e8701be962fabc691c4703103ff17e0f0",
+    "branch": "project/zensia-reference-acceptance"
+  },
+  "confidentiality": {
+    "rawPromptCommitted": false,
+    "promptFingerprintAlgorithm": "sha256",
+    "promptSha256": "5f8a74adadb15fac3d9b5b51fe770b8929115933378d73d0e0f6540ed9bcf4ab",
+    "promptSource": "brief"
+  },
+  "policy": {
+    "path": "config/forge-execution-policy.json",
+    "sha256": "5ca1bf999da5c15a733b45dd8a27f56f6a5b98a9cb1b70fcaac8bf94f83f88b7"
+  },
+  "stateBaseline": {
+    "experience": {
+      "path": "config/experience.json",
+      "sha256": "2625b586b792d084683d0babbb18f1a379e6cfbbdcfd7c84cb497d4df3229ac4",
+      "bytes": 112276
+    },
+    "manifest": {
+      "path": "config/asset-manifest.json",
+      "sha256": "4aaf7b35e2d17e857e2c10fc2002fc902dee81eebb378968886890b841c69fd1",
+      "bytes": 4664
+    },
+    "graph": {
+      "path": "config/interaction-graph.json",
+      "sha256": "b051d3cadc999a177420324ef994bbb3f1c72780c049f7ca3e90f6e252b15264",
+      "bytes": 3192
+    },
+    "cinematic": {
+      "path": "config/cinematic-systems.json",
+      "sha256": "794bf92cd4d42242c2d5328c401dea3c35295d4fc3e0aff521bbf52fb3a486a6",
+      "bytes": 8979
+    }
+  },
+  "referenceClassification": {
+    "detectedCount": 0,
+    "businessCount": 0,
+    "referenceCount": 0,
+    "supportingCount": 0,
+    "businessUrlSha256": [],
+    "referenceUrlSha256": [],
+    "supportingUrlSha256": []
+  },
+  "stages": {
+    "operational-readiness": {
+      "status": "PASS",
+      "evidence": "Strict local readiness passed."
+    },
+    "clean-baseline": {
+      "status": "PASS",
+      "evidence": "No governed creative production path was dirty before preflight."
+    },
+    "state-provenance": {
+      "status": "PASS",
+      "evidence": "Exact baseline experience, asset manifest, interaction graph and cinematic-system inputs were hashed."
+    },
+    "reference-classification": {
+      "status": "PASS",
+      "evidence": "Every URL in the Forge request was assigned a business, reference or supporting role; ambiguous URLs fail closed."
+    },
+    "external-reference-intelligence": {
+      "status": "PASS",
+      "evidence": "No external reference URL was supplied for this project."
+    },
+    "build-packet": {
+      "status": "PASS",
+      "evidence": "Canonical Forge Build Packet compiled from current repo state."
+    },
+    "director-intelligence": {
+      "status": "PASS",
+      "evidence": "Build Packet compiled through Director Intelligence."
+    },
+    "reference-intelligence": {
+      "status": "PASS",
+      "evidence": "Construction Research section present and hashed."
+    },
+    "creative-state-graph": {
+      "status": "PASS",
+      "evidence": "Creative State Graph present in Build Packet and capsules."
+    },
+    "originality-gate": {
+      "status": "PASS",
+      "evidence": "Build Packet/Context Capsule generation completed without originality-gate rejection."
+    },
+    "capability-routing": {
+      "status": "PASS",
+      "evidence": "Context Capsules expose allowed systems/capabilities and denied actions."
+    },
+    "signature-slice-gate": {
+      "status": "PASS",
+      "evidence": "Signature Slice Gate present and shared across Context Capsules."
+    },
+    "context-capsules": {
+      "status": "PASS",
+      "evidence": "All policy-required specialist domains compiled."
+    },
+    "verification-plan": {
+      "status": "PASS",
+      "evidence": "Acceptance Contract and Definition of Done present and hashed."
+    }
+  },
+  "evidence": {
+    "readiness": {
+      "sha256": "c9fa618aff02468849bcee4772c667ca0d4a1abfb3a078abb0be914177c368fb",
+      "bytes": 2842
+    },
+    "buildPacket": {
+      "sha256": "bad5dff55d4fc737da3f93828d86fa748712459bec7d7219e5dd76e73894d120",
+      "bytes": 344069,
+      "requiredSectionsVerified": true
+    },
+    "externalReferences": [],
+    "externalReferenceSection": {
+      "sha256": "96971b30b5d4fb3a656ff6d5ca564ae9801b5832340ad8680844a3b0be7351d1",
+      "bytes": 179
+    },
+    "constructionResearch": {
+      "sha256": "cba0e280d6bfa41ae084bb3cf0f03907a1c94cf1df9aebaf8a1168c1e7d41e82",
+      "bytes": 19795
+    },
+    "acceptanceContract": {
+      "sha256": "e6240d4f38f4d0e12bbe0e6d89755eb0ea97d104b2196c52562c9f45767caa14",
+      "bytes": 1088
+    },
+    "contexts": [
+      {
+        "domain": "director",
+        "sha256": "ef5c8f5824b13566346c5d9bb597f2b68c4cecc63467b870375b5029d012622c",
+        "bytes": 43135,
+        "creativeStateFingerprint": "forge1:36ec5f464a9a9eb2",
+        "signaturePrimarySceneId": "signature"
+      },
+      {
+        "domain": "composition",
+        "sha256": "2bff685396fbbb3c04fbd4ff2441a2d1a4b0332879ee11dfecd25ea4ecad0626",
+        "bytes": 30696,
+        "creativeStateFingerprint": "forge1:36ec5f464a9a9eb2",
+        "signaturePrimarySceneId": "signature"
+      },
+      {
+        "domain": "camera",
+        "sha256": "7e425e0346b49e50aa74074d1da3cdb257b1a48a51d04f047123b884ff611ef4",
+        "bytes": 30594,
+        "creativeStateFingerprint": "forge1:36ec5f464a9a9eb2",
+        "signaturePrimarySceneId": "signature"
+      },
+      {
+        "domain": "motion",
+        "sha256": "3fc5d785a3e3af671140efdc00020813a3df0a958eaa33e60a0e364383c924ad",
+        "bytes": 30783,
+        "creativeStateFingerprint": "forge1:36ec5f464a9a9eb2",
+        "signaturePrimarySceneId": "signature"
+      },
+      {
+        "domain": "typography",
+        "sha256": "b6caf9444bb52c0fb68191dc1906b00ecb55c846908957db17786bf9d5c42851",
+        "bytes": 30500,
+        "creativeStateFingerprint": "forge1:36ec5f464a9a9eb2",
+        "signaturePrimarySceneId": "signature"
+      },
+      {
+        "domain": "interaction",
+        "sha256": "85ff5f1566f17d3a6ffaa621e1e0f5af0ca03aa7df5cb10361406e58426fcca2",
+        "bytes": 37179,
+        "creativeStateFingerprint": "forge1:36ec5f464a9a9eb2",
+        "signaturePrimarySceneId": "signature"
+      },
+      {
+        "domain": "asset",
+        "sha256": "2ab55d4fcf3d2e7a2cc86c68b834d3d43c1a4e2617e787dfee44c90f5e0a950a",
+        "bytes": 36015,
+        "creativeStateFingerprint": "forge1:36ec5f464a9a9eb2",
+        "signaturePrimarySceneId": "signature"
+      },
+      {
+        "domain": "mobile",
+        "sha256": "f5e2d9cf19ddc3ab13e0e0ade54d808d6432b7db4d48a192a08f8ad0e11d0d32",
+        "bytes": 37462,
+        "creativeStateFingerprint": "forge1:36ec5f464a9a9eb2",
+        "signaturePrimarySceneId": "signature"
+      },
+      {
+        "domain": "performance",
+        "sha256": "4c8b695d969050eb8b6536c359bc1e1490ef4423c6c92a82eaa26377974e4e66",
+        "bytes": 36504,
+        "creativeStateFingerprint": "forge1:36ec5f464a9a9eb2",
+        "signaturePrimarySceneId": "signature"
+      },
+      {
+        "domain": "engineering",
+        "sha256": "0d69c9f040d8f89ad3f0887199f8dfbaf1d6a8f29c66acac52957b08ca75b359",
+        "bytes": 42438,
+        "creativeStateFingerprint": "forge1:36ec5f464a9a9eb2",
+        "signaturePrimarySceneId": "signature"
+      }
+    ]
+  },
+  "selfHash": "3adde82e0117b82652ec43d3a72425356cf8af21460c61c4f51aaf1d17e06d5f",
+  "attestation": {
+    "algorithm": "none",
+    "keyId": null,
+    "signature": null
+  }
+}
