@@ -1,0 +1,39 @@
+name: Zensia Only Browser Verify V2
+
+on:
+  push:
+    branches:
+      - verify/zensia-real-cafe-v2
+    paths:
+      - .github/workflows/zensia-only-browser-verify-v2.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      STUDIO_AUTH_ENABLED: "false"
+      ENABLE_STUDIO_IN_PROD: "true"
+      FORGE_STUDIO_TEST_AUTH_BYPASS: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Run Zensia browser tests only
+        run: npx playwright test tests/browser/zensia.spec.ts --project=chromium --workers=1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zensia-only-evidence-v2
+          path: |
+            test-results/zensia-real-cafe/
+            playwright-report/
+          retention-days: 7
