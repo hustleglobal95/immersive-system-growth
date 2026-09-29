@@ -39,9 +39,9 @@ const PRODUCTS = [
 ] as const;
 
 const RECIPES = [
-  { name: "Espresso", ratio: "1 : 2", detail: "18g coffee · 36g yield · 28 sec", accent: "Deep / concentrated" },
-  { name: "Cappuccino", ratio: "1 : 1 : 1", detail: "Espresso · steamed milk · microfoam", accent: "Creamy / balanced" },
-  { name: "Cold Brew", ratio: "1 : 8", detail: "Coarse coffee · cold water · 14 hr", accent: "Clean / chocolatey" },
+  { name: "Espresso", ratio: "SHORT", detail: "Concentrated Colombian espresso", accent: "Deep / concentrated" },
+  { name: "Cappuccino", ratio: "SILKY", detail: "Espresso · steamed milk · silky foam", accent: "Creamy / balanced" },
+  { name: "Cold Brew", ratio: "SLOW", detail: "Colombian coffee · cold extraction", accent: "Clean / bold" },
 ] as const;
 
 const PROFILE_IMAGES = [
@@ -74,11 +74,6 @@ export function ZensiaImaginationExperience() {
 
       if (reduced) return;
 
-      gsap.to(".zi-cup__steam--1", { y: -48, x: 9, scaleX: 1.18, opacity: 0.1, duration: 2.8, repeat: -1, ease: "sine.inOut" });
-      gsap.to(".zi-cup__steam--2", { y: -58, x: -7, scaleX: 0.9, opacity: 0.14, duration: 3.4, repeat: -1, ease: "sine.inOut", delay: 0.45 });
-      gsap.to(".zi-cup__steam--3", { y: -42, x: 6, scaleX: 1.08, opacity: 0.08, duration: 3.05, repeat: -1, ease: "sine.inOut", delay: 0.9 });
-      gsap.to(".zi-cup__coffee-shine", { xPercent: 170, duration: 3.8, repeat: -1, ease: "sine.inOut" });
-
       const mm = gsap.matchMedia();
 
       mm.add("(min-width: 981px)", () => {
@@ -93,11 +88,9 @@ export function ZensiaImaginationExperience() {
 
         journey
           .to(".zi-cup-stage", { xPercent: -38, yPercent: 47, scale: 0.77, rotate: -4, ease: "none" }, 0)
-          .to(".zi-cup__saucer", { scaleX: 0.88, opacity: 0.62, ease: "none" }, 0)
           .fromTo(".zi-pour-stream", { scaleY: 0, transformOrigin: "top center", opacity: 0 }, { scaleY: 1, opacity: 1, ease: "none" }, 0.18)
           .to(".zi-pour-stream", { opacity: 0, ease: "none" }, 0.48)
-          .to(".zi-cup-stage", { xPercent: 31, yPercent: 137, scale: 0.6, rotate: 3, ease: "none" }, 0.52)
-          .to(".zi-cup__steam", { opacity: 0.38, ease: "none" }, 0.52);
+          .to(".zi-cup-stage", { xPercent: 31, yPercent: 137, scale: 0.6, rotate: 3, ease: "none" }, 0.52);
 
         gsap.to(".zi-hero__ghost", {
           xPercent: -14,
@@ -226,7 +219,7 @@ export function ZensiaImaginationExperience() {
             <div className="zi-journey-copy zi-journey-copy--one" data-zi-reveal>
               <p className="zi-eyebrow">01 · THE POUR</p>
               <h2 id="zi-kinetic-title" className="zi-section-title">A cup can<br/><em>change the pace.</em></h2>
-              <p>Scroll and the hero cup leaves the billboard, moves into the room, and becomes part of the preparation ritual instead of disappearing after the first screen.</p>
+              <p>The cup moves with you from first aroma to first pour, turning preparation into part of the room rather than a step hidden behind the counter.</p>
             </div>
             <div className="zi-journey-copy zi-journey-copy--two" data-zi-reveal>
               <p className="zi-eyebrow">02 · THE ROOM</p>
@@ -283,7 +276,7 @@ export function ZensiaImaginationExperience() {
         <section className="zi-recipes">
           <div className="zi-recipes__head" data-zi-reveal>
             <p className="zi-eyebrow">THE BREW BAR</p>
-            <h2 className="zi-section-title">Three ways<br/>to read the same bean.</h2>
+            <h2 className="zi-section-title">Three ways<br/>to meet the cup.</h2>
           </div>
           <div className="zi-recipes__grid">
             {RECIPES.map((recipe, index) => (
@@ -307,7 +300,7 @@ export function ZensiaImaginationExperience() {
           <div className="zi-photo-story__copy" data-zi-reveal>
             <p className="zi-eyebrow">THE COFFEE HOUSE</p>
             <h2 className="zi-section-title">Come for the cup.<br/><em>Stay for the room.</em></h2>
-            <p>Zensia is treated here as a place, not a product grid. The website moves from object to ritual to menu to room so the experience feels like entering the coffee shop.</p>
+            <p>A morning espresso, an afternoon cold brew, a warm bite and a corner worth keeping. The room is part of the ritual—built for conversations that don’t need to hurry.</p>
           </div>
           <div className="zi-photo-panel zi-photo-panel--small">
             <Image src={PROFILE_IMAGES[3]} alt="Zensia cold coffee" fill sizes="(max-width: 900px) 46vw, 24vw" />
