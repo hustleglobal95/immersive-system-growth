@@ -74,12 +74,18 @@ type SceneProps={
   reduced:MutableRefObject<boolean>;
 };
 
-function SteamRibbon({index,materials}:{index:number;materials:MutableRefObject<ShaderMaterial[]>}){
+function SteamRibbon({index,progress}:{index:number;progress:MutableRefObject<number>}){
+  const material=useRef<ShaderMaterial>(null);
+  useFrame(({clock})=>{
+    if(!material.current) return;
+    material.current.uniforms.uTime.value=clock.elapsedTime*(index===1?0.92:1);
+    material.current.opacity=1-MathUtils.smoothstep(progress.current,0.25,0.33);
+  });
   return (
     <mesh position={[(index-1)*0.34,2.0,index===1?0.04:-0.08]} rotation={[0,index===1?0.08:-0.06,0]}>
       <planeGeometry args={[0.72,2.75,18,42]} />
       <shaderMaterial
-        ref={(material)=>{if(material) materials.current[index]=material;}}
+        ref={material}
         vertexShader={STEAM_VERTEX}
         fragmentShader={STEAM_FRAGMENT}
         uniforms={{uTime:{value:0},uSeed:{value:index*1.91+0.7}}}
@@ -127,13 +133,6 @@ function CupScene({progress,pointer,reduced}:SceneProps){
       stream.current.scale.set(1,Math.max(0.02,pour),1);
     }
     if(streamMaterial.current) streamMaterial.current.opacity=0.78*pour;
-
-    const steamFade=1-MathUtils.smoothstep(p,0.25,0.33);
-    steamMaterials.current.forEach((material,index)=>{
-      if(!material) return;
-      material.uniforms.uTime.value=clock.elapsedTime*(index===1?0.92:1);
-      material.opacity=steamFade;
-    });
   });
 
   return (
@@ -164,7 +163,7 @@ function CupScene({progress,pointer,reduced}:SceneProps){
           <meshBasicMaterial color="#2b1710" transparent opacity={0.85} />
         </mesh>
         <group position={[0,0.66,0]}>
-          {[0,1,2].map((index)=><SteamRibbon key={index} index={index} materials={steamMaterials} />)}
+          {[0,1,2].map((index)=><SteamRibbon key={index} index={index} progress={progress} />)}
         </group>
       </group>
       <mesh ref={stream} visible={false} rotation={[0,0,0.10]}>
@@ -306,7 +305,7 @@ export function ZensiaCoffeeExperience(){
           <div className="zc-rack__intro zc-reveal">
             <p className="zc-eyebrow">From our café to your day</p>
             <h2 id="zc-rack-title">The Zensia <em>coffee rack.</em></h2>
-            <p>A shop wall that mixes Zensia's packaged coffee with the coffee styles people actually come to drink.</p>
+            <p>A shop wall that mixes Zensia&apos;s packaged coffee with the coffee styles people actually come to drink.</p>
             <a className="zc-button" href={ORDER_URL}>Shop / order</a>
           </div>
 
