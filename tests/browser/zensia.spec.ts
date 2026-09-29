@@ -27,9 +27,9 @@ test("Zensia reference remains aligned on mobile",async({page})=>{
 
 test("Zensia keeps functional hotspot navigation",async({page})=>{
   await page.goto("/zensia");
-  await expect(page.getByRole("link",{name:"Coffee"})).toHaveAttribute("href","#coffee");
-  await expect(page.getByRole("link",{name:"Menu"})).toHaveAttribute("href","https://www.zensiacoffee.com/actual-menu");
-  await expect(page.getByRole("link",{name:"Recipes"})).toHaveAttribute("href","#recipes");
-  await expect(page.getByRole("link",{name:"Story"})).toHaveAttribute("href","#story");
-  await expect(page.getByRole("link",{name:"Visit"})).toHaveAttribute("href","#visit");
+  await expect(page.getByRole("link",{name:"Coffee",exact:true})).toHaveAttribute("href","#coffee");
+  await expect(page.getByRole("link",{name:"Menu",exact:true})).toHaveAttribute("href","https://www.zensiacoffee.com/actual-menu");
+  await expect(page.getByRole("link",{name:"Recipes",exact:true})).toHaveAttribute("href","#recipes");
+  await expect(page.getByRole("link",{name:"Story",exact:true})).toHaveAttribute("href","#story");
+  await expect(page.getByRole("link",{name:"Visit",exact:true})).toHaveAttribute("href","#visit");
 });
