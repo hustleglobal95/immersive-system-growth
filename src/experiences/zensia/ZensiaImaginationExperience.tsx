@@ -190,6 +190,18 @@ export function ZensiaImaginationExperience() {
       </header>
 
       <main id="zi-main">
+        <div className="zi-cup-flow">
+          <div className="zi-cup-stage-shell" onPointerMove={onCupMove} onPointerLeave={resetCup}>
+            <div ref={cupStage} className="zi-cup-stage">
+              <ZensiaHeroCup />
+              <span className="zi-cup-stage__note">MOVE THE CUP</span>
+              <div className="zi-bean zi-bean--1" />
+              <div className="zi-bean zi-bean--2" />
+              <div className="zi-bean zi-bean--3" />
+              <div className="zi-cup-orbit"><span>AROMA</span><span>ORIGIN</span><span>RITUAL</span></div>
+            </div>
+          </div>
+
         <section className="zi-hero" aria-labelledby="zi-hero-title">
           <div className="zi-hero__ghost" aria-hidden="true">ZENSIA</div>
           <div className="zi-hero__copy">
@@ -206,16 +218,6 @@ export function ZensiaImaginationExperience() {
             </div>
           </div>
 
-          <div className="zi-cup-zone" onPointerMove={onCupMove} onPointerLeave={resetCup}>
-            <div ref={cupStage} className="zi-cup-stage">
-              <ZensiaHeroCup />
-              <span className="zi-cup-stage__note">MOVE THE CUP</span>
-            </div>
-            <div className="zi-bean zi-bean--1" />
-            <div className="zi-bean zi-bean--2" />
-            <div className="zi-bean zi-bean--3" />
-            <div className="zi-cup-orbit"><span>AROMA</span><span>ORIGIN</span><span>RITUAL</span></div>
-          </div>
         </section>
 
         <section className="zi-cup-journey zi-kinetic" aria-labelledby="zi-kinetic-title">
@@ -234,6 +236,7 @@ export function ZensiaImaginationExperience() {
             <div className="zi-journey-rail" aria-hidden="true"><span>BEAN</span><span>GRIND</span><span>BLOOM</span><span>POUR</span></div>
           </div>
         </section>
+        </div>
 
         <section id="zi-coffee" className="zi-rack">
           <div className="zi-rack__intro" data-zi-reveal>
