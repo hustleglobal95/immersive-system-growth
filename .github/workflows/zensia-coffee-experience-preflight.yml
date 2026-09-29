@@ -1,0 +1,119 @@
+name: Zensia Coffee Experience Preflight
+
+on:
+  push:
+    branches:
+      - project/zensia-coffee-experience
+    paths:
+      - .github/workflows/zensia-coffee-experience-preflight.yml
+
+permissions:
+  contents: write
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Write structured Zensia experience brief
+        run: |
+          mkdir -p .forge/execution/zensia-coffee-experience
+          cat > .forge/execution/zensia-coffee-experience/brief.json <<'EOF'
+          {
+            "projectName": "Zensia Full Coffee Shop Experience",
+            "projectType": "hospitality",
+            "tier": "signature",
+            "client": "Zensia Coffee",
+            "audience": "People discovering Zensia online, deciding what to drink, buy, visit, or order.",
+            "objective": "Rebuild Zensia as a complete cinematic coffee-shop experience centered on one persistent interactive coffee cup that carries through the scroll, with real animated steam, a coffee handoff into the next scene, cinematic drink and package showcases, a dense coffee rack, recipes, café story, and conversion.",
+            "primaryAction": "Order online",
+            "brandTruth": "Zensia is a warm, human coffee shop and Colombian specialty coffee brand. The site should make the cup, craft, products, recipes, and physical café feel like one continuous sensory experience.",
+            "differentiators": [
+              "One persistent interactive hero cup that remains the visual anchor across multiple scenes",
+              "Animated volumetric-feeling steam driven in real time",
+              "Scroll-driven coffee handoff from hero into the next coffee showcase scene",
+              "Cinematic Zensia product packaging and drinks",
+              "A dense curated coffee rack with Zensia products and classic coffee recipe categories",
+              "Café and brand story integrated into the same spatial narrative"
+            ],
+            "constraints": [
+              "Use the existing Next.js, GSAP, React Three Fiber, Drei and Forge systems already installed",
+              "Keep one persistent 3D canvas for the hero cup rather than resetting a new 3D scene per section",
+              "The cup must remain interactive with pointer response on desktop and a stable touch/mobile fallback",
+              "Steam must be actually animated at runtime and not represented by a static image",
+              "The cup must visibly hand off coffee into the next section as scroll progresses",
+              "Use real Zensia photography and existing verified brand assets where available",
+              "Do not fabricate product prices, roast claims, ingredient claims, or availability",
+              "Preserve Order Online, Visit, Menu and Story conversion paths",
+              "Build desktop, mobile and reduced-motion states",
+              "Keep accessibility and semantic DOM for navigation, copy and conversion actions",
+              "Avoid generic stacked-card landing-page composition",
+              "Avoid arbitrary decorative particles that are not motivated by the coffee/café narrative"
+            ],
+            "existingAssets": [
+              {"id":"zensia-product-images","label":"Existing Zensia product photography","type":"image","notes":"Verified Wix-hosted Zensia photography already referenced by the current experience."},
+              {"id":"zensia-cafe-images","label":"Existing Zensia café and drink photography","type":"image","notes":"Verified Zensia café/drink imagery already referenced in the checked-in experience."}
+            ],
+            "references": [
+              {
+                "label": "Approved Zensia full coffee-shop concept",
+                "lesson": "Warm cinematic café atmosphere, premium serif/sans hierarchy, one hero cup, packaged coffee showcase, coffee rack, recipes, story and final visit/order conversion."
+              }
+            ]
+          }
+          EOF
+      - name: Run Forge preflight
+        env:
+          STUDIO_AUTH_ENABLED: "false"
+          FORGE_LOCAL_STORAGE_ENABLED: "true"
+          NODE_ENV: development
+        run: |
+          npm run forge:preflight -- \
+            --name="Zensia Full Coffee Shop Experience" \
+            --brief=.forge/execution/zensia-coffee-experience/brief.json \
+            --artifacts=.forge/execution/zensia-coffee-experience/artifacts \
+            --record=forge-intelligence/execution-records/zensia-coffee-experience.json
+      - name: Compile motion context
+        env:
+          STUDIO_AUTH_ENABLED: "false"
+          FORGE_LOCAL_STORAGE_ENABLED: "true"
+          NODE_ENV: development
+        run: |
+          npm run forge:context -- \
+            --domain="motion" \
+            --scene="persistent-cup-scroll" \
+            --objective="Build a persistent interactive cup, runtime steam and scroll-driven coffee handoff into the next section." \
+            --prompt="Use a single persistent cup as the spatial anchor for the Zensia coffee-shop experience." \
+            --name="Zensia Full Coffee Shop Experience" \
+            --output=.forge/execution/zensia-coffee-experience/motion-context.json
+      - name: Compile interaction context
+        env:
+          STUDIO_AUTH_ENABLED: "false"
+          FORGE_LOCAL_STORAGE_ENABLED: "true"
+          NODE_ENV: development
+        run: |
+          npm run forge:context -- \
+            --domain="interaction" \
+            --scene="persistent-cup-scroll" \
+            --objective="Make the cup pointer-responsive, accessible by reduced-motion fallback, and synchronized with scroll." \
+            --prompt="Use a single persistent cup as the spatial anchor for the Zensia coffee-shop experience." \
+            --name="Zensia Full Coffee Shop Experience" \
+            --output=.forge/execution/zensia-coffee-experience/interaction-context.json
+      - name: Validate execution evidence
+        run: npm run forge:execution:audit -- --record=forge-intelligence/execution-records/zensia-coffee-experience.json
+      - name: Commit public-safe record
+        run: |
+          git config user.name "forge-preflight"
+          git config user.email "actions@users.noreply.github.com"
+          git add forge-intelligence/execution-records/zensia-coffee-experience.json
+          git commit -m "Record Zensia coffee experience preflight [forge-preflight-record]" || true
+          git pull --rebase origin project/zensia-coffee-experience
+          git push origin HEAD:project/zensia-coffee-experience

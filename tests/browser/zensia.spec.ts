@@ -2,85 +2,34 @@ import { test, expect } from "@playwright/test";
 
 test.setTimeout(120000);
 
-test("Zensia imagination pass renders the kinetic hero and commerce path",async({page})=>{
+test("Zensia renders the approved reference as the visual source of truth",async({page})=>{
   const errors:string[]=[];
   page.on("pageerror",error=>errors.push(error.message));
+
   await page.goto("/zensia");
-  await expect(page.getByRole("heading",{level:1})).toContainText("Coffee");
-  await expect(page.getByAltText("Zensia Zen at Home Colombian coffee")).toBeVisible();
-  await expect(page.locator(".zi-object-field")).toBeVisible();
-  await expect(page.locator(".zi-orbit--outer")).toBeVisible();
-  await expect(page.locator(".zi-seal")).toBeVisible();
-  await page.screenshot({path:"test-results/zensia-imagination/desktop-hero.png",fullPage:false});
-
-  const selectors=page.getByRole("group",{name:"Choose a Zensia coffee product"}).getByRole("button");
-  await expect(selectors).toHaveCount(4);
-  await selectors.nth(1).click();
-  await expect(selectors.nth(1)).toHaveAttribute("aria-pressed","true");
-
-  await page.locator(".zi-kinetic").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("heading",{name:/A cup can/i})).toBeVisible();
-  await expect(page.locator(".zi-kinetic__tile")).toHaveCount(2);
-  await page.screenshot({path:"test-results/zensia-imagination/desktop-kinetic.png",fullPage:false});
-
-  await page.locator("#zi-menu").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("heading",{name:/Find your pause/i})).toBeVisible();
-  await expect(page.locator(".zim-menu__fallback")).toBeVisible();
-  await expect(page.locator("[data-source='uploaded-zensia-coffee-splash']")).toHaveCount(0);
-  const categories=page.getByRole("group",{name:"Menu categories"}).getByRole("button");
-  await expect(categories).toHaveCount(6);
-  await expect(page.locator(".zim-menu__item")).toHaveCount(7);
-
-  await page.getByRole("button",{name:"Cold Beverages: 13 items"}).click();
-  await expect(page.locator(".zim-menu__item")).toHaveCount(13);
-  await page.getByRole("button",{name:"Fruit Slush/Juice"}).click();
-  await expect(page.locator(".zim-menu__photo-stage")).toBeVisible();
-  await expect(page.locator(".zim-menu__active-name")).toContainText("Fruit Slush/Juice");
-  await expect(page.locator(".zim-menu__variant-row").getByRole("button")).toHaveCount(7);
-  await page.getByRole("button",{name:"Passion Fruit",exact:true}).click();
-  await expect(page.locator(".zim-menu__selected-variant")).toHaveText("Passion Fruit");
-  await page.waitForTimeout(700);
-  await page.screenshot({path:"test-results/zensia-imagination/desktop-full-menu.png",fullPage:false});
-
-  await page.getByRole("button",{name:"Specialty Desserts: 7 items"}).click();
-  await expect(page.locator(".zim-menu__item")).toHaveCount(7);
-  await expect(page.getByRole("button",{name:"Passion Fruit Delight"})).toBeVisible();
-
-  await page.locator("#zi-visit").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("link",{name:/Order online/i}).first()).toHaveAttribute("href","https://zensia-coffee-llc.square.site/");
+  await expect(page.locator(".zc-reference__image")).toBeVisible();
+  await expect(page.locator(".zc-steam__strand")).toHaveCount(3);
+  await expect(page.locator(".zc-cup-focus")).toBeVisible();
+  await expect(page.locator(".zc-pour-accent")).toBeVisible();
+  await expect(page.getByRole("link",{name:"Order online"}).first()).toHaveAttribute("href","https://zensia-coffee-llc.square.site/");
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  await page.screenshot({path:"test-results/zensia-coffee-experience/desktop-reference.png",fullPage:true});
   expect(errors).toEqual([]);
 });
 
-test("Zensia imagination pass keeps the kinetic language on mobile without overflow",async({page})=>{
+test("Zensia reference remains aligned on mobile",async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto("/zensia");
-  await expect(page.getByRole("heading",{level:1})).toBeVisible();
-  await expect(page.locator(".zi-object-field")).toBeVisible();
+  await expect(page.locator(".zc-reference__image")).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
-  await page.screenshot({path:"test-results/zensia-imagination/mobile-hero.png",fullPage:false});
-
-  await page.locator(".zi-kinetic").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("heading",{name:/A cup can/i})).toBeVisible();
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
-
-  await page.locator("#zi-menu").scrollIntoViewIfNeeded();
-  await page.getByRole("button",{name:"Empanadas: 6 items"}).click();
-  await expect(page.locator(".zim-menu__item")).toHaveCount(6);
-  await expect(page.getByRole("button",{name:"Corn Spinach"})).toBeVisible();
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
-  await page.screenshot({path:"test-results/zensia-imagination/mobile-full-menu.png",fullPage:false});
-
-  await page.locator("#zi-visit").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("link",{name:/Order online/i}).first()).toBeVisible();
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  await page.screenshot({path:"test-results/zensia-coffee-experience/mobile-reference.png",fullPage:true});
 });
 
-test("Zensia imagination pass remains readable without JavaScript",async({browser})=>{
-  const context=await browser.newContext({javaScriptEnabled:false});
-  const page=await context.newPage();
+test("Zensia keeps functional hotspot navigation",async({page})=>{
   await page.goto("/zensia");
-  await expect(page.getByRole("heading",{level:1})).toBeVisible();
-  await expect(page.getByRole("link",{name:/Order online/i}).first()).toBeVisible();
-  await expect(page.getByText("Passion Fruit Delight",{exact:true})).toBeVisible();
-  await context.close();
+  await expect(page.getByRole("link",{name:"Coffee",exact:true})).toHaveAttribute("href","#coffee");
+  await expect(page.getByRole("link",{name:"Menu",exact:true})).toHaveAttribute("href","https://www.zensiacoffee.com/actual-menu");
+  await expect(page.getByRole("link",{name:"Recipes",exact:true})).toHaveAttribute("href","#recipes");
+  await expect(page.getByRole("link",{name:"Story",exact:true})).toHaveAttribute("href","#story");
+  await expect(page.getByRole("link",{name:"Visit",exact:true})).toHaveAttribute("href","#visit");
 });
