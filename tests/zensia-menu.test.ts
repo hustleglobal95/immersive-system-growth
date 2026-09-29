@@ -51,25 +51,30 @@ test("Zensia immersive menu is interaction-first and preserves ordering",()=>{
 });
 
 
-test("Zensia immersive menu is photo-first and removes synthetic product geometry",()=>{
+test("Zensia immersive menu uses only verified item photography and honest fallbacks",()=>{
   assert.match(component,/next\/image/);
-  assert.match(component,/FROM ZENSIA/);
+  assert.match(component,/ZENSIA_ITEM_PHOTOS/);
   assert.match(component,/zim-menu__item-thumb/);
+  assert.match(component,/zim-menu__item-mark/);
+  assert.match(component,/zim-menu__fallback/);
   assert.match(component,/820771_5c658f32b08d47f7ae25fc6045590669/);
   assert.match(component,/859566_c6c1ece55ef84a9e8f18b65b712bffd2/);
   assert.match(component,/859566_c2dd3549ae574e75a12c2e5289b11818/);
+  assert.doesNotMatch(component,/ZENSIA_PHOTO_POOLS/);
+  assert.doesNotMatch(component,/uploaded-zensia-coffee-splash/);
+  assert.doesNotMatch(component,/zim-menu__media-splash/);
   assert.doesNotMatch(component,/zim-menu__vessel/);
   assert.doesNotMatch(component,/zim-menu__orbit/);
   assert.doesNotMatch(component,/zim-menu__steam/);
+  assert.doesNotMatch(css,/\.zim-menu__media-splash/);
   assert.doesNotMatch(css,/\.zim-menu__vessel/);
   assert.doesNotMatch(css,/\.zim-menu__orbit/);
   assert.doesNotMatch(css,/\.zim-menu__steam/);
 });
 
-test("Zensia immersive menu keeps the uploaded splash as connective motion only",()=>{
-  assert.match(component,/uploaded-zensia-coffee-splash/);
-  assert.match(component,/showCoffeeSplash/);
-  assert.match(component,/ef1ed3e5-a0c5-4055-a347-5ab30d2c3454\.webp/);
+test("Zensia immersive menu protects long-name and reduced-motion layouts",()=>{
+  assert.match(component,/data-long/);
+  assert.match(css,/\.zim-menu__active-name\[data-long="true"\]/);
   assert.match(css,/prefers-reduced-motion/);
-  assert.match(css,/\.zim-menu__media-splash\{display:none!important\}/);
+  assert.match(css,/\.zim-menu__fallback/);
 });

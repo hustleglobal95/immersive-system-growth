@@ -1,9 +1,9 @@
-name: Zensia Full Menu Preflight
+name: Zensia Emergency Menu Repair Preflight
 
 on:
   push:
     branches:
-      - project/zensia-full-immersive-menu
+      - project/zensia-emergency-menu-final
     paths:
       - .github/workflows/zensia-full-menu-preflight.yml
 
@@ -28,12 +28,12 @@ jobs:
           mkdir -p .forge/execution/zensia-full-menu
           cat > .forge/execution/zensia-full-menu/brief.json <<'EOF'
           {
-            "projectName": "Zensia Coffee Full Immersive Menu",
+            "projectName": "Zensia Emergency Menu Repair",
             "projectType": "hospitality",
             "tier": "signature",
             "client": "Zensia Coffee",
             "audience": "Visitors deciding what to order before or during a Zensia visit.",
-            "objective": "Integrate Zensia's complete current public menu into the existing immersive website as a first-class interactive experience, with every listed menu item and every listed flavor variant represented.",
+            "objective": "Repair the live Zensia menu immediately: remove broken transparent splash overlays, stop misleading repeated imagery, restore readable typography, and make selection-driven real product photography feel clean, premium and intentional.",
             "primaryAction": "Order online",
             "brandTruth": "The menu itself should feel like part of the Zensia experience, not a detached PDF or utility page.",
             "differentiators": [
@@ -50,7 +50,10 @@ jobs:
               "Keep every item accessible by keyboard and touch",
               "Use Forge GSAP and mask systems for category transitions and active-item choreography",
               "Preserve Order Online, Menu, Visit and Calm Club conversion paths",
-              "Mobile must provide the full menu without horizontal page overflow"
+              "Mobile must provide the full menu without horizontal page overflow",
+              "Remove the uploaded splash from the menu stage until it can be integrated without checkerboard artifacts or copy collisions",
+              "Only show a product image when it is an exact verified Zensia product image; otherwise use a deliberate editorial fallback, never a misleading repeated thumbnail",
+              "Active item typography must remain fully visible at every breakpoint"
             ],
             "existingAssets": [],
             "references": [
@@ -59,8 +62,8 @@ jobs:
                 "lesson": "This is the authoritative current menu content. Preserve names and category grouping without fabricating prices or details."
               },
               {
-                "label": "Current Zensia Forge build",
-                "lesson": "Extend the existing kinetic object and mask-reveal language into the menu rather than creating a disconnected menu page."
+                "label": "Current Zensia production render",
+                "lesson": "Do not repeat generic images across unrelated items, do not let media overlap copy, and do not allow active product names to clip or collide with controls."
               }
             ]
           }
@@ -71,13 +74,13 @@ jobs:
           FORGE_LOCAL_STORAGE_ENABLED: "true"
           NODE_ENV: development
         run: |
-          npm run forge:preflight --             --name="Zensia Coffee Full Immersive Menu"             --brief=.forge/execution/zensia-full-menu/brief.json             --artifacts=.forge/execution/zensia-full-menu/artifacts             --record=forge-intelligence/execution-records/zensia-full-menu.json
+          npm run forge:preflight --             --name="Zensia Emergency Menu Repair"             --brief=.forge/execution/zensia-full-menu/brief.json             --artifacts=.forge/execution/zensia-full-menu/artifacts             --record=forge-intelligence/execution-records/zensia-full-menu.json
       - name: Compile interaction context
         run: |
-          npm run forge:context --             --domain="interaction"             --scene="menu"             --objective="Build a complete touch and keyboard accessible immersive menu with category and active-item interaction"             --prompt="Integrate every current Zensia menu item and every listed flavor variant into the immersive site."             --name="Zensia Coffee Full Immersive Menu"             --output=.forge/execution/zensia-full-menu/interaction-context.json
+          npm run forge:context --             --domain="interaction"             --scene="menu"             --objective="Build a complete touch and keyboard accessible immersive menu with category and active-item interaction"             --prompt="Integrate every current Zensia menu item and every listed flavor variant into the immersive site."             --name="Zensia Emergency Menu Repair"             --output=.forge/execution/zensia-full-menu/interaction-context.json
       - name: Compile motion context
         run: |
-          npm run forge:context --             --domain="motion"             --scene="menu"             --objective="Use GSAP and Forge masks to make menu browsing spatial and cinematic without hiding content"             --prompt="Integrate every current Zensia menu item and every listed flavor variant into the immersive site."             --name="Zensia Coffee Full Immersive Menu"             --output=.forge/execution/zensia-full-menu/motion-context.json
+          npm run forge:context --             --domain="motion"             --scene="menu"             --objective="Use GSAP and Forge masks to make menu browsing spatial and cinematic without hiding content"             --prompt="Integrate every current Zensia menu item and every listed flavor variant into the immersive site."             --name="Zensia Emergency Menu Repair"             --output=.forge/execution/zensia-full-menu/motion-context.json
       - name: Validate execution evidence
         run: npm run forge:execution:audit -- --record=forge-intelligence/execution-records/zensia-full-menu.json
       - name: Commit public-safe record
@@ -85,5 +88,6 @@ jobs:
           git config user.name "forge-preflight"
           git config user.email "actions@users.noreply.github.com"
           git add forge-intelligence/execution-records/zensia-full-menu.json
-          git commit -m "Record Zensia full menu preflight [forge-preflight-record]"
-          git push origin HEAD:project/zensia-full-immersive-menu
+          git commit -m "Record Zensia emergency menu repair preflight [forge-preflight-record]" || true
+          git pull --rebase origin project/zensia-emergency-menu-final
+          git push origin HEAD:project/zensia-emergency-menu-final
