@@ -1,0 +1,100 @@
+name: Zensia Real Cafe Rebuild Preflight
+
+on:
+  push:
+    branches:
+      - project/zensia-real-cafe-rebuild
+    paths:
+      - .github/workflows/zensia-real-cafe-rebuild-preflight.yml
+
+permissions:
+  contents: write
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Write repair brief
+        run: |
+          mkdir -p .forge/execution/zensia-real-cafe-rebuild
+          cat > .forge/execution/zensia-real-cafe-rebuild/brief.json <<'EOF'
+          {
+            "projectName": "Zensia Real Cafe Rebuild",
+            "projectType": "hospitality",
+            "tier": "signature",
+            "client": "Zensia Coffee",
+            "audience": "People deciding whether to visit, order, or explore Zensia.",
+            "objective": "Replace the broken reference-image implementation with a real cinematic coffee-shop website that structurally matches the approved visual reference using real Zensia photography, semantic DOM, GSAP, an interactive cup hero, animated steam, a scroll handoff, product rack, recipes, story and visit conversion.",
+            "primaryAction": "Order online",
+            "brandTruth": "Warm Colombian specialty coffee, calm hospitality, plants, natural materials, real products and a place worth staying in.",
+            "differentiators": [
+              "Reference-faithful warm cafe composition",
+              "One interactive hero cup with runtime steam",
+              "Scroll continuity from cup to coffee showcase",
+              "Dense shelf/rack product merchandising",
+              "Real Zensia photography and menu pathways"
+            ],
+            "constraints": [
+              "Do not use a screenshot as the website",
+              "Do not use the broken public/zensia/reference-master.png asset",
+              "Do not introduce a dark abstract demo aesthetic",
+              "Use actual HTML/CSS composition for every section",
+              "Use direct browser-safe Zensia image URLs instead of Next image optimization for critical remote visuals",
+              "Keep the hero cup interactive on pointer and stable on mobile",
+              "Use runtime animated steam",
+              "Use GSAP ScrollTrigger for continuity and reveals",
+              "Preserve menu, order, visit and story conversion paths",
+              "No fabricated prices or inventory claims",
+              "Verify with real browser screenshots before merge"
+            ],
+            "existingAssets": [
+              {"id":"zensia-wix-assets","label":"Verified Zensia Wix photography","type":"image","notes":"Existing real Zensia coffee, beverage, product and brand photography already referenced by the repository and public Zensia site."}
+            ],
+            "references": [
+              {"label":"Approved Zensia coffee experience reference","lesson":"Warm photoreal cafe hero, cream coffee showcase, dark product rack, light recipe rail, cafe story split, and warm final visit CTA."}
+            ]
+          }
+          EOF
+      - name: Run Forge preflight
+        env:
+          STUDIO_AUTH_ENABLED: "false"
+          FORGE_LOCAL_STORAGE_ENABLED: "true"
+          NODE_ENV: development
+        run: |
+          npm run forge:preflight -- \
+            --name="Zensia Real Cafe Rebuild" \
+            --brief=.forge/execution/zensia-real-cafe-rebuild/brief.json \
+            --artifacts=.forge/execution/zensia-real-cafe-rebuild/artifacts \
+            --record=forge-intelligence/execution-records/zensia-real-cafe-rebuild.json
+      - name: Compile motion context
+        env:
+          STUDIO_AUTH_ENABLED: "false"
+          FORGE_LOCAL_STORAGE_ENABLED: "true"
+          NODE_ENV: development
+        run: |
+          npm run forge:context -- \
+            --domain="motion" \
+            --scene="cup-to-coffee-handoff" \
+            --objective="Keep one cup visually alive across the hero transition with steam, pointer response and a scroll-driven handoff." \
+            --prompt="Match the approved cafe reference without relying on a screenshot." \
+            --name="Zensia Real Cafe Rebuild" \
+            --output=.forge/execution/zensia-real-cafe-rebuild/motion-context.json
+      - name: Validate execution evidence
+        run: npm run forge:execution:audit -- --record=forge-intelligence/execution-records/zensia-real-cafe-rebuild.json
+      - name: Commit public-safe record
+        run: |
+          git config user.name "forge-preflight"
+          git config user.email "actions@users.noreply.github.com"
+          git add forge-intelligence/execution-records/zensia-real-cafe-rebuild.json
+          git commit -m "Record Zensia real cafe rebuild preflight [forge-preflight-record]" || true
+          git pull --rebase origin project/zensia-real-cafe-rebuild
+          git push origin HEAD:project/zensia-real-cafe-rebuild
