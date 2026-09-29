@@ -1,6 +1,6 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 
-import Image from "next/image";
 import { useLayoutEffect, useRef, type PointerEvent as ReactPointerEvent } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -68,13 +68,13 @@ export function ZensiaCoffeeExperience(){
       <a className="zc-skip" href="#reference">Skip to experience</a>
 
       <main id="reference" className="zc-reference" aria-label="Zensia Coffee">
-        <Image
+        <img
           src="/zensia/reference-master.png"
           alt="Zensia Coffee cinematic cafe experience with a steaming hero cup, packaged coffee, a coffee rack, recipes, cafe story and ordering section."
-          width={941}
-          height={1672}
-          priority
-          sizes="100vw"
+          width="941"
+          height="1672"
+          decoding="sync"
+          fetchPriority="high"
           className="zc-reference__image"
         />
 
