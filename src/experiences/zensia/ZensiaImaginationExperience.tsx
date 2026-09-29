@@ -5,6 +5,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ZensiaImmersiveMenu } from "./ZensiaImmersiveMenu";
+import { ZensiaHeroCup } from "./ZensiaHeroCup";
 
 const ORDER_URL = "https://zensia-coffee-llc.square.site/";
 const CALM_URL = "https://profile.squareup.com/loyalty/MLX5PRMQ9XZ02";
@@ -49,27 +50,6 @@ const PROFILE_IMAGES = [
   "https://static.wixstatic.com/media/859566_dda43df0514841eea1663f508724fcef~mv2.jpg",
   "https://static.wixstatic.com/media/859566_26ddc1aef049454db886a6bd9d84b5b6~mv2.jpg",
 ] as const;
-
-function HeroCup() {
-  return (
-    <div className="zi-cup" aria-hidden="true">
-      <div className="zi-cup__steam zi-cup__steam--1" />
-      <div className="zi-cup__steam zi-cup__steam--2" />
-      <div className="zi-cup__steam zi-cup__steam--3" />
-      <div className="zi-cup__rim">
-        <div className="zi-cup__coffee">
-          <span className="zi-cup__coffee-shine" />
-        </div>
-      </div>
-      <div className="zi-cup__body">
-        <span className="zi-cup__logo">Z</span>
-      </div>
-      <div className="zi-cup__handle" />
-      <div className="zi-cup__saucer" />
-      <div className="zi-cup__shadow" />
-    </div>
-  );
-}
 
 export function ZensiaImaginationExperience() {
   const root = useRef<HTMLDivElement>(null);
@@ -228,7 +208,7 @@ export function ZensiaImaginationExperience() {
 
           <div className="zi-cup-zone" onPointerMove={onCupMove} onPointerLeave={resetCup}>
             <div ref={cupStage} className="zi-cup-stage">
-              <HeroCup />
+              <ZensiaHeroCup />
               <span className="zi-cup-stage__note">MOVE THE CUP</span>
             </div>
             <div className="zi-bean zi-bean--1" />
