@@ -1,0 +1,86 @@
+name: Zensia Reference Acceptance Preflight
+
+on:
+  push:
+    branches:
+      - project/zensia-reference-acceptance
+    paths:
+      - .github/workflows/zensia-reference-acceptance-preflight.yml
+
+permissions:
+  contents: write
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Write acceptance brief
+        run: |
+          mkdir -p .forge/execution/zensia-reference-acceptance
+          cat > .forge/execution/zensia-reference-acceptance/brief.json <<'EOF'
+          {
+            "projectName": "Zensia Reference Acceptance",
+            "projectType": "hospitality",
+            "tier": "signature",
+            "client": "Zensia Coffee",
+            "audience": "People deciding whether to visit, order, or explore Zensia.",
+            "objective": "Pass the user's explicit visual acceptance test by reproducing the approved Zensia reference without reinterpretation. Embed the user-provided approved reference directly in the app bundle as the visual source of truth, then layer runtime steam, pointer response, scroll-driven coffee handoff, semantic navigation, ordering, menu, recipes, story, visit anchors, accessibility and responsive behavior on top.",
+            "primaryAction": "Order online",
+            "brandTruth": "The approved reference is the visual contract. Visual drift is a failure.",
+            "differentiators": [
+              "Exact approved reference composition",
+              "Runtime steam over the hero cup",
+              "Pointer-responsive hero scene",
+              "Scroll-driven coffee-pour emphasis across the hero-to-coffee boundary",
+              "Functional semantic hotspots for every primary navigation and conversion action"
+            ],
+            "constraints": [
+              "Do not visually reinterpret the approved reference",
+              "Do not rely on remote image optimization for the approved reference",
+              "Do not use the corrupted public/zensia/reference-master.png asset",
+              "Embed a valid user-provided reference representation directly in the app bundle",
+              "Keep navigation, menu, order, recipes, story and visit interactions functional",
+              "Add runtime steam rather than static smoke only",
+              "Add pointer response without moving the composition far enough to reveal misregistration",
+              "Add scroll-driven coffee handoff emphasis while preserving the reference composition",
+              "Provide accessible semantic text and focusable controls",
+              "Verify the rendered output in a real browser before merge"
+            ],
+            "existingAssets": [
+              {"id":"approved-zensia-reference","label":"User-approved Zensia full-page reference","type":"image","notes":"941 by 1672 reference supplied by the user in the active conversation."}
+            ],
+            "references": [
+              {"label":"Approved Zensia full-page reference","lesson":"This image is the acceptance target; match it, do not reinterpret it."}
+            ]
+          }
+          EOF
+      - name: Run Forge preflight
+        env:
+          STUDIO_AUTH_ENABLED: "false"
+          FORGE_LOCAL_STORAGE_ENABLED: "true"
+          NODE_ENV: development
+        run: |
+          npm run forge:preflight -- \
+            --name="Zensia Reference Acceptance" \
+            --brief=.forge/execution/zensia-reference-acceptance/brief.json \
+            --artifacts=.forge/execution/zensia-reference-acceptance/artifacts \
+            --record=forge-intelligence/execution-records/zensia-reference-acceptance.json
+      - name: Validate execution evidence
+        run: npm run forge:execution:audit -- --record=forge-intelligence/execution-records/zensia-reference-acceptance.json
+      - name: Commit public-safe record
+        run: |
+          git config user.name "forge-preflight"
+          git config user.email "actions@users.noreply.github.com"
+          git add forge-intelligence/execution-records/zensia-reference-acceptance.json
+          git commit -m "Record Zensia reference acceptance preflight [forge-preflight-record]" || true
+          git pull --rebase origin project/zensia-reference-acceptance
+          git push origin HEAD:project/zensia-reference-acceptance
