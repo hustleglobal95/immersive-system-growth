@@ -72,7 +72,6 @@ export function ZensiaCoffeeExperience(){
         gsap.fromTo(panel,{y:28,opacity:0},{y:0,opacity:1,duration:.8,ease:"power3.out",scrollTrigger:{trigger:panel,start:"top 84%",once:true}});
       });
 
-      gsap.to(".zc-slice__image",{yPercent:-1.2,ease:"none",scrollTrigger:{trigger:element,start:"top top",end:"bottom bottom",scrub:1}});
     },element);
 
     return ()=>context.revert();
