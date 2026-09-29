@@ -40,6 +40,7 @@
 }
 .zc-slice::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none}
 .zc-hero::before{background:linear-gradient(90deg,rgba(17,11,8,.98) 0%,rgba(17,11,8,.92) 29%,rgba(17,11,8,.44) 43%,transparent 60%)}
+.zc-hero .zc-slice__plate{transform:translate(calc(var(--mx)*-7px),calc(var(--my)*-4px)) scale(1.018);transition:transform .14s linear}
 .zc-coffee::before{background:linear-gradient(90deg,#f3eee6 0%,#f3eee6 31%,rgba(243,238,230,.86) 39%,transparent 53%)}
 .zc-rack::before{background:linear-gradient(90deg,rgba(16,10,7,.98) 0%,rgba(16,10,7,.94) 28%,rgba(16,10,7,.3) 43%,transparent 56%)}
 .zc-recipes::before{background:linear-gradient(90deg,#f3eee6 0%,#f3eee6 27%,rgba(243,238,230,.78) 36%,transparent 48%)}
@@ -94,6 +95,7 @@
   .zc-nav a:not(.zc-nav__order){display:none}
   .zc-slice{height:auto;min-height:78svh;overflow:hidden}
   .zc-slice__image{width:100%;height:100%;object-fit:cover;transform:none!important}
+  .zc-hero .zc-slice__plate{transform:none}
   .zc-hero .zc-slice__image{object-position:55% 8%}
   .zc-coffee .zc-slice__image{object-position:62% 29%}
   .zc-rack .zc-slice__image{object-position:62% 50%}
