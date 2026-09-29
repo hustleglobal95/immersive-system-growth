@@ -29,7 +29,7 @@ const RECIPES=[
   {name:"Cappuccino",src:CAPPUCCINO,note:"Velvety, balanced, classic."},
   {name:"Iced Latte",src:LATTE,note:"Chilled, smooth, refreshing."},
   {name:"Mocha",src:LATTE,note:"Coffee, milk, chocolate."},
-  {name:"Affogato",src:COLD_BREW,note:"Coffee over something sweet."},
+  {name:"Cold Brew",src:COLD_BREW,note:"Slow, cold extraction with a clean finish."},
 ] as const;
 
 const RACK_LABELS=[
@@ -88,6 +88,7 @@ export function ZensiaCoffeeExperience(){
         .to(".zc-steam",{opacity:.35,ease:"none"},.55);
 
       gsap.fromTo(".zc-glass__fill",{scaleY:.04},{scaleY:1,ease:"none",scrollTrigger:{trigger:".zc-coffee",start:"top 82%",end:"top 22%",scrub:.65}});
+      gsap.to(".zc-cup-stage",{opacity:0,yPercent:82,ease:"none",scrollTrigger:{trigger:".zc-coffee",start:"58% center",end:"bottom 28%",scrub:.7}});
 
       gsap.utils.toArray<HTMLElement>(".zc-reveal").forEach(node=>{
         gsap.from(node,{y:38,opacity:0,duration:.85,ease:"power3.out",scrollTrigger:{trigger:node,start:"top 86%",once:true}});
@@ -218,7 +219,7 @@ export function ZensiaCoffeeExperience(){
         </section>
 
         <section className="zc-story" id="story">
-          <div className="zc-story__photo"><img src={PICKUP} alt="Zensia Coffee cafe experience"/></div>
+          <div className="zc-story__photo"><img src={HERO_BG} alt="Zensia Coffee cafe experience"/></div>
           <div className="zc-story__mantra" aria-hidden="true">GOOD<br/>PEOPLE<br/>GREAT<br/>COFFEE<br/>BRIGHTER<br/>DAYS</div>
           <div className="zc-story__copy zc-reveal">
             <p className="zc-kicker">Our story</p>
