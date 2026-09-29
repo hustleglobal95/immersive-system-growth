@@ -1,0 +1,33 @@
+name: Zensia production hotfix deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/zensia-production-hotfix.yml
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Verify repaired Zensia menu
+        run: |
+          npm test -- --test-name-pattern="Zensia immersive menu"
+          npm run typecheck
+      - name: Deploy repaired main to Vercel production
+        run: npx --yes vercel@latest deploy --prod --yes --token="$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
