@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 
 import { useLayoutEffect, useRef, type PointerEvent as ReactPointerEvent } from "react";
 import gsap from "gsap";
