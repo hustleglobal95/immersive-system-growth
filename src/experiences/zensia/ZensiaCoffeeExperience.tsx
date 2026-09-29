@@ -102,9 +102,8 @@ function CupScene({progress,pointer,reduced}:SceneProps){
   const cup=useRef<Group>(null);
   const stream=useRef<Mesh>(null);
   const streamMaterial=useRef<MeshPhysicalMaterial>(null);
-  const steamMaterials=useRef<ShaderMaterial[]>([]);
 
-  useFrame(({clock})=>{
+  useFrame(()=>{
     const group=cup.current;
     if(!group) return;
     const p=progress.current;
