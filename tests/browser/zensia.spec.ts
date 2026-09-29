@@ -24,8 +24,9 @@ test("Zensia imagination pass renders the kinetic hero and commerce path",async(
   await page.screenshot({path:"test-results/zensia-imagination/desktop-kinetic.png",fullPage:false});
 
   await page.locator("#zi-menu").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("heading",{name:/Everything,/i})).toBeVisible();
-  await expect(page.locator("[data-source='uploaded-zensia-coffee-splash']")).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Find your pause/i})).toBeVisible();
+  await expect(page.locator(".zim-menu__fallback")).toBeVisible();
+  await expect(page.locator("[data-source='uploaded-zensia-coffee-splash']")).toHaveCount(0);
   const categories=page.getByRole("group",{name:"Menu categories"}).getByRole("button");
   await expect(categories).toHaveCount(6);
   await expect(page.locator(".zim-menu__item")).toHaveCount(7);
@@ -33,6 +34,8 @@ test("Zensia imagination pass renders the kinetic hero and commerce path",async(
   await page.getByRole("button",{name:"Cold Beverages: 13 items"}).click();
   await expect(page.locator(".zim-menu__item")).toHaveCount(13);
   await page.getByRole("button",{name:"Fruit Slush/Juice"}).click();
+  await expect(page.locator(".zim-menu__photo-stage")).toBeVisible();
+  await expect(page.locator(".zim-menu__active-name")).toContainText("Fruit Slush/Juice");
   await expect(page.locator(".zim-menu__variant-row").getByRole("button")).toHaveCount(7);
   await page.getByRole("button",{name:"Passion Fruit",exact:true}).click();
   await expect(page.locator(".zim-menu__selected-variant")).toHaveText("Passion Fruit");
