@@ -9,7 +9,8 @@ const ORDER_URL="https://zensia-coffee-llc.square.site/";
 const MENU_URL="https://www.zensiacoffee.com/actual-menu";
 const MAP_URL="https://www.google.com/maps/search/?api=1&query=8121+Maryland+Avenue+Saint+Louis+MO+63105";
 
-const HERO_BG="https://static.wixstatic.com/media/859566_6b7702b0813d4b9388ff1a8752200691~mv2.png";
+const HERO_BG="https://static.wixstatic.com/media/859566_1cd86dfed64f4c40a53270c8feeb4e68~mv2.jpg";
+const STORY_BG="https://static.wixstatic.com/media/859566_786ba6f55e9c40d49fba494b876adad2~mv2.png";
 const ESPRESSO="https://static.wixstatic.com/media/859566_b618d3f2dc39473fa45047c95e676872~mv2.jpg";
 const LATTE="https://static.wixstatic.com/media/859566_90db78bfbd21470fafaf59bd0646b4ba~mv2.jpg";
 const CAPPUCCINO="https://static.wixstatic.com/media/859566_dda43df0514841eea1663f508724fcef~mv2.jpg";
@@ -218,7 +219,7 @@ export function ZensiaCoffeeExperience(){
         </section>
 
         <section className="zc-story" id="story">
-          <div className="zc-story__photo"><img src={HERO_BG} alt="Zensia Coffee cafe experience"/></div>
+          <div className="zc-story__photo"><img src={STORY_BG} alt="Zensia Coffee story"/></div>
           <div className="zc-story__mantra" aria-hidden="true">GOOD<br/>PEOPLE<br/>GREAT<br/>COFFEE<br/>BRIGHTER<br/>DAYS</div>
           <div className="zc-story__copy zc-reveal">
             <p className="zc-kicker">Our story</p>
