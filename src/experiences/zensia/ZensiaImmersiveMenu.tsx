@@ -18,8 +18,9 @@ type ZensiaImmersiveMenuProps = {
 
 const ZENSIA_ITEM_PHOTOS: Partial<Record<string, string>> = {
   "regular-espresso": "https://static.wixstatic.com/media/859566_b618d3f2dc39473fa45047c95e676872~mv2.jpg",
+  "mocha": "https://static.wixstatic.com/media/859566_df5ad4fea37f44cc8dd2dc0a6da184dc~mv2.png",
   "latte": "https://static.wixstatic.com/media/859566_90db78bfbd21470fafaf59bd0646b4ba~mv2.jpg",
-  "cappuccino": "https://static.wixstatic.com/media/859566_dda43df0514841eea1663f508724fcef~mv2.jpg",
+  "cappuccino": "https://static.wixstatic.com/media/859566_1130219c260643bd9af2e53ca139367b~mv2.png",
   "cold-brew": "https://static.wixstatic.com/media/820771_5c658f32b08d47f7ae25fc6045590669~mv2.jpg",
   "iced-latte": "https://static.wixstatic.com/media/859566_c6c1ece55ef84a9e8f18b65b712bffd2~mv2.png",
   "iced-matcha-sweet": "https://static.wixstatic.com/media/859566_7859c9e3e46947c7a006e921b2e80d44~mv2.png",
