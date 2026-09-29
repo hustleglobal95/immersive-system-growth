@@ -6,41 +6,38 @@ const component=fs.readFileSync("src/experiences/zensia/ZensiaCoffeeExperience.t
 const css=fs.readFileSync("app/zensia/zensia-coffee-experience.css","utf8");
 const page=fs.readFileSync("app/zensia/page.tsx","utf8");
 
-test("Zensia route uses the reference-driven coffee experience",()=>{
+test("Zensia is visually locked to the approved reference asset",()=>{
   assert.match(page,/ZensiaCoffeeExperience/);
-  assert.match(page,/zensia-coffee-experience\.css/);
-  assert.match(component,/reference-master\.png/);
-  assert.doesNotMatch(page,/ZensiaImaginationExperience/);
+  assert.match(component,/\/zensia\/reference-master\.png/);
+  assert.match(component,/width=\{941\}/);
+  assert.match(component,/height=\{1672\}/);
+  assert.match(css,/\.zc-reference__image/);
+  assert.match(css,/width:100%/);
+  assert.match(css,/height:auto/);
 });
 
-test("Zensia hero uses the approved cafe plate with runtime interaction and steam",()=>{
-  assert.match(component,/ReferenceSlice/);
-  assert.match(component,/zc-cup-interaction/);
-  assert.match(component,/zc-steam-ribbon/);
+test("Zensia interaction is layered without rewriting the approved composition",()=>{
+  assert.match(component,/zc-cup-focus/);
+  assert.match(component,/zc-steam/);
+  assert.match(component,/zc-pour-accent/);
   assert.match(component,/onPointerMove/);
-  assert.match(component,/--mx/);
-  assert.match(css,/\.zc-hero \.zc-slice__plate/);
-  assert.match(css,/\.zc-steam-ribbon/);
-  assert.doesNotMatch(component,/@react-three\/fiber/);
+  assert.match(component,/HOTSPOTS/);
+  assert.match(css,/\.zc-hotspots/);
+  assert.doesNotMatch(component,/ReferenceSlice/);
+  assert.doesNotMatch(css,/zc-hero::before/);
 });
 
-test("Zensia scroll carries coffee into the next section",()=>{
-  assert.match(component,/zc-coffee-stream/);
-  assert.match(component,/zc-coffee-fill/);
-  assert.match(component,/ScrollTrigger/);
-  assert.match(component,/scrub:/);
-  assert.match(component,/start:\"65% top\"/);
-  assert.match(component,/end:\"bottom top\"/);
-});
-
-test("Zensia full site preserves rack, recipes, story, visit and commerce",()=>{
-  for(const token of ["zc-coffee","zc-rack","zc-recipes","zc-story","zc-visit","RACK_ITEMS","RECIPES"]){
-    assert.match(component,new RegExp(token));
-  }
+test("Zensia preserves commerce and navigation targets",()=>{
   assert.match(component,/https:\/\/zensia-coffee-llc\.square\.site\//);
   assert.match(component,/https:\/\/www\.zensiacoffee\.com\/actual-menu/);
-  assert.match(css,/--font-cormorant-garamond/);
-  assert.match(css,/@media\(max-width:900px\)/);
-  assert.match(css,/@media\(max-width:560px\)/);
+  assert.match(component,/google\.com\/maps/);
+  assert.match(component,/Explore our coffee/);
+  assert.match(component,/Shop all coffee/);
+  assert.match(component,/Explore recipes/);
+});
+
+test("Zensia includes reduced-motion and mobile-safe treatment",()=>{
+  assert.match(css,/@media\(max-width:760px\)/);
   assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
+  assert.match(css,/overflow-x:clip/);
 });
