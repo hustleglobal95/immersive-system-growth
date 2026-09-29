@@ -14,7 +14,6 @@ const ESPRESSO="https://static.wixstatic.com/media/859566_b618d3f2dc39473fa45047
 const LATTE="https://static.wixstatic.com/media/859566_90db78bfbd21470fafaf59bd0646b4ba~mv2.jpg";
 const CAPPUCCINO="https://static.wixstatic.com/media/859566_dda43df0514841eea1663f508724fcef~mv2.jpg";
 const COLD_BREW="https://static.wixstatic.com/media/859566_26ddc1aef049454db886a6bd9d84b5b6~mv2.jpg";
-const PICKUP="https://static.wixstatic.com/media/859566_964413ad1fa349baa158f8df858ac5ba~mv2.jpg";
 const PANDEBONO="https://static.wixstatic.com/media/859566_c2dd3549ae574e75a12c2e5289b11818~mv2.jpg";
 
 const BAGS=[
