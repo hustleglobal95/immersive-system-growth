@@ -762,7 +762,7 @@ export function ProductionStudioWorkbench() {
               onRevert={revertAcceptedProposal}
             />
             <form className="production-command" onSubmit={(event) => { event.preventDefault(); runCommand(); }}>
-              <button type="button" className="production-command-shortcut" aria-label="Open command palette" onClick={() => setCommandPaletteOpen(true)}>⌘K</button><input aria-label="Forge command" value={command} onChange={(event) => setCommand(event.target.value)} placeholder="Refine the selected 3D scene: “slower macro push”, “fix mobile framing”, “reduce bloom”…" /><button type="submit">Apply</button>
+              <button type="button" className="production-command-shortcut" aria-label="Open command palette" onClick={() => setCommandPaletteOpen(true)}>⌘K</button><input aria-label="Forge command" value={command} onChange={(event) => setCommand(event.target.value)} placeholder="Refine the selected 3D scene: “slower macro push”, “fix mobile framing”, “reduce bloom”…" /><button type="submit">Direct</button>
             </form>
           </section>
 
