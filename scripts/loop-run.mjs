@@ -252,7 +252,23 @@ try {
                     "Candidate direction: "+strategy.instruction,
                   ].filter(Boolean).join("\n"),
                 ])
-              : await run(process.execPath,[
+              : definition.worker==="creative-rebuild"
+                ? await run(process.execPath,[
+                    "--import","tsx","scripts/autonomy-concept-reset.mjs",
+                    "--report",path.join(incumbentRoot,"review-report.json"),
+                    "--experience",currentIncumbentPath,
+                    "--manifest",currentIncumbentManifestPath,
+                    "--graph",currentIncumbentGraphPath,
+                    "--output",reviewRoot,
+                    "--strategy",strategy.id,
+                    "--context",[
+                      String(options.context || source.context || ""),
+                      "Concept Reset objective: "+definition.objective,
+                      "Candidate direction: "+strategy.instruction,
+                      "Prior bounded repairs failed or are intentionally bypassed because this loop is authorized to replace the concept structure.",
+                    ].filter(Boolean).join("\n"),
+                  ])
+                : await run(process.execPath,[
                 "--import","tsx","scripts/autonomy-visual-director.mjs",
                 "--report",path.join(incumbentRoot,"review-report.json"),
                 "--experience",currentIncumbentPath,
@@ -265,7 +281,7 @@ try {
         evidence.repairSignature=repairPlanSignature(repairPlan);
         evidence.repairSummary=Array.isArray(repairPlan?.summary) ? repairPlan.summary.slice(0,8).map((item)=>String(item).slice(0,400)) : [];
         evidence.repairCommandTypes=Array.isArray(repairPlan?.commands)
-          ? [...new Set(repairPlan.commands.map((command)=>String(command?.type || "")).filter(Boolean))].slice(0,7)
+          ? [...new Set(repairPlan.commands.map((command)=>String(command?.type || "")).filter(Boolean))].slice(0,8)
           : [];
         if(worker.code!==0 || !(await exists(candidateExperiencePath))) {
           const repairResult=await readJson(path.join(reviewRoot,"repair-result.json"),{});
