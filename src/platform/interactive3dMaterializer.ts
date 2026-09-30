@@ -103,30 +103,33 @@ export function materializeInteractive3DExperience(input: {
       to: { position: [0, 0, 0], rotation: [0, 0, 0], scale: 1 },
     };
     scene.copy = {
-      eyebrow: bounded(input.blueprint.project.name.toUpperCase(), 100),
-      headline: bounded(direction.label, 120),
-      body: bounded(direction.purpose, 800),
+      eyebrow: direction.copy?.eyebrow ?? bounded(input.blueprint.project.name.toUpperCase(), 100),
+      headline: direction.copy?.headline ?? bounded(direction.label, 120),
+      body: direction.copy?.body ?? bounded(direction.purpose, 800),
       align: compositionAlign(index, direction.depthStrategy),
     };
+    const light = generatedLighting(input.blueprint, index, scene.id === plan.signatureSlice.sceneId);
     scene.world = {
-      ...scene.world,
       background: palette.background,
       fog: palette.fog,
+      fogDensity: light.fogDensity,
+      ambient: light.ambient,
+      key: light.key,
+      rim: light.rim,
       keyColor: palette.foreground,
       rimColor: palette.accent,
-      ambient: clamp(scene.world.ambient, 0.35, 2.2),
-      key: clamp(scene.world.key, 1.2, 8),
-      rim: clamp(scene.world.rim, 0.5, 7),
-      exposure: clamp(scene.world.exposure, 0.75, 1.25),
+      exposure: light.exposure,
     };
     scene.post = {
-      bloom: Math.min(scene.post.bloom, 0.28),
-      vignette: clamp(scene.post.vignette, 0.08, 0.32),
+      bloom: light.bloom,
+      vignette: light.vignette,
     };
     scene.material = {
-      ...scene.material,
       tint: palette.foreground,
-      tintStrength: Math.min(scene.material.tintStrength, 0.12),
+      tintStrength: 0,
+      metalness: null,
+      roughness: null,
+      clearcoat: null,
     };
     const visual = scene.id === plan.signatureSlice.sceneId
       ? undefined
@@ -194,6 +197,25 @@ export function materializeInteractive3DExperience(input: {
 type ExperienceCamera = ExperienceConfig["scenes"][number]["camera"];
 type ExperienceCameraState = ExperienceCamera["from"];
 
+function generatedLighting(
+  blueprint: Interactive3DBlueprint,
+  index: number,
+  signature: boolean,
+) {
+  const spatial = blueprint.experience.archetype === "spatial-story" || blueprint.experience.archetype === "world-explorer";
+  const product = blueprint.experience.archetype === "product-reveal" || blueprint.experience.archetype === "configurator";
+  const pulse = Math.sin((index + 1) * 1.37) * 0.08;
+  return {
+    fogDensity: spatial ? 0.0075 : product ? 0.012 : 0.005,
+    ambient: roundCamera((spatial ? 0.72 : product ? 0.58 : 0.68) + pulse),
+    key: roundCamera((signature ? 3.6 : product ? 2.8 : 2.45) + pulse * 3),
+    rim: roundCamera(signature ? 2.1 : product ? 1.45 : 1.1),
+    exposure: roundCamera(signature ? 1.04 : 1),
+    bloom: roundCamera(signature ? 0.12 : product ? 0.055 : 0.035),
+    vignette: roundCamera(signature ? 0.18 : 0.12),
+  };
+}
+
 function generatedRanges(
   sceneIds: string[],
   signatureSceneId: string,
@@ -219,7 +241,9 @@ function generatedCamera(
   mobile: boolean,
 ): ExperienceCamera {
   const from = generatedCameraState(blueprint.experience.archetype, index / Math.max(1, count), mobile);
-  const to = generatedCameraState(blueprint.experience.archetype, (index + 1) / Math.max(1, count), mobile);
+  const to = move === "static"
+    ? from
+    : generatedCameraState(blueprint.experience.archetype, (index + 1) / Math.max(1, count), mobile);
   return {
     path: cameraPathForMove(move),
     from,
