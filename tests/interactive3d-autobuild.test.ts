@@ -6,7 +6,7 @@ import { planInteractive3DFromPrompt } from "../src/platform/interactive3dPlanne
 import { evaluateInteractive3DBlueprintPolicy } from "../src/platform/interactive3dPolicy";
 import { materializeInteractive3DExperience } from "../src/platform/interactive3dMaterializer";
 import { constrainAiBlueprint, refineInteractive3DBlueprintWithAi } from "../src/platform/autonomy/aiGatewayInteractive3DPlanner";
-import { generationRequestsForInteractive3D } from "../src/platform/interactive3dAssetFactory";
+import { generationRequestsForInteractive3D } from "../src/platform/interactive3dAssetFactory";\nimport { evaluateInteractive3DAutobuildReadiness } from "../src/platform/interactive3dAutobuild";
 
 function plan(prompt:string,name:string) {
   return planInteractive3DFromPrompt({prompt,projectName:name,experience:rawExperience,manifest:rawManifest});
@@ -132,4 +132,111 @@ test("asset factory emits project-specific generation requests instead of accept
   assert.ok(requests.some((request)=>request.type==="image"));
   assert.ok(requests.every((request)=>request.prompt.includes("Aster Watch")));
   assert.ok(requests.every((request)=>!request.prompt.includes("Casa Lumen")));
+});
+
+
+function loopEvidence(loopId:"construction"|"visual-polish",acceptedImprovements:number) {
+  return {
+    code:0,
+    reportPath:"/tmp/"+loopId+"/run-report.json",
+    report:{
+      version:1,
+      runId:"test-"+loopId,
+      loopId,
+      objective:"Prove rendered quality.",
+      status:"completed",
+      startedAt:"2026-09-30T00:00:00.000Z",
+      endedAt:"2026-09-30T00:01:00.000Z",
+      source:"fixture",
+      definition:{
+        version:1,
+        id:loopId,
+        label:loopId,
+        description:"fixture",
+        objective:"fixture",
+        worker:loopId==="construction"?"construction":"visual-repair",
+        executable:true,
+        verifiers:["schema","visual"],
+        allowedRepairCommands:[],
+        strategies:[{id:"fixture",label:"fixture",instruction:"fixture"}],
+        budgets:{maxCycles:1,maxCandidatesPerCycle:1,maxCandidateAttempts:1,maxWallTimeMs:1000,noProgressLimit:1},
+        acceptance:{
+          requireHardGates:true,
+          requireCandidateWin:true,
+          minPreferenceAgreement:0.67,
+          maxMotionRegression:3,
+        },
+        memory:{runEvidence:true,projectJournal:"summary",forgeLearning:"manual-promotion"},
+        humanGates:["Human approval required."],
+      },
+      baselineFingerprint:"a".repeat(64),
+      currentFingerprint:"b".repeat(64),
+      acceptedImprovements,
+      candidateAttempts:1,
+      noProgressStreak:0,
+      reportedCostUsd:0,
+      cycles:[{
+        cycle:1,
+        startedAt:"2026-09-30T00:00:00.000Z",
+        endedAt:"2026-09-30T00:01:00.000Z",
+        incumbentFingerprint:"a".repeat(64),
+        candidates:[{
+          id:"candidate-1",
+          strategyId:"fixture",
+          fingerprint:"b".repeat(64),
+          hardGateFailures:[],
+          functionalPassed:true,
+          motionScore:100,
+          comparisonAccepted:acceptedImprovements>0,
+          comparisonWinner:acceptedImprovements>0?"candidate":"incumbent",
+          preferenceAgreement:1,
+          repairSummary:["fixture"],
+        }],
+        noProgress:acceptedImprovements===0,
+      }],
+      humanApprovalRequired:true,
+    },
+  };
+}
+
+test("autonomous 3D readiness requires a separate visual-polish proof, not construction alone", () => {
+  const result=evaluateInteractive3DAutobuildReadiness({
+    materialized:true,
+    signatureReady:true,
+    aiRequested:true,
+    aiConfigured:true,
+    aiUsed:true,
+    construction:loopEvidence("construction",1),
+    visualPolish:null,
+  });
+  assert.equal(result.ready,false);
+  assert.ok(result.blockers.some((item)=>item.includes("visual-polish")));
+});
+
+test("autonomous 3D readiness is earned only after both rendered loops pass hard gates", () => {
+  const result=evaluateInteractive3DAutobuildReadiness({
+    materialized:true,
+    signatureReady:true,
+    aiRequested:true,
+    aiConfigured:true,
+    aiUsed:true,
+    construction:loopEvidence("construction",1),
+    visualPolish:loopEvidence("visual-polish",1),
+  });
+  assert.equal(result.ready,true);
+  assert.equal(result.totalAcceptedImprovements,2);
+});
+
+test("autonomous 3D readiness fails closed when no rendered improvement is proven", () => {
+  const result=evaluateInteractive3DAutobuildReadiness({
+    materialized:true,
+    signatureReady:true,
+    aiRequested:true,
+    aiConfigured:true,
+    aiUsed:true,
+    construction:loopEvidence("construction",0),
+    visualPolish:loopEvidence("visual-polish",0),
+  });
+  assert.equal(result.ready,false);
+  assert.ok(result.blockers.some((item)=>item.includes("did not prove any accepted")));
 });
