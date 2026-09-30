@@ -62,6 +62,7 @@ export function planInteractive3DFromPrompt(input: {
       treatment,
       prompt: input.prompt,
       heroAssetId: assets.find((asset) => asset.heroCandidate)?.id ?? "hero",
+      projectName: input.projectName,
     }),
   );
   const palette = paletteFor(promptIntelligence.brief.projectType, archetype);
@@ -160,6 +161,7 @@ function planScene(input: {
   treatment: ReturnType<typeof runDirectorIntelligence>["report"]["treatment"];
   prompt: string;
   heroAssetId: string;
+  projectName: string;
 }): Interactive3DScene {
   const beat = input.treatment.emotionalArc[
     Math.min(
@@ -193,6 +195,18 @@ function planScene(input: {
     purpose,
     dominantSubject: subject,
     copyRole,
+    copy: {
+      eyebrow: bounded(input.projectName.toUpperCase(), 100),
+      headline: bounded(shot?.title || beat?.label || label, 120),
+      body: bounded(
+        signature
+          ? input.treatment.signatureMoment.description
+          : shot?.subject
+            ? shot.subject
+            : beat?.purpose || purpose,
+        800,
+      ),
+    },
     medium,
     depthStrategy,
     camera: {
