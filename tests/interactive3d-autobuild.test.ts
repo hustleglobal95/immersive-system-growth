@@ -6,7 +6,8 @@ import { planInteractive3DFromPrompt } from "../src/platform/interactive3dPlanne
 import { evaluateInteractive3DBlueprintPolicy } from "../src/platform/interactive3dPolicy";
 import { materializeInteractive3DExperience } from "../src/platform/interactive3dMaterializer";
 import { constrainAiBlueprint, refineInteractive3DBlueprintWithAi } from "../src/platform/autonomy/aiGatewayInteractive3DPlanner";
-import { generationRequestsForInteractive3D } from "../src/platform/interactive3dAssetFactory";\nimport { evaluateInteractive3DAutobuildReadiness } from "../src/platform/interactive3dAutobuild";
+import { generationRequestsForInteractive3D } from "../src/platform/interactive3dAssetFactory";
+import { evaluateInteractive3DAutobuildReadiness } from "../src/platform/interactive3dAutobuild";
 
 function plan(prompt:string,name:string) {
   return planInteractive3DFromPrompt({prompt,projectName:name,experience:rawExperience,manifest:rawManifest});
