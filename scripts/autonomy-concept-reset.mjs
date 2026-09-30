@@ -5,6 +5,9 @@ import { parseInteractionGraph } from "../src/lib/interactionGraph.ts";
 import { parseAssetManifest } from "../src/platform/assetManifestSchema.ts";
 import { applyCreativeRebuildPlan } from "../src/platform/autonomy/creativeRebuild.ts";
 import { creativeRebuildConfigured, requestCreativeRebuildPlan } from "../src/platform/autonomy/aiGatewayCreativeRebuild.ts";
+import { inferPromptIntelligence } from "../src/platform/autonomy/promptIntelligence.ts";
+import { runDirectorIntelligence } from "../src/platform/director-intelligence/orchestrator.ts";
+import { loadCreativeContext } from "./lib/creative-context.mjs";
 
 const options=args(process.argv.slice(2));
 const experiencePath=String(options.experience || "config/experience.json");
@@ -33,9 +36,38 @@ const manifest=parseAssetManifest(JSON.parse(await fs.readFile(manifestPath,"utf
 const interactionGraph=parseInteractionGraph(JSON.parse(await fs.readFile(graphPath,"utf8")));
 const report=JSON.parse(await fs.readFile(reportPath,"utf8"));
 const captures=await readCaptures(report);
+const creativeContext=await loadCreativeContext(experience.meta.name);
+const prompt=inferPromptIntelligence({
+  prompt:projectContext,
+  projectName:experience.meta.name,
+  sceneCount:experience.scenes.length,
+  manifest,
+});
+const intelligence=runDirectorIntelligence({
+  brief:prompt.brief,
+  ...(creativeContext.memory?.nodes?.length ? {memory:creativeContext.memory}:{}),
+  ...(creativeContext.portfolio?.length ? {portfolio:creativeContext.portfolio}:{}),
+});
+const directorContext=[
+  projectContext,
+  "Forge Director Intelligence:",
+  JSON.stringify({
+    northStar:intelligence.creativeDNA.northStar,
+    signatureMechanism:intelligence.creativeDNA.signatureMechanism,
+    visualRule:intelligence.artDirection.visualRule,
+    selectedTerritoryId:intelligence.report.treatment.selectedTerritoryId,
+    constructionMode:intelligence.constructionPlan.mode,
+    typography:intelligence.disciplineDirections.typography.premise,
+    lighting:intelligence.disciplineDirections.lighting.premise,
+    material:intelligence.disciplineDirections.material.premise,
+    cameraRules:intelligence.disciplineDirections.camera.rules.slice(0,4),
+    reject:intelligence.artDirection.reject.slice(0,6),
+    originalityBlockers:intelligence.originalityGate.blockers.slice(0,6),
+  }),
+].join("\n");
 
 const plan=await requestCreativeRebuildPlan({
-  projectContext,
+  projectContext:directorContext,
   strategy,
   experience,
   interactionGraph,
