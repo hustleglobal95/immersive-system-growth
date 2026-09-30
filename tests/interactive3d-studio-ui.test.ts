@@ -20,6 +20,8 @@ test("Studio is explicitly optimized for interactive 3D website production", () 
 
 test("Studio exposes one whole-site AI 3D build dock and a secondary contextual command", () => {
   assert.match(studio, /Interactive3DBuildDock/);
+  assert.match(studio, /const guideVisible = guidedOpen;/);
+  assert.match(studio, />3D Build</);
   assert.match(dock, /AI 3D BUILD/);
   assert.match(dock, /Build 3D direction/);
   assert.match(dock, /Brief/);
