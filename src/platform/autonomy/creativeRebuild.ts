@@ -244,7 +244,6 @@ function intensityMultiplier(intensity:number,min:number,max:number) {
   return min+(max-min)*((intensity-1)/9);
 }
 function clamp(value:number,min:number,max:number){ return Math.max(min,Math.min(max,value)); }
-function slug(value:string){ return value.toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,60); }
 function uniqueSceneId(base:string,index:number,used:Set<string>) {
   const root=base||"scene-"+(index+1);
   let value=root;
