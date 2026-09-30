@@ -1,4 +1,4 @@
-import { parseExperience } from "@/src/lib/configSchema";
+import { parseExperience, sceneMediaSchema } from "@/src/lib/configSchema";
 import { createExperienceEngine } from "@/src/platform/createExperienceEngine";
 import { compileInteractive3DBlueprint } from "@/src/platform/interactive3dCompiler";
 import { cameraChoreographyForBlueprintMove } from "@/src/platform/interactive3dRecipeRegistry";
@@ -117,7 +117,7 @@ export function materializeInteractive3DExperience(input: {
     const signatureVisual = scene.id === plan.signatureSlice.sceneId ? heroVisual : undefined;
     const assigned = signatureVisual ?? visual;
     if (assigned?.source) {
-      scene.media = {
+      scene.media = sceneMediaSchema.parse({
         kind: assigned.type === "video" ? "video" : "image",
         src: assigned.source,
         ...(assigned.type === "video" ? { poster: supportVisuals.find((asset) => asset.type === "image")?.source ?? assigned.source } : {}),
@@ -126,15 +126,15 @@ export function materializeInteractive3DExperience(input: {
         position: [50, 50],
         mobilePosition: [50, 50],
         layers: [],
-      };
+      });
     } else {
-      scene.media = {
+      scene.media = sceneMediaSchema.parse({
         kind: "color",
         fill: palette.background,
         alt: bounded(direction.dominantSubject, 300),
         transition: "dissolve",
         layers: [],
-      };
+      });
     }
   }
 
