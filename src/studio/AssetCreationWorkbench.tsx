@@ -28,6 +28,7 @@ export function AssetCreationWorkbench() {
   const [reason, setReason] = useState("Create the missing visual asset needed to complete this scene.");
   const [priority, setPriority] = useState("supporting");
   const [prompt, setPrompt] = useState("Cinematic premium environment plate with strong foreground, midground and background separation, realistic materials, restrained lighting, no text.");
+  const [sourceImageUrl, setSourceImageUrl] = useState("");
   const [sceneIndex, setSceneIndex] = useState(0);
   const [ticket, setTicket] = useState<AssetGenerationTicket | null>(null);
   const [status, setStatus] = useState<AssetGenerationStatus | null>(null);
@@ -53,6 +54,8 @@ export function AssetCreationWorkbench() {
     if (nextReason) setReason(nextReason.slice(0, 800));
     if (nextPriority) setPriority(nextPriority.slice(0, 40));
     if (Number.isInteger(nextScene) && nextScene >= 0) setSceneIndex(Math.min(nextScene, initialExperience.scenes.length - 1));
+    const seededReference = params.get("referenceImage");
+    if (seededReference?.startsWith("https://")) setSourceImageUrl(seededReference.slice(0, 4000));
     const seededPrompt = params.get("prompt");
     if (seededPrompt) setPrompt(seededPrompt.slice(0, 4000));
     else if (nextName || nextReason) setPrompt(buildPrompt(nextName ?? name, nextType ?? type, nextReason ?? reason));
@@ -71,7 +74,7 @@ export function AssetCreationWorkbench() {
       const response = await fetch("/api/studio/assets/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, name, type, prompt, taskId }),
+        body: JSON.stringify({ action, name, type, prompt, taskId, ...(type === "model" && sourceImageUrl.trim() ? { sourceImageUrl: sourceImageUrl.trim() } : {}) }),
       });
       const data = await response.json() as { ok?: boolean; ticket?: AssetGenerationTicket; error?: string };
       if (!response.ok || !data.ok || !data.ticket) throw new Error(data.error || "Asset generation did not start.");
@@ -205,6 +208,7 @@ export function AssetCreationWorkbench() {
         <label>Asset name<input value={name} onChange={(event) => setName(event.target.value)} /></label>
         <label>Asset type<select value={type} onChange={(event) => setType(event.target.value as ForgeAssetType)}>{["model", "image", "video", "texture", "ui", "hdri", "audio"].map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
         <label>Why it exists<textarea rows={4} value={reason} onChange={(event) => setReason(event.target.value)} /></label>
+        {type === "model" && <label>Reference image URL <span>(recommended)</span><input type="url" placeholder="https://… clean product/character plate" value={sourceImageUrl} onChange={(event) => setSourceImageUrl(event.target.value)} /><small>Use a clean, approved front/three-quarter reference when possible. Forge will use Meshy 7.1 Image-to-3D at 4K instead of letting text alone invent the hero.</small></label>}
         <div className="asset-creator__meta"><span>Priority<strong>{priority}</strong></span><span>Scene<strong>{scene?.label ?? "Project-wide"}</strong></span><span>Generator<strong>{providerLabel}</strong></span></div>
       </aside>
 
@@ -236,7 +240,7 @@ export function AssetCreationWorkbench() {
         </section>}
 
         <section className="asset-creator__providers">
-          <article><span>3D</span><strong>Meshy</strong><p>Text → geometry preview → automatic PBR refine → GLB → Forge draft.</p></article>
+          <article><span>3D</span><strong>Meshy 7.1</strong><p>Approved reference image → 4K Image-to-3D PBR GLB (preferred). 4K text-to-3D remains the fallback.</p></article>
           <article><span>IMAGE</span><strong>Higgsfield</strong><p>Production brief → 2K image generation → Forge scene media.</p></article>
           <article><span>VIDEO</span><strong>Higgsfield</strong><p>Production brief → cinematic 5-second generation → Forge scene media.</p></article>
         </section>
