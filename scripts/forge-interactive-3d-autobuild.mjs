@@ -5,7 +5,8 @@ import { planInteractive3DFromPrompt } from "../src/platform/interactive3dPlanne
 import { aiGatewayInteractive3DPlannerConfigured, refineInteractive3DBlueprintWithAi } from "../src/platform/autonomy/aiGatewayInteractive3DPlanner.ts";
 import { resolveInteractive3DGeneratedAssets } from "../src/platform/interactive3dAssetFactory.ts";
 import { compileInteractive3DBlueprint } from "../src/platform/interactive3dCompiler.ts";
-import { materializeInteractive3DExperience } from "../src/platform/interactive3dMaterializer.ts";\nimport { evaluateInteractive3DAutobuildReadiness } from "../src/platform/interactive3dAutobuild.ts";
+import { materializeInteractive3DExperience } from "../src/platform/interactive3dMaterializer.ts";
+import { evaluateInteractive3DAutobuildReadiness } from "../src/platform/interactive3dAutobuild.ts";
 
 const options = args(process.argv.slice(2));
 const prompt = await resolvePrompt(options);
