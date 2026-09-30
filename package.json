@@ -129,7 +129,10 @@
     "forge:reference:capture": "node scripts/forge-reference-capture.mjs",
     "forge:reference:validate": "node scripts/forge-reference-validate.mjs",
     "forge:3d:validate": "node --import tsx scripts/forge-interactive-3d.mjs validate",
-    "forge:3d:compile": "node --import tsx scripts/forge-interactive-3d.mjs compile"
+    "forge:3d:compile": "node --import tsx scripts/forge-interactive-3d.mjs compile",
+    "forge:3d:plan": "node --import tsx scripts/forge-interactive-3d-autobuild.mjs --plan-only=true --loop=false",
+    "forge:3d:autobuild": "node --import tsx scripts/forge-interactive-3d-autobuild.mjs",
+    "forge:3d:benchmark": "node --import tsx --test tests/interactive3d-autobuild.test.ts"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "5.3.0",

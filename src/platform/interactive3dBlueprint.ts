@@ -13,6 +13,7 @@ const directive = z.string().min(1).max(300);
 const id = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 const finite = z.number().finite();
 const vec3 = z.tuple([finite, finite, finite]);
+const hexColor = z.string().regex(/^#(?:[\da-f]{3}|[\da-f]{6})$/i);
 
 export const Interactive3DArchetypeSchema = z.enum([
   "product-reveal",
@@ -30,6 +31,11 @@ export const Interactive3DSceneSchema = z.object({
   purpose: medium,
   dominantSubject: medium,
   copyRole: medium,
+  copy: z.object({
+    eyebrow: z.string().max(100).optional(),
+    headline: z.string().min(1).max(120),
+    body: z.string().min(1).max(800),
+  }).strict().optional(),
   medium: z.enum(["dom", "hybrid", "webgl"]),
   depthStrategy: z.enum([
     "flat",
@@ -92,6 +98,29 @@ export const Interactive3DBlueprintSchema = z.object({
     strategy: z.enum(["webgl", "webgpu-opt-in"]).default("webgl"),
     rationale: medium,
   }).strict(),
+  artDirection: z.object({
+    palette: z.object({
+      background: hexColor,
+      foreground: hexColor,
+      accent: hexColor,
+      fog: hexColor,
+    }).strict(),
+    typography: medium,
+    lighting: medium,
+    material: medium,
+    composition: medium,
+  }).strict().default({
+    palette: {
+      background: "#080b10",
+      foreground: "#f5f2eb",
+      accent: "#d3a36a",
+      fog: "#080b10",
+    },
+    typography: "Semantic editorial typography with one dominant display hierarchy and restrained supporting copy.",
+    lighting: "One motivated key, controlled ambient fill and restrained rim separation.",
+    material: "Preserve physically plausible surfaces and avoid generic chrome or excessive bloom.",
+    composition: "Protect one dominant subject and deliberate negative space for semantic copy.",
+  }),
   assets: z.array(z.object({
     id,
     label: short,

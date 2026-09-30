@@ -19,6 +19,10 @@ test("Loop Engine exposes only workers that have production-safe executors",()=>
   assert.equal(loopDefinition("performance")?.executable,true);
   assert.equal(loopDefinition("asset-quality")?.executable,true);
   assert.equal(loopDefinition("construction")?.executable,true);
+  const visualPolish=loopDefinition("visual-polish")!;
+  for(const verifier of ["assets","performance","accessibility"] as const) {
+    assert.ok(visualPolish.verifiers.includes(verifier));
+  }
   for(const definition of loopDefinitions) {
     assert.equal(definition.acceptance.requireHardGates,true);
     assert.equal(definition.acceptance.requireCandidateWin,true);

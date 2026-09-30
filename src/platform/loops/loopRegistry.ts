@@ -29,7 +29,7 @@ const definitions:LoopDefinition[]=[
     objective:"Produce a visibly stronger version of the current experience without changing client facts, conversion strategy, scene meaning or signature asset identity.",
     worker:"visual-repair",
     executable:true,
-    verifiers:["schema","functional","motion","mobile","visual"],
+    verifiers:["schema","functional","assets","motion","mobile","performance","accessibility","visual"],
     allowedRepairCommands:["scene.adjustLighting","scene.adjustSubjectFraming","scene.adjustMediaFraming","scene.adjustMaterialSurface","motion.applyArchetype","camera.applyChoreography"],
     strategies:[
       { id:"hierarchy-first",label:"Hierarchy first",instruction:"Prioritize focal hierarchy, negative space, crop, copy/subject separation and restrained presentation. Preserve the defining visual idea." },
