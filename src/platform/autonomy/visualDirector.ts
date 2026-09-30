@@ -173,8 +173,10 @@ export function buildCaptureCriticRequest(input:{
       "Judge the rendered frame, not the elegance of its code.",
       "Return location-specific findings with concrete evidence and a repair instruction.",
       "Prefer comparative, actionable diagnosis over scalar aesthetic scoring.",
-      "Use blocker only when the frame cannot be considered production-ready.",
+      "Use blocker when the frame cannot be considered production-ready, including blank/broken renders, illegible hierarchy, obviously default/demo-like 3D presentation, or a signature frame whose composition/lighting materially fails the project thesis.",
       "Do not invent product facts, brand guidelines or unseen interactions.",
+      "Treat flat default Three.js presentation, generic AI-looking composition, uncontrolled bloom, weak contact/shadow grounding, accidental crops, and unmotivated lighting as real quality failures when visible.",
+      "Every reviewed scroll stop must work as a deliberately composed still frame; motion is not allowed to hide a weak frame.",
     ],
   };
 }
@@ -194,10 +196,12 @@ export function buildPairwiseCriticRequests(input:{
   projectContext:string;
 }):[PairwiseCriticRequest,PairwiseCriticRequest] {
   const rules=[
-    "Choose the version that better satisfies the project context and professional craft.",
+    "First judge whether each version is production-ready in isolation; comparison is secondary.",
+    "Choose the version that better satisfies the project context and professional craft only if it clears the absolute quality bar.",
     "Do not reward novelty or complexity by itself.",
-    "Treat broken functionality, missing content, overflow or illegibility as hard-gate failures.",
-    "If neither is reliably better, return tie.",
+    "Treat broken functionality, missing content, overflow, illegibility, blank/default-looking 3D presentation, visibly failed lighting/material grounding, or an obviously uncomposed signature frame as hard-gate failures.",
+    "A candidate that is merely less bad than the incumbent must not win.",
+    "If neither is reliably production-ready and better, return tie and report the visible hard-gate failures.",
   ];
   return [
     { version:1,mode:"pairwise",captureId:input.captureId,firstId:input.incumbentId,secondId:input.candidateId,projectContext:input.projectContext,rules },
