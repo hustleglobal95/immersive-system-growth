@@ -34,7 +34,7 @@ const base = planInteractive3DFromPrompt({prompt,projectName,experience,manifest
 let blueprint = base.blueprint;
 const aiRequested = bool(options.ai, true);
 const aiConfigured = aiGatewayInteractive3DPlannerConfigured(process.env);
-const strict = strict;
+const strict = bool(options.strict, false);
 if (strict && (!aiRequested || !aiConfigured)) {
   fail("Strict autonomous 3D production requires the bounded AI planner and AI Gateway credentials.");
 }
