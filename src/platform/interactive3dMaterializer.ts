@@ -87,14 +87,16 @@ export function materializeInteractive3DExperience(input: {
   }
 
   const ranges = generatedRanges(blueprintIds, plan.signatureSlice.sceneId);
+  const desktopCameras = generatedCameraSequence(input.blueprint, false);
+  const mobileCameras = generatedCameraSequence(input.blueprint, true);
   for (let index = 0; index < next.scenes.length; index++) {
     const scene = next.scenes[index];
     const direction = input.blueprint.experience.scenes[index];
     scene.label = bounded(direction.label, 80);
     scene.range = ranges[index];
     scene.easing = "cinematic";
-    scene.camera = generatedCamera(input.blueprint, direction.camera.move, index, next.scenes.length, false);
-    scene.mobileCamera = generatedCamera(input.blueprint, direction.camera.move, index, next.scenes.length, true);
+    scene.camera = desktopCameras[index];
+    scene.mobileCamera = mobileCameras[index];
     scene.blocks = [];
     scene.motionTracks = [];
     scene.hero = {
@@ -233,22 +235,31 @@ function generatedRanges(
   });
 }
 
-function generatedCamera(
+function generatedCameraSequence(
   blueprint: Interactive3DBlueprint,
-  move: Interactive3DScene["camera"]["move"],
-  index: number,
-  count: number,
   mobile: boolean,
-): ExperienceCamera {
-  const from = generatedCameraState(blueprint.experience.archetype, index / Math.max(1, count), mobile);
-  const to = move === "static"
-    ? from
-    : generatedCameraState(blueprint.experience.archetype, (index + 1) / Math.max(1, count), mobile);
-  return {
-    path: cameraPathForMove(move),
-    from,
-    to,
-  };
+): ExperienceCamera[] {
+  const scenes = blueprint.experience.scenes;
+  const count = scenes.length;
+  const states: ExperienceCameraState[] = [
+    generatedCameraState(blueprint.experience.archetype, 0, mobile),
+  ];
+  for (let index = 0; index < count; index++) {
+    states.push(
+      scenes[index].camera.move === "static"
+        ? states[index]
+        : generatedCameraState(
+            blueprint.experience.archetype,
+            (index + 1) / Math.max(1, count),
+            mobile,
+          ),
+    );
+  }
+  return scenes.map((scene, index) => ({
+    path: cameraPathForMove(scene.camera.move),
+    from: states[index],
+    to: states[index + 1],
+  }));
 }
 
 function generatedCameraState(
