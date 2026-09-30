@@ -111,7 +111,7 @@ export function materializeInteractive3DExperience(input: {
       tint: palette.foreground,
       tintStrength: Math.min(scene.material.tintStrength, 0.12),
     };
-    const visual = index === plan.signatureSlice.sceneId
+    const visual = scene.id === plan.signatureSlice.sceneId
       ? undefined
       : supportVisuals[index % Math.max(1, supportVisuals.length)];
     const signatureVisual = scene.id === plan.signatureSlice.sceneId ? heroVisual : undefined;
