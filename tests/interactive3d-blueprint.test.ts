@@ -28,7 +28,7 @@ test("interactive 3D blueprint compiles into existing Forge-native systems", () 
 });
 
 test("interactive 3D policy blocks unbounded camera output and arbitrary remote model URLs", () => {
-  const candidate = structuredClone(rawBlueprint);
+  const candidate = structuredClone(parseInteractive3DBlueprint(rawBlueprint));
   candidate.experience.scenes[0].camera.move = "custom";
   candidate.assets[0].status = "existing";
   candidate.assets[0].source = "https://example.com/untrusted.glb";
@@ -39,7 +39,7 @@ test("interactive 3D policy blocks unbounded camera output and arbitrary remote 
 });
 
 test("interactive 3D policy requires cold-first-use prewarm work for 3D scenes", () => {
-  const candidate = structuredClone(rawBlueprint);
+  const candidate = structuredClone(parseInteractive3DBlueprint(rawBlueprint));
   candidate.experience.scenes[1].prewarm = [];
   const report = evaluateInteractive3DBlueprintPolicy(candidate);
   assert.equal(report.passed, false);
