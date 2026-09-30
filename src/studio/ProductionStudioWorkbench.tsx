@@ -151,7 +151,6 @@ export function ProductionStudioWorkbench() {
     writeStored(missionDecisionKey,JSON.stringify(next));
     setNotice("Mission decision approved. Forge recalculated the dependent production plan.");
   };
-  const guideSeen = useClientValue(() => readStored("forge-studio-guided-first-run-v1"), "");
   const shippedProjectId = useStoredValue(STUDIO_GUIDE_SHIP_KEY);
   const workflow = useMemo(() => {
     const assetCount = draft.assetManifest.models.length + draft.assetManifest.textures.length + draft.assetManifest.hdr.length + draft.assetManifest.video.length;
@@ -167,7 +166,7 @@ export function ProductionStudioWorkbench() {
     const unconfigured = draft.experience.scenes.length === 1 && assetCount === 0 && motionCount === 0 && !draft.experience.heroModel && !draft.experience.scenes[0]?.media;
     return { completed, nextLabel, unconfigured };
   }, [draft.assetManifest, draft.experience, draft.project.id, guideBrief, projectHealth.status, shippedProjectId]);
-  const guideVisible = guidedOpen || (!guideDismissed && draft.hydrated && !guideSeen && workflow.unconfigured);
+  const guideVisible = guidedOpen;
   const closeGuide = () => {
     setGuidedOpen(false);
     setGuideDismissed(true);
@@ -644,7 +643,7 @@ export function ProductionStudioWorkbench() {
           {primarySurfaces.map((item) => <button key={item} type="button" aria-current={!advanced && surface === item ? "page" : undefined} onClick={() => { setSurface(item); setAdvanced(false); setAnimateOpen(false); }}>{item}</button>)}
         </nav>
         <div className="production-top-actions">
-          <button id="studio-guided-build-button" type="button" className="production-guided-button" onClick={() => setGuidedOpen(true)}><span>Guided Build</span><strong>{workflow.completed}/6</strong></button>
+          <button id="studio-guided-build-button" type="button" className="production-guided-button" onClick={() => { setSurface("Build"); setAdvanced(false); queueMicrotask(() => document.getElementById("interactive-3d-build")?.scrollIntoView({ behavior: "smooth", block: "start" })); }}><span>3D Build</span><strong>AI</strong></button>
           <button type="button" className="production-status" data-valid={projectHealth.status==="ready"} data-health={projectHealth.status} onClick={() => { setSurface("Review"); setAdvanced(false); }}><i />{projectHealth.status==="ready" ? "Ready" : projectHealth.status==="blocked" ? `${projectHealth.issues.filter((issue)=>issue.severity==="blocker").length} blocker` : `${projectHealth.issues.filter((issue)=>issue.severity==="warning").length} issue`}</button>
           <details className="production-assist"><summary>Assist</summary><div><Link href="/studio/agent"><strong>Creative Agent</strong><span>Turn the idea into a production strategy.</span></Link><Link href="/director"><strong>Director</strong><span>Critique and strengthen the creative direction.</span></Link><Link href="/studio/assets/create"><strong>Asset Creator</strong><span>Create a missing image, video or 3D asset.</span></Link></div></details>
           <details className="production-advanced-menu"><summary>Advanced</summary><div><button type="button" onClick={() => openAdvanced("Motion")}><strong>Sequencer</strong><span>Tracks, curves and camera timing.</span></button><button type="button" onClick={() => openAdvanced("Interact")}><strong>Interactions</strong><span>Triggers, state and behavior graph.</span></button><button type="button" onClick={() => openAdvanced("Assets")}><strong>Asset tools</strong><span>Manifest, bank and GLB inspection.</span></button><button type="button" onClick={() => openAdvanced("Visuals")}><strong>Visual effects</strong><span>Cinematic systems, masks and cursor reveals.</span></button><button type="button" onClick={() => openAdvanced("Telemetry")}><strong>Telemetry</strong><span>Real-device performance evidence.</span></button><button type="button" onClick={() => openAdvanced("Discoverability")}><strong>Search & AI</strong><span>SEO, entities, crawlability and AI retrieval.</span></button></div></details>
