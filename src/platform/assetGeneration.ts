@@ -9,6 +9,7 @@ export const assetGenerationRequestSchema = z.object({
   type: forgeAssetTypeSchema,
   prompt: z.string().min(8).max(4000),
   taskId: z.string().min(1).max(220).optional(),
+  sourceImageUrl: z.string().url().max(4000).refine((value) => value.startsWith("https://"), "Model reference image must use HTTPS.").optional(),
 }).strict();
 
 export type AssetGenerationProvider = "meshy" | "higgsfield-image" | "higgsfield-video";
@@ -53,9 +54,54 @@ export async function submitAssetGeneration(
 
     const isRefine = input.action === "refine";
     if (isRefine && !input.taskId) throw new Error("A completed Meshy preview task is required before refinement.");
+
+    // Diorama-quality path: when art direction provides a clean reference plate, preserve that
+    // silhouette/material intent through Meshy Image-to-3D instead of asking text alone to invent it.
+    if (!isRefine && input.sourceImageUrl) {
+      const response = await providerFetch("https://api.meshy.ai/openapi/v1/image-to-3d", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          image_url: input.sourceImageUrl,
+          ai_model: "meshy-7.1",
+          model_type: "standard",
+          geometry_resolution: "4k",
+          enable_pbr: true,
+          should_remesh: true,
+          target_polycount: 120000,
+          should_texture: true,
+          auto_size: true,
+          target_formats: ["glb"],
+        }),
+      });
+      const data = await response.json() as { result?: string };
+      if (!data.result) throw new Error("Meshy Image-to-3D did not return a task id.");
+      return {
+        provider,
+        taskId: "i3d:" + data.result,
+        phase: "generate",
+        status: "submitted",
+        message: "Meshy 7.1 is converting the approved reference image into a 4K PBR production GLB.",
+      };
+    }
+
     const body = isRefine
-      ? { mode: "refine", preview_task_id: input.taskId, enable_pbr: true, target_formats: ["glb"] }
-      : { mode: "preview", prompt: input.prompt, target_formats: ["glb"] };
+      ? {
+          mode: "refine",
+          preview_task_id: input.taskId,
+          enable_pbr: true,
+          texture_resolution: "4k",
+          target_formats: ["glb"],
+        }
+      : {
+          mode: "preview",
+          prompt: input.prompt,
+          ai_model: "meshy-7.1",
+          geometry_resolution: "4k",
+          should_remesh: true,
+          target_polycount: 120000,
+          target_formats: ["glb"],
+        };
     const response = await providerFetch("https://api.meshy.ai/openapi/v2/text-to-3d", {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
@@ -68,7 +114,9 @@ export async function submitAssetGeneration(
       taskId: data.result,
       phase: isRefine ? "refine" : "preview",
       status: "submitted",
-      message: isRefine ? "Meshy is texturing and preparing the production GLB." : "Meshy is building the first 3D geometry preview.",
+      message: isRefine
+        ? "Meshy 7.1 is applying 4K PBR textures to the approved geometry."
+        : "Meshy 7.1 is building a 4K geometry preview. For a controlled hero asset, provide a clean reference image instead.",
     };
   }
 
@@ -108,7 +156,12 @@ export async function readAssetGenerationStatus(
   if (provider === "meshy") {
     const apiKey = environment.MESHY_API_KEY;
     if (!apiKey) throw new Error("Meshy is not connected.");
-    const response = await providerFetch(`https://api.meshy.ai/openapi/v2/text-to-3d/${encodeURIComponent(taskId)}`, {
+    const imageTask = taskId.startsWith("i3d:");
+    const providerTaskId = imageTask ? taskId.slice(4) : taskId;
+    const endpoint = imageTask
+      ? `https://api.meshy.ai/openapi/v1/image-to-3d/${encodeURIComponent(providerTaskId)}`
+      : `https://api.meshy.ai/openapi/v2/text-to-3d/${encodeURIComponent(providerTaskId)}`;
+    const response = await providerFetch(endpoint, {
       headers: { Authorization: `Bearer ${apiKey}` },
     });
     const data = await response.json() as Record<string, unknown>;
@@ -124,7 +177,7 @@ export async function readAssetGenerationStatus(
       outputs: modelUrls,
       previewUrl: firstString(data.thumbnail_url),
       error,
-      canRefine: phase === "preview" && rawStatus.toUpperCase() === "SUCCEEDED",
+      canRefine: !imageTask && phase === "preview" && rawStatus.toUpperCase() === "SUCCEEDED",
     };
   }
 

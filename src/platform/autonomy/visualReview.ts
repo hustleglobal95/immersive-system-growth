@@ -59,13 +59,19 @@ export function buildRenderReviewPlan(experience: ExperienceConfig, maxSceneSamp
     const start = scene.range[0];
     const end = scene.range[1];
     const span = Math.max(0.0001,end-start);
-    const role: RenderReviewCapture["role"] = index === 0 ? "opening" : index === scenes.length-1 ? "resolution" : "midpoint";
-    const midpoint = clamp(start + span*0.5);
-    const handoff = clamp(start + span*0.9);
-    return [
-      { key:"mid", progress:midpoint, role },
-      ...(index < scenes.length-1 ? [{ key:"handoff", progress:handoff, role:"handoff" as const }] : []),
-    ].map((point) => ({ scene, point }));
+    const points: Array<{key:string;progress:number;role:RenderReviewCapture["role"]}> = [];
+    if(index===0) {
+      // The poster frame is an explicit quality gate. Midpoint-only review let weak first impressions survive.
+      points.push({key:"poster",progress:clamp(start+span*0.08),role:"opening"});
+      points.push({key:"mid",progress:clamp(start+span*0.55),role:"midpoint"});
+    } else if(index===scenes.length-1) {
+      points.push({key:"setup",progress:clamp(start+span*0.18),role:"setup"});
+      points.push({key:"final",progress:clamp(start+span*0.94),role:"resolution"});
+    } else {
+      points.push({key:"mid",progress:clamp(start+span*0.5),role:"midpoint"});
+      points.push({key:"handoff",progress:clamp(start+span*0.9),role:"handoff"});
+    }
+    return points.map((point) => ({ scene, point }));
   });
   const captures: RenderReviewCapture[] = [];
   for (const viewport of ["desktop","mobile"] as const) {
@@ -84,7 +90,7 @@ export function buildRenderReviewPlan(experience: ExperienceConfig, maxSceneSamp
     version:1,
     captures,
     dimensions,
-    comparisonRule:"A repair candidate may replace the incumbent only after blinded pairwise visual comparison and hard-gate verification.",
+    comparisonRule:"A repair candidate must be production-ready in isolation and may replace the incumbent only after blinded pairwise visual comparison plus hard-gate verification. Merely being less bad than the incumbent is not acceptance.",
   };
 }
 

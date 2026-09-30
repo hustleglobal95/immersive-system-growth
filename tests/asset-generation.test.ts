@@ -20,6 +20,21 @@ test("asset generation requests are bounded and explicit", () => {
     prompt: "Create a clean premium hero product model with believable materials.",
   });
   assert.equal(parsed.type, "model");
+  const imageLed = assetGenerationRequestSchema.parse({
+    action: "submit",
+    name: "hero-product.glb",
+    type: "model",
+    prompt: "Build the approved hero object from the supplied art-direction plate.",
+    sourceImageUrl: "https://assets.example.com/hero-reference.png",
+  });
+  assert.equal(imageLed.sourceImageUrl, "https://assets.example.com/hero-reference.png");
+  assert.throws(() => assetGenerationRequestSchema.parse({
+    action: "submit",
+    name: "hero-product.glb",
+    type: "model",
+    prompt: "Build the approved hero object from the supplied art-direction plate.",
+    sourceImageUrl: "http://assets.example.com/hero-reference.png",
+  }));
   assert.throws(() => assetGenerationRequestSchema.parse({
     action: "submit",
     name: "",

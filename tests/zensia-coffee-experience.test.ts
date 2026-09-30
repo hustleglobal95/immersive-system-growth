@@ -9,8 +9,8 @@ const page=fs.readFileSync("app/zensia/page.tsx","utf8");
 test("Zensia is visually locked to the approved reference asset",()=>{
   assert.match(page,/ZensiaCoffeeExperience/);
   assert.match(component,/\/zensia\/reference-master\.png/);
-  assert.match(component,/width=\{941\}/);
-  assert.match(component,/height=\{1672\}/);
+  assert.match(component,/width=(?:\{941\}|["\']941["\'])/);
+  assert.match(component,/height=(?:\{1672\}|["\']1672["\'])/);
   assert.match(css,/\.zc-reference__image/);
   assert.match(css,/width:100%/);
   assert.match(css,/height:auto/);
