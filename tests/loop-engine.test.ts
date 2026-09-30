@@ -311,6 +311,7 @@ test("Loop Engine scripts preserve human approval and legacy repair compatibilit
   assert.match(runner,/accepted-interaction-graph\.json/);
   assert.match(runner,/autonomy-asset-repair\.mjs/);
   assert.match(runner,/autonomy-construction\.mjs/);
+  assert.match(runner,/autonomy-concept-reset\.mjs/);
   assert.match(runner,/autonomy-accessibility-verify\.mjs/);
   assert.match(runner,/current-incumbent\.json/);
   assert.match(runner,/Project Vault does not contain project/);
