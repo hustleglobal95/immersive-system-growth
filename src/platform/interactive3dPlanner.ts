@@ -49,7 +49,7 @@ export function planInteractive3DFromPrompt(input: {
   const assets = blueprintAssets({
     archetype,
     projectName: input.projectName,
-    visualWorld: director.artDirection?.northStar ?? treatment.thesis,
+    visualWorld: director.creativeDNA?.northStar ?? treatment.artBible.northStar,
     heroAsset: input.heroAsset,
   });
   const scenes = experience.scenes.map((scene, index) =>
@@ -85,7 +85,7 @@ export function planInteractive3DFromPrompt(input: {
     experience: {
       archetype,
       thesis: treatment.thesis,
-      visualWorld: director.artDirection?.northStar ?? treatment.memoryStatement,
+      visualWorld: director.creativeDNA?.northStar ?? treatment.artBible.world,
       interactionModel: interactionModelFor(archetype),
       signatureMoment: treatment.signatureMoment.description,
       signatureSceneId: scenes[signatureIndex].id,
@@ -97,10 +97,10 @@ export function planInteractive3DFromPrompt(input: {
     },
     artDirection: {
       palette,
-      typography: director.artDirection?.typography?.join?.(" ") ?? "One strong editorial display hierarchy with restrained supporting copy.",
-      lighting: director.artDirection?.lighting?.join?.(" ") ?? "Motivated key lighting with controlled fill and subject separation.",
-      material: director.artDirection?.materials?.join?.(" ") ?? "Physically plausible surfaces with restrained post-processing.",
-      composition: director.artDirection?.composition?.join?.(" ") ?? "One dominant subject with protected negative space for semantic copy.",
+      typography: director.artDirection?.typeSystem?.join(" ") ?? treatment.artBible.typographyCharacter,
+      lighting: director.artDirection?.lightingSystem?.join(" ") ?? treatment.grammar.lighting.join(" "),
+      material: director.artDirection?.materialSystem?.join(" ") ?? treatment.artBible.materialLogic,
+      composition: director.artDirection?.sceneFrames?.map((frame) => frame.composition).slice(0, 3).join(" ") ?? treatment.grammar.composition.join(" "),
     },
     assets,
     references: [],
