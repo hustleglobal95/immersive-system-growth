@@ -87,7 +87,7 @@ export function planInteractive3DFromPrompt(input: {
       thesis: treatment.thesis,
       visualWorld: director.creativeDNA?.northStar ?? treatment.artBible.world,
       interactionModel: interactionModelFor(archetype),
-      signatureMoment: treatment.signatureMoment.description,
+      signatureMoment: bounded(treatment.signatureMoment.description, 600),
       signatureSceneId: scenes[signatureIndex].id,
       scenes,
     },
@@ -97,10 +97,10 @@ export function planInteractive3DFromPrompt(input: {
     },
     artDirection: {
       palette,
-      typography: director.artDirection?.typeSystem?.join(" ") ?? treatment.artBible.typographyCharacter,
-      lighting: director.artDirection?.lightingSystem?.join(" ") ?? treatment.grammar.lighting.join(" "),
-      material: director.artDirection?.materialSystem?.join(" ") ?? treatment.artBible.materialLogic,
-      composition: director.artDirection?.sceneFrames?.map((frame) => frame.composition).slice(0, 3).join(" ") ?? treatment.grammar.composition.join(" "),
+      typography: bounded(director.artDirection?.typeSystem?.join(" ") ?? treatment.artBible.typographyCharacter, 600),
+      lighting: bounded(director.artDirection?.lightingSystem?.join(" ") ?? treatment.grammar.lighting.join(" "), 600),
+      material: bounded(director.artDirection?.materialSystem?.join(" ") ?? treatment.artBible.materialLogic, 600),
+      composition: bounded(director.artDirection?.sceneFrames?.map((frame) => frame.composition).slice(0, 3).join(" ") ?? treatment.grammar.composition.join(" "), 600),
     },
     assets,
     references: [],
@@ -143,6 +143,7 @@ function chooseArchetype(
   if (/\b(configur|customiz|build your|choose your)\b/.test(lower)) return "configurator";
   if (/\b(data|metric|network|system map|visuali[sz]ation)\b/.test(lower) && projectType === "saas") return "data-sculpture";
   if (/\b(explore|world|walkthrough|environment|journey through|spatial world)\b/.test(lower)) return "world-explorer";
+  if (/\b(coffee|cup|roastery|watch|shoe|sneaker|bottle|perfume|device|headphone|speaker)\b/.test(lower)) return "product-reveal";
   if (projectType === "product" || projectType === "automotive") return "product-reveal";
   if (projectType === "property" || projectType === "hospitality") return "spatial-story";
   if (projectType === "portfolio" || projectType === "commerce") return "interactive-gallery";
@@ -259,7 +260,7 @@ function blueprintAssets(input: {
   ];
 }
 
-function signatureSceneIndex(beats: Interactive3DBlueprint extends never ? never : ReturnType<typeof runDirectorIntelligence>["report"]["treatment"]["emotionalArc"], sceneCount: number) {
+function signatureSceneIndex(beats: ReturnType<typeof runDirectorIntelligence>["report"]["treatment"]["emotionalArc"], sceneCount: number) {
   let best = 0;
   for (let index = 1; index < beats.length; index++) {
     if (beats[index].intensity > beats[best].intensity) best = index;
