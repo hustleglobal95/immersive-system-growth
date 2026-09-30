@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { chromium } from "@playwright/test";
+import sharp from "sharp";
 import rawExperience from "../config/experience.json" with { type:"json" };
 import { parseExperience } from "../src/lib/configSchema.ts";
 import { buildRenderReviewPlan } from "../src/platform/autonomy/visualReview.ts";
@@ -20,7 +21,7 @@ const browser=await chromium.launch({
   headless:true,
   args:["--use-gl=angle","--use-angle=swiftshader","--enable-webgl","--ignore-gpu-blocklist"],
 });
-const report={ version:1,generatedAt:new Date().toISOString(),project:experience.meta.name,variant,baseURL,previewRoute,plan,captures:[],runtimeErrors:[] };
+const report={ version:1,generatedAt:new Date().toISOString(),project:experience.meta.name,variant,baseURL,previewRoute,plan,captures:[],runtimeErrors:[],contactSheet:null };
 
 try {
   await fs.mkdir(outputRoot,{ recursive:true });
@@ -43,8 +44,21 @@ try {
         await page.evaluate(()=>document.fonts.ready);
         await page.waitForTimeout(2200);
         const overflow=await root.evaluate((element)=>element.scrollWidth>element.clientWidth+1);
-        await page.locator(".studio-preview__canvas").first().screenshot({ path:pathOut,animations:"disabled",timeout:15000 });
-        report.captures.push({ ...capture,path:pathOut,status:"captured",horizontalOverflow:overflow });
+        const canvas=page.locator(".studio-preview__canvas").first();
+        const screenshot=await canvas.screenshot({ path:pathOut,animations:"disabled",timeout:15000 });
+        const stats=await sharp(screenshot).stats();
+        const mean=stats.channels.slice(0,3).reduce((sum,channel)=>sum+channel.mean,0)/Math.max(1,Math.min(3,stats.channels.length));
+        const nearBlank=stats.entropy<0.12;
+        const runtime=await page.evaluate(()=>window.__FORGE_AUTONOMY_REVIEW__?.snapshot?.() ?? null);
+        report.captures.push({
+          ...capture,
+          path:pathOut,
+          status:"captured",
+          horizontalOverflow:overflow,
+          nearBlank,
+          imageStats:{entropy:Number(stats.entropy.toFixed(4)),mean:Number(mean.toFixed(2)),sharpness:Number(stats.sharpness.toFixed(4))},
+          runtime,
+        });
         console.log("AUTONOMY " + variant.toUpperCase() + " CAPTURE " + capture.id);
       } catch(error) {
         report.captures.push({ ...capture,path:pathOut,status:"failed",horizontalOverflow:false,error:error instanceof Error ? error.message : String(error) });
@@ -52,6 +66,7 @@ try {
     }
     await context.close();
   }
+  report.contactSheet=await writeContactSheet(report.captures,outputRoot,variant);
   await fs.writeFile(path.join(outputRoot,"review-report.json"),JSON.stringify(report,null,2)+"\n");
   const failures=report.captures.filter((item)=>item.status!=="captured" || item.horizontalOverflow);
   console.log(variant + " capture: " + (report.captures.length-failures.length) + "/" + report.captures.length + " clean captures.");
@@ -71,4 +86,36 @@ function args(argv) {
     else out[key]=true;
   }
   return out;
+}
+
+
+async function writeContactSheet(captures,outputRoot,variant) {
+  const rows=captures.filter((capture)=>capture.status==="captured");
+  if(!rows.length) return null;
+  const cellWidth=640;
+  const cellHeight=420;
+  const columns=2;
+  const rowCount=Math.ceil(rows.length/columns);
+  const composites=[];
+  for(const [index,capture] of rows.entries()) {
+    const image=await sharp(path.resolve(String(capture.path)))
+      .resize({width:cellWidth,height:cellHeight-44,fit:"contain",background:"#0b0b0b"})
+      .toBuffer();
+    const label=escapeXml(capture.id+" · "+capture.role+" · "+Math.round(capture.progress*100)+"%");
+    const caption=Buffer.from(`<svg width="${cellWidth}" height="44"><rect width="100%" height="100%" fill="#111"/><text x="16" y="28" fill="#fff" font-size="16" font-family="Arial, sans-serif">${label}</text></svg>`);
+    const x=(index%columns)*cellWidth;
+    const y=Math.floor(index/columns)*cellHeight;
+    composites.push({input:image,left:x,top:y});
+    composites.push({input:caption,left:x,top:y+cellHeight-44});
+  }
+  const target=path.join(outputRoot,`${variant}-contact-sheet.jpg`);
+  await sharp({create:{width:cellWidth*columns,height:cellHeight*rowCount,channels:3,background:"#080808"}})
+    .composite(composites)
+    .jpeg({quality:84})
+    .toFile(target);
+  return target;
+}
+
+function escapeXml(value) {
+  return String(value).replace(/[&<>"']/g,(char)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;"}[char]));
 }
