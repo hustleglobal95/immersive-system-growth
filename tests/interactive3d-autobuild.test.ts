@@ -56,7 +56,32 @@ test("materializer removes incumbent content and emits registered Forge camera/m
   assert.ok(materialized.experience.scenes.every((scene)=>!scene.copy.body.includes("Begur")));
   assert.ok(materialized.appliedCommands.some((command)=>command.type==="camera.applyChoreography"));
   assert.ok(materialized.appliedCommands.some((command)=>command.type==="motion.applyArchetype"));
+  assert.notDeepEqual(materialized.experience.scenes[0].camera,rawExperience.scenes[0].camera);
+  assert.equal(materialized.experience.scenes[0].range[0],0);
+  assert.equal(materialized.experience.scenes.at(-1)?.range[1],1);
+  for(let index=1;index<materialized.experience.scenes.length;index++){
+    const previous=materialized.experience.scenes[index-1];
+    const current=materialized.experience.scenes[index];
+    assert.equal(previous.range[1],current.range[0]);
+    assert.deepEqual(previous.camera.to,current.camera.from);
+    assert.deepEqual(previous.mobileCamera?.to,current.mobileCamera?.from);
+  }
   assert.equal(materialized.assetReadiness.ready,false);
+});
+
+test("owned product hero is rendered once through PersistentHero rather than duplicated as a scene asset", () => {
+  const result=planInteractive3DFromPrompt({
+    prompt:"Create a premium 3D watch product reveal.",
+    projectName:"Owned Product",
+    experience:rawExperience,
+    manifest:rawManifest,
+    heroAsset:{id:"owned-product",label:"Owned Product GLB",type:"model",source:"/models/owned/product.glb"},
+  });
+  const materialized=materializeInteractive3DExperience({blueprint:result.blueprint,experience:rawExperience});
+  assert.equal(materialized.experience.heroModel,"/models/owned/product.glb");
+  assert.equal(materialized.experience.heroVisible,true);
+  assert.equal(materialized.experience.assets.some((asset)=>asset.url==="/models/owned/product.glb"),false);
+  assert.equal(materialized.assetReadiness.ready,true);
 });
 
 test("AI planner is bounded to Forge scene identity and protected asset facts", () => {
