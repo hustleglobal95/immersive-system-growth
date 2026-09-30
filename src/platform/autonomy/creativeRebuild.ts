@@ -93,7 +93,7 @@ export function applyCreativeRebuildPlan(input:{
   const sourceToFirstNewId=new Map<string,string>();
   const scenes=plan.sceneBlueprints.map((blueprint,index)=>{
     const source=structuredClone(sourceById.get(blueprint.sourceSceneId)!);
-    const id=uniqueSceneId(slug(blueprint.label)||blueprint.sourceSceneId,index,usedIds);
+    const id=uniqueSceneId(blueprint.sourceSceneId,index,usedIds);
     if(!sourceToFirstNewId.has(blueprint.sourceSceneId)) sourceToFirstNewId.set(blueprint.sourceSceneId,id);
     const directed:SceneDefinition={
       ...source,
