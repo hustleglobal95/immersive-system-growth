@@ -118,6 +118,18 @@ function deterministicFindings(captureReport) {
         confidence:1,
       });
     }
+    if(capture.nearBlank) {
+      rows.push({
+        critic:"craft",
+        captureId:capture.id,
+        severity:"blocker",
+        finding:"The required cinematic frame rendered as near-uniform or effectively blank.",
+        evidence:[`Screenshot entropy ${capture.imageStats?.entropy ?? "unknown"} is below the blank-frame threshold.`],
+        affectedSystems:["render","assets","lighting","composition"],
+        repair:"Restore visible subject, copy and authored lighting before any visual candidate can be promoted.",
+        confidence:1,
+      });
+    }
   }
   for(const error of captureReport.runtimeErrors ?? []) {
     const fallback=captures.find((capture)=>capture.viewport===error.viewport) ?? captures[0];
