@@ -13,7 +13,7 @@ const directive = z.string().min(1).max(300);
 const id = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 const finite = z.number().finite();
 const vec3 = z.tuple([finite, finite, finite]);
-const hexColor = z.string().regex(/^#(?:[\\da-f]{3}|[\\da-f]{6})$/i);
+const hexColor = z.string().regex(/^#(?:[\da-f]{3}|[\da-f]{6})$/i);
 
 export const Interactive3DArchetypeSchema = z.enum([
   "product-reveal",
