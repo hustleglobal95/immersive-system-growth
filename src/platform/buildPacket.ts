@@ -161,7 +161,7 @@ export function buildForgeBuildPacket(input:ForgeBuildPacketInput) {
     "- Mobile preserves narrative order, focal hierarchy and the signature idea.",
     "- Primary conversion controls remain semantic and usable.",
     "- First encounter is smooth; preloading/prewarming covers the signature path.",
-    "- When an Interactive3DBlueprint is attached, its policy report has no blockers and the implementation uses the compiled Forge-native recipe/camera/asset contracts."
+    "- When an Interactive3DBlueprint is attached, its policy report has no blockers and the implementation uses the compiled Forge-native recipe/camera/asset contracts.",
     "- Functional, motion, mobile, performance, accessibility and asset gates pass where applicable.",
     "- Any external or subjective creative approval remains explicitly unverified until rendered evidence is reviewed.",
     "",
