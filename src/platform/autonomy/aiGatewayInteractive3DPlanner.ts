@@ -27,7 +27,8 @@ export async function refineInteractive3DBlueprintWithAi(input: {
     "Do not write JSX, JavaScript, shader code or arbitrary camera coordinates.",
     "Operate only inside the blueprint grammar.",
     "Preserve all project facts, all scene IDs and their order, all asset IDs/status/source fields, and the renderer strategy.",
-    "You may improve the experience archetype, thesis, visual world, signature scene choice, scene labels/purpose/subject/copy role, depth strategy, registered camera move, interaction semantics, transitions, mobile translation, prewarm declarations, accessibility wording, art direction, and you may tighten performance budgets.",
+    "You may improve the experience archetype, thesis, visual world, signature scene choice, scene labels/purpose/subject/copy role/public-facing copy, depth strategy, registered camera move, interaction semantics, transitions, mobile translation, prewarm declarations, accessibility wording, art direction, and you may tighten performance budgets.",
+    "Write concise public-facing scene copy that sounds specific to the supplied project. Do not expose production instructions in visitor copy and do not invent client facts, awards, prices, claims or locations.",
     "Never use camera.move=custom. Never invent a remote asset URL. Never convert a generated/missing asset into an existing asset.",
     "Use 3D only where it communicates material, space, transformation, mechanism or meaningful depth. Let semantic DOM own headings, prose, navigation and conversion.",
     "The signature moment must be visually specific and must have one dominant subject.",
@@ -106,10 +107,14 @@ function blueprintJsonSchema() {
   const scene = {
     type:"object",
     additionalProperties:false,
-    required:["id","label","purpose","dominantSubject","copyRole","medium","depthStrategy","camera","interaction","transition","mobile","prewarm"],
+    required:["id","label","purpose","dominantSubject","copyRole","copy","medium","depthStrategy","camera","interaction","transition","mobile","prewarm"],
     properties:{
       id:{type:"string",pattern:"^[a-z0-9]+(?:-[a-z0-9]+)*$"},
       label:string(180), purpose:string(600), dominantSubject:string(600), copyRole:string(600),
+      copy:{
+        type:"object",additionalProperties:false,required:["headline","body"],
+        properties:{eyebrow:{type:"string",maxLength:100},headline:string(120),body:string(800)},
+      },
       medium:{type:"string",enum:["dom","hybrid","webgl"]},
       depthStrategy:{type:"string",enum:["flat","layered-dom","parallax","perspective","material","atmospheric","full-3d"]},
       camera:{
