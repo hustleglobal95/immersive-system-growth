@@ -87,7 +87,7 @@ function summarizeLoop(
       "Expected " + expectedLoopId + " evidence but received " + report.loopId + ".",
     );
   }
-  if (!["completed", "converged"].includes(report.status)) {
+  if (report.status !== "completed") {
     blockers.push(
       expectedLoopId + " loop did not finish cleanly (status " + report.status + ").",
     );
@@ -96,15 +96,25 @@ function summarizeLoop(
     blockers.push(expectedLoopId + " loop produced no rendered candidate attempts.");
   }
 
+  const acceptedCandidates = report.cycles.flatMap((cycle) => {
+    if (!cycle.acceptedCandidateId) return [];
+    const accepted = cycle.candidates.find(
+      (candidate) => candidate.id === cycle.acceptedCandidateId,
+    );
+    return accepted ? [accepted] : [];
+  });
   const hardGateFailures = unique(
-    report.cycles.flatMap((cycle) =>
-      cycle.candidates.flatMap((candidate) => candidate.hardGateFailures),
-    ),
+    acceptedCandidates.flatMap((candidate) => candidate.hardGateFailures),
   );
   if (hardGateFailures.length) {
     blockers.push(
-      expectedLoopId + " loop retained hard-gate failures in its evidence: " +
+      expectedLoopId + " loop accepted a candidate with hard-gate failures: " +
       hardGateFailures.slice(0, 4).join("; "),
+    );
+  }
+  if (acceptedCandidates.length < report.acceptedImprovements) {
+    blockers.push(
+      expectedLoopId + " loop evidence is inconsistent: accepted improvements exceed traceable accepted candidates.",
     );
   }
 
