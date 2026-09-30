@@ -143,10 +143,13 @@ function chooseArchetype(
   const lower = prompt.toLowerCase();
   if (/\b(configur|customiz|build your|choose your)\b/.test(lower)) return "configurator";
   if (/\b(data|metric|network|system map|visuali[sz]ation)\b/.test(lower) && projectType === "saas") return "data-sculpture";
-  if (/\b(explore|world|walkthrough|environment|journey through|spatial world)\b/.test(lower)) return "world-explorer";
   if (/\b(coffee|cup|roastery|watch|shoe|sneaker|bottle|perfume|device|headphone|speaker)\b/.test(lower)) return "product-reveal";
   if (projectType === "product" || projectType === "automotive") return "product-reveal";
-  if (projectType === "property" || projectType === "hospitality") return "spatial-story";
+  if (projectType === "property" || projectType === "hospitality") {
+    const explicitExplorer = /\b(free[- ]?roam|open world|walkthrough|navigate the world|explore the world|interactive environment|world explorer)\b/.test(lower);
+    return explicitExplorer ? "world-explorer" : "spatial-story";
+  }
+  if (/\b(free[- ]?roam|open world|walkthrough|navigate the world|explore the world|interactive environment|spatial world)\b/.test(lower)) return "world-explorer";
   if (projectType === "portfolio" || projectType === "commerce") return "interactive-gallery";
   if (projectType === "saas") return "data-sculpture";
   return "editorial-depth";
