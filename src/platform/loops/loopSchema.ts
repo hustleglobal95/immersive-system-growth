@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const loopWorkerSchema=z.enum(["visual-repair","performance-repair","asset-repair","construction"]);
+export const loopWorkerSchema=z.enum(["visual-repair","performance-repair","asset-repair","construction","creative-rebuild"]);
 export const loopVerifierSchema=z.enum(["schema","functional","visual","motion","mobile","performance","accessibility","assets"]);
 export const loopStatusSchema=z.enum(["planned","running","completed","stopped","escalated","failed"]);
 
@@ -28,6 +28,7 @@ export const loopRepairCommandSchema=z.enum([
   "scene.adjustMaterialSurface",
   "motion.applyArchetype",
   "camera.applyChoreography",
+  "concept.reset",
 ]);
 
 export const loopStrategySchema=z.object({
@@ -46,7 +47,7 @@ export const loopDefinitionSchema=z.object({
   executable:z.boolean(),
   verifiers:z.array(loopVerifierSchema).min(1),
   strategies:z.array(loopStrategySchema).min(1).max(5),
-  allowedRepairCommands:z.array(loopRepairCommandSchema).min(1).max(7),
+  allowedRepairCommands:z.array(loopRepairCommandSchema).min(1).max(8),
   budgets:loopBudgetSchema,
   acceptance:loopAcceptanceSchema,
   humanGates:z.array(z.string().min(4).max(240)).max(12),
@@ -63,7 +64,7 @@ export const loopCandidateEvidenceSchema=z.object({
   fingerprint:z.string().min(1).max(128).optional(),
   repairSignature:z.string().min(1).max(128).optional(),
   repairSummary:z.array(z.string().max(400)).max(8).default([]),
-  repairCommandTypes:z.array(loopRepairCommandSchema).max(7).optional(),
+  repairCommandTypes:z.array(loopRepairCommandSchema).max(8).optional(),
   candidatePath:z.string().max(1000).optional(),
   candidateAssetManifestPath:z.string().max(1000).optional(),
   candidateInteractionGraphPath:z.string().max(1000).optional(),
