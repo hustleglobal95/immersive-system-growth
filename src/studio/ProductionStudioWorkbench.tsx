@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { readStored, useClientValue, useStoredValue, writeStored } from "@/src/lib/useClientValue";
+import { useStoredValue, writeStored } from "@/src/lib/useClientValue";
 import rawExperience from "@/config/experience.json";
 import rawProject from "@/config/studio-project.json";
 import rawAssetManifest from "@/config/asset-manifest.json";
@@ -80,7 +80,7 @@ export function ProductionStudioWorkbench() {
   const [newName, setNewName] = useState("Untitled Experience");
   const [newKind, setNewKind] = useState<ProjectKind>("custom");
   const [guidedOpen, setGuidedOpen] = useState(false);
-  const [guideDismissed, setGuideDismissed] = useState(false);
+  const [, setGuideDismissed] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [vaultOpen, setVaultOpen] = useState(false);
   const [loopOpen, setLoopOpen] = useState(false);
