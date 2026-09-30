@@ -4,6 +4,7 @@ import { parseExperience } from "../src/lib/configSchema.ts";
 import { buildCaptureCriticRequest, parseVisualDirectorResponse } from "../src/platform/autonomy/visualDirector.ts";
 import { planVisualRepairs, applyVisualRepairPlan } from "../src/platform/autonomy/repairPlanner.ts";
 import { parseDirectorJudgment } from "../src/platform/director-intelligence/judgment.ts";
+import { aiGatewayVisualCriticConfigured, callAiGatewaySingleVisualCritic } from "../src/platform/autonomy/aiGatewayVisualCritic.ts";
 
 const options=args(process.argv.slice(2));
 const reportPath=String(options.report || "test-results/autonomy/review-report.json");
@@ -11,6 +12,7 @@ const experiencePath=String(options.experience || "config/experience.json");
 const outputRoot=String(options.output || "test-results/autonomy-review");
 const criticUrl=process.env.FORGE_VISUAL_CRITIC_URL;
 const criticToken=process.env.FORGE_VISUAL_CRITIC_TOKEN;
+const gatewayCritic=aiGatewayVisualCriticConfigured(process.env);
 const directorJudgmentPath=options["director-judgment"] ? String(options["director-judgment"]) : "";
 const report=JSON.parse(await fs.readFile(reportPath,"utf8"));
 const experience=parseExperience(JSON.parse(await fs.readFile(experiencePath,"utf8")));
@@ -27,25 +29,30 @@ if(directorJudgmentPath) {
   })));
 }
 
-if(criticUrl) {
+if(criticUrl || gatewayCritic) {
   for(const capture of report.captures ?? []) {
     if(capture.status!=="captured") continue;
     const imagePath=path.resolve(String(capture.path));
     const imageData=(await fs.readFile(imagePath)).toString("base64");
     const request=buildCaptureCriticRequest({ capture,projectContext });
-    const response=await fetch(criticUrl,{
-      method:"POST",
-      headers:{
-        "content-type":"application/json",
-        ...(criticToken ? { authorization:"Bearer " + criticToken } : {}),
-      },
-      body:JSON.stringify({
-        ...request,
-        image:{ mimeType:"image/png",data:imageData },
-      }),
-    });
-    if(!response.ok) throw new Error("Visual critic request failed for " + capture.id + ": HTTP " + response.status);
-    const payload=await response.json();
+    let payload;
+    if(criticUrl) {
+      const response=await fetch(criticUrl,{
+        method:"POST",
+        headers:{
+          "content-type":"application/json",
+          ...(criticToken ? { authorization:"Bearer " + criticToken } : {}),
+        },
+        body:JSON.stringify({
+          ...request,
+          image:{ mimeType:"image/png",data:imageData },
+        }),
+      });
+      if(!response.ok) throw new Error("Visual critic request failed for " + capture.id + ": HTTP " + response.status);
+      payload=await response.json();
+    } else {
+      payload=await callAiGatewaySingleVisualCritic({ request,image:imageData,environment:process.env });
+    }
     const parsed=parseVisualDirectorResponse(payload,capture.id);
     findings.push(...parsed.findings);
   }
@@ -74,7 +81,8 @@ if(result.ok) await fs.writeFile(path.join(outputRoot,"candidate-experience.json
 
 console.log("Visual Director findings: " + normalized.length);
 console.log(plan.summary.join(" "));
-if(!criticUrl) console.log("No FORGE_VISUAL_CRITIC_URL configured: only deterministic runtime/layout findings were used.");
+if(!criticUrl && !gatewayCritic) console.log("No multimodal visual critic configured: only deterministic runtime/layout findings were used.");
+else console.log("Multimodal frame critique: "+(criticUrl ? "custom endpoint" : "AI Gateway"));
 if(!result.ok) {
   console.error("No safe candidate produced: " + result.errors.join(" "));
   process.exitCode=2;
