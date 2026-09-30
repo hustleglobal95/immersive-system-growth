@@ -2,7 +2,7 @@ import { parseExperience, sceneMediaSchema } from "@/src/lib/configSchema";
 import { createExperienceEngine } from "@/src/platform/createExperienceEngine";
 import { compileInteractive3DBlueprint } from "@/src/platform/interactive3dCompiler";
 import { cameraChoreographyForBlueprintMove } from "@/src/platform/interactive3dRecipeRegistry";
-import type { Interactive3DBlueprint } from "@/src/platform/interactive3dBlueprint";
+import type { Interactive3DBlueprint, Interactive3DScene } from "@/src/platform/interactive3dBlueprint";
 import type { MotionArchetypeName } from "@/src/platform/motionArchetypes";
 import type { ExperienceConfig } from "@/src/types/experience";
 
