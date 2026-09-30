@@ -91,7 +91,11 @@ test("render review plan covers desktop and mobile scene states deterministicall
   assert.ok(plan.captures.length >= 12);
   assert.ok(plan.captures.some((item) => item.viewport === "desktop"));
   assert.ok(plan.captures.some((item) => item.viewport === "mobile"));
+  assert.ok(plan.captures.some((item) => item.role === "opening"));
   assert.ok(plan.captures.some((item) => item.role === "handoff"));
+  assert.ok(plan.captures.some((item) => item.role === "resolution"));
+  assert.match(plan.comparisonRule,/production-ready in isolation/i);
+  assert.match(plan.comparisonRule,/less bad/i);
   assert.ok(plan.dimensions.includes("composition"));
   assert.ok(plan.dimensions.includes("motion"));
   assert.equal(plan.dimensions.length,17);
