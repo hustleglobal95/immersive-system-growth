@@ -113,6 +113,7 @@ function hardGateFailures(report) {
   for(const capture of report.captures ?? []) {
     if(capture.status!=="captured") failures.push(capture.id + ": capture failed");
     if(capture.horizontalOverflow) failures.push(capture.id + ": horizontal overflow");
+    if(capture.nearBlank) failures.push(capture.id + ": near-blank cinematic frame");
   }
   for(const error of report.runtimeErrors ?? []) failures.push("runtime: " + String(error.message || error.type || "error"));
   return failures;
