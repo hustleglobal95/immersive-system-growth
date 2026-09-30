@@ -90,6 +90,10 @@ export function materializeInteractive3DExperience(input: {
     const scene = next.scenes[index];
     const direction = input.blueprint.experience.scenes[index];
     scene.label = bounded(direction.label, 80);
+    scene.range = generatedRange(index, next.scenes.length, plan.signatureSlice.sceneId, scene.id);
+    scene.easing = "cinematic";
+    scene.camera = generatedCamera(input.blueprint, direction.camera.move, index, next.scenes.length, false);
+    scene.mobileCamera = generatedCamera(input.blueprint, direction.camera.move, index, next.scenes.length, true);
     scene.blocks = [];
     scene.motionTracks = [];
     scene.hero = {
@@ -184,6 +188,111 @@ export function materializeInteractive3DExperience(input: {
     fingerprintAfter: result.fingerprintAfter,
     assetReadiness: { ready: blockers.length === 0, blockers },
   };
+}
+
+type ExperienceCamera = ExperienceConfig["scenes"][number]["camera"];
+type ExperienceCameraState = ExperienceCamera["from"];
+
+function generatedRange(
+  index: number,
+  count: number,
+  signatureSceneId: string,
+  sceneId: string,
+): [number, number] {
+  const weights = Array.from({ length: count }, (_, current) =>
+    current === indexOfSignature(count, signatureSceneId, sceneId, index) ? 1.35 : current === 0 || current === count - 1 ? 1.08 : 1,
+  );
+  // The signature identity is only known for the current scene in this pure helper; replace the
+  // current weight when this scene is the signature, while keeping all other chapters neutral.
+  if (sceneId === signatureSceneId) weights[index] = 1.35;
+  else weights[index] = index === 0 || index === count - 1 ? 1.08 : 1;
+  const total = weights.reduce((sum, value) => sum + value, 0);
+  const start = weights.slice(0, index).reduce((sum, value) => sum + value, 0) / total;
+  const end = (weights.slice(0, index + 1).reduce((sum, value) => sum + value, 0)) / total;
+  return [roundRange(start), roundRange(index === count - 1 ? 1 : end)];
+}
+
+function indexOfSignature(count: number, signatureSceneId: string, sceneId: string, index: number) {
+  void count;
+  return sceneId === signatureSceneId ? index : -1;
+}
+
+function generatedCamera(
+  blueprint: Interactive3DBlueprint,
+  move: Interactive3DScene["camera"]["move"],
+  index: number,
+  count: number,
+  mobile: boolean,
+): ExperienceCamera {
+  const from = generatedCameraState(blueprint.experience.archetype, index / Math.max(1, count), mobile);
+  const to = generatedCameraState(blueprint.experience.archetype, (index + 1) / Math.max(1, count), mobile);
+  return {
+    path: cameraPathForMove(move),
+    from,
+    to,
+  };
+}
+
+function generatedCameraState(
+  archetype: Interactive3DBlueprint["experience"]["archetype"],
+  progress: number,
+  mobile: boolean,
+): ExperienceCameraState {
+  const t = Math.max(0, Math.min(1, progress));
+  const productLike = archetype === "product-reveal" || archetype === "configurator";
+  const spatial = archetype === "spatial-story" || archetype === "world-explorer";
+  let position: [number, number, number];
+  let target: [number, number, number];
+  let fov: number;
+
+  if (productLike) {
+    const angle = -0.55 + t * 1.1;
+    const radius = 6.2 - Math.sin(Math.PI * t) * 2;
+    position = [Math.sin(angle) * radius, 1.15 + Math.sin(Math.PI * t) * 0.55, Math.cos(angle) * radius];
+    target = [0, 0.12, 0];
+    fov = 43 - Math.sin(Math.PI * t) * 8;
+  } else if (spatial) {
+    const angle = -0.7 + t * 1.45;
+    const radius = 7.6 - Math.sin(Math.PI * t) * 2.4;
+    position = [Math.sin(angle) * radius, 1.65 + Math.sin(Math.PI * t) * 1.15, Math.cos(angle) * radius];
+    target = [0, 0.45 + Math.sin(Math.PI * t) * 0.2, 0];
+    fov = 50 - Math.sin(Math.PI * t) * 6;
+  } else {
+    const lateral = Math.sin(t * Math.PI * 2) * 1.35;
+    position = [lateral, 0.7 + Math.sin(Math.PI * t) * 0.45, 6.2 - Math.sin(Math.PI * t) * 0.8];
+    target = [0, 0.15, 0];
+    fov = 47 - Math.sin(Math.PI * t) * 4;
+  }
+
+  if (mobile) {
+    position = [position[0] * 0.58, position[1] + 0.35, position[2] * 1.28];
+    fov = Math.min(72, fov + 12);
+  }
+  return {
+    position: position.map(roundCamera) as [number, number, number],
+    target: target.map(roundCamera) as [number, number, number],
+    fov: roundCamera(fov),
+  };
+}
+
+function cameraPathForMove(move: Interactive3DScene["camera"]["move"]): ExperienceCamera["path"] {
+  switch (move) {
+    case "dolly": return "dolly";
+    case "truck": return "linear";
+    case "crane": return "crane";
+    case "orbit": return "orbit";
+    case "macro": return "macro";
+    case "reveal": return "pullback";
+    case "static": return "linear";
+    case "custom": return "linear";
+  }
+}
+
+function roundCamera(value: number) {
+  return Math.round(value * 10_000) / 10_000;
+}
+function roundRange(value: number) {
+  return Math.round(value * 1_000_000) / 1_000_000;
 }
 
 function motionArchetypeFor(blueprint: Interactive3DBlueprint): MotionArchetypeName {
