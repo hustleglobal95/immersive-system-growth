@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { AssetManifest } from "@/src/types/assets";
 
-const localAsset = z.string().regex(/^\/(?:models|textures|hdr|video)\/(?!.*\.\.)[^\s?#]+$/);
+const localAsset = z.string().regex(/^\/(?:models|textures|hdr|video|generated\/vault)\/(?!.*\.\.)[^\s?#]+$/);
 const assetPath = localAsset.or(z.string().url().refine((value) => value.startsWith("https://")));
 const derivative = z.object({
   sourcePath: assetPath,
