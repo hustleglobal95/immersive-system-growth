@@ -8,7 +8,7 @@ import { planVisualRepairs, applyVisualRepairPlan } from "../src/platform/autono
 import { buildPairwiseCriticRequests, pairwiseJudgmentFromResponse, parseVisualDirectorResponse } from "../src/platform/autonomy/visualDirector";
 import { forcedOptimizationDecision } from "../src/platform/autonomy/forcedOptimization";
 import { parseDirectorJudgment } from "../src/platform/director-intelligence/judgment";
-import { aiGatewayVisualCriticConfigured, callAiGatewayPairwiseVisualCritic } from "../src/platform/autonomy/aiGatewayVisualCritic";
+import { aiGatewayVisualCriticConfigured, callAiGatewayPairwiseVisualCritic, callAiGatewaySingleVisualCritic } from "../src/platform/autonomy/aiGatewayVisualCritic";
 
 const initial=parseExperience(raw);
 
@@ -321,6 +321,53 @@ test("Director judgment rejects repair findings that cite unseen captures",()=>{
   }));
 });
 
+
+test("AI Gateway visual critic can diagnose a single rendered frame for repair",async()=>{
+  const reviewPlan=buildRenderReviewPlan(initial,2);
+  const capture=reviewPlan.captures[0];
+  const request={
+    version:1 as const,
+    mode:"single" as const,
+    capture,
+    projectContext:"Cinematic product experience with a composed poster frame.",
+    criticBriefs:[{
+      id:"composition" as const,
+      objective:"Judge hierarchy.",
+      checks:["One dominant focal point"],
+      prohibited:["Do not reward complexity"],
+    }],
+    rules:["Judge the rendered frame."],
+  };
+  let captured:RequestInit|undefined;
+  const result=await callAiGatewaySingleVisualCritic({
+    request,
+    image:"ZmFrZS1wbmc=",
+    environment:{AI_GATEWAY_API_KEY:"test-key",FORGE_AI_GATEWAY_VISUAL_MODEL:"openai/gpt-5.4"},
+    fetchImpl:async(_url,init)=>{
+      captured=init;
+      return new Response(JSON.stringify({
+        choices:[{message:{content:JSON.stringify({
+          findings:[{
+            critic:"composition",
+            captureId:capture.id,
+            severity:"major",
+            finding:"The subject and headline compete for the same focal area.",
+            evidence:["The subject overlaps the primary copy block."],
+            affectedSystems:["composition","hero framing"],
+            repair:"Move the subject away from the copy and restore intentional negative space.",
+            confidence:.91,
+          }],
+          summary:"One composition failure.",
+        })}}],
+      }),{status:200,headers:{"content-type":"application/json"}});
+    },
+  });
+  assert.equal(result.findings.length,1);
+  assert.equal(result.findings[0].critic,"composition");
+  const body=JSON.parse(String(captured?.body));
+  assert.equal(body.response_format.type,"json_schema");
+  assert.equal(body.messages[0].content.filter((part:{type:string})=>part.type==="image_url").length,1);
+});
 
 test("AI Gateway visual critic uses structured multimodal comparison and validates the result",async()=>{
   assert.equal(aiGatewayVisualCriticConfigured({}),false);
