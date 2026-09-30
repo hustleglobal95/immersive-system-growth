@@ -113,7 +113,7 @@ test("Build Animate provides direct motion authoring before the expert sequencer
 
 test("Build camera inspector directly edits shots and hands off to targeted Animate", async ({ page }) => {
   await page.goto("/studio");
-  await page.getByRole("button", { name: "Structure", exact: true }).click();
+  await page.getByRole("button", { name: "Objects", exact: true }).click();
   const tree=page.locator(".production-tree");
   await tree.getByRole("button", { name: /Camera/ }).first().click();
 
@@ -130,7 +130,7 @@ test("Build camera inspector directly edits shots and hands off to targeted Anim
 
 test("Build environment inspector directly edits lighting and atmosphere", async ({ page }) => {
   await page.goto("/studio");
-  await page.getByRole("button", { name: "Structure", exact: true }).click();
+  await page.getByRole("button", { name: "Objects", exact: true }).click();
   await page.locator(".production-tree").getByRole("button", { name: /Environment/ }).click();
 
   await page.getByLabel("Environment exposure").fill("1.35");
@@ -146,7 +146,7 @@ test("Build environment inspector directly edits lighting and atmosphere", async
 
 test("Build media inspector directly edits presentation when media exists", async ({ page }) => {
   await page.goto("/studio");
-  await page.getByRole("button", { name: "Structure", exact: true }).click();
+  await page.getByRole("button", { name: "Objects", exact: true }).click();
   const media=page.locator(".production-tree").getByRole("button", { name: /Media/ });
   await expect(media).toBeVisible();
   await media.click();
