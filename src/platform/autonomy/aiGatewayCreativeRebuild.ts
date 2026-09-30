@@ -53,7 +53,7 @@ export async function requestCreativeRebuildPlan(input:{
       "Do not solve a failed concept with more decorative effects. Change the narrative structure, shot order, camera language, motion archetype and interaction logic.",
       "Use one dominant signature mechanism. Supporting scenes should create contrast and stillness around it.",
       "If the requested experience genuinely requires a missing asset, declare it in assetGaps. Mark it critical only if using existing assets would make the concept dishonest or visibly wrong.",
-      "Interaction recipes are optional. Only reference interaction targets from the supplied target list. The persistent WebGL hero target is 'hero'.",
+      "Interaction recipes are optional. Only reference interaction targets from the supplied target list. The persistent WebGL hero target is 'hero'. Sequence recipes select a rebuilt scene slot; Forge resolves the real scene ID itself. Never invent sequence names.",
       "The final plan will be rendered and compared against the incumbent. A merely different candidate is useless; it must be more specific, coherent and production-worthy.",
       "",
       "Project context: "+input.projectContext,
@@ -117,9 +117,8 @@ function gatewaySchema(sourceSceneIds:string[],targets:string[]) {
         properties:{
           kind:{const:"scene-sequence"},
           sceneSlot:{type:"integer",minimum:0,maximum:7},
-          sequenceName:{type:"string",minLength:1,maxLength:120},
         },
-        required:["kind","sceneSlot","sequenceName"],
+        required:["kind","sceneSlot"],
         additionalProperties:false,
       },
       {
@@ -149,9 +148,9 @@ function gatewaySchema(sourceSceneIds:string[],targets:string[]) {
         properties:{
           kind:{const:"click-sequence"},
           target:{type:"string",enum:targetEnum},
-          sequenceName:{type:"string",minLength:1,maxLength:120},
+          sceneSlot:{type:"integer",minimum:0,maximum:7},
         },
-        required:["kind","target","sequenceName"],
+        required:["kind","target","sceneSlot"],
         additionalProperties:false,
       },
       {
