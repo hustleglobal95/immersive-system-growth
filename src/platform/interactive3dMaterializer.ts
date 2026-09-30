@@ -62,9 +62,15 @@ export function materializeInteractive3DExperience(input: {
     (asset) => !asset.heroCandidate && ["image","video"].includes(asset.type) && asset.status === "existing" && asset.source,
   );
 
-  if (heroModel?.source) {
+  const persistentProductHero =
+    input.blueprint.experience.archetype === "product-reveal" ||
+    input.blueprint.experience.archetype === "configurator";
+  if (heroModel?.source && persistentProductHero) {
     next.heroModel = heroModel.source;
     next.heroVisible = true;
+  } else if (heroModel?.source) {
+    next.heroModel = "";
+    next.heroVisible = false;
     next.assets.push({
       id: heroModel.id,
       kind: "model",
@@ -85,6 +91,12 @@ export function materializeInteractive3DExperience(input: {
     const direction = input.blueprint.experience.scenes[index];
     scene.label = bounded(direction.label, 80);
     scene.blocks = [];
+    scene.motionTracks = [];
+    scene.hero = {
+      motion: "linear",
+      from: { position: [0, 0, 0], rotation: [0, 0, 0], scale: 1 },
+      to: { position: [0, 0, 0], rotation: [0, 0, 0], scale: 1 },
+    };
     scene.copy = {
       eyebrow: bounded(input.blueprint.project.name.toUpperCase(), 100),
       headline: bounded(direction.label, 120),
