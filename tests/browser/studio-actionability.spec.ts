@@ -46,7 +46,7 @@ test("Build rig inspector targets the selected part in simple Animate",async({pa
   })).toBe(true);
 
   await page.locator(".production-advanced-head").getByRole("button",{name:/Back to Studio/}).click();
-  await page.getByRole("button",{name:"Structure",exact:true}).click();
+  await page.getByRole("button",{name:"Objects",exact:true}).click();
   await page.locator(".production-tree").getByRole("button",{name:/Rotor/}).click();
   await page.locator(".production-right").getByRole("button",{name:"Position",exact:true}).click();
   await expect(page.getByRole("heading",{name:"Make something move.",level:2})).toBeVisible();
@@ -119,7 +119,8 @@ test("Advanced Telemetry mutates policy without permanent navigation",async({pag
 
 test("Guided Build persists a project brief and returns to production",async({page})=>{
   await page.goto("/studio");
-  await page.getByRole("button",{name:/Guided Build/}).first().click();
+  await page.getByRole("button",{name:"Open command palette"}).click();
+  await page.getByRole("dialog",{name:"Go anywhere. Do anything."}).getByRole("button",{name:"Guided Build",exact:true}).click();
   const guide=page.getByRole("dialog",{name:"Build the project without learning the machinery."});
   await expect(guide).toBeVisible();
   const brief="Create a precise luxury product reveal with a mechanical signature moment.";
@@ -127,7 +128,8 @@ test("Guided Build persists a project brief and returns to production",async({pa
   await expect.poll(()=>page.evaluate(()=>localStorage.getItem("forge-studio-guide-brief-v1"))).toBe(brief);
   await guide.getByRole("button",{name:"Close guide"}).click();
   await expect(page.getByRole("button",{name:"Build",exact:true})).toHaveAttribute("aria-current","page");
-  await page.getByRole("button",{name:/Guided Build/}).first().click();
+  await page.getByRole("button",{name:"Open command palette"}).click();
+  await page.getByRole("dialog",{name:"Go anywhere. Do anything."}).getByRole("button",{name:"Guided Build",exact:true}).click();
   await expect(page.getByRole("dialog").locator("textarea")).toHaveValue(brief);
 });
 
