@@ -17,10 +17,11 @@
 ### Meshy — 3D
 
 - Server credential: `MESHY_API_KEY`
-- Forge uses Meshy Text to 3D v2.
-- Preview: `POST https://api.meshy.ai/openapi/v2/text-to-3d` with `mode: preview`.
-- Refine: the same endpoint with `mode: refine`, PBR enabled and GLB requested.
-- Status: `GET https://api.meshy.ai/openapi/v2/text-to-3d/:id`.
+- **Preferred hero path:** an approved HTTPS reference plate → Meshy Image-to-3D (`/openapi/v1/image-to-3d`) using `meshy-7.1`, 4K geometry, remesh, PBR texturing and GLB output. This preserves authored silhouette/material direction instead of asking text generation to invent the hero.
+- **Fallback path:** Meshy Text to 3D v2 using `meshy-7.1`, 4K preview geometry and a 4K PBR refine pass.
+- Image-to-3D status: `GET https://api.meshy.ai/openapi/v1/image-to-3d/:id`.
+- Text-to-3D status: `GET https://api.meshy.ai/openapi/v2/text-to-3d/:id`.
+- Studio marks image-led tasks internally and keeps provider task IDs server-side; generated files still flow through Asset Vault before release.
 
 Official reference: https://docs.meshy.ai/en/api/text-to-3d
 
