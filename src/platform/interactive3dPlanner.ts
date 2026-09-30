@@ -46,6 +46,13 @@ export function planInteractive3DFromPrompt(input: {
   const treatment = director.report.treatment;
   const archetype = chooseArchetype(promptIntelligence.brief.projectType, input.prompt);
   const signatureIndex = signatureSceneIndex(treatment.emotionalArc, experience.scenes.length);
+  const signatureMoment = signatureMomentFor({
+    archetype,
+    projectType: promptIntelligence.brief.projectType,
+    projectName: input.projectName,
+    prompt: input.prompt,
+    directorFallback: treatment.signatureMoment.description,
+  });
   const assets = blueprintAssets({
     archetype,
     projectName: input.projectName,
@@ -63,6 +70,7 @@ export function planInteractive3DFromPrompt(input: {
       prompt: input.prompt,
       heroAssetId: assets.find((asset) => asset.heroCandidate)?.id ?? "hero",
       projectName: input.projectName,
+      signatureMoment,
     }),
   );
   const palette = paletteFor(promptIntelligence.brief.projectType, archetype);
@@ -88,7 +96,7 @@ export function planInteractive3DFromPrompt(input: {
       thesis: treatment.thesis,
       visualWorld: director.creativeDNA?.northStar ?? treatment.artBible.world,
       interactionModel: interactionModelFor(archetype),
-      signatureMoment: bounded(treatment.signatureMoment.description, 600),
+      signatureMoment,
       signatureSceneId: scenes[signatureIndex].id,
       scenes,
     },
@@ -165,6 +173,7 @@ function planScene(input: {
   prompt: string;
   heroAssetId: string;
   projectName: string;
+  signatureMoment: string;
 }): Interactive3DScene {
   const beat = input.treatment.emotionalArc[
     Math.min(
@@ -203,7 +212,7 @@ function planScene(input: {
       headline: bounded(shot?.title || beat?.label || label, 120),
       body: bounded(
         signature
-          ? input.treatment.signatureMoment.description
+          ? input.signatureMoment
           : shot?.subject
             ? shot.subject
             : beat?.purpose || purpose,
@@ -275,6 +284,55 @@ function blueprintAssets(input: {
       heroCandidate: false,
     },
   ];
+}
+
+function signatureMomentFor(input: {
+  archetype: Interactive3DBlueprint["experience"]["archetype"];
+  projectType: Interactive3DBlueprint["project"]["projectType"];
+  projectName: string;
+  prompt: string;
+  directorFallback: string;
+}) {
+  const subject = projectSubjectFor(input.prompt, input.projectName, input.projectType);
+  const moments: Record<Interactive3DBlueprint["experience"]["archetype"], string> = {
+    "product-reveal":
+      input.projectName + " peaks when " + subject + " moves from a withheld or separated construction state into one complete, inspectable form; the camera settles into material-scale detail instead of adding a second spectacle.",
+    "spatial-story":
+      input.projectName + " peaks at an authored threshold where " + subject + " opens from compression into the clearest sense of place, scale or view; camera direction, horizon and light carry continuously through the reveal.",
+    "editorial-depth":
+      input.projectName + " peaks when the editorial field briefly gives spatial priority to " + subject + "; typography, image depth and camera pressure resolve into one legible composition before returning to stillness.",
+    "interactive-gallery":
+      input.projectName + " peaks when " + subject + " leaves the collection rhythm and becomes the single spatial focus; selection, camera and surrounding works quiet down so the chosen piece earns the frame.",
+    "configurator":
+      input.projectName + " peaks when a deliberate user choice produces a clearly visible state change on " + subject + "; the result remains inspectable and reversible rather than becoming an ornamental animation.",
+    "data-sculpture":
+      input.projectName + " peaks when the governing data change reorganizes " + subject + " into a materially different spatial state while the semantic explanation remains readable beside it.",
+    "world-explorer":
+      input.projectName + " peaks when the visitor crosses a deliberate spatial threshold in " + subject + " and the environment reveals a new scale, destination or relationship; navigation remains authored rather than free-camera spectacle.",
+  };
+  const authored = bounded(moments[input.archetype], 600);
+  const genericFallback = /competitors could not credibly own|signature moment demonstrates|memorable behavior/i.test(input.directorFallback);
+  if (genericFallback) return authored;
+  return bounded(authored + " Director intent: " + input.directorFallback, 600);
+}
+
+function projectSubjectFor(
+  prompt: string,
+  projectName: string,
+  projectType: Interactive3DBlueprint["project"]["projectType"],
+) {
+  const lower = prompt.toLowerCase();
+  if (/\bwatch|timepiece|mechanical\b/.test(lower)) return "the mechanical timepiece and its construction";
+  if (/\bcoffee|cup|roastery|espresso|bean\b/.test(lower)) return "the coffee ritual, hero cup and material detail";
+  if (/\bshoe|sneaker|footwear\b/.test(lower)) return "the hero footwear form, sole and material system";
+  if (/\bperfume|fragrance|bottle\b/.test(lower)) return "the hero bottle, glass and liquid/material relationship";
+  if (/\bcar|vehicle|automotive|roadster|sedan|suv\b/.test(lower)) return "the vehicle form and engineering detail";
+  if (/\bresidence|property|tower|architecture|waterfront|hotel|resort|interior\b/.test(lower)) return projectName + "'s architecture, thresholds, materials and view";
+  if (/\bfashion|couture|collection|garment|apparel|lookbook\b/.test(lower)) return "the collection silhouette, image direction and material detail";
+  if (/\bportfolio|case stud|project work|gallery\b/.test(lower)) return projectName + "'s selected work";
+  if (/\bdata|metric|network|system map|visuali[sz]ation\b/.test(lower)) return "the project data and its spatial relationships";
+  if (projectType === "saas") return projectName + "'s product mechanism";
+  return projectName + "'s primary subject";
 }
 
 function signatureSceneIndex(beats: ReturnType<typeof runDirectorIntelligence>["report"]["treatment"]["emotionalArc"], sceneCount: number) {
