@@ -121,6 +121,24 @@ const definitions:LoopDefinition[]=[
     ],
     budgets:{ maxCycles:4,maxCandidatesPerCycle:3,maxCandidateAttempts:12,maxWallTimeMs:2_400_000,noProgressLimit:2 },
   },
+  {
+    ...common,
+    id:"concept-reset",
+    label:"Concept Reset",
+    description:"Replace a failed creative concept at the structural level instead of polishing a weak composition.",
+    objective:"Produce a materially different, brief-specific experience by rebuilding scene topology, shot order, camera language, motion archetypes and typed interaction logic while preserving verified client facts and registered asset identity.",
+    worker:"creative-rebuild",
+    executable:true,
+    verifiers:["schema","functional","assets","motion","mobile","performance","accessibility","visual"],
+    allowedRepairCommands:["concept.reset"],
+    strategies:[
+      { id:"narrative-reversal",label:"Narrative reversal",instruction:"Reconsider the order in which the visitor discovers the product or story. Change scene topology and shot sequence so the experience earns its signature moment instead of front-loading it." },
+      { id:"signature-mechanism",label:"Signature mechanism",instruction:"Rebuild around one project-specific interaction or cinematic mechanism. Remove interchangeable motion language and make supporting scenes create contrast around the signature beat." },
+      { id:"interaction-led",label:"Interaction led",instruction:"Use typed Forge interactions to make the visitor cause a meaningful visual state change. Rebuild the scene arc around that cause-and-effect rather than adding hover decoration to an unchanged layout." },
+    ],
+    budgets:{ maxCycles:3,maxCandidatesPerCycle:3,maxCandidateAttempts:9,maxWallTimeMs:2_400_000,noProgressLimit:1 },
+  },
+
 ].map((definition)=>loopDefinitionSchema.parse(definition));
 
 export const loopDefinitions=definitions;
