@@ -24,7 +24,6 @@ const interactionRecipeSchema=z.discriminatedUnion("kind",[
   z.object({
     kind:z.literal("scene-sequence"),
     sceneSlot:z.number().int().min(0).max(7),
-    sequenceName:z.string().regex(/^[a-zA-Z0-9_.:-]{1,120}$/),
   }).strict(),
   z.object({
     kind:z.literal("scene-shader"),
@@ -41,7 +40,7 @@ const interactionRecipeSchema=z.discriminatedUnion("kind",[
   z.object({
     kind:z.literal("click-sequence"),
     target:z.string().regex(/^[a-zA-Z0-9_.:-]{1,160}$/),
-    sequenceName:z.string().regex(/^[a-zA-Z0-9_.:-]{1,120}$/),
+    sceneSlot:z.number().int().min(0).max(7),
   }).strict(),
   z.object({
     kind:z.literal("hover-class"),
@@ -172,7 +171,7 @@ function buildInteractionGraph(experience:ExperienceConfig,plan:CreativeRebuildP
       if(!scene) continue;
       connect(
         {id:"concept-trigger-"+serial,label:"Enter "+scene.label,kind:"trigger",position:{x:40,y},event:"scene-enter",sceneId:scene.id,states:["default"]},
-        {id:"concept-action-"+serial,label:"Play "+recipe.sequenceName,kind:"action",position:{x:340,y},action:{type:"sequence",name:recipe.sequenceName,command:"play",loop:false,release:false}},
+        {id:"concept-action-"+serial,label:"Play "+scene.label,kind:"action",position:{x:340,y},action:{type:"sequence",name:scene.id,command:"play",loop:false,release:false}},
       );
     } else if(recipe.kind==="scene-shader") {
       const scene=experience.scenes[recipe.sceneSlot];
@@ -187,9 +186,11 @@ function buildInteractionGraph(experience:ExperienceConfig,plan:CreativeRebuildP
         {id:"concept-action-"+serial,label:"Enable orbit "+recipe.target,kind:"action",position:{x:340,y},action:{type:"orbit",target:recipe.target,command:"enable",sensitivity:recipe.sensitivity}},
       );
     } else if(recipe.kind==="click-sequence") {
+      const scene=experience.scenes[recipe.sceneSlot];
+      if(!scene) continue;
       connect(
         {id:"concept-trigger-"+serial,label:"Activate "+recipe.target,kind:"trigger",position:{x:40,y},event:"click",target:recipe.target,states:["default"]},
-        {id:"concept-action-"+serial,label:"Play "+recipe.sequenceName,kind:"action",position:{x:340,y},action:{type:"sequence",name:recipe.sequenceName,command:"play",loop:false,release:false}},
+        {id:"concept-action-"+serial,label:"Play "+scene.label,kind:"action",position:{x:340,y},action:{type:"sequence",name:scene.id,command:"play",loop:false,release:false}},
       );
     } else {
       const addId="concept-trigger-"+serial;
