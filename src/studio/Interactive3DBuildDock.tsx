@@ -78,7 +78,7 @@ export function Interactive3DBuildDock(props: {
   }
 
   return (
-    <section className="production-3d-builder" data-expanded={expanded}>
+    <section id="interactive-3d-build" className="production-3d-builder" data-expanded={expanded}>
       <header className="production-3d-builder__head">
         <div>
           <span>AI 3D BUILD</span>
