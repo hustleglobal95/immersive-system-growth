@@ -31,6 +31,11 @@ export const Interactive3DSceneSchema = z.object({
   purpose: medium,
   dominantSubject: medium,
   copyRole: medium,
+  copy: z.object({
+    eyebrow: z.string().max(100).optional(),
+    headline: z.string().min(1).max(120),
+    body: z.string().min(1).max(800),
+  }).strict().optional(),
   medium: z.enum(["dom", "hybrid", "webgl"]),
   depthStrategy: z.enum([
     "flat",
