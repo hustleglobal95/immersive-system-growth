@@ -111,7 +111,7 @@ function knownInteractionTargets(experience:ExperienceConfig,graph:InteractionGr
 function gatewaySchema(sourceSceneIds:string[],targets:string[]) {
   const targetEnum=targets.length ? targets : ["hero"];
   const recipe={
-    oneOf:[
+    anyOf:[
       {
         type:"object",
         properties:{
