@@ -8,14 +8,16 @@ import type { LoopCandidateEvidence, LoopRunReport } from "../src/platform/loops
 import { analyzeAssetManifest } from "../src/platform/assetIntelligence";
 import { buildAssetQualityCandidate, profileAssetQuality } from "../src/platform/assetQuality";
 import { buildConstructionCandidate } from "../src/platform/constructionWorker";
+import { applyCreativeRebuildPlan } from "../src/platform/autonomy/creativeRebuild";
+import { parseInteractionGraph } from "../src/lib/interactionGraph";
 import { parseExperience } from "../src/lib/configSchema";
 import rawExperience from "../config/experience.json";
 import rawManifest from "../config/asset-manifest.json";
 import type { AssetManifest } from "../src/types/assets";
 
 test("Loop Engine exposes only workers that have production-safe executors",()=>{
-  assert.deepEqual(executableLoopDefinitions().map((item)=>item.id),["visual-polish","mobile-translation","motion-polish","performance","asset-quality","construction"]);
-  assert.equal(loopDefinitions.length,6);
+  assert.deepEqual(executableLoopDefinitions().map((item)=>item.id),["visual-polish","mobile-translation","motion-polish","performance","asset-quality","construction","concept-reset"]);
+  assert.equal(loopDefinitions.length,7);
   assert.equal(loopDefinition("performance")?.executable,true);
   assert.equal(loopDefinition("asset-quality")?.executable,true);
   assert.equal(loopDefinition("construction")?.executable,true);
@@ -201,12 +203,75 @@ test("Construction worker preserves client copy and camera endpoints while rebui
   });
 });
 
+test("Concept Reset can replace scene topology and compile a new typed interaction graph",()=>{
+  const source=parseExperience(rawExperience);
+  const graph=parseInteractionGraph(JSON.parse(fs.readFileSync("config/interaction-graph.json","utf8")));
+  const plan={
+    version:1 as const,
+    thesis:"Turn the project into a deliberate reveal sequence with one interaction-owned signature beat.",
+    failureDiagnosis:"The existing sequence spends equal intensity across too many chapters and never creates a decisive visual event.",
+    structuralReason:"Reordering and duplicating the strongest authored scenes creates anticipation, proof and resolution without inventing client facts.",
+    sceneBlueprints:[
+      {sourceSceneId:source.scenes[0].id,label:"Arrival",role:"establish" as const,archetype:"editorial-reveal" as const,cameraChoreography:"director-precision-push" as const,intensity:3},
+      {sourceSceneId:source.scenes[2].id,label:"Threshold",role:"threshold" as const,archetype:"threshold-passage" as const,cameraChoreography:"director-crane-reveal" as const,intensity:7},
+      {sourceSceneId:source.scenes[3].id,label:"Material reveal",role:"reveal" as const,archetype:"product-hero" as const,cameraChoreography:"director-macro-approach" as const,intensity:10},
+      {sourceSceneId:source.scenes.at(-1)!.id,label:"Resolve",role:"resolve" as const,archetype:"editorial-reveal" as const,cameraChoreography:"director-pullback-reveal" as const,intensity:4},
+    ],
+    interactionRecipes:[
+      {kind:"scene-sequence" as const,sceneSlot:2},
+      {kind:"pointer-orbit" as const,target:"hero",sensitivity:.006},
+    ],
+    assetGaps:[],
+  };
+  const rebuilt=applyCreativeRebuildPlan({experience:source,interactionGraph:graph,plan});
+  assert.equal(rebuilt.blockers.length,0);
+  assert.equal(rebuilt.experience.scenes.length,4);
+  assert.deepEqual(rebuilt.experience.scenes.map((scene)=>scene.id),[
+    source.scenes[0].id,source.scenes[2].id,source.scenes[3].id,source.scenes.at(-1)!.id,
+  ]);
+  assert.deepEqual(rebuilt.experience.scenes[2].copy,source.scenes[3].copy);
+  assert.ok(rebuilt.experience.scenes[2].motionTracks.some((track)=>track.target==="camera.position"));
+  assert.ok(rebuilt.interactionGraph.nodes.some((node)=>node.kind==="action" && node.action.type==="sequence" && node.action.name===rebuilt.experience.scenes[2].id));
+  assert.ok(rebuilt.interactionGraph.nodes.some((node)=>node.kind==="action" && node.action.type==="orbit" && node.action.target==="hero"));
+});
+
+test("Concept Reset blocks critical missing assets instead of pretending it can deliver the concept",()=>{
+  const source=parseExperience(rawExperience);
+  const graph=parseInteractionGraph(JSON.parse(fs.readFileSync("config/interaction-graph.json","utf8")));
+  const plan={
+    version:1 as const,
+    thesis:"Build around a verified hero object rather than a placeholder.",
+    failureDiagnosis:"The current project has no asset capable of supporting the requested signature interaction.",
+    structuralReason:"The concept depends on a real hero object, so structure must wait for that asset instead of faking the result.",
+    sceneBlueprints:[
+      {sourceSceneId:source.scenes[0].id,label:"Open",role:"establish" as const,archetype:"editorial-reveal" as const,cameraChoreography:"director-precision-push" as const,intensity:3},
+      {sourceSceneId:source.scenes[1].id,label:"Build",role:"build" as const,archetype:"parallax-story" as const,cameraChoreography:"director-parallax-truck" as const,intensity:6},
+      {sourceSceneId:source.scenes[2].id,label:"Reveal",role:"reveal" as const,archetype:"product-hero" as const,cameraChoreography:"director-macro-approach" as const,intensity:10},
+    ],
+    interactionRecipes:[],
+    assetGaps:[{name:"approved-hero.glb",type:"model" as const,reason:"The signature interaction requires client-approved geometry.",critical:true}],
+  };
+  const rebuilt=applyCreativeRebuildPlan({experience:source,interactionGraph:graph,plan});
+  assert.ok(rebuilt.blockers.some((item)=>/approved-hero\.glb/i.test(item)));
+  assert.deepEqual(rebuilt.experience,source);
+});
+
 test("Construction Loop requires the complete verification stack",()=>{
   const definition=loopDefinition("construction")!;
   for(const verifier of ["schema","functional","assets","motion","mobile","performance","accessibility","visual"] as const) {
     assert.ok(definition.verifiers.includes(verifier));
   }
   assert.deepEqual(definition.strategies.map((item)=>item.id),["hierarchy-first","camera-structure","signature-budget"]);
+});
+
+test("Concept Reset is a high-authority loop with the full verification stack",()=>{
+  const definition=loopDefinition("concept-reset")!;
+  assert.equal(definition.worker,"creative-rebuild");
+  assert.deepEqual(definition.allowedRepairCommands,["concept.reset"]);
+  assert.deepEqual(definition.strategies.map((item)=>item.id),["narrative-reversal","signature-mechanism","interaction-led"]);
+  for(const verifier of ["schema","functional","assets","motion","mobile","performance","accessibility","visual"] as const) {
+    assert.ok(definition.verifiers.includes(verifier));
+  }
 });
 
 test("Performance Loop has distinct evidence-driven candidate strategies",()=>{
