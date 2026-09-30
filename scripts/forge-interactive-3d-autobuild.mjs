@@ -5,7 +5,7 @@ import { planInteractive3DFromPrompt } from "../src/platform/interactive3dPlanne
 import { aiGatewayInteractive3DPlannerConfigured, refineInteractive3DBlueprintWithAi } from "../src/platform/autonomy/aiGatewayInteractive3DPlanner.ts";
 import { resolveInteractive3DGeneratedAssets } from "../src/platform/interactive3dAssetFactory.ts";
 import { compileInteractive3DBlueprint } from "../src/platform/interactive3dCompiler.ts";
-import { materializeInteractive3DExperience } from "../src/platform/interactive3dMaterializer.ts";
+import { materializeInteractive3DExperience } from "../src/platform/interactive3dMaterializer.ts";\nimport { evaluateInteractive3DAutobuildReadiness } from "../src/platform/interactive3dAutobuild.ts";
 
 const options = args(process.argv.slice(2));
 const prompt = await resolvePrompt(options);
@@ -81,31 +81,70 @@ if (unresolvedHero && strict) {
   fail(materialized.assetReadiness.blockers.join(" "));
 }
 
-let loop = null;
-if (bool(options.loop, true)) {
-  const loopOutput=path.join(outputRoot,"construction-loop");
-  const result=await run(process.execPath,[
-    "--import","tsx","scripts/loop-run.mjs",
-    "--loop","construction",
-    "--experience",path.join(outputRoot,"04-signature-experience.json"),
-    "--manifest",generationRequested ? path.join(outputRoot,"02-asset-manifest.json") : manifestPath,
-    "--graph",graphPath,
-    "--cinematic",cinematicPath,
-    "--context",prompt,
-    "--output",loopOutput,
-    "--cycles",String(integer(options.cycles,3)),
-    "--candidates",String(integer(options.candidates,3)),
-  ]);
-  const loopReportPath=path.join(loopOutput,"run-report.json");
-  const loopReport=await readJson(loopReportPath,null);
-  loop={code:result.code,reportPath:loopReportPath,report:loopReport};
-  if(result.code!==0 && bool(options.strict,false)) {
-    await write("autobuild-report.json",report({materialized:true,loop}));
-    fail("Construction loop failed closed. Inspect "+loopReportPath);
+let constructionLoop = null;
+let visualPolishLoop = null;
+let finalExperienceSource = path.join(outputRoot,"04-signature-experience.json");
+let finalManifestSource = generationRequested ? path.join(outputRoot,"02-asset-manifest.json") : manifestPath;
+let finalGraphSource = graphPath;
+const loopsRequested = bool(options.loop, true);
+const polishRequested = loopsRequested && bool(options.polish, true);
+
+if (loopsRequested && !unresolvedHero) {
+  constructionLoop = await runForgeLoop({
+    loopId:"construction",
+    output:path.join(outputRoot,"construction-loop"),
+    experience:finalExperienceSource,
+    manifest:finalManifestSource,
+    graph:finalGraphSource,
+    cycles:integer(options.cycles,3),
+    candidates:integer(options.candidates,3),
+  });
+  if (constructionLoop.code === 0 && constructionLoop.report) {
+    finalExperienceSource = constructionLoop.report.acceptedExperiencePath || finalExperienceSource;
+    finalManifestSource = constructionLoop.report.acceptedAssetManifestPath || finalManifestSource;
+    finalGraphSource = constructionLoop.report.acceptedInteractionGraphPath || finalGraphSource;
+  }
+  if (constructionLoop.code !== 0 && strict) {
+    const current=report({materialized:true,constructionLoop,visualPolishLoop});
+    await write("autobuild-report.json",current);
+    fail("Construction loop failed closed. Inspect "+constructionLoop.reportPath);
+  }
+
+  if (polishRequested && constructionLoop.code === 0) {
+    visualPolishLoop = await runForgeLoop({
+      loopId:"visual-polish",
+      output:path.join(outputRoot,"visual-polish-loop"),
+      experience:finalExperienceSource,
+      manifest:finalManifestSource,
+      graph:finalGraphSource,
+      cycles:integer(options["polish-cycles"],2),
+      candidates:integer(options["polish-candidates"],3),
+    });
+    if (visualPolishLoop.code === 0 && visualPolishLoop.report) {
+      finalExperienceSource = visualPolishLoop.report.acceptedExperiencePath || finalExperienceSource;
+      finalManifestSource = visualPolishLoop.report.acceptedAssetManifestPath || finalManifestSource;
+      finalGraphSource = visualPolishLoop.report.acceptedInteractionGraphPath || finalGraphSource;
+    }
+    if (visualPolishLoop.code !== 0 && strict) {
+      const current=report({materialized:true,constructionLoop,visualPolishLoop});
+      await write("autobuild-report.json",current);
+      fail("Visual-polish loop failed closed. Inspect "+visualPolishLoop.reportPath);
+    }
   }
 }
 
-const finalReport=report({materialized:true,loop});
+if (loopsRequested && unresolvedHero) {
+  console.log("Rendered loops skipped: the signature-critical hero asset is unresolved.");
+}
+
+const finalExperienceArtifact=path.join(outputRoot,"05-final-experience.json");
+const finalManifestArtifact=path.join(outputRoot,"05-final-asset-manifest.json");
+const finalGraphArtifact=path.join(outputRoot,"05-final-interaction-graph.json");
+await fs.copyFile(finalExperienceSource,finalExperienceArtifact);
+await fs.copyFile(finalManifestSource,finalManifestArtifact);
+await fs.copyFile(finalGraphSource,finalGraphArtifact);
+
+const finalReport=report({materialized:true,constructionLoop,visualPolishLoop});
 await write("autobuild-report.json",finalReport);
 if(strict && !finalReport.autonomousProductionReady) {
   fail("Strict autonomous 3D production did not earn production-ready status. Inspect "+path.join(outputRoot,"autobuild-report.json"));
@@ -113,11 +152,23 @@ if(strict && !finalReport.autonomousProductionReady) {
 console.log("FORGE INTERACTIVE 3D AUTOBUILD COMPLETE");
 console.log("Blueprint: "+path.join(outputRoot,generationRequested ? "02-resolved-blueprint.json" : "01-blueprint.json"));
 console.log("Signature experience: "+path.join(outputRoot,"04-signature-experience.json"));
-if(loop?.report?.acceptedExperiencePath) console.log("Verified improved experience: "+loop.report.acceptedExperiencePath);
+console.log("Final experience: "+finalExperienceArtifact);
 if(!aiConfigured) console.log("AI planner: deterministic baseline only (AI Gateway not configured)");
 if(unresolvedHero) console.log("Asset readiness: BLOCKED until signature asset generation/promotion completes");
+if(!finalReport.autonomousProductionReady) {
+  console.log("Production readiness: BLOCKED · "+finalReport.readiness.blockers.join(" | "));
+}
 
 function report(input){
+  const readiness=evaluateInteractive3DAutobuildReadiness({
+    materialized:input.materialized,
+    signatureReady:!unresolvedHero,
+    aiRequested,
+    aiConfigured,
+    aiUsed:aiRequested&&aiConfigured,
+    construction:input.constructionLoop,
+    visualPolish:input.visualPolishLoop,
+  });
   return {
     version:1,
     projectId,projectName,prompt,
@@ -132,16 +183,36 @@ function report(input){
       blockers:input.materialized ? materialized.assetReadiness.blockers : [],
     },
     materialized:input.materialized,
-    loop:input.loop,
-    autonomousProductionReady:Boolean(
-      input.materialized &&
-      !unresolvedHero &&
-      aiRequested &&
-      aiConfigured &&
-      input.loop?.report?.acceptedImprovements > 0 &&
-      ["completed","converged"].includes(String(input.loop?.report?.status))
-    ),
+    loop:input.constructionLoop,
+    loops:{
+      construction:input.constructionLoop,
+      visualPolish:input.visualPolishLoop,
+    },
+    finalArtifacts:{
+      experience:"05-final-experience.json",
+      assetManifest:"05-final-asset-manifest.json",
+      interactionGraph:"05-final-interaction-graph.json",
+    },
+    readiness,
+    autonomousProductionReady:readiness.ready,
   };
+}
+
+async function runForgeLoop(input){
+  const result=await run(process.execPath,[
+    "--import","tsx","scripts/loop-run.mjs",
+    "--loop",input.loopId,
+    "--experience",input.experience,
+    "--manifest",input.manifest,
+    "--graph",input.graph,
+    "--cinematic",cinematicPath,
+    "--context",prompt,
+    "--output",input.output,
+    "--cycles",String(input.cycles),
+    "--candidates",String(input.candidates),
+  ]);
+  const reportPath=path.join(input.output,"run-report.json");
+  return {code:result.code,reportPath,report:await readJson(reportPath,null)};
 }
 async function resolvePrompt(opts){
   if(opts.prompt) return String(opts.prompt).trim();
