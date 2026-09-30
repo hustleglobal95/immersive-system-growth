@@ -34,6 +34,10 @@ const base = planInteractive3DFromPrompt({prompt,projectName,experience,manifest
 let blueprint = base.blueprint;
 const aiRequested = bool(options.ai, true);
 const aiConfigured = aiGatewayInteractive3DPlannerConfigured(process.env);
+const strict = strict;
+if (strict && (!aiRequested || !aiConfigured)) {
+  fail("Strict autonomous 3D production requires the bounded AI planner and AI Gateway credentials.");
+}
 if (aiRequested && aiConfigured) {
   blueprint = await refineInteractive3DBlueprintWithAi({ prompt, base: blueprint });
 } else if (bool(options["require-ai"], false) && !aiConfigured) {
@@ -72,7 +76,7 @@ if (bool(options["plan-only"], false)) {
 const materialized = materializeInteractive3DExperience({blueprint,experience});
 await write("04-signature-experience.json", materialized.experience);
 const unresolvedHero = !materialized.assetReadiness.ready;
-if (unresolvedHero && bool(options.strict, false)) {
+if (unresolvedHero && strict) {
   await write("autobuild-report.json", report({materialized:true,loop:null}));
   fail(materialized.assetReadiness.blockers.join(" "));
 }
@@ -103,6 +107,9 @@ if (bool(options.loop, true)) {
 
 const finalReport=report({materialized:true,loop});
 await write("autobuild-report.json",finalReport);
+if(strict && !finalReport.autonomousProductionReady) {
+  fail("Strict autonomous 3D production did not earn production-ready status. Inspect "+path.join(outputRoot,"autobuild-report.json"));
+}
 console.log("FORGE INTERACTIVE 3D AUTOBUILD COMPLETE");
 console.log("Blueprint: "+path.join(outputRoot,generationRequested ? "02-resolved-blueprint.json" : "01-blueprint.json"));
 console.log("Signature experience: "+path.join(outputRoot,"04-signature-experience.json"));
@@ -129,6 +136,7 @@ function report(input){
     autonomousProductionReady:Boolean(
       input.materialized &&
       !unresolvedHero &&
+      aiRequested &&
       aiConfigured &&
       input.loop?.report?.acceptedImprovements > 0 &&
       ["completed","converged"].includes(String(input.loop?.report?.status))
