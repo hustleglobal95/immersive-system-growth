@@ -3,6 +3,7 @@ import path from "node:path";
 import { parseDirectorBrief } from "../src/platform/directorSchema.ts";
 import { runDirectorIntelligence } from "../src/platform/director-intelligence/orchestrator.ts";
 import { buildForgeBuildPacket } from "../src/platform/buildPacket.ts";
+import { blueprintToDirectorBrief, parseInteractive3DBlueprint } from "../src/platform/interactive3dBlueprint.ts";
 import { inferPromptIntelligence } from "../src/platform/autonomy/promptIntelligence.ts";
 import { parseExperience } from "../src/lib/configSchema.ts";
 import { parseAssetManifest } from "../src/platform/assetManifestSchema.ts";
@@ -11,6 +12,7 @@ import { applyReferenceAnalysesToBrief, classifyPromptUrls, loadReferenceAnalyse
 
 const options=Object.fromEntries(process.argv.slice(2).filter((arg)=>arg.startsWith("--")&&arg.includes("=")).map((arg)=>arg.slice(2).split(/=(.*)/s,2)));
 const briefPath=String(options.brief || "config/director-brief.example.json");
+const blueprintPath=String(options.blueprint || "").trim();
 const output=String(options.output || "");
 const promptFile=String(options["prompt-file"] || "").trim();
 const prompt=promptFile ? (await fs.readFile(path.resolve(promptFile),"utf8")).trim() : String(options.prompt || "").trim();
@@ -19,19 +21,24 @@ const referenceAnalysisPaths=parseDelimitedList(options["reference-analysis"]);
 const businessUrls=parseDelimitedList(options["business-url"]);
 const referenceUrls=parseDelimitedList(options["reference-url"]);
 const supportingUrls=parseDelimitedList(options["supporting-url"]);
-const [briefRaw,experience,assetManifest,interactionGraph,cinematicSystems,repoContract]=await Promise.all([
+if(blueprintPath&&prompt) throw new Error("Pass either --blueprint or --prompt, not both.");
+const [briefRaw,experience,assetManifest,interactionGraph,cinematicSystems,repoContract,blueprintRaw]=await Promise.all([
   prompt ? Promise.resolve("") : fs.readFile(briefPath,"utf8"),
   fs.readFile(String(options.experience || "config/experience.json"),"utf8"),
   fs.readFile(String(options.manifest || "config/asset-manifest.json"),"utf8"),
   fs.readFile(String(options.graph || "config/interaction-graph.json"),"utf8"),
   fs.readFile(String(options.cinematic || "config/cinematic-systems.json"),"utf8"),
   fs.readFile("CLAUDE.md","utf8"),
+  blueprintPath ? fs.readFile(path.resolve(blueprintPath),"utf8") : Promise.resolve(""),
 ]);
 const parsedExperience=parseExperience(JSON.parse(experience));
 const parsedManifest=parseAssetManifest(JSON.parse(assetManifest));
-const inferredBrief=prompt
-  ? inferPromptIntelligence({prompt,projectName,sceneCount:parsedExperience.scenes.length,manifest:parsedManifest}).brief
-  : parseDirectorBrief(JSON.parse(briefRaw));
+const interactive3dBlueprint=blueprintRaw ? parseInteractive3DBlueprint(JSON.parse(blueprintRaw)) : null;
+const inferredBrief=interactive3dBlueprint
+  ? blueprintToDirectorBrief(interactive3dBlueprint)
+  : prompt
+    ? inferPromptIntelligence({prompt,projectName,sceneCount:parsedExperience.scenes.length,manifest:parsedManifest}).brief
+    : parseDirectorBrief(JSON.parse(briefRaw));
 const urlClassification=prompt
   ? classifyPromptUrls(prompt,{businessUrls,referenceUrls,supportingUrls})
   : {detected:[],groups:{business:[],reference:[],supporting:[]},unclassified:[],notInPrompt:[]};
@@ -62,6 +69,7 @@ const packet=buildForgeBuildPacket({
   },
   repoContract,
   externalReferenceIntelligence:summarizeReferenceAnalyses(referenceRows),
+  interactive3dBlueprint:interactive3dBlueprint ?? undefined,
 });
 if(output) {
   const target=path.resolve(output);

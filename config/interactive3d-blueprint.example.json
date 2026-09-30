@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "project": {
+    "name": "Mercury Runner",
+    "projectType": "product",
+    "tier": "signature",
+    "audience": "Performance-minded runners who respond to premium editorial product storytelling.",
+    "objective": "Make the shoe feel engineered, desirable and materially distinctive.",
+    "primaryAction": "Explore the product",
+    "brandTruth": "Performance is expressed through material precision and controlled motion.",
+    "differentiators": [
+      "One hero product remains the visual anchor.",
+      "Motion reveals construction rather than decorating the page."
+    ],
+    "constraints": [
+      "Essential copy and conversion remain semantic DOM.",
+      "WebGL is the production baseline."
+    ]
+  },
+  "experience": {
+    "archetype": "product-reveal",
+    "thesis": "A controlled spatial reveal turns product engineering into the narrative.",
+    "visualWorld": "Dark editorial typography, polished metal, restrained reflective atmosphere.",
+    "interactionModel": "Scroll establishes narrative progress while pointer movement adds bounded physical parallax.",
+    "signatureMoment": "The hero shoe resolves from a reflective field into a precise close inspection state.",
+    "signatureSceneId": "hero-reveal",
+    "scenes": [
+      {
+        "id": "hero-reveal",
+        "label": "Hero reveal",
+        "purpose": "Establish the product as the dominant spatial subject.",
+        "dominantSubject": "Performance running shoe",
+        "copyRole": "DOM headline and primary action frame the 3D hero.",
+        "medium": "hybrid",
+        "depthStrategy": "material",
+        "camera": {
+          "move": "reveal",
+          "lens": "normal",
+          "rationale": "Open enough space to reveal the product without turning the camera into spectacle."
+        },
+        "interaction": {
+          "input": "mixed",
+          "physicalQuantity": "progress",
+          "behavior": "Scroll controls reveal progress; pointer adds bounded parallax only after readiness."
+        },
+        "transition": "Settle into a stable inspection state before supporting copy advances.",
+        "mobile": "Use a static-biased hero composition with reduced reflection and smaller camera travel.",
+        "prewarm": [
+          "critical hero GLB",
+          "KTX2 hero textures",
+          "environment map",
+          "hero material pipelines"
+        ]
+      },
+      {
+        "id": "material-proof",
+        "label": "Material proof",
+        "purpose": "Translate product construction into a legible close-detail chapter.",
+        "dominantSubject": "Hero shoe material and sole detail",
+        "copyRole": "DOM copy explains the product proof while 3D supplies spatial evidence.",
+        "medium": "hybrid",
+        "depthStrategy": "perspective",
+        "camera": {
+          "move": "macro",
+          "lens": "macro",
+          "rationale": "Use a bounded detail approach rather than arbitrary camera coordinates."
+        },
+        "interaction": {
+          "input": "scroll",
+          "physicalQuantity": "progress",
+          "behavior": "Normalized scroll progress advances the authored detail state."
+        },
+        "transition": "Ease from the hero state into a readable detail composition.",
+        "mobile": "Preserve the material proof with a shorter approach and lower LOD.",
+        "prewarm": [
+          "detail LOD",
+          "detail texture set"
+        ]
+      }
+    ]
+  },
+  "renderer": {
+    "strategy": "webgl",
+    "rationale": "Use the existing persistent Forge R3F/Three runtime and adaptive render governor."
+  },
+  "assets": [
+    {
+      "id": "hero-shoe",
+      "label": "Hero running shoe",
+      "type": "model",
+      "status": "generate",
+      "role": "Signature product asset; must pass the Forge asset factory before runtime use.",
+      "heroCandidate": true
+    }
+  ],
+  "references": [],
+  "performance": {
+    "targetFps": 60,
+    "initialCriticalMb": 6,
+    "maxActiveMb": 72,
+    "maxDrawCalls": 90,
+    "maxTriangles": 600000
+  },
+  "accessibility": {
+    "semanticFallback": "DOM product story and hero poster remain useful when WebGL is unavailable.",
+    "reducedMotion": "Replace camera travel with stable compositions and discrete state changes.",
+    "keyboardPath": "All essential product exploration and conversion actions have semantic keyboard controls."
+  }
+}
