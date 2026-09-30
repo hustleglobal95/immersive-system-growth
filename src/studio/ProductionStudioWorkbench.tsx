@@ -27,6 +27,7 @@ import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
 import { STUDIO_GUIDE_BRIEF_KEY, STUDIO_GUIDE_SHIP_KEY, StudioWorkflowGuide } from "@/src/studio/StudioWorkflowGuide";
 import { StudioVaultPanel } from "@/src/studio/StudioVaultPanel";
 import { StudioIdentityBadge } from "@/src/studio/StudioIdentityBadge";
+import { Interactive3DBuildDock } from "@/src/studio/Interactive3DBuildDock";
 import { LoopEnginePanel } from "@/src/studio/LoopEnginePanel";
 import { capabilitiesForContext, type ResolvedCapability } from "@/src/platform/control-plane/capabilityRegistry";
 import { createProposalDraft, type ForgeProposal } from "@/src/platform/control-plane/proposal";
@@ -638,7 +639,7 @@ export function ProductionStudioWorkbench() {
         onOpenShip={() => { closeGuide(); setSurface("Ship"); setAdvanced(false); }}
       />}
       <header className="production-topbar">
-        <div className="production-brand"><Link href="/forge">FORGE</Link><span>STUDIO</span></div>
+        <div className="production-brand"><Link href="/forge">FORGE</Link><span>3D STUDIO</span><em>INTERACTIVE WEB</em></div>
         <nav aria-label="Primary Studio surfaces">
           {primarySurfaces.map((item) => <button key={item} type="button" aria-current={!advanced && surface === item ? "page" : undefined} onClick={() => { setSurface(item); setAdvanced(false); setAnimateOpen(false); }}>{item}</button>)}
         </nav>
@@ -681,9 +682,9 @@ export function ProductionStudioWorkbench() {
       ) : (
         <div className="production-layout">
           <aside className="production-left">
-            <div className="production-panel-title"><div><span>PROJECT</span><strong>{draft.project.name}</strong></div><button type="button" title="New scene" aria-label="Add scene" onClick={addScene}>＋</button></div>
+            <div className="production-panel-title"><div><span>SCENE GRAPH</span><strong>{draft.project.name}</strong></div><button type="button" title="New scene" aria-label="Add scene" onClick={addScene}>＋</button></div>
             <div className="production-segmented">
-              {(["Scenes", "Structure", "Assets"] as LeftMode[]).map((mode) => <button key={mode} type="button" aria-pressed={leftMode === mode} onClick={() => setLeftMode(mode)}>{mode}</button>)}
+              {(["Scenes", "Structure", "Assets"] as LeftMode[]).map((mode) => <button key={mode} type="button" aria-pressed={leftMode === mode} onClick={() => setLeftMode(mode)}>{mode === "Structure" ? "Objects" : mode}</button>)}
             </div>
             <Navigator mode={leftMode} experience={draft.experience} manifest={draft.assetManifest} activeScene={sceneIndex} selection={selection} onSelect={setSelection} onScene={selectScene} />
             <button type="button" className="production-import" onClick={() => { setWorkspace("Assets"); setAdvanced(true); }}>＋ Import assets</button>
@@ -691,9 +692,32 @@ export function ProductionStudioWorkbench() {
 
           <section className={`production-stage${animateOpen ? " production-stage--animate" : ""}`}>
             <div className="production-stage-head">
-              <div><span>{scene.copy.eyebrow}</span><strong>{scene.label}</strong></div>
-              <div className="production-stage-actions"><button type="button" onClick={() => setSelection({ kind: "camera", index: sceneIndex })}>Camera</button><button type="button" className={animateOpen ? "accent" : undefined} aria-pressed={animateOpen} onClick={() => { if(animateOpen){setAnimateOpen(false);setAnimateTarget(undefined);}else openSimpleAnimate(); }}>Animate</button><button type="button" onClick={() => openAdvanced("Motion")}>Advanced</button></div>
+              <div><span>LIVE 3D VIEWPORT</span><strong>{scene.label}</strong></div>
+              <div className="production-stage-actions"><button type="button" onClick={() => setSelection({ kind: "camera", index: sceneIndex })}>Camera</button><button type="button" className={animateOpen ? "accent" : undefined} aria-pressed={animateOpen} onClick={() => { if(animateOpen){setAnimateOpen(false);setAnimateTarget(undefined);}else openSimpleAnimate(); }}>Animate</button><button type="button" onClick={() => openAdvanced("Motion")}>Timeline</button></div>
             </div>
+            <Interactive3DBuildDock
+              initialPrompt={guideBrief}
+              projectName={draft.project.name}
+              experience={draft.experience}
+              manifest={draft.assetManifest}
+              healthStatus={projectHealth.status}
+              onPreview={(candidate) => {
+                setCandidateExperience(candidate);
+                setPreviewMode("candidate");
+                setPreparedProposal(null);
+                setNotice("Interactive 3D candidate generated. Review it in the viewport before applying it.");
+              }}
+              onApply={(candidate) => {
+                draft.setExperience(candidate);
+                setCandidateExperience(null);
+                setPreviewMode("current");
+                setPreparedProposal(null);
+                setActiveScene(0);
+                setSelection({ kind: "scene", index: 0 });
+                setNotice("Interactive 3D structure applied to the draft. Continue with hero assets, motion polish and proof.");
+              }}
+              onOpenAssets={() => openAdvanced("Assets")}
+            />
             {workflow.unconfigured && <section className="production-first-run" aria-labelledby="studio-first-run-title"><div><span>START HERE</span><h2 id="studio-first-run-title">What do you want to create?</h2><p>Start with the outcome. Forge will guide assets, scenes, motion, review and publishing without asking you to learn the machinery first.</p></div><div><button type="button" className="primary" onClick={() => setGuidedOpen(true)}>Start Guided Build</button><button type="button" onClick={() => importRef.current?.click()}>Import an existing project</button><button type="button" onClick={() => { setGuideDismissed(true); try { window.localStorage.setItem("forge-studio-guided-first-run-v1", "seen"); } catch { /* storage can be blocked */ } }}>Open Studio anyway</button></div></section>}
             {!workflow.unconfigured && mission && missionPlan && <OperatorMissionControl
               mission={mission}
@@ -739,12 +763,12 @@ export function ProductionStudioWorkbench() {
               onRevert={revertAcceptedProposal}
             />
             <form className="production-command" onSubmit={(event) => { event.preventDefault(); runCommand(); }}>
-              <button type="button" className="production-command-shortcut" aria-label="Open command palette" onClick={() => setCommandPaletteOpen(true)}>⌘K</button><input aria-label="Forge command" value={command} onChange={(event) => setCommand(event.target.value)} placeholder="Tell Forge the outcome: ‘make this cinematic’, ‘fix mobile’, ‘make it inspectable’…" /><button type="submit">Direct</button>
+              <button type="button" className="production-command-shortcut" aria-label="Open command palette" onClick={() => setCommandPaletteOpen(true)}>⌘K</button><input aria-label="Forge command" value={command} onChange={(event) => setCommand(event.target.value)} placeholder="Refine the selected 3D scene: “slower macro push”, “fix mobile framing”, “reduce bloom”…" /><button type="submit">Apply</button>
             </form>
           </section>
 
           <aside className="production-right">
-            <div className="production-panel-title"><div><span>INSPECTOR</span><strong>{selectionLabel}</strong></div><button type="button" aria-label="Open advanced inspector" onClick={() => openAdvanced("Motion")}>•••</button></div>
+            <div className="production-panel-title"><div><span>PROPERTIES</span><strong>{selectionLabel}</strong></div><button type="button" aria-label="Open advanced inspector" onClick={() => openAdvanced("Motion")}>•••</button></div>
             <ContextualDirection
               context={selectionContext}
               capabilities={selectionCapabilities}
@@ -756,7 +780,7 @@ export function ProductionStudioWorkbench() {
           </aside>
 
           <section className="production-bottom">
-            <div className="production-story-head"><div><span>STORY</span><strong>{draft.experience.scenes.length} scenes</strong></div><div><button type="button" aria-label="Move scene earlier" onClick={() => moveScene(-1)} disabled={sceneIndex === 0}>←</button><button type="button" aria-label="Move scene later" onClick={() => moveScene(1)} disabled={sceneIndex === draft.experience.scenes.length - 1}>→</button><button type="button" onClick={duplicateScene}>Duplicate</button><button type="button" onClick={deleteScene}>Delete</button><button type="button" className="accent" onClick={addScene}>＋ Scene</button></div></div>
+            <div className="production-story-head"><div><span>SCROLL STORYBOARD</span><strong>{draft.experience.scenes.length} scenes · 0 → 100%</strong></div><div><button type="button" aria-label="Move scene earlier" onClick={() => moveScene(-1)} disabled={sceneIndex === 0}>←</button><button type="button" aria-label="Move scene later" onClick={() => moveScene(1)} disabled={sceneIndex === draft.experience.scenes.length - 1}>→</button><button type="button" onClick={duplicateScene}>Duplicate</button><button type="button" onClick={deleteScene}>Delete</button><button type="button" className="accent" onClick={addScene}>＋ Scene</button></div></div>
             <div className="production-story-strip">
               {draft.experience.scenes.map((item, index) => <button key={item.id} type="button" className={index === sceneIndex ? "active" : ""} onClick={() => selectScene(index)}><small>{String(index + 1).padStart(2, "0")}</small><span>{item.label}</span><i aria-hidden="true" style={scenePreviewStyle(item)} /></button>)}
             </div>

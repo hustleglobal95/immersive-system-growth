@@ -3,6 +3,7 @@ import { ProductionStudioWorkbench } from "@/src/studio/ProductionStudioWorkbenc
 import "./studio.css";
 import "./ui-refinement.css";
 import "./production-studio.css";
+import "./interactive-3d-studio.css";
 import "./workflow-guide.css";
 import { requireStudioPageAccess } from "@/src/platform/studioPageAccess";
 
@@ -10,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Forge Studio",
-  description: "Visual production control for immersive experiences.",
+  description: "AI-native production studio for interactive 3D websites.",
 };
 
 export default async function StudioPage() {
