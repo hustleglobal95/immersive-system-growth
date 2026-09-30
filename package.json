@@ -127,7 +127,9 @@
     "forge:preflight": "node scripts/forge-preflight.mjs",
     "forge:execution:audit": "node scripts/forge-execution-audit.mjs",
     "forge:reference:capture": "node scripts/forge-reference-capture.mjs",
-    "forge:reference:validate": "node scripts/forge-reference-validate.mjs"
+    "forge:reference:validate": "node scripts/forge-reference-validate.mjs",
+    "forge:3d:validate": "node --import tsx scripts/forge-interactive-3d.mjs validate",
+    "forge:3d:compile": "node --import tsx scripts/forge-interactive-3d.mjs compile"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "5.3.0",

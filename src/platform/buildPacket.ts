@@ -1,6 +1,7 @@
 import type { runDirectorIntelligence } from "@/src/platform/director-intelligence/orchestrator";
 import { buildCreativeStateGraph, buildSignatureSliceGate } from "@/src/platform/agentic/creativeStateGraph";
 import { assertProductionOriginalityGate } from "@/src/platform/director-intelligence/productionOriginalityGate";
+import { compileInteractive3DBlueprint } from "@/src/platform/interactive3dCompiler";
 
 type DirectorRun=ReturnType<typeof runDirectorIntelligence>;
 
@@ -14,6 +15,7 @@ export interface ForgeBuildPacketInput {
   };
   repoContract:string;
   externalReferenceIntelligence?:unknown[];
+  interactive3dBlueprint?:unknown;
 }
 
 export function buildForgeBuildPacket(input:ForgeBuildPacketInput) {
@@ -24,6 +26,7 @@ export function buildForgeBuildPacket(input:ForgeBuildPacketInput) {
   const selected=treatment.territories.find((item)=>item.id===treatment.selectedTerritoryId) ?? treatment.territories[0];
   const creativeState=buildCreativeStateGraph(director);
   const signatureSlice=buildSignatureSliceGate(creativeState);
+  const interactive3d=input.interactive3dBlueprint===undefined ? null : compileInteractive3DBlueprint(input.interactive3dBlueprint);
   const sections=[
     "# FORGE BUILD PACKET — CLAUDE EXECUTION CONTRACT",
     "",
@@ -100,6 +103,12 @@ export function buildForgeBuildPacket(input:ForgeBuildPacketInput) {
     "## SCENE-BY-SCENE CONSTRUCTION PLAN",
     json(director.constructionPlan),
     "",
+    "## INTERACTIVE 3D COMPILER CONTRACT",
+    interactive3d
+      ? "This contract is compiled from the validated Interactive3DBlueprint. Treat recipe ids, ownership, camera choreography, asset jobs, safe repair paths and signature-slice acceptance as executable constraints."
+      : "No Interactive3DBlueprint is attached. Existing Forge Director and project contracts remain authoritative.",
+    interactive3d ? json(interactive3d) : "",
+    "",
     "## CURRENT VALIDATED PROJECT STATE",
     "This is the incumbent. Preserve client facts and working behavior unless this packet explicitly directs a bounded change.",
     json(currentState),
@@ -135,6 +144,7 @@ export function buildForgeBuildPacket(input:ForgeBuildPacketInput) {
     "## NON-NEGOTIABLES",
     "- Do not invent client facts, metrics, materials, dimensions, awards, testimonials or asset availability.",
     "- Do not implement a supplied external reference from URL familiarity or surface resemblance. Use only the evidence-backed deconstruction in EXTERNAL REFERENCE INTELLIGENCE and transform its causal lessons into the project-specific Creative DNA.",
+    "- AI may choose Blueprint data and approved Forge recipes; it may not emit arbitrary production JavaScript, shaders, renderer configuration or remote asset URLs that bypass Forge policy.",
     "- Do not add a new animation clock.",
     "- Do not create a second competing WebGL architecture when the persistent Forge Canvas can own the effect.",
     "- Do not flatten the signature moment on mobile; reduce simultaneous complexity while preserving meaning.",
@@ -151,6 +161,7 @@ export function buildForgeBuildPacket(input:ForgeBuildPacketInput) {
     "- Mobile preserves narrative order, focal hierarchy and the signature idea.",
     "- Primary conversion controls remain semantic and usable.",
     "- First encounter is smooth; preloading/prewarming covers the signature path.",
+    "- When an Interactive3DBlueprint is attached, its policy report has no blockers and the implementation uses the compiled Forge-native recipe/camera/asset contracts."
     "- Functional, motion, mobile, performance, accessibility and asset gates pass where applicable.",
     "- Any external or subjective creative approval remains explicitly unverified until rendered evidence is reviewed.",
     "",
