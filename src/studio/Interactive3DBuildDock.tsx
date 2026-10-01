@@ -106,6 +106,7 @@ export function Interactive3DBuildDock(props: {
         <div className="production-3d-builder__body">
           <div className="production-3d-builder__prompt">
             <textarea
+              aria-label="AI website brief"
               value={prompt}
               onChange={(event) => setPrompt(event.target.value)}
               rows={3}
