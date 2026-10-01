@@ -186,8 +186,8 @@ export function ForgeEditor(){
     const next:SceneDefinition={
       ...base,
       id,
-      label:`Scene ${draft.experience.scenes.length+1}`,
-      copy:{...base.copy,eyebrow:`${String(draft.experience.scenes.length+1).padStart(2,"0")} / SCENE`,headline:"New scene"},
+      label:`Section ${draft.experience.scenes.length+1}`,
+      copy:{...base.copy,eyebrow:`${String(draft.experience.scenes.length+1).padStart(2,"0")} / SECTION`,headline:"New section"},
       range:[0,1],
       motionTracks:[],
       blocks:[],
@@ -564,6 +564,41 @@ function LayerRow({icon,label,depth,active,onClick}:{icon:IconName;label:string;
   return <button type="button" className="forge-next__layer-row" data-active={active} style={{paddingLeft:10+depth*18}} onClick={onClick}><Icon name={icon}/><span>{label}</span></button>;
 }
 
+function TransformInspector({transform,mode,onModeChange,onChange}:{
+  transform:ForgeNodeTransform;
+  mode:ForgeTransformMode;
+  onModeChange:(mode:ForgeTransformMode)=>void;
+  onChange:(transform:ForgeNodeTransform)=>void;
+}){
+  return <div className="forge-next__transform-inspector">
+    <div className="forge-next__transform-tabs" role="group" aria-label="Transform inspector mode">
+      {(["translate","rotate","scale"] as const).map((item)=><button key={item} type="button" aria-pressed={mode===item} onClick={()=>onModeChange(item)}>{item==="translate"?"Move":item==="rotate"?"Rotate":"Scale"}</button>)}
+    </div>
+    <VectorFields label="Position" value={transform.position} step={.1} onChange={(position)=>onChange({...transform,position})}/>
+    <VectorFields label="Rotation" value={transform.rotation.map((value)=>radToDeg(value)) as Vec3} step={1} suffix="°" onChange={(rotation)=>onChange({...transform,rotation:rotation.map((value)=>degToRad(value)) as Vec3})}/>
+    <VectorFields label="Scale" value={transform.scale} step={.05} min={.01} onChange={(scale)=>onChange({...transform,scale})}/>
+  </div>;
+}
+
+function VectorFields({label,value,onChange,step,min,suffix}:{label:string;value:Vec3;onChange:(value:Vec3)=>void;step:number;min?:number;suffix?:string}){
+  return <div className="forge-next__vector-field">
+    <span>{label}</span>
+    <div>{(["X","Y","Z"] as const).map((axis,index)=><label key={axis}><small>{axis}</small><input
+      aria-label={label+" "+axis}
+      type="number"
+      step={step}
+      min={min}
+      value={Number(value[index].toFixed(label==="Rotation"?1:3))}
+      onChange={(event)=>{
+        const next=[...value] as Vec3;
+        const parsed=Number(event.target.value);
+        if(Number.isFinite(parsed)) next[index]=parsed;
+        onChange(next);
+      }}
+    />{suffix&&<i>{suffix}</i>}</label>)}</div>
+  </div>;
+}
+
 function InspectorSection({title,children}:{title:string;children:React.ReactNode}){
   return <section className="forge-next__inspector-section"><h3>{title}</h3>{children}</section>;
 }
@@ -675,4 +710,7 @@ function uniqueSceneId(experience:ExperienceConfig,base:string){
 }
 function slug(value:string){return value.toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,64);}
 function midpoint(range:[number,number]){return range[0]+(range[1]-range[0])*.5;}
+function uniformScale(scale:Vec3){return Math.max(.01,(scale[0]+scale[1]+scale[2])/3);}
+function radToDeg(value:number){return value*180/Math.PI;}
+function degToRad(value:number){return value*Math.PI/180;}
 function validKind(value:ProjectKind|null):value is ProjectKind{return ["real-estate","product","hospitality","automotive","fashion","custom"].includes(value??"");}
