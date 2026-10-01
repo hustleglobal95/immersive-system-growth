@@ -108,7 +108,7 @@
 .forge-next__rail-spacer{flex:1}
 .forge-next__layers,.forge-next__inspector{
   min-height:0;height:100%;display:flex;flex-direction:column;background:var(--forge-panel);
-  transition:width .18s ease,opacity .18s ease;border .18s ease;
+  transition:width .18s ease,opacity .18s ease,border .18s ease;
 }
 .forge-next__layers{grid-column:2;width:238px;border-right:1px solid var(--forge-line)}
 .forge-next__inspector{grid-column:4;width:292px;border-left:1px solid var(--forge-line)}
