@@ -63,7 +63,7 @@ test("Project Vault and Asset Vault expose deployment readiness independently", 
 });
 
 test("internal product surfaces are wired into Studio and shipping blocks temporary generated assets", () => {
-  const studio = fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx", "utf8");
+  const studio = fs.readFileSync("src/studio/ForgeEditor.tsx", "utf8");
   const publish = fs.readFileSync("src/studio/ProjectPanels.tsx", "utf8");
   const creator = fs.readFileSync("src/studio/AssetCreationWorkbench.tsx", "utf8");
   const proxy = fs.readFileSync("proxy.ts", "utf8");
