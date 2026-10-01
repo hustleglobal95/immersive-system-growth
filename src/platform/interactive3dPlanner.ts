@@ -9,6 +9,7 @@ import { evaluateInteractive3DBlueprintPolicy } from "@/src/platform/interactive
 import { parseExperience } from "@/src/lib/configSchema";
 import { parseAssetManifest } from "@/src/platform/assetManifestSchema";
 import type { AssetManifest } from "@/src/types/assets";
+import { parseStudioReferences, studioReferencesToBlueprintReferences, studioReferencesToDirectorReferences, type StudioReference } from "@/src/platform/studioReference";
 
 export interface Interactive3DHeroAssetInput {
   id?: string;
@@ -30,19 +31,22 @@ export function planInteractive3DFromPrompt(input: {
   experience: unknown;
   manifest: unknown;
   heroAsset?: Interactive3DHeroAssetInput;
+  references?: StudioReference[];
 }): Interactive3DPromptPlan {
   const experience = parseExperience(input.experience);
   const manifest = parseAssetManifest(input.manifest);
   if (experience.scenes.length < 2 || experience.scenes.length > 16) {
     throw new Error("Interactive 3D autonomous planning requires an ExperienceConfig template with 2-16 scenes.");
   }
+  const projectReferences=parseStudioReferences(input.references ?? []);
   const promptIntelligence = inferPromptIntelligence({
     prompt: input.prompt,
     projectName: input.projectName,
     sceneCount: Math.max(4, Math.min(8, experience.scenes.length)),
     manifest,
   });
-  const director = runDirectorIntelligence({ brief: promptIntelligence.brief });
+  const directorReferences=studioReferencesToDirectorReferences(projectReferences);
+  const director = runDirectorIntelligence({ brief: { ...promptIntelligence.brief, references:[...promptIntelligence.brief.references,...directorReferences] } });
   const treatment = director.report.treatment;
   const archetype = chooseArchetype(promptIntelligence.brief.projectType, input.prompt);
   const sceneCount = sceneCountForArchetype(archetype);
@@ -113,7 +117,7 @@ export function planInteractive3DFromPrompt(input: {
       composition: bounded(director.artDirection?.sceneFrames?.map((frame) => frame.composition).slice(0, 3).join(" ") ?? treatment.grammar.composition.join(" "), 600),
     },
     assets,
-    references: [],
+    references: studioReferencesToBlueprintReferences(projectReferences),
     performance: {
       targetFps: 60,
       initialCriticalMb: archetype === "world-explorer" ? 8 : 6,
@@ -140,6 +144,7 @@ export function planInteractive3DFromPrompt(input: {
       "Signature scene: " + blueprint.experience.signatureSceneId,
       "Hero asset: " + assets.find((asset) => asset.heroCandidate)?.label,
       "Production renderer: WebGL",
+      "Reference intelligence: " + studioReferencesToBlueprintReferences(projectReferences).length + " evidence-directed project reference(s)",
       "Template client-specific content will be discarded during materialization.",
     ],
   };

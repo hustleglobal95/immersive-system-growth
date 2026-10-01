@@ -10,7 +10,7 @@ import { PublishPanel } from "@/src/studio/ProjectPanels";
 import type { useStudioDraft } from "@/src/studio/useStudioDraft";
 import type { ExperienceConfig, SceneDefinition, Vec3 } from "@/src/types/experience";
 
-export type AdvancedWorkspaceName="Motion"|"Interact"|"Assets"|"Visuals"|"Telemetry"|"Discoverability";
+export type AdvancedWorkspaceName="References"|"Motion"|"Interact"|"Assets"|"Visuals"|"Telemetry"|"Discoverability";
 
 export function ContextualDirection({ context, capabilities, proposal, nextActions, onCapability }: {
   context:SelectionContext;

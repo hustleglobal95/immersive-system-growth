@@ -71,5 +71,6 @@
       "allowTrainingCrawlers": false,
       "publishLlmsTxt": true
     }
-  }
+  },
+  "references": []
 }

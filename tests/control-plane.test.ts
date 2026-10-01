@@ -336,6 +336,7 @@ test("Studio is one editor with first-class website authoring workspaces",()=>{
   const studio=fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx","utf8");
   assert.match(studio,/const editorTabs = \[/);
   assert.match(studio,/label:"Canvas"/);
+  assert.match(studio,/label:"References"/);
   assert.match(studio,/label:"Motion"/);
   assert.match(studio,/label:"Interactions"/);
   assert.match(studio,/label:"Assets"/);

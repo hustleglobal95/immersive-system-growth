@@ -50,7 +50,9 @@ Immersive Site Forge 6.1 is organized as a multi-project production platform rat
 
 - browser-based Forge Studio at `/studio`
 - PRO+ Control Plane with seven first-class selection kinds (scene, camera, rig node, copy, media, asset, environment), self-validating Capability Registry, Intent Compiler, Next Action Engine, Project Health and non-mutating Proposal Contract
-- editor-first Studio with Canvas, Motion, Interactions, Assets and Effects as first-class workspaces plus integrated Project Health, Performance, Search + AI and Publish
+- editor-first Studio with Canvas, References, Motion, Interactions, Assets and Effects as first-class workspaces plus integrated Project Health, Performance, Search + AI and Publish
+- project-scoped website reference intelligence: URL references, evidence-backed corpus selection, structured analysis import, transferable principles, explicit do-not-copy rules and Forge-system mapping
+- reference-aware AI Build and Director planning; URL-only references remain inert until evidence or transfer direction is supplied
 - registry-driven contextual actions that route semantic operator intent into existing camera, motion, interaction, asset, Director and Loop systems without duplicating those engines
 - unified Current / Candidate review for reversible fast proposals and proposal-bound verified Loop project-state bundles, with exact working/Vault baseline parity and atomic local bundle undo/redo
 - reviewer-protected local Loop-result bridge that validates winning evidence before Studio can preview a deep candidate

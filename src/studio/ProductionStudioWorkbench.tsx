@@ -26,6 +26,7 @@ import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
 import { StudioVaultPanel } from "@/src/studio/StudioVaultPanel";
 import { StudioIdentityBadge } from "@/src/studio/StudioIdentityBadge";
 import { Interactive3DBuildDock } from "@/src/studio/Interactive3DBuildDock";
+import { ReferenceWorkbench } from "@/src/studio/ReferenceWorkbench";
 import { LoopEnginePanel } from "@/src/studio/LoopEnginePanel";
 import { capabilitiesForContext, type ResolvedCapability } from "@/src/platform/control-plane/capabilityRegistry";
 import { createProposalDraft, type ForgeProposal } from "@/src/platform/control-plane/proposal";
@@ -51,6 +52,7 @@ const initialGraph = parseInteractionGraph(rawInteractionGraph);
 
 const editorTabs = [
   { label:"Canvas", workspace:null },
+  { label:"References", workspace:"References" },
   { label:"Motion", workspace:"Motion" },
   { label:"Interactions", workspace:"Interact" },
   { label:"Assets", workspace:"Assets" },
@@ -494,6 +496,7 @@ export function ProductionStudioWorkbench() {
     else if (value === "director" || value.includes("open director")) window.location.assign("/director");
     else if (value.includes("asset creator") || value.includes("create asset")) window.location.assign("/studio/assets/create");
     else if (value.includes("new project")) setNewProjectOpen(true);
+    else if (value.includes("reference") || value.includes("inspiration") || value.includes("precedent")) openAdvanced("References");
     else if (value.includes("interact")) openAdvanced("Interact");
     else if (value === "assets" || value.includes("asset workspace")) openAdvanced("Assets");
     else if (value.includes("seo") || value.includes("search") || value.includes("discoverability")) openAdvanced("Discoverability");
@@ -595,6 +598,7 @@ export function ProductionStudioWorkbench() {
               experience={draft.experience}
               manifest={draft.assetManifest}
               healthStatus={projectHealth.status}
+              references={draft.project.references}
               onPreview={(candidate) => {
                 setCandidateExperience(candidate);
                 setPreviewMode("candidate");
@@ -678,7 +682,7 @@ export function ProductionStudioWorkbench() {
           <header><div><span>FORGE COMMAND</span><h2 id="command-palette-title">Go anywhere. Do anything.</h2></div><button type="button" aria-label="Close command palette" onClick={closeCommandPalette}>×</button></header>
           <form onSubmit={(event) => { event.preventDefault(); runCommandValue(command); }}><input autoFocus aria-label="Search Forge commands" value={command} onChange={(event) => setCommand(event.target.value)} placeholder="Try “ship”, “Creative Agent”, “add scene”, “product hero”…" /><kbd>ESC</kbd></form>
           <div className="production-command-groups">
-            <section><span>EDITOR</span><button type="button" onClick={() => runCommandValue("canvas")}>Canvas</button><button type="button" onClick={() => runCommandValue("sequencer")}>Motion</button><button type="button" onClick={() => runCommandValue("interact")}>Interactions</button><button type="button" onClick={() => runCommandValue("assets")}>Assets</button><button type="button" onClick={() => openAdvanced("Visuals")}>Effects</button></section>
+            <section><span>EDITOR</span><button type="button" onClick={() => runCommandValue("canvas")}>Canvas</button><button type="button" onClick={() => runCommandValue("references")}>References</button><button type="button" onClick={() => runCommandValue("sequencer")}>Motion</button><button type="button" onClick={() => runCommandValue("interact")}>Interactions</button><button type="button" onClick={() => runCommandValue("assets")}>Assets</button><button type="button" onClick={() => openAdvanced("Visuals")}>Effects</button></section>
             <section><span>QUALITY + RELEASE</span><button type="button" onClick={() => runCommandValue("project health")}>Project Health</button><button type="button" onClick={() => runCommandValue("telemetry")}>Performance</button><button type="button" onClick={() => runCommandValue("search")}>Search + AI</button><button type="button" onClick={() => runCommandValue("publish")}>Publish</button></section>
             <section><span>PROJECT</span><button type="button" onClick={() => runCommandValue("improvement engine")}>Improve current site</button><button type="button" onClick={() => runCommandValue("vault")}>Versions</button><button type="button" onClick={() => runCommandValue("ai build")}>AI Build</button><button type="button" onClick={() => runCommandValue("new project")}>New website</button><button type="button" onClick={() => runCommandValue("add scene")}>Add scene</button></section>
             <section><span>ASSIST</span><button type="button" onClick={() => runCommandValue("creative agent")}>Creative Agent</button><button type="button" onClick={() => runCommandValue("open director")}>Director</button><button type="button" onClick={() => runCommandValue("asset creator")}>Asset Creator</button></section>
@@ -721,6 +725,7 @@ function Navigator({ mode, experience, manifest, activeScene, selection, onSelec
 function AdvancedWorkspace({ workspace, draft, activeScene, setActiveScene, onClose }: { workspace: Workspace; draft: ReturnType<typeof useStudioDraft>; activeScene: number; setActiveScene: (index: number) => void; onClose: () => void }) {
   return <div className="production-advanced">
     <div className="production-advanced-head"><div><span>{workspace.toUpperCase()} / EDITOR</span><strong>Forge production tools</strong></div><button type="button" onClick={onClose}>← Back to Canvas</button></div>
+    {workspace === "References" ? <ReferenceWorkbench project={draft.project} setProject={draft.setProject} /> : null}
     {workspace === "Motion" ? <SequencerEditor experience={draft.experience} setExperience={draft.setExperience} active={activeScene} setActive={setActiveScene} beginGroup={draft.beginExperienceGroup} endGroup={draft.endExperienceGroup} undo={draft.undoExperience} redo={draft.redoExperience} canUndo={draft.canUndoExperience} canRedo={draft.canRedoExperience} /> : null}
     {workspace === "Interact" ? <InteractionGraphEditor graph={draft.interactionGraph} setGraph={draft.setInteractionGraph} /> : null}
     {workspace === "Assets" ? <div className="production-advanced-stack"><AssetManager setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} active={activeScene} /><AssetBankPanel experience={draft.experience} setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} interactionGraph={draft.interactionGraph} undo={draft.undoExperience} canUndo={draft.canUndoExperience} /><GlbInspectorPanel experience={draft.experience} setExperience={draft.setExperience} /></div> : null}

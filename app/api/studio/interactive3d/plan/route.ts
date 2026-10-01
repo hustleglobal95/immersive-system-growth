@@ -8,6 +8,7 @@ import { materializeInteractive3DExperience } from "@/src/platform/interactive3d
 import { parseAssetManifest } from "@/src/platform/assetManifestSchema";
 import { generationRequestsForInteractive3D } from "@/src/platform/interactive3dAssetFactory";
 import { interactionGraphForInteractive3D } from "@/src/platform/interactive3dInteractionGraph";
+import { studioReferenceSchema } from "@/src/platform/studioReference";
 
 export const runtime = "nodejs";
 
@@ -17,6 +18,7 @@ const requestSchema = z.object({
   experience: z.unknown(),
   manifest: z.unknown(),
   useCurrentHero: z.boolean().default(false),
+  references: z.array(studioReferenceSchema).max(20).default([]),
 }).strict();
 
 export async function POST(request: Request) {
@@ -50,6 +52,7 @@ export async function POST(request: Request) {
       projectName: input.projectName,
       experience,
       manifest: cleanManifest,
+      references: input.references,
       ...(heroSource ? {
         heroAsset: {
           id: "studio-owned-hero",

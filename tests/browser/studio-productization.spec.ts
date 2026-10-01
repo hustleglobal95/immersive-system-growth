@@ -6,6 +6,7 @@ test("Studio opens directly as the complete interactive 3D website editor", asyn
 
   await expect(page.locator("main.production-studio")).toBeVisible();
   await expect(page.getByRole("button",{name:"Canvas",exact:true})).toHaveAttribute("aria-current","page");
+  await expect(page.getByRole("button",{name:"References",exact:true})).toBeVisible();
   await expect(page.getByRole("button",{name:"Motion",exact:true})).toBeVisible();
   await expect(page.getByRole("button",{name:"Interactions",exact:true})).toBeVisible();
   await expect(page.locator(".production-topbar nav").getByRole("button",{name:"Assets",exact:true})).toBeVisible();

@@ -19,6 +19,8 @@ test("default Studio is the complete interactive 3D website editor", () => {
 
 test("Forge exposes core website authoring workspaces directly", () => {
   assert.match(editor, /label:"Canvas"/);
+  assert.match(editor, /label:"References"/);
+  assert.match(editor, /references={draft\.project\.references}/);
   assert.match(editor, /label:"Motion"/);
   assert.match(editor, /label:"Interactions"/);
   assert.match(editor, /label:"Assets"/);

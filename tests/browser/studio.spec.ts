@@ -223,7 +223,7 @@ test("Publish honors Project Health and keeps release authority protected", asyn
 
 test("Performance quality tool remains available from the editor", async ({ page }) => {
   await page.goto("/studio");
-  await openEditorTool(page,/Telemetry/);
+  await openEditorTool(page,/Performance/);
   await expect(page.getByRole("heading", { name: "Telemetry policy" })).toBeVisible();
   await expect(page.getByLabel("Sample rate")).toBeVisible();
 });

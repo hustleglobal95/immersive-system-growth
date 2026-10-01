@@ -57,6 +57,7 @@ if(/import\s*\{\s*StudioWorkbench\s*\}/.test(route)) failures.push("Legacy Studi
 
 const activeFiles=[
   "src/studio/ProductionStudioWorkbench.tsx",
+  "src/studio/ReferenceWorkbench.tsx",
   "src/studio/ControlPlaneSurfaces.tsx",
   "src/studio/AnimatePanel.tsx",
   "src/studio/SequencerEditor.tsx",
@@ -79,6 +80,8 @@ for(const file of activeFiles){
 const requiredChecks=[
   ["src/studio/ProductionStudioWorkbench.tsx","const editorTabs = [","Studio must expose the editor workspace tabs"],
   ["src/studio/ProductionStudioWorkbench.tsx","openSimpleAnimate","Canvas must expose targeted motion authoring"],
+  ["src/studio/ProductionStudioWorkbench.tsx",'{ label:"References", workspace:"References" }',"Studio must expose References as a first-class workspace"],
+  ["src/studio/ReferenceWorkbench.tsx","FORGE IMPLEMENTATION MAP","References must translate evidence into Forge system constraints"],
   ["src/studio/CinematicSystemsPanel.tsx","LIVE DRAFT","Visual Effects must identify itself as live draft authoring"],
   ["src/studio/useStudioDraft.ts","cinematicSystems","Studio draft must persist cinematic systems"],
   ["src/studio/StudioLivePreview.tsx","CinematicSystemsLayer contained","Studio preview must render the production cinematic compositor"],

@@ -118,6 +118,35 @@ test("GLB Inspector creates deterministic rig tracks from a staged model",async(
   })).toBe(true);
 });
 
+test("References workspace persists evidence-directed rules and feeds AI Build",async({page})=>{
+  await page.goto("/studio");
+  await page.locator(".production-topbar nav").getByRole("button",{name:"References",exact:true}).click();
+  await expect(page.getByText("PROJECT REFERENCES",{exact:true})).toBeVisible();
+
+  await page.getByLabel("Reference URL").fill("https://example.com/reference");
+  await page.getByLabel("Reference label").fill("Reference Test");
+  await page.getByRole("button",{name:"＋ Add website",exact:true}).click();
+  await expect(page.getByText("NEEDS DIRECTION",{exact:true})).toBeVisible();
+  await expect(page.getByText("VISUAL EVIDENCE ANALYZER",{exact:true})).toBeVisible();
+  await expect(page.getByRole("button",{name:"Analyze screenshots",exact:true})).toBeDisabled();
+
+  const transfer=page.locator("label.reference-editor__list").filter({hasText:"Transfer / take"}).locator("textarea");
+  await transfer.fill("Carry one persistent subject through chapter transitions.");
+  const avoid=page.locator("label.reference-editor__list").filter({hasText:"Do not copy"}).locator("textarea");
+  await avoid.fill("Exact composition");
+  await expect(page.getByText("REFERENCE ACTIVE",{exact:true})).toBeVisible();
+
+  await expect.poll(()=>page.evaluate(()=>{
+    const raw=localStorage.getItem("forge-studio-v2");
+    if(!raw) return null;
+    const refs=JSON.parse(raw).project?.references ?? [];
+    return refs[0]?.take?.[0] ?? null;
+  })).toBe("Carry one persistent subject through chapter transitions.");
+
+  await page.getByRole("button",{name:/Back to Canvas/}).click();
+  await expect(page.getByText(/1 evidence-directed reference active/)).toBeVisible();
+});
+
 test("Performance quality tool mutates telemetry policy",async({page})=>{
   await page.goto("/studio");
   await openEditorTool(page,/Telemetry/);
