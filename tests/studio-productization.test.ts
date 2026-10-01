@@ -2,79 +2,34 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
-const studioPage = fs.readFileSync("app/studio/page.tsx", "utf8");
-const studio = fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx", "utf8");
-const guide = fs.readFileSync("src/studio/StudioWorkflowGuide.tsx", "utf8");
-const panels = fs.readFileSync("src/studio/ProjectPanels.tsx", "utf8");
-const agent = fs.readFileSync("src/studio/CreativeAgentWorkbench.tsx", "utf8");
-const assetCreator = fs.readFileSync("src/studio/AssetCreationWorkbench.tsx", "utf8");
-const assetManager = fs.readFileSync("src/studio/AssetManager.tsx", "utf8");
-const controlPlaneSurfaces = fs.readFileSync("src/studio/ControlPlaneSurfaces.tsx", "utf8");
+const page=fs.readFileSync("app/studio/page.tsx","utf8");
+const advancedPage=fs.readFileSync("app/studio/advanced/page.tsx","utf8");
+const simple=fs.readFileSync("src/studio/SimpleForgeStudio.tsx","utf8");
+const production=fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx","utf8");
 
-test("Studio exposes one guided entry hierarchy instead of floating launchers", () => {
-  assert.doesNotMatch(studioPage, /studio-intelligence-dock|StudioWorkflowDock/);
-  assert.match(studio, /Guided Build/);
-  assert.match(studio, /production-assist/);
-  assert.match(studio, /production-sr-only/);
+test("default Studio is the simple Forge product",()=>{
+  assert.match(page,/SimpleForgeStudio/);
+  assert.doesNotMatch(page,/ProductionStudioWorkbench/);
+  assert.match(simple,/type Mode="build"\|"edit"\|"finish"/);
+  assert.match(simple,/>Build Website</);
+  assert.match(simple,/>Finish Website</);
+  assert.match(simple,/href="\/studio\/advanced"/);
 });
 
-test("Studio has keyboard access to the command system", () => {
-  assert.match(studio, /event\.key\.toLowerCase\(\) === "k"/);
-  assert.match(studio, /slashShortcut/);
-  assert.match(studio, /production-command-palette/);
-  assert.match(studio, /aria-label="Open command palette"/);
+test("simple Studio builds through the bounded 3D planner",()=>{
+  assert.match(simple,/fetch\("\/api\/studio\/interactive3d\/plan"/);
+  assert.match(simple,/draft\.applyProjectBundle/);
+  assert.match(simple,/StudioLivePreview/);
 });
 
-test("Guided Build finishes in Guided Ship instead of engineering controls", () => {
-  assert.match(guide, /Review & publish/);
-  assert.match(panels, /GUIDED SHIP/);
-  assert.match(panels, /Advanced setup/);
-  assert.match(panels, /HTTP-only session/);
-  assert.doesNotMatch(panels, /Open review pull request/);
+test("simple Studio can finish through Forge publishing",()=>{
+  assert.match(simple,/fetch\("\/api\/studio\/publish\/status"/);
+  assert.match(simple,/fetch\("\/api\/studio\/publish"/);
+  assert.match(simple,/releaseReady/);
 });
 
-test("client-facing Studio family hides internal release labels", () => {
-  assert.doesNotMatch(agent, /V5 · HIERARCHY \+ ASSET CREATION/);
-  assert.doesNotMatch(assetCreator, />BETA</);
-});
-
-
-test("Studio routes selections through contextual direction instead of exposing raw machinery first", () => {
-  assert.match(studio, /ContextualDirection/);
-  assert.match(controlPlaneSurfaces, /SCENE DIRECTION/);
-  assert.match(controlPlaneSurfaces, /CAMERA DIRECTION/);
-  assert.match(controlPlaneSurfaces, /OBJECT DIRECTION/);
-  assert.match(controlPlaneSurfaces, /COPY DIRECTION/);
-  assert.match(controlPlaneSurfaces, /MEDIA DIRECTION/);
-  assert.match(controlPlaneSurfaces, /ASSET DIRECTION/);
-  assert.match(controlPlaneSurfaces, /ENVIRONMENT DIRECTION/);
-});
-
-test("Studio asset intake surfaces Asset Intelligence guidance", () => {
-  assert.match(assetManager, /analyzeAssetManifest/);
-  assert.match(assetManager, /ASSET INTELLIGENCE/);
-  assert.match(assetManager, /manifest health/);
-});
-
-
-test("Studio primary navigation is Build Review Ship with expert systems under Advanced", () => {
-  assert.match(studio, /primarySurfaces = \["Build", "Review", "Ship"\]/);
-  assert.match(studio, /production-advanced-menu/);
-  assert.match(studio, />Sequencer</);
-  assert.match(studio, />Interactions</);
-  assert.match(studio, />Asset tools</);
-  assert.match(studio, />Telemetry</);
-});
-
-test("Project Health owns release readiness in Guided Ship", () => {
-  assert.match(studio, /ReviewSurface/);
-  assert.match(studio, /ShipSurface/);
-  assert.match(panels, /healthReady/);
-  assert.match(panels, /Project Health/);
-});
-
-test("Next Best Action is promoted above subsystem navigation", () => {
-  assert.match(studio, /NEXT BEST ACTION/);
-  assert.match(studio, /recommendNextActions/);
-  assert.match(studio, /compileIntent/);
+test("full production machinery is preserved behind Advanced",()=>{
+  assert.match(advancedPage,/ProductionStudioWorkbench/);
+  assert.match(production,/primarySurfaces = \["Build", "Review", "Ship"\]/);
+  assert.match(production,/production-advanced-menu/);
 });
