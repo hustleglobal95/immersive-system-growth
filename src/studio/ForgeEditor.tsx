@@ -353,7 +353,7 @@ export function ForgeEditor(){
         <button type="button" className="forge-next__health" data-status={projectHealth.status} onClick={()=>setMode("quality")}><i />{projectHealth.status==="ready"?"Ready":projectHealth.status}</button>
         <button type="button" className="forge-next__preview-action" onClick={()=>{setMode("design");setPreviewMode((value)=>!value);}}><Icon name="play" /> {previewMode?"Edit":"Preview"}</button>
         <button type="button" className="forge-next__publish" onClick={()=>setMode("publish")}>Publish</button>
-        <details className="forge-next__menu"><summary aria-label="Project menu"><Icon name="more" /></summary><div>
+        <details className="forge-next__menu"><summary role="button" aria-label="Project menu"><Icon name="more" /></summary><div>
           <button type="button" onClick={()=>setNewProjectOpen(true)}>New website</button>
           <button type="button" onClick={()=>setVaultOpen(true)}>Versions</button>
           <button type="button" onClick={()=>setLoopOpen(true)}>Improve current site</button>
