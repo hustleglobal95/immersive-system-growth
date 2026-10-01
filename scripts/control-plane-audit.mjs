@@ -21,8 +21,8 @@ const draft=fs.readFileSync("src/studio/useStudioDraft.ts","utf8");
 const loopPanel=fs.readFileSync("src/studio/LoopEnginePanel.tsx","utf8");
 const loopRunner=fs.readFileSync("scripts/loop-run.mjs","utf8");
 
-if(!studio.includes("const editorTabs = [") || !studio.includes('{ label:"Canvas", workspace:null }') || !studio.includes('{ label:"Motion", workspace:"Motion" }') || !studio.includes('{ label:"Interactions", workspace:"Interact" }') || !studio.includes('{ label:"Assets", workspace:"Assets" }') || !studio.includes('{ label:"Effects", workspace:"Visuals" }')) {
-  issues.push({capabilityId:"studio",message:"Forge must expose Canvas, Motion, Interactions, Assets and Effects as first-class editor workspaces."});
+if(!studio.includes("const editorTabs = [") || !studio.includes('{ label:"Canvas", workspace:null }') || !studio.includes('{ label:"References", workspace:"References" }') || !studio.includes('{ label:"Motion", workspace:"Motion" }') || !studio.includes('{ label:"Interactions", workspace:"Interact" }') || !studio.includes('{ label:"Assets", workspace:"Assets" }') || !studio.includes('{ label:"Effects", workspace:"Visuals" }')) {
+  issues.push({capabilityId:"studio",message:"Forge must expose Canvas, References, Motion, Interactions, Assets and Effects as first-class editor workspaces."});
 }
 if(studio.includes("SimpleForgeStudio") || studio.includes("production-advanced-menu")) {
   issues.push({capabilityId:"studio",message:"Retired simple/advanced product splits must not return."});
