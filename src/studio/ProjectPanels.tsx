@@ -1,6 +1,4 @@
 "use client";
-import { writeStored } from "@/src/lib/useClientValue";
-import { STUDIO_GUIDE_SHIP_KEY } from "@/src/studio/StudioWorkflowGuide";
 
 import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import type { ExperienceConfig } from "@/src/types/experience";
@@ -134,7 +132,6 @@ export function PublishPanel({ project, setProject, experience, assetManifest, i
       const response = await fetch("/api/studio/publish", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ experience, project, assetManifest, interactionGraph, cinematicSystems, title, summary }) });
       const body = await response.json() as { ok?: boolean; error?: string; url?: string; number?: number };
       if (!response.ok || !body.ok) throw new Error(body.error ?? "Publishing failed");
-      writeStored(STUDIO_GUIDE_SHIP_KEY, project.id);
       void fetch(`/api/studio/vault/projects/${encodeURIComponent(project.id)}/journal`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "publish", detail: `Review #${body.number} created: ${title}` }) }).catch(() => {});
       setResult({ message: `Review #${body.number} created successfully.`, url: body.url });
     } catch (error) {
@@ -160,8 +157,8 @@ export function PublishPanel({ project, setProject, experience, assetManifest, i
   return (
     <div className="studio-publish-guided">
       <section className="studio-card studio-card--wide studio-publish-hero">
-        <div className="studio-card__head"><div><span>GUIDED SHIP</span><h2>{ready ? "Ready to create a review." : "Finish the release setup."}</h2></div><output data-status={ready ? "ready" : "attention"}>{ready ? "READY" : "SETUP"}</output></div>
-        <p className="studio-muted">Forge keeps repository credentials, workflow details and deployment internals out of the normal authoring path. Create a review when the project is valid and this browser has been authorized by the workspace owner.</p>
+        <div className="studio-card__head"><div><span>PUBLISH / RELEASE</span><h2>{ready ? "Ready to create a review." : "Finish the release setup."}</h2></div><output data-status={ready ? "ready" : "attention"}>{ready ? "READY" : "SETUP"}</output></div>
+        <p className="studio-muted">Create a protected release review when the website is valid, durable, and this browser has been authorized by the workspace owner.</p>
         <div className="studio-publish-readiness" role="list" aria-label="Publish readiness">
           <div role="listitem" data-ready={validationCount === 0}><span>{validationCount === 0 ? "✓" : "!"}</span><strong>Project validation</strong><small>{validationCount === 0 ? "No configuration issues" : `${validationCount} issue${validationCount === 1 ? "" : "s"} need attention`}</small></div>
           <div role="listitem" data-ready={healthReady}><span>{healthReady ? "✓" : "!"}</span><strong>Project Health</strong><small>{healthReady ? "Forge production health is ready" : healthSummary || "Review production issues before shipping"}</small></div>
