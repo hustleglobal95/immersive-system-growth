@@ -47,10 +47,10 @@ export function DirectorIntelligenceWorkbench() {
       const project=parseStudioProject(payload.project);
       const references=studioReferencesToDirectorReferences(project.references);
       if(!references.length) return;
-      setBrief((current)=>{
-        const next={...current,references};
+      const next={...starterBrief,references};
+      queueMicrotask(()=>{
+        setBrief(next);
         setResult(runDirectorIntelligence({brief:next}));
-        return next;
       });
     } catch {
       // Keep the starter brief when Studio storage is unavailable.
