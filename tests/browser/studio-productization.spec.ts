@@ -44,3 +44,11 @@ test("Advanced preserves the complete production editor", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Ship", exact: true })).toBeVisible();
   await expect(page.locator("details.production-advanced-menu > summary")).toBeVisible();
 });
+
+
+test("Studio exposes the guided product shell and keyboard command palette", async ({ page }) => {
+  await page.goto("/studio/advanced");
+  await expect(page.getByRole("button", { name: "Open command palette" })).toBeVisible();
+  await page.keyboard.press(process.platform === "darwin" ? "Meta+K" : "Control+K");
+  await expect(page.getByRole("dialog", { name: "Go anywhere. Do anything." })).toBeVisible();
+});
