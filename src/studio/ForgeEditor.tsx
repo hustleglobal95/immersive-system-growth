@@ -282,7 +282,7 @@ export function ForgeEditor(){
             <StudioLivePreview
               experience={previewExperience}
               active={Math.min(sceneIndex,previewExperience.scenes.length-1)}
-              setActive={selectScene}
+              setActive={(index)=>{const target=previewExperience.scenes[index];if(target)setCanvasProgress(midpoint(target.range));setActiveScene(Math.min(index,draft.experience.scenes.length-1));}}
               progress={canvasProgress}
               onProgressChange={setCanvasProgress}
               cinematicSystems={draft.cinematicSystems}
@@ -343,7 +343,7 @@ export function ForgeEditor(){
           {mode==="assets"&&<div className="forge-next__workspace-stack"><AssetManager setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} active={sceneIndex}/><AssetBankPanel experience={draft.experience} setExperience={draft.setExperience} assetManifest={draft.assetManifest} setAssetManifest={draft.setAssetManifest} interactionGraph={draft.interactionGraph} undo={draft.undoExperience} canUndo={draft.canUndoExperience}/><GlbInspectorPanel experience={draft.experience} setExperience={draft.setExperience}/></div>}
           {mode==="effects"&&<CinematicSystemsPanel manifest={draft.cinematicSystems} setManifest={draft.setCinematicSystems} experience={draft.experience} activeScene={sceneIndex} onSelectScene={setActiveScene}/>}
           {mode==="quality"&&<QualityWorkspace tab={qualityTab} setTab={setQualityTab} projectHealth={projectHealth} draft={draft}/>}
-          {mode==="publish"&&<PublishPanel project={draft.project} setProject={draft.setProject} experience={draft.experience} assetManifest={draft.assetManifest} interactionGraph={draft.interactionGraph} cinematicSystems={draft.cinematicSystems} validationCount={draft.validation.length} healthReady={projectHealth.status==="ready"} healthSummary={projectHealth.summary}/>}
+          {mode==="publish"&&<PublishPanel project={draft.project} setProject={draft.setProject} experience={draft.experience} assetManifest={draft.assetManifest} interactionGraph={draft.interactionGraph} cinematicSystems={draft.cinematicSystems} validationCount={draft.validation.length} healthReady={projectHealth.status==="ready"} healthSummary={projectHealth.issues[0]?.detail??"Project Health needs attention."}/>}
         </div>
       </section>}
     </div>
