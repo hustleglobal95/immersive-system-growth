@@ -39,13 +39,14 @@ export function planInteractive3DFromPrompt(input: {
   const promptIntelligence = inferPromptIntelligence({
     prompt: input.prompt,
     projectName: input.projectName,
-    sceneCount: experience.scenes.length,
+    sceneCount: Math.max(4, Math.min(8, experience.scenes.length)),
     manifest,
   });
   const director = runDirectorIntelligence({ brief: promptIntelligence.brief });
   const treatment = director.report.treatment;
   const archetype = chooseArchetype(promptIntelligence.brief.projectType, input.prompt);
-  const signatureIndex = signatureSceneIndex(treatment.emotionalArc, experience.scenes.length);
+  const sceneCount = sceneCountForArchetype(archetype);
+  const signatureIndex = signatureSceneIndex(treatment.emotionalArc, sceneCount);
   const signatureMoment = signatureMomentFor({
     archetype,
     projectType: promptIntelligence.brief.projectType,
@@ -59,11 +60,11 @@ export function planInteractive3DFromPrompt(input: {
     visualWorld: director.creativeDNA?.northStar ?? treatment.artBible.northStar,
     heroAsset: input.heroAsset,
   });
-  const scenes = experience.scenes.map((scene, index) =>
+  const scenes = Array.from({ length: sceneCount }, (_, index) =>
     planScene({
-      id: scene.id,
+      id: sceneIdFor(archetype, index),
       index,
-      count: experience.scenes.length,
+      count: sceneCount,
       signatureIndex,
       archetype,
       treatment,
@@ -142,6 +143,26 @@ export function planInteractive3DFromPrompt(input: {
       "Template client-specific content will be discarded during materialization.",
     ],
   };
+}
+
+function sceneCountForArchetype(archetype: Interactive3DBlueprint["experience"]["archetype"]) {
+  if (archetype === "spatial-story" || archetype === "world-explorer") return 7;
+  if (archetype === "product-reveal") return 6;
+  if (archetype === "configurator") return 5;
+  return 5;
+}
+
+function sceneIdFor(archetype: Interactive3DBlueprint["experience"]["archetype"], index: number) {
+  const sequences: Record<Interactive3DBlueprint["experience"]["archetype"], string[]> = {
+    "product-reveal": ["arrival","reveal","construction","signature","detail","action"],
+    "spatial-story": ["arrival","context","threshold","material","signature","horizon","action"],
+    "editorial-depth": ["arrival","thesis","depth","signature","action"],
+    "interactive-gallery": ["arrival","collection","focus","signature","action"],
+    "configurator": ["arrival","inspect","configure","signature","action"],
+    "data-sculpture": ["arrival","system","signal","signature","action"],
+    "world-explorer": ["arrival","orientation","threshold","journey","signature","destination","action"],
+  };
+  return sequences[archetype][index] ?? "chapter-" + (index + 1);
 }
 
 function chooseArchetype(
