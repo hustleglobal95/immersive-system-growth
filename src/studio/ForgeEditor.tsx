@@ -286,12 +286,12 @@ export function ForgeEditor(){
     <div className="forge-next__shell">
       <nav className="forge-next__rail" aria-label="Editor modes">
         <div className="forge-next__rail-primary">
-          <button type="button" data-active={mode==="design"} aria-label="Design" title="Design" onClick={()=>setMode("design")}><Icon name="layers" /></button>
-          <button type="button" data-active={mode==="references"} aria-label="References" title="References" onClick={()=>setMode("references")}><Icon name="reference" /></button>
-          <button type="button" data-active={mode==="assets"} aria-label="Assets" title="Assets" onClick={()=>setMode("assets")}><Icon name="media" /></button>
-          <button type="button" data-active={mode==="motion"} aria-label="Motion" title="Motion" onClick={()=>setMode("motion")}><Icon name="motion" /></button>
-          <button type="button" data-active={mode==="interactions"} aria-label="Interact" title="Interactions" onClick={()=>setMode("interactions")}><Icon name="bolt" /></button>
-          <button type="button" data-active={mode==="effects"} aria-label="Effects" title="Effects" onClick={()=>setMode("effects")}><Icon name="sparkles" /></button>
+          <button type="button" data-active={mode==="design"} aria-current={mode==="design"?"page":undefined} aria-label="Design" title="Design" onClick={()=>setMode("design")}><Icon name="layers" /></button>
+          <button type="button" data-active={mode==="references"} aria-current={mode==="references"?"page":undefined} aria-label="References" title="References" onClick={()=>setMode("references")}><Icon name="reference" /></button>
+          <button type="button" data-active={mode==="assets"} aria-current={mode==="assets"?"page":undefined} aria-label="Assets" title="Assets" onClick={()=>setMode("assets")}><Icon name="media" /></button>
+          <button type="button" data-active={mode==="motion"} aria-current={mode==="motion"?"page":undefined} aria-label="Motion" title="Motion" onClick={()=>setMode("motion")}><Icon name="motion" /></button>
+          <button type="button" data-active={mode==="interactions"} aria-current={mode==="interactions"?"page":undefined} aria-label="Interact" title="Interactions" onClick={()=>setMode("interactions")}><Icon name="bolt" /></button>
+          <button type="button" data-active={mode==="effects"} aria-current={mode==="effects"?"page":undefined} aria-label="Effects" title="Effects" onClick={()=>setMode("effects")}><Icon name="sparkles" /></button>
         </div>
         <div className="forge-next__rail-spacer" />
         <button type="button" data-active={mode==="quality"} title="Quality" aria-label="Quality" onClick={()=>setMode("quality")}><Icon name="shield" /></button>
