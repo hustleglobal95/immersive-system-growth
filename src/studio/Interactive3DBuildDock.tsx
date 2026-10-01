@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { ExperienceConfig } from "@/src/types/experience";
 import type { AssetManifest } from "@/src/types/assets";
+import { activeStudioReferences, type StudioReference } from "@/src/platform/studioReference";
 
 type HealthStatus = "ready" | "attention" | "blocked";
 
@@ -27,6 +28,7 @@ export function Interactive3DBuildDock(props: {
   experience: ExperienceConfig;
   manifest: AssetManifest;
   healthStatus: HealthStatus;
+  references: StudioReference[];
   onPreview: (candidate: ExperienceConfig) => void;
   onApply: (candidate: ExperienceConfig) => void;
   onOpenAssets: () => void;
@@ -40,6 +42,7 @@ export function Interactive3DBuildDock(props: {
 
   const assetCount = props.manifest.models.length + props.manifest.textures.length + props.manifest.hdr.length + props.manifest.video.length;
   const motionCount = props.experience.scenes.reduce((sum, scene) => sum + scene.motionTracks.length, 0);
+  const activeReferences = activeStudioReferences(props.references);
   const stages = useMemo(() => [
     { label: "Brief", done: prompt.trim().length >= 12 || Boolean(result) },
     { label: "Hero asset", done: result ? result.assets.ready : assetCount > 0 },
@@ -63,6 +66,7 @@ export function Interactive3DBuildDock(props: {
           experience: props.experience,
           manifest: props.manifest,
           useCurrentHero: keepHero,
+          references: props.references,
         }),
       });
       const body = await response.json() as BuildResult | { ok: false; error?: string };
@@ -82,7 +86,7 @@ export function Interactive3DBuildDock(props: {
       <header className="production-3d-builder__head">
         <div>
           <span>AI 3D BUILD</span>
-          <strong>Describe the website. Forge plans the spatial system.</strong>
+          <strong>Describe the website. Forge plans the spatial system using your project reference intelligence.</strong>
         </div>
         <button type="button" onClick={() => setExpanded((value) => !value)} aria-expanded={expanded}>
           {expanded ? "Hide" : "Open"}
@@ -107,6 +111,7 @@ export function Interactive3DBuildDock(props: {
               rows={3}
               placeholder="Example: Build a luxury mechanical watch experience. One persistent watch is the hero. Scroll assembles the movement, then transitions into macro material inspection. Keep typography editorial and motion restrained."
             />
+            <div className="production-3d-builder__reference-state" data-active={activeReferences.length>0}><span>REFERENCES</span><strong>{activeReferences.length ? `${activeReferences.length} evidence-directed reference${activeReferences.length===1?"":"s"} active` : "No evidence-directed references active"}</strong><small>{activeReferences.length ? "Transfer rules and do-not-copy constraints will steer this build." : "Add or deconstruct references in the References workspace if this build should follow external construction lessons."}</small></div>
             <div className="production-3d-builder__prompt-actions">
               <label>
                 <input
