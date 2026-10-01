@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import type { DirectorBrief } from "@/src/platform/directorSchema";
 import type { DirectorHumanApprovals, DirectorHumanGateId } from "@/src/platform/director-intelligence/humanGates";
 import { runDirectorIntelligence } from "@/src/platform/director-intelligence/orchestrator";
 import { useCreativeIntelligenceContext } from "@/src/studio/useCreativeIntelligenceContext";
+import { parseStudioProject } from "@/src/platform/studioSchema";
+import { studioReferencesToDirectorReferences } from "@/src/platform/studioReference";
 
 const starterBrief: DirectorBrief = {
   projectName: "Aster House",
@@ -36,6 +38,24 @@ export function DirectorIntelligenceWorkbench() {
   const creativeContext=useCreativeIntelligenceContext(brief.projectName);
   const report = result.report;
   const selected = report.treatment.territories.find((item) => item.id === report.treatment.selectedTerritoryId)!;
+
+  useEffect(() => {
+    try {
+      const stored=window.localStorage.getItem("forge-studio-v2");
+      if(!stored) return;
+      const payload=JSON.parse(stored) as {project?:unknown};
+      const project=parseStudioProject(payload.project);
+      const references=studioReferencesToDirectorReferences(project.references);
+      if(!references.length) return;
+      setBrief((current)=>{
+        const next={...current,references};
+        setResult(runDirectorIntelligence({brief:next}));
+        return next;
+      });
+    } catch {
+      // Keep the starter brief when Studio storage is unavailable.
+    }
+  },[]);
 
   const run = (nextApprovals = approvals, nextFinalCut = finalCutRequested) => setResult(runDirectorIntelligence({
     brief,
