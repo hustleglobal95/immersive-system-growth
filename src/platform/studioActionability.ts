@@ -161,7 +161,7 @@ export const studioActionabilityContracts:readonly StudioActionabilityContract[]
     mode:"execute",
     source:"src/studio/ProjectPanels.tsx",
     evidence:["/api/studio/publish","Create review","healthReady"],
-    browserEvidence:"Ship honors Project Health and keeps protected publishing guided",
+    browserEvidence:"Publish honors Project Health and keeps release authority protected",
     guarded:true,
   },
   {
