@@ -249,8 +249,7 @@ export function ForgeEditor(){
     setLeftPanelTab("layers");
     setInspectorOpen(true);
     setPreviewMode(false);
-    if(selection.kind==="text") setInspectorTab("content");
-    else setInspectorTab("design");
+    setInspectorTab("design");
   }
 
   function updateHeroTransform(transform:ForgeNodeTransform){
@@ -348,7 +347,7 @@ export function ForgeEditor(){
         <button type="button" aria-label="Undo" disabled={!draft.canUndoExperience} onClick={draft.undoExperience}><Icon name="undo" /></button>
         <button type="button" aria-label="Redo" disabled={!draft.canRedoExperience} onClick={draft.redoExperience}><Icon name="redo" /></button>
         <button type="button" className="forge-next__health" data-status={projectHealth.status} onClick={()=>setMode("quality")}><i />{projectHealth.status==="ready"?"Ready":projectHealth.status}</button>
-        <button type="button" className="forge-next__preview-action" onClick={()=>{setMode("design");setPreviewCandidate(false);}}><Icon name="play" /> Preview</button>
+        <button type="button" className="forge-next__preview-action" onClick={()=>{setMode("design");setPreviewMode((value)=>!value);}}><Icon name="play" /> {previewMode?"Edit":"Preview"}</button>
         <button type="button" className="forge-next__publish" onClick={()=>setMode("publish")}>Publish</button>
         <details className="forge-next__menu"><summary aria-label="Project menu"><Icon name="more" /></summary><div>
           <button type="button" onClick={()=>setNewProjectOpen(true)}>New website</button>
@@ -389,17 +388,18 @@ export function ForgeEditor(){
             <button type="button" aria-label="Collapse layers" onClick={()=>setLayersOpen(false)}><Icon name="panelLeft" /></button>
           </div>
           {leftPanelTab==="pages" ? <>
-            <div className="forge-next__panel-section-title"><span>Website</span><button type="button" onClick={addScene} aria-label="＋ Add scene"><Icon name="plus" /></button></div>
-            <div className="forge-next__scene-list">
+            <div className="forge-next__panel-section-title"><span>Sections</span><button type="button" onClick={addScene} aria-label="＋ Add section"><Icon name="plus" /></button></div>
+            <div className="forge-next__scene-list" aria-label="Website sections">
               {draft.experience.scenes.map((item,index)=><button key={item.id} type="button" data-active={index===sceneIndex} onClick={()=>selectScene(index)}>
-                <Icon name="page" /><div><strong>{item.label}</strong><small>{item.copy.headline}</small></div><span>{String(index+1).padStart(2,"0")}</span>
+                <Icon name="frame" /><div><strong>{item.label}</strong><small>{item.copy.headline}</small></div><span>{String(index+1).padStart(2,"0")}</span>
               </button>)}
             </div>
-          </> : <div className="forge-next__layer-tree">
-            <LayerRow icon="frame" label={scene.label} depth={0} active />
-            <LayerRow icon="text" label="Copy" depth={1} onClick={()=>{setInspectorTab("content");setCanvasTool("text");}} />
-            {scene.media&&<LayerRow icon="media" label={scene.media.kind==="video"?"Video":"Media"} depth={1} onClick={()=>setMode("assets")} />}
-            {draft.experience.heroModel&&<LayerRow icon="cube" label="Hero 3D" depth={1} onClick={()=>setMode("assets")} />}
+          </> : <div className="forge-next__layer-tree" aria-label="Section elements">
+            <LayerRow icon="frame" label={scene.label} depth={0} active={canvasSelection.kind==="section"} onClick={()=>selectCanvasNode({kind:"section",id:scene.id})} />
+            <LayerRow icon="text" label="Headline" depth={1} active={canvasSelection.kind==="text"} onClick={()=>{selectCanvasNode({kind:"text",id:"headline"});setCanvasTool("text");}} />
+            {scene.media&&<LayerRow icon="media" label={scene.media.kind==="video"?"Background video":"Background media"} depth={1} onClick={()=>setMode("assets")} />}
+            {draft.experience.heroVisible&&<LayerRow icon="cube" label="Hero 3D" depth={1} active={canvasSelection.kind==="hero"} onClick={()=>selectCanvasNode({kind:"hero",id:"hero"})} />}
+            {sectionAssets.map((asset)=><LayerRow key={asset.id} icon={asset.kind==="model"?"cube":"media"} label={asset.id} depth={1} active={canvasSelection.kind==="asset"&&canvasSelection.id===asset.id} onClick={()=>selectCanvasNode({kind:"asset",id:asset.id})} />)}
             <LayerRow icon="motion" label={"Motion · "+scene.motionTracks.length} depth={1} onClick={()=>setMode("motion")} />
             <LayerRow icon="bolt" label="Interactions" depth={1} onClick={()=>setMode("interactions")} />
           </div>}
@@ -414,30 +414,48 @@ export function ForgeEditor(){
           {!inspectorOpen&&<button className="forge-next__edge-toggle forge-next__edge-toggle--right" type="button" onClick={()=>setInspectorOpen(true)}><Icon name="panelLeft" /></button>}
 
           <div className="forge-next__canvas-bar">
-            <div className="forge-next__canvas-context"><span>{scene?.label}</span><i>/</i><strong>Desktop</strong></div>
+            <div className="forge-next__canvas-context"><span>{scene?.label}</span><i>/</i><strong>{previewMode||previewCandidate?"Preview":"Edit stage"}</strong></div>
             <div className="forge-next__viewport-switcher" aria-label="Canvas viewport">
               <button type="button" className={canvasViewport==="desktop"?"active":""} aria-pressed={canvasViewport==="desktop"} onClick={()=>setCanvasViewport("desktop")}><Icon name="desktop" /> Desktop</button>
               <button type="button" className={canvasViewport==="tablet"?"active":""} aria-pressed={canvasViewport==="tablet"} aria-label="Tablet viewport" onClick={()=>setCanvasViewport("tablet")}><Icon name="tablet" /></button>
               <button type="button" className={canvasViewport==="mobile"?"active":""} aria-pressed={canvasViewport==="mobile"} aria-label="Mobile viewport" onClick={()=>setCanvasViewport("mobile")}><Icon name="phone" /></button>
             </div>
             <div className="forge-next__canvas-actions">
-              {candidate&&<div className="forge-next__candidate-toggle"><button type="button" className={previewCandidate?"":"active"} onClick={()=>setPreviewCandidate(false)}>Current</button><button type="button" className={previewCandidate?"active":""} onClick={()=>setPreviewCandidate(true)}>Candidate</button></div>}
+              {!previewMode&&!previewCandidate&&<div className="forge-next__transform-modes" role="group" aria-label="Transform mode">
+                {(["translate","rotate","scale"] as const).map((item)=><button type="button" key={item} aria-pressed={transformMode===item} onClick={()=>setTransformMode(item)}>{item==="translate"?"Move":item==="rotate"?"Rotate":"Scale"}</button>)}
+              </div>}
+              {candidate&&<div className="forge-next__candidate-toggle"><button type="button" className={previewCandidate?"":"active"} onClick={()=>{setPreviewCandidate(false);setPreviewMode(false);}}>Current</button><button type="button" className={previewCandidate?"active":""} onClick={()=>{setPreviewCandidate(true);setPreviewMode(true);}}>Candidate</button></div>}
+              <button type="button" onClick={()=>{setPreviewMode((value)=>!value);setPreviewCandidate(false);}}><Icon name="play" /> {previewMode?"Edit stage":"Preview"}</button>
               <button type="button" onClick={()=>setMode("motion")}><Icon name="motion" /> Animate</button>
             </div>
           </div>
 
-          <div className="forge-next__canvas">
-            <div className="forge-next__artboard-label"><span>{draft.project.name}</span><small>1200 px</small></div>
-            <StudioLivePreview
-              experience={previewExperience}
-              active={Math.min(sceneIndex,previewExperience.scenes.length-1)}
-              setActive={(index)=>{const target=previewExperience.scenes[index];if(target)setCanvasProgress(midpoint(target.range));setActiveScene(Math.min(index,draft.experience.scenes.length-1));}}
-              progress={canvasProgress}
-              onProgressChange={setCanvasProgress}
-              cinematicSystems={draft.cinematicSystems}
-              viewport={canvasViewport}
-              onViewportChange={setCanvasViewport}
-            />
+          <div className="forge-next__canvas" data-canvas-mode={previewMode||previewCandidate?"preview":"edit"}>
+            <div className="forge-next__artboard-label"><span>{draft.project.name}</span><small>{previewMode||previewCandidate?"Website preview":"3D edit stage"}</small></div>
+            {previewMode||previewCandidate
+              ? <StudioLivePreview
+                  experience={previewExperience}
+                  active={Math.min(sceneIndex,previewExperience.scenes.length-1)}
+                  setActive={(index)=>{const target=previewExperience.scenes[index];if(target)setCanvasProgress(midpoint(target.range));setActiveScene(Math.min(index,draft.experience.scenes.length-1));}}
+                  progress={canvasProgress}
+                  onProgressChange={setCanvasProgress}
+                  cinematicSystems={draft.cinematicSystems}
+                  viewport={canvasViewport}
+                  onViewportChange={setCanvasViewport}
+                />
+              : <ForgeViewportCanvas
+                  experience={draft.experience}
+                  activeSection={sceneIndex}
+                  selection={canvasSelection}
+                  transformMode={transformMode}
+                  headlineTransform={headlineTransform}
+                  onSelect={selectCanvasNode}
+                  onHeroTransform={updateHeroTransform}
+                  onAssetTransform={updateAssetTransform}
+                  onHeadlineTransform={updateHeadlineTransform}
+                  onTransformBegin={draft.beginExperienceGroup}
+                  onTransformEnd={draft.endExperienceGroup}
+                />}
             <button type="button" className="forge-next__agent-launch" aria-label="AI Build" onClick={()=>setAiOpen((value)=>!value)} aria-expanded={aiOpen}><Icon name="sparkles" /><span>Ask Forge</span><kbd>⌘ J</kbd></button>
           </div>
 
@@ -472,12 +490,22 @@ export function ForgeEditor(){
           </div>
           <div className="forge-next__inspector-scroll">
             {inspectorTab==="design" ? <>
-              <InspectorSection title="Scene">
-                <label>Name<input value={scene.label} maxLength={80} onChange={(event)=>draft.setExperience((current)=>({...current,scenes:current.scenes.map((item,index)=>index===sceneIndex?{...item,label:event.target.value}:item)}))}/></label>
-                <div className="forge-next__field-grid"><Readout label="Range" value={Math.round((scene.range[1]-scene.range[0])*100)+"%"} /><Readout label="Tracks" value={String(scene.motionTracks.length)} /></div>
+              <InspectorSection title="Selected element">
+                <Readout label="Type" value={canvasSelection.kind==="section"?"Section":canvasSelection.kind==="hero"?"Hero 3D":canvasSelection.kind==="asset"?"3D / media asset":"3D headline"} />
+                <Readout label="Selection" value={canvasSelection.kind==="asset"?canvasSelection.id:canvasSelection.kind==="text"?"Headline":canvasSelection.kind==="hero"?"Hero":scene.label} />
+                {selectedTransform()&&<TransformInspector
+                  transform={selectedTransform()!}
+                  mode={transformMode}
+                  onModeChange={setTransformMode}
+                  onChange={updateSelectedTransform}
+                />}
               </InspectorSection>
-              <InspectorSection title="Experience">
-                <Readout label="Hero" value={draft.experience.heroModel?"3D model":"None"} />
+              <InspectorSection title="Section">
+                <label>Name<input value={scene.label} maxLength={80} onChange={(event)=>draft.setExperience((current)=>({...current,scenes:current.scenes.map((item,index)=>index===sceneIndex?{...item,label:event.target.value}:item)}))}/></label>
+                <div className="forge-next__field-grid"><Readout label="Scroll span" value={Math.round((scene.range[1]-scene.range[0])*100)+"%"} /><Readout label="Motion tracks" value={String(scene.motionTracks.length)} /></div>
+              </InspectorSection>
+              <InspectorSection title="Website systems">
+                <Readout label="Hero" value={draft.experience.heroVisible?"Enabled":"Hidden"} />
                 <Readout label="Media" value={scene.media?.kind??"None"} />
                 <Readout label="References" value={String(draft.project.references.length)} />
                 <div className="forge-next__inspector-actions"><button type="button" onClick={()=>setMode("motion")}><Icon name="motion" /> Motion</button><button type="button" onClick={()=>setMode("interactions")}><Icon name="bolt" /> Interactions</button><button type="button" onClick={()=>setMode("effects")}><Icon name="sparkles" /> Effects</button><button type="button" onClick={()=>setMode("references")}><Icon name="reference" /> References</button></div>
@@ -497,7 +525,7 @@ export function ForgeEditor(){
                 <button type="button" className="forge-next__row-action" onClick={()=>setMode("references")}><span>Reference direction</span><Icon name="chevronRight" /></button>
               </InspectorSection>
             </>}
-            <section className="forge-next__danger"><button type="button" disabled={draft.experience.scenes.length<=1} onClick={removeScene}>Delete scene</button></section>
+            <section className="forge-next__danger"><button type="button" disabled={draft.experience.scenes.length<=1} onClick={removeScene}>Delete section</button></section>
           </div>
         </aside>
       </> : <section className="forge-next__workspace">
