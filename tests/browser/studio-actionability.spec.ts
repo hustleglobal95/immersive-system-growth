@@ -51,9 +51,10 @@ test("Motion workspace preserves expert motion control",async({page})=>{
   await page.goto("/studio");
   await editorNav(page).getByRole("button",{name:"Motion",exact:true}).click();
   await expect(page.getByRole("heading",{name:"Motion sequencer",level:2})).toBeVisible();
-  await expect(page.getByLabel("Playback rate")).toBeVisible();
-  await expect(page.getByLabel("Timeline snap")).toBeVisible();
-  await expect(page.getByRole("button",{name:"Play",exact:true})).toBeVisible();
+  const sequencer=page.locator("section.studio-card").filter({has:page.getByRole("heading",{name:"Motion sequencer",level:2})});
+  await expect(sequencer.getByLabel("Playback rate")).toBeVisible();
+  await expect(sequencer.getByLabel("Timeline snap")).toBeVisible();
+  await expect(sequencer.getByRole("button",{name:"Play",exact:true})).toBeVisible();
 });
 
 test("Interactions workspace preserves deterministic graph authoring",async({page})=>{
