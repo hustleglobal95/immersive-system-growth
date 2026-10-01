@@ -22,7 +22,7 @@ test("Edit exposes direct website controls without subsystem navigation", async 
   await expect(page.getByLabel("Section name")).toBeVisible();
   await expect(page.getByLabel("Headline")).toBeVisible();
   await expect(page.getByLabel("Body")).toBeVisible();
-  await expect(page.getByText("Camera", { exact: true })).toBeVisible();
+  await expect(page.getByLabel("Camera")).toBeVisible();
   await expect(page.getByRole("button", { name: "Finish Website" })).toBeVisible();
 });
 
