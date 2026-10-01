@@ -1,10 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { critiqueTreatment, directProject } from "@/src/platform/directorEngine";
 import { compileDirectorTreatment } from "@/src/platform/directorCompiler";
 import { createProductionPlanFromTreatment } from "@/src/platform/directorProductionPlan";
 import type { DirectorBrief, DirectorTreatment } from "@/src/platform/directorSchema";
+import { parseStudioProject } from "@/src/platform/studioSchema";
+import { studioReferencesToDirectorReferences } from "@/src/platform/studioReference";
 
 const projectTypes: Array<{ id: DirectorBrief["projectType"]; label: string }> = [
   { id: "brand", label: "Brand" },
@@ -49,6 +51,24 @@ export function DirectorWorkbench() {
   const compilation = useMemo(() => compileDirectorTreatment(treatment), [treatment]);
   const productionPlan = useMemo(() => createProductionPlanFromTreatment(treatment), [treatment]);
   const selected = treatment.territories.find((territory) => territory.id === treatment.selectedTerritoryId)!;
+
+  useEffect(() => {
+    try {
+      const stored=window.localStorage.getItem("forge-studio-v2");
+      if(!stored) return;
+      const payload=JSON.parse(stored) as {project?:unknown};
+      const project=parseStudioProject(payload.project);
+      const references=studioReferencesToDirectorReferences(project.references);
+      if(!references.length) return;
+      setBrief((current)=>{
+        const next={...current,references};
+        setTreatment(directProject(next));
+        return next;
+      });
+    } catch {
+      // Director remains usable with its starter brief if Studio storage is unavailable.
+    }
+  },[]);
 
   const generate = () => setTreatment(directProject(brief));
   const chooseTerritory = (id: string) => {
@@ -104,6 +124,7 @@ export function DirectorWorkbench() {
         <label>Primary action
           <input value={brief.primaryAction} onChange={(event) => setBrief({ ...brief, primaryAction: event.target.value })} />
         </label>
+        {brief.references.length > 0 && <section className="director-project-references"><span>STUDIO REFERENCES</span><strong>{brief.references.length} active construction reference{brief.references.length===1?"":"s"}</strong>{brief.references.slice(0,4).map((reference)=><p key={reference.label}>{reference.label}</p>)}</section>}
         <button className="director-generate" onClick={generate}>Direct this project</button>
 
         <div className="director-status">
