@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { discoverabilityDefaults, discoverabilitySchema } from "@/src/platform/discoverability";
+import { studioReferenceSchema } from "@/src/platform/studioReference";
 
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 const relativeJsonPath = z
@@ -70,6 +71,7 @@ export const studioProjectSchema = z
     visualSystemsPath: relativeJsonPath.default("config/visual-systems.json"),
     experienceModesPath: relativeJsonPath.default("config/experience-modes.json"),
     contentSources: z.array(contentSourceSchema).max(20).default([]),
+    references: z.array(studioReferenceSchema).max(20).default([]),
     discoverability: discoverabilitySchema.default(discoverabilityDefaults()),
     deployment: z
       .object({
