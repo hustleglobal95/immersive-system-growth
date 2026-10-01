@@ -260,7 +260,7 @@ export function ForgeEditor(){
         {modes.map((item)=><button key={item.id} type="button" data-active={mode===item.id} title={item.label} aria-label={item.label} onClick={()=>setMode(item.id)}><span>{item.short}</span></button>)}
         <div className="forge-next__rail-spacer" />
         <button type="button" data-active={mode==="quality"} title="Quality" aria-label="Quality" onClick={()=>setMode("quality")}><span>Q</span></button>
-        <button type="button" title="Commands" aria-label="Commands" onClick={()=>setCommandOpen(true)}><span>⌘</span></button>
+        <button type="button" title="Commands" aria-label="Open command palette" onClick={()=>setCommandOpen(true)}><span>⌘</span></button>
       </aside>
 
       {mode==="design" ? <>
@@ -355,7 +355,7 @@ export function ForgeEditor(){
     {notice&&<button type="button" className="forge-next__toast" onClick={()=>setNotice("")}>{notice}<span>×</span></button>}
     {commandOpen&&<div className="forge-next__command-backdrop" onMouseDown={(event)=>{if(event.target===event.currentTarget)setCommandOpen(false);}}><div className="forge-next__command">
       <div className="forge-next__command-input"><span>⌘</span><input ref={commandInput} aria-label="Forge command" placeholder="Go to Motion, open References, publish…" onKeyDown={(event)=>{if(event.key==="Enter")runCommand(event.currentTarget.value);}}/><kbd>esc</kbd></div>
-      <div className="forge-next__command-grid">{[...modes,{id:"quality" as const,label:"Quality",short:"Q"},{id:"publish" as const,label:"Publish",short:"P"}].map((item)=><button type="button" key={item.id} onClick={()=>{setMode(item.id);setCommandOpen(false);}}><span>{item.short}</span><strong>{item.label}</strong></button>)}<button type="button" onClick={()=>{setAiOpen(true);setMode("design");setCommandOpen(false);}}><span>AI</span><strong>AI Build</strong></button><button type="button" onClick={()=>{setNewProjectOpen(true);setCommandOpen(false);}}><span>＋</span><strong>New website</strong></button></div>
+      <div className="forge-next__command-grid">{[...modes,{id:"quality" as const,label:"Quality",short:"Q"},{id:"publish" as const,label:"Publish",short:"P"}].map((item)=><button type="button" key={item.id} onClick={()=>{setMode(item.id);setCommandOpen(false);}}><span>{item.short}</span><strong>{item.label}</strong></button>)}<button type="button" onClick={()=>{setAiOpen(true);setMode("design");setCommandOpen(false);}}><span>AI</span><strong>AI Build</strong></button><button type="button" onClick={()=>{setNewProjectOpen(true);setCommandOpen(false);}}><span>＋</span><strong>New website</strong></button><button type="button" onClick={()=>{setVaultOpen(true);setCommandOpen(false);}}><span>V</span><strong>Versions</strong></button><button type="button" onClick={()=>{setLoopOpen(true);setCommandOpen(false);}}><span>↗</span><strong>Improve current site</strong></button></div>
     </div></div>}
     {loopOpen&&<LoopEnginePanel
       projectId={draft.project.id}
