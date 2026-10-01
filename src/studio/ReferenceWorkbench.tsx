@@ -142,7 +142,7 @@ export function ReferenceWorkbench({ project, setProject }:{
 
     <main className="reference-workbench__main">
       {message && <button type="button" className="reference-workbench__message" onClick={()=>setMessage("")}>{message}<span>×</span></button>}
-      {selected ? <ReferenceEditor reference={selected} onChange={updateSelected} onSystem={updateSystem} onRemove={removeSelected} /> : <ReferenceEmpty />}
+      {selected ? <ReferenceEditor key={selected.id} reference={selected} onChange={updateSelected} onSystem={updateSystem} onRemove={removeSelected} /> : <ReferenceEmpty />}
     </main>
 
     <aside className="reference-workbench__corpus">
@@ -171,6 +171,49 @@ function ReferenceEditor({reference,onChange,onSystem,onRemove}:{
   onRemove:()=>void;
 }) {
   const summary=referenceDirectionSummary(reference);
+  const [screenshots,setScreenshots]=useState<File[]>([]);
+  const [analyzing,setAnalyzing]=useState(false);
+  const [analysisMessage,setAnalysisMessage]=useState("");
+  const screenshotRef=useRef<HTMLInputElement>(null);
+
+  const chooseScreenshots=(files:FileList|null)=>{
+    const next=Array.from(files ?? []).slice(0,4);
+    const invalid=next.find((file)=>!["image/png","image/jpeg","image/webp"].includes(file.type) || file.size>3_200_000);
+    if(invalid) {
+      setScreenshots([]);
+      setAnalysisMessage("Use up to four PNG, JPEG or WebP screenshots, each 3.2 MB or smaller.");
+      if(screenshotRef.current) screenshotRef.current.value="";
+      return;
+    }
+    setScreenshots(next);
+    setAnalysisMessage(next.length ? `${next.length} screenshot${next.length===1?"":"s"} ready for deconstruction.` : "");
+  };
+
+  const analyzeScreenshots=async()=>{
+    if(!screenshots.length || analyzing) return;
+    setAnalyzing(true);
+    setAnalysisMessage("");
+    try {
+      const encoded=await Promise.all(screenshots.map(async(file)=>({
+        name:file.name,
+        dataUrl:await fileToDataUrl(file),
+      })));
+      const response=await fetch("/api/studio/references/analyze",{
+        method:"POST",
+        headers:{"content-type":"application/json"},
+        body:JSON.stringify({reference,screenshots:encoded}),
+      });
+      const body=await response.json() as {ok:boolean;reference?:StudioReference;error?:string};
+      if(!response.ok || !body.ok || !body.reference) throw new Error(body.error || "Reference screenshot analysis failed.");
+      onChange(body.reference);
+      setAnalysisMessage("Screenshot deconstruction applied. Review the evidence, transfer rules and Forge implementation map before building.");
+    } catch(error) {
+      setAnalysisMessage(error instanceof Error ? error.message : "Reference screenshot analysis failed.");
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
   return <div className="reference-editor">
     <header className="reference-editor__head">
       <div>
@@ -185,8 +228,26 @@ function ReferenceEditor({reference,onChange,onSystem,onRemove}:{
     </header>
 
     <section className="reference-editor__readiness" data-ready={summary.ready}>
-      <div><span>{summary.ready ? "REFERENCE ACTIVE" : "REFERENCE NOT DIRECTING YET"}</span><strong>{summary.ready ? "Forge will use these constraints in AI Build + Director." : "A URL alone is not visual evidence. Add observed facts, transfer rules, or import a verified analysis."}</strong></div>
+      <div><span>{summary.ready ? "REFERENCE ACTIVE" : "REFERENCE NOT DIRECTING YET"}</span><strong>{summary.ready ? "Forge will use these constraints in AI Build + Director." : "A URL alone is not visual evidence. Add screenshots, observed facts, transfer rules, or import an analysis."}</strong></div>
       <div><b>{Math.round(reference.evidenceStrength*100)}%</b><small>evidence confidence</small></div>
+    </section>
+
+    <section className="reference-editor__analyzer">
+      <div className="reference-editor__analyzer-copy">
+        <span>VISUAL EVIDENCE ANALYZER</span>
+        <strong>Give Forge the pixels, not permission to guess from a URL.</strong>
+        <p>Attach desktop, mobile, and key interaction-state screenshots. Forge deconstructs only what is visible, then writes observed evidence, transferable construction rules, no-copy boundaries, and system mappings.</p>
+      </div>
+      <div className="reference-editor__analyzer-controls">
+        <label className="reference-editor__drop">
+          <input ref={screenshotRef} type="file" accept="image/png,image/jpeg,image/webp" multiple onChange={(event)=>chooseScreenshots(event.target.files)} />
+          <span>{screenshots.length ? `${screenshots.length} screenshot${screenshots.length===1?"":"s"} selected` : "Choose screenshots"}</span>
+          <small>PNG / JPEG / WebP · up to 4 · 3.2 MB each</small>
+        </label>
+        {screenshots.length>0 && <div className="reference-editor__file-list">{screenshots.map((file)=><span key={file.name+file.size}>{file.name}</span>)}</div>}
+        <button type="button" className="primary" disabled={!screenshots.length || analyzing} onClick={()=>void analyzeScreenshots()}>{analyzing ? "Analyzing visual evidence…" : "Analyze screenshots"}</button>
+        {analysisMessage && <p role="status">{analysisMessage}</p>}
+      </div>
     </section>
 
     <div className="reference-editor__source-grid">
@@ -232,4 +293,13 @@ function withUniqueId(reference:StudioReference,references:StudioReference[]) {
   let index=2;
   while(used.has(`${reference.id}-${index}`)) index+=1;
   return {...reference,id:`${reference.id}-${index}`};
+}
+
+function fileToDataUrl(file:File) {
+  return new Promise<string>((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>typeof reader.result==="string" ? resolve(reader.result) : reject(new Error("Screenshot could not be encoded."));
+    reader.onerror=()=>reject(reader.error ?? new Error("Screenshot could not be read."));
+    reader.readAsDataURL(file);
+  });
 }
