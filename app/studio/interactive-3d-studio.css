@@ -1,0 +1,214 @@
+/*
+ * Interactive 3D Studio UI
+ * Purpose-built around the prompt -> scene graph -> viewport -> inspector -> scroll storyboard workflow.
+ */
+.production-studio{
+  --ps-bg:#07090c;
+  --ps-panel:#0d1014;
+  --ps-panel-2:#11151a;
+  --ps-line:rgba(255,255,255,.08);
+  --ps-line-strong:rgba(255,255,255,.15);
+  --ps-text:#f1f2f2;
+  --ps-muted:#8b9299;
+  --ps-accent:#ff6a3d;
+  --ps-green:#78d5a2;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 50% -30%,rgba(68,83,102,.12),transparent 38%),
+    var(--ps-bg);
+}
+.production-topbar{
+  height:58px;
+  padding:0 14px;
+  grid-template-columns:minmax(220px,1fr) auto minmax(360px,1fr);
+  background:rgba(7,9,12,.9);
+  border-bottom-color:rgba(255,255,255,.07);
+  backdrop-filter:blur(22px) saturate(1.25);
+}
+.production-brand{gap:9px;align-items:center}
+.production-brand a{font-size:17px}
+.production-brand span{font-size:9px;color:#a7adb3;letter-spacing:.14em}
+.production-brand em{
+  padding:4px 7px;
+  border:1px solid rgba(255,106,61,.24);
+  border-radius:999px;
+  background:rgba(255,106,61,.07);
+  color:#d9a08e;
+  font-size:7px;
+  font-style:normal;
+  font-weight:750;
+  letter-spacing:.12em;
+}
+.production-topbar nav{border:0;background:#0d1115;border-radius:9px}
+.production-topbar nav button{min-width:66px;font-size:11px}
+.production-topbar nav button[aria-current=page]{background:#1a2026;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.production-top-actions{gap:5px}
+.production-top-actions summary,.production-guided-button{font-size:9px!important}
+.production-layout{
+  height:calc(100svh - 58px);
+  grid-template-columns:244px minmax(620px,1fr) 318px;
+  grid-template-rows:minmax(0,1fr) 160px;
+}
+.production-left,.production-right{background:rgba(13,16,20,.96)}
+.production-panel-title{height:50px;padding:9px 12px}
+.production-panel-title span{font-size:8px;letter-spacing:.13em}
+.production-panel-title strong{font-size:12px}
+.production-segmented{margin:8px}
+.production-segmented button{font-size:10px;padding:7px 5px}
+.production-tree{padding:0 8px 12px}
+.production-tree button{min-height:38px;padding:8px}
+.production-tree button strong{font-size:11px}
+.production-tree button small{font-size:8px}
+.production-tree button>span{font-size:11px}
+.production-tree button.active{background:rgba(255,106,61,.09);box-shadow:inset 2px 0 0 var(--ps-accent)}
+.production-import{font-size:10px;min-height:34px}
+.production-stage{background:#080a0d;overflow:hidden}
+.production-stage-head{height:50px;flex:0 0 50px;padding:8px 12px;background:#0b0e12}
+.production-stage-head span{font-size:8px;color:#8e969e;letter-spacing:.13em}
+.production-stage-head strong{font-size:13px}
+.production-stage-actions button{font-size:9px;padding:7px 10px;background:#10141a}
+.production-runtime{padding:8px 10px 6px}
+.production-runtime>.studio-preview{
+  border:1px solid rgba(255,255,255,.08)!important;
+  border-radius:12px!important;
+  overflow:hidden;
+  box-shadow:0 26px 70px rgba(0,0,0,.35);
+}
+.production-runtime .studio-preview__toolbar{min-height:42px}
+.production-runtime .studio-preview__viewport{background:#050609}
+.production-right .production-context,
+.production-right .production-inspector{font-size:11px}
+.production-section h3{font-size:9px}
+.production-section label{font-size:9px}
+.production-section input:not([type=range]),.production-section textarea,.production-section select{font-size:11px}
+.production-bottom{padding:8px 12px;background:#0a0d11}
+.production-story-head{height:30px}
+.production-story-head span{font-size:8px}
+.production-story-head strong{font-size:10px}
+.production-story-head button{font-size:9px}
+.production-story-strip{height:82px}
+.production-story-strip>button{width:142px;min-width:142px;height:76px;padding:6px}
+.production-story-strip small{font-size:8px}
+.production-story-strip span{font-size:10px}
+.production-story-strip i{height:37px}
+.production-progress{height:22px}
+.production-progress>div{height:4px}
+
+/* AI build dock: the only whole-site prompt surface in Build. */
+.production-3d-builder{
+  margin:8px 10px 0;
+  flex:0 0 auto;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:11px;
+  background:linear-gradient(180deg,rgba(18,23,29,.96),rgba(12,15,19,.96));
+  overflow:hidden;
+}
+.production-3d-builder__head{
+  min-height:44px;
+  padding:8px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.production-3d-builder__head>div{min-width:0;display:grid;gap:2px}
+.production-3d-builder__head span{font-size:7px;letter-spacing:.15em;color:var(--ps-accent);font-weight:800}
+.production-3d-builder__head strong{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.production-3d-builder__head>button{
+  padding:6px 8px;border:1px solid var(--ps-line);border-radius:7px;background:#0c1014;color:#aeb4b9;font-size:8px
+}
+.production-3d-pipeline{
+  min-height:30px;
+  padding:0 10px 8px;
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:4px;
+}
+.production-3d-pipeline>div{
+  min-width:0;padding:5px 7px;display:flex;align-items:center;gap:6px;
+  border:1px solid rgba(255,255,255,.055);border-radius:7px;background:#0a0d11;color:#69717a
+}
+.production-3d-pipeline i{
+  width:16px;height:16px;display:grid;place-items:center;border-radius:50%;background:#171d23;
+  font-size:7px;font-style:normal;font-weight:800
+}
+.production-3d-pipeline span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8px}
+.production-3d-pipeline>div[data-done=true]{border-color:rgba(120,213,162,.16);color:#9ccfb4}
+.production-3d-pipeline>div[data-done=true] i{background:rgba(120,213,162,.12);color:#8fe0b1}
+.production-3d-builder__body{
+  padding:10px;border-top:1px solid rgba(255,255,255,.06);
+  display:grid;grid-template-columns:minmax(0,1.45fr) minmax(240px,.75fr);gap:10px
+}
+.production-3d-builder__prompt textarea{
+  width:100%;min-height:78px;padding:10px 11px;resize:vertical;outline:0;
+  border:1px solid rgba(255,255,255,.09);border-radius:8px;background:#070a0d;color:#eef0f1;
+  font-size:11px;line-height:1.45
+}
+.production-3d-builder__prompt textarea:focus{border-color:rgba(255,106,61,.42);box-shadow:0 0 0 3px rgba(255,106,61,.06)}
+.production-3d-builder__prompt-actions{margin-top:6px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.production-3d-builder__prompt-actions label{display:flex;align-items:center;gap:6px;color:#7e868d;font-size:8px}
+.production-3d-builder__prompt-actions button,.production-3d-builder__result-actions button{
+  min-height:30px;padding:7px 10px;border:1px solid var(--ps-line);border-radius:7px;background:#14191f;color:#c9cdd0;font-size:8px
+}
+.production-3d-builder__prompt-actions button.primary,.production-3d-builder__result-actions button.primary{
+  border-color:#ff6a3d;background:#ff6a3d;color:#fff;font-weight:800
+}
+.production-3d-builder__evidence{
+  min-width:0;padding:9px;border:1px solid rgba(255,255,255,.065);border-radius:8px;background:#090c10
+}
+.production-3d-builder__empty strong,.production-3d-builder__summary strong{display:block;font-size:10px}
+.production-3d-builder__empty p,.production-3d-builder__summary p,.production-3d-builder__blocker,.production-3d-builder__error{
+  margin:4px 0 0;color:#757e86;font-size:8px;line-height:1.45
+}
+.production-3d-builder__summary>span{font-size:7px;text-transform:uppercase;letter-spacing:.12em;color:#a6adb3}
+.production-3d-builder__chips{margin-top:7px;display:flex;gap:5px;flex-wrap:wrap}
+.production-3d-builder__chips span{
+  padding:4px 6px;border-radius:999px;background:#171c21;color:#7f878e;font-size:7px
+}
+.production-3d-builder__chips span[data-ok=true]{background:rgba(120,213,162,.1);color:#8ed8ae}
+.production-3d-builder__blocker{padding:7px;border-left:2px solid #f0aa65;background:rgba(240,170,101,.06);color:#b89d80}
+.production-3d-builder__error{padding:7px;border-left:2px solid #ff8170;background:rgba(255,129,112,.06);color:#d8a099}
+.production-3d-builder__result-actions{margin-top:8px;display:flex;gap:5px;flex-wrap:wrap}
+
+/* Context command is secondary: it refines the selected scene, it does not compete with whole-site AI build. */
+.production-command{
+  margin:0 10px 8px;height:38px;flex-basis:38px;border-radius:8px;background:#0d1115;box-shadow:none
+}
+.production-command input{font-size:10px}
+.production-command button{height:28px;font-size:8px}
+.production-command-shortcut{background:#151a20!important;color:#8f979d!important;border:1px solid rgba(255,255,255,.07)!important}
+
+/* Keep expert systems discoverable without making them permanent chrome. */
+.production-advanced-menu>summary,.production-assist>summary{color:#a6acb1}
+.production-top-actions details>div{background:#12171c;border-color:rgba(255,255,255,.1)}
+.production-first-run{display:none}
+
+/* Canvas is the product. Hide secondary mission cards from the viewport once configured; Review owns readiness details. */
+.production-stage>.operator-mission,
+.production-stage>.production-next-action{margin:7px 10px 0;max-height:120px;overflow:auto}
+
+/* Responsive: preserve viewport first, then scene graph, then inspector. */
+@media(max-width:1220px){
+  .production-layout{grid-template-columns:210px minmax(520px,1fr) 276px}
+  .production-topbar{grid-template-columns:auto 1fr auto}
+  .production-brand em{display:none}
+}
+@media(max-width:960px){
+  .production-layout{height:auto;display:grid;grid-template-columns:210px minmax(0,1fr);grid-template-rows:minmax(620px,70svh) auto auto}
+  .production-right{grid-column:1/-1;max-height:none;border-left:0;border-top:1px solid var(--ps-line)}
+  .production-bottom{grid-column:1/-1}
+  .production-3d-builder__body{grid-template-columns:1fr}
+}
+@media(max-width:720px){
+  .production-topbar{grid-template-columns:1fr;height:auto;min-height:58px;padding:8px 10px}
+  .production-brand{margin-bottom:4px}
+  .production-topbar nav{grid-row:auto;grid-column:auto;justify-self:start}
+  .production-top-actions{grid-row:auto;grid-column:auto;justify-self:stretch;overflow-x:auto}
+  .production-layout{display:block}
+  .production-left{max-height:280px}
+  .production-stage{min-height:720px}
+  .production-right{max-height:none}
+  .production-3d-pipeline{grid-template-columns:repeat(5,110px);overflow-x:auto}
+  .production-3d-builder__prompt-actions{align-items:stretch;flex-direction:column}
+  .production-3d-builder__prompt-actions button{width:100%}
+}

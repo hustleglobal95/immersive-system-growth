@@ -6,7 +6,13 @@ test("Studio exposes the guided product shell and keyboard command palette", asy
 
   await expect(page.getByRole("heading", { level: 1, name: /Forge Studio/ })).toBeAttached();
   await expect(page.locator(".studio-intelligence-dock")).toHaveCount(0);
-  await expect(page.getByRole("button", { name: /Guided Build/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /3D Build/ })).toBeVisible();
+  await expect(page.locator("#interactive-3d-build")).toBeVisible();
+  await expect(page.getByText("AI 3D BUILD")).toBeVisible();
+  await expect(page.getByText("SCENE GRAPH")).toBeVisible();
+  await expect(page.getByText("LIVE 3D VIEWPORT")).toBeVisible();
+  await expect(page.getByText("PROPERTIES")).toBeVisible();
+  await expect(page.getByText("SCROLL STORYBOARD")).toBeVisible();
   await expect(page.getByRole("button", { name: "Build", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Review", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Ship", exact: true })).toBeVisible();
@@ -27,7 +33,9 @@ test("Studio exposes the guided product shell and keyboard command palette", asy
 test("Guided Build remains reachable and its project escape hatch stays visible", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/studio");
-  await page.getByRole("button", { name: /Guided Build/ }).click();
+  await page.getByRole("button", { name: "Open command palette" }).click();
+  const palette=page.getByRole("dialog", { name: "Go anywhere. Do anything." });
+  await palette.getByRole("button", { name: "Guided Build", exact: true }).click();
   await expect(page.getByRole("dialog", { name: "Build the project without learning the machinery." })).toBeVisible();
   await expect(page.getByRole("button", { name: "Start a different project" })).toBeVisible();
   await page.keyboard.press("Escape");
