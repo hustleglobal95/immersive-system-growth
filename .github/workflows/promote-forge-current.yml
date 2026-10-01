@@ -1,0 +1,18 @@
+name: Promote current Forge artifact
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/promote-forge-current.yml"
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Promote READY Forge artifact to production
+        run: npx --yes vercel@latest promote immersive-system-growth-j9xjjctn0-hustleglobal95s-projects.vercel.app --yes --token="$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
