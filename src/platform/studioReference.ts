@@ -48,7 +48,6 @@ export function parseStudioReferences(input:unknown):StudioReference[] {
 
 export function studioReferenceHasDirection(reference:StudioReference) {
   return reference.take.length>0
-    || reference.evidence.length>0
     || Object.values(reference.systems).some((value)=>value.trim().length>0);
 }
 
@@ -187,7 +186,8 @@ function referenceLesson(reference:StudioReference) {
     .map(([key,value])=>`${humanize(key)}: ${value.trim()}`);
   const take=reference.take.length ? "Transfer: "+reference.take.join("; ") : "";
   const evidence=reference.evidence.length ? "Observed: "+reference.evidence.slice(0,6).join("; ") : "";
-  return [take,...systemDirections,evidence].filter(Boolean).join(" ");
+  const noCopy="Do not copy: "+(reference.doNotCopy.join("; ") || "branding, exact composition, proprietary assets, copy, palette/type bundle, or signature interaction verbatim");
+  return [take,...systemDirections,evidence,noCopy].filter(Boolean).join(" ");
 }
 
 function joinMatching(values:string[],pattern:RegExp) {
