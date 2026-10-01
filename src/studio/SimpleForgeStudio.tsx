@@ -11,7 +11,7 @@ import { parseInteractionGraph } from "@/src/lib/interactionGraph";
 import { parseStudioProject } from "@/src/platform/studioSchema";
 import { evaluateProjectHealth } from "@/src/platform/control-plane/projectHealth";
 import { StudioLivePreview } from "@/src/studio/StudioLivePreview";
-import { useStudioDraft } from "@/src/studio/useStudioDraft";
+import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig, SceneDefinition } from "@/src/types/experience";
 
@@ -127,7 +127,21 @@ export function SimpleForgeStudio(){
   }
 
   async function finishWebsite(){
-    if(!publishReady||publishing) return;
+    if(!releaseReady||publishing) return;
+    if(!publishReady){
+      const safeName=(draft.project.id||draft.project.name||"forge-project").replace(/[^a-z0-9-]+/gi,"-").replace(/^-+|-+$/g,"").toLowerCase()||"forge-project";
+      downloadJson(safeName+"-finished.json",{
+        version:1,
+        status:"finished",
+        project:draft.project,
+        experience:draft.experience,
+        assetManifest:draft.assetManifest,
+        interactionGraph:draft.interactionGraph,
+        cinematicSystems:draft.cinematicSystems,
+      });
+      setPublishResult({text:"Website finished. The completed Forge project package was downloaded. Connect publishing later only if you want Forge to create the release review automatically."});
+      return;
+    }
     setPublishing(true);
     setPublishResult({text:"Creating release review…"});
     try{
@@ -158,11 +172,9 @@ export function SimpleForgeStudio(){
     if(blockers.length) return blockers[0].title;
     if(draft.validation.length) return draft.validation[0];
     if(temporaryAssets) return "A generated asset is still temporary.";
-    if(!publishCapability) return "Checking publishing…";
-    if(!publishCapability.enabled) return "Publishing is not connected yet.";
-    if(!publishCapability.repositoryConfigured||!publishCapability.githubTokenConfigured) return "GitHub publishing is not connected yet.";
-    if(!publishCapability.canPublish) return "This account cannot publish.";
-    if(!publishCapability.sessionAuthorized) return "Publishing authorization is missing.";
+    if(!publishCapability) return "Checking publishing. You can still finish and export the project.";
+    if(!publishCapability.enabled||!publishCapability.repositoryConfigured||!publishCapability.githubTokenConfigured) return "Publishing is not connected. Finish Website will export the completed project package.";
+    if(!publishCapability.canPublish||!publishCapability.sessionAuthorized) return "Automatic publishing is unavailable. Finish Website will export the completed project package.";
     return "";
   }
 
@@ -222,7 +234,7 @@ export function SimpleForgeStudio(){
               {draft.validation.map((issue)=><button type="button" key={issue} onClick={()=>setMode("edit")}><strong>Configuration issue</strong><span>{issue}</span></button>)}
               {temporaryAssets>0&&<Link href="/studio/assets/create"><strong>Permanent asset needed</strong><span>Move the generated draft asset into the final project.</span></Link>}
             </div>}
-          <button className="simple-forge__primary" type="button" disabled={!publishReady||publishing} onClick={()=>void finishWebsite()}>{publishing?"Finishing…":"Finish Website"}</button>
+          <button className="simple-forge__primary" type="button" disabled={!releaseReady||publishing} onClick={()=>void finishWebsite()}>{publishing?"Finishing…":"Finish Website"}</button>
           {!publishReady&&<p className="simple-forge__message">{publishBlocker()}</p>}
           {publishResult&&<div className="simple-forge__published" role="status"><strong>{publishResult.text}</strong>{publishResult.url&&<a href={publishResult.url} target="_blank" rel="noreferrer">Open release review</a>}</div>}
           <button className="simple-forge__secondary" type="button" onClick={()=>setMode("edit")}>Back to editing</button>
