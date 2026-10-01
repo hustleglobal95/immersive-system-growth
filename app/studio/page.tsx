@@ -1,20 +1,17 @@
 import type { Metadata } from "next";
-import { ProductionStudioWorkbench } from "@/src/studio/ProductionStudioWorkbench";
+import { SimpleForgeStudio } from "@/src/studio/SimpleForgeStudio";
 import "./studio.css";
-import "./ui-refinement.css";
-import "./production-studio.css";
-import "./interactive-3d-studio.css";
-import "./workflow-guide.css";
+import "./simple-forge-studio.css";
 import { requireStudioPageAccess } from "@/src/platform/studioPageAccess";
 
-export const dynamic = "force-dynamic";
+export const dynamic="force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Forge Studio",
-  description: "AI-native production studio for interactive 3D websites.",
+export const metadata:Metadata={
+  title:"Forge Studio",
+  description:"Build, edit and finish interactive 3D websites in Forge.",
 };
 
-export default async function StudioPage() {
+export default async function StudioPage(){
   await requireStudioPageAccess("/studio");
-  return <ProductionStudioWorkbench />;
+  return <SimpleForgeStudio/>;
 }
