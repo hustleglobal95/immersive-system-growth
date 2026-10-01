@@ -102,7 +102,7 @@ export function ReferenceWorkbench({ project, setProject }:{
       const parsed=JSON.parse(await file.text());
       const reference=importStudioReferenceAnalysis(parsed);
       addReference(reference);
-      setMessage(`${reference.label} imported from verified reference analysis and activated.`);
+      setMessage(`${reference.label} imported from structured reference analysis and activated.`);
     } catch(error) {
       setMessage(error instanceof Error ? error.message : "Reference analysis import failed.");
     } finally {
@@ -190,8 +190,8 @@ function ReferenceEditor({reference,onChange,onSystem,onRemove}:{
     </section>
 
     <div className="reference-editor__source-grid">
-      <label>Name<input value={reference.label} onChange={(event)=>onChange({label:event.target.value})} /></label>
-      <label>Source URL<input type="url" value={reference.url} onChange={(event)=>onChange({url:event.target.value})} /></label>
+      <label>Name<input value={reference.label} onChange={(event)=>{ if(event.target.value.trim()) onChange({label:event.target.value}); }} /></label>
+      <label>Source URL<input type="url" value={reference.url} readOnly /></label>
     </div>
 
     <div className="reference-editor__principles">
@@ -215,7 +215,7 @@ function ReferenceEmpty() {
   return <section className="reference-workbench__blank">
     <span>REFERENCE INTELLIGENCE</span>
     <h2>References should change the build, not decorate the brief.</h2>
-    <p>Add a website from the left, import Forge&apos;s verified browser-analysis JSON, or choose an evidence-backed reference from the corpus. Forge will separate observed behavior from transferable principles and explicit no-copy constraints.</p>
+    <p>Add a website from the left, import Forge reference-analysis JSON, or choose an evidence-backed reference from the corpus. Forge will separate observed behavior from transferable principles and explicit no-copy constraints.</p>
     <div><strong>REFERENCE</strong><i>→</i><strong>DECONSTRUCT</strong><i>→</i><strong>MAP TO FORGE</strong><i>→</i><strong>AI BUILD + DIRECTOR</strong></div>
   </section>;
 }
