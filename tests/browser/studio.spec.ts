@@ -5,22 +5,58 @@ const nav=(page:import("@playwright/test").Page)=>page.getByRole("navigation",{n
 test("canvas edit persists into the working website",async({page})=>{
   await page.goto("/studio");
   await expect(page.locator(".forge-next__canvas")).toBeVisible();
+  await page.getByRole("button",{name:"Content",exact:true}).click();
   await page.getByLabel("Headline").fill("Forge Canvas Edit");
   await expect.poll(()=>page.evaluate(()=>{
     const raw=localStorage.getItem("forge-studio-v2");
     return raw?JSON.parse(raw).experience?.scenes?.[0]?.copy?.headline:null;
   })).toBe("Forge Canvas Edit");
   await page.reload();
+  await page.getByRole("button",{name:"Content",exact:true}).click();
   await expect(page.getByLabel("Headline")).toHaveValue("Forge Canvas Edit");
 });
 
-test("layers create and select website scenes",async({page})=>{
+test("editor exposes website sections instead of scenes",async({page})=>{
   await page.goto("/studio");
-  const scenes=page.locator(".forge-next__scene-list>button");
-  const before=await scenes.count();
-  await page.getByRole("button",{name:"＋ Add scene",exact:true}).click();
-  await expect(scenes).toHaveCount(before+1);
-  await expect(page.getByLabel("Scene name")).toHaveValue(`Scene ${before+1}`);
+  await expect(page.getByText("Sections",{exact:true})).toBeVisible();
+  const sections=page.locator(".forge-next__scene-list>button");
+  const before=await sections.count();
+  await page.getByRole("button",{name:"＋ Add section",exact:true}).click();
+  await expect(sections).toHaveCount(before+1);
+  await page.getByRole("button",{name:"Design",exact:true}).last().click();
+  await expect(page.locator(".forge-next__inspector").getByLabel("Name")).toHaveValue(`Section ${before+1}`);
+});
+
+test("editable R3F stage is the default Forge canvas",async({page})=>{
+  await page.goto("/studio");
+  await expect(page.locator(".forge-viewport-canvas")).toBeVisible();
+  await expect(page.locator(".forge-viewport-canvas canvas")).toBeAttached();
+  await expect(page.getByRole("group",{name:"Transform mode"})).toBeVisible();
+  await expect(page.getByRole("button",{name:"Preview",exact:true}).first()).toBeVisible();
+});
+
+test("layers select editable elements and inspector exposes transforms",async({page})=>{
+  await page.goto("/studio");
+  await page.getByRole("button",{name:"Layers",exact:true}).click();
+  await page.getByRole("button",{name:"Headline",exact:true}).click();
+  await expect(page.getByText("3D headline",{exact:true})).toBeVisible();
+  await expect(page.getByLabel("Position X")).toBeVisible();
+  await expect(page.getByLabel("Rotation Y")).toBeVisible();
+  await expect(page.getByLabel("Scale Z")).toBeVisible();
+});
+
+test("transform inspector writes to the same canvas state",async({page})=>{
+  await page.goto("/studio");
+  await page.getByRole("button",{name:"Layers",exact:true}).click();
+  await page.getByRole("button",{name:"Headline",exact:true}).click();
+  await page.getByLabel("Position X").fill("1.25");
+  await expect.poll(()=>page.evaluate(()=>{
+    const raw=localStorage.getItem("forge-studio-v2");
+    if(!raw)return null;
+    const draft=JSON.parse(raw);
+    const sectionId=draft.experience?.scenes?.[0]?.id;
+    return sectionId?draft.project?.canvasEditor?.headlineTransforms?.[sectionId]?.position?.[0]:null;
+  })).toBe(1.25);
 });
 
 test("canvas panels collapse without hiding the website",async({page})=>{
