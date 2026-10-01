@@ -5,6 +5,9 @@ import { planInteractive3DFromPrompt } from "@/src/platform/interactive3dPlanner
 import { aiGatewayInteractive3DPlannerConfigured, refineInteractive3DBlueprintWithAi } from "@/src/platform/autonomy/aiGatewayInteractive3DPlanner";
 import { compileInteractive3DBlueprint } from "@/src/platform/interactive3dCompiler";
 import { materializeInteractive3DExperience } from "@/src/platform/interactive3dMaterializer";
+import { parseAssetManifest } from "@/src/platform/assetManifestSchema";
+import { generationRequestsForInteractive3D } from "@/src/platform/interactive3dAssetFactory";
+import { interactionGraphForInteractive3D } from "@/src/platform/interactive3dInteractionGraph";
 
 export const runtime = "nodejs";
 
@@ -31,12 +34,22 @@ export async function POST(request: Request) {
   try {
     const input = requestSchema.parse(await request.json());
     const experience = parseExperience(input.experience);
+    const sourceManifest = parseAssetManifest(input.manifest);
+    const cleanManifest = input.useCurrentHero
+      ? sourceManifest
+      : parseAssetManifest({
+          ...sourceManifest,
+          models: [],
+          textures: [],
+          hdr: [],
+          video: [],
+        });
     const heroSource = input.useCurrentHero ? experience.heroModel : "";
     const base = planInteractive3DFromPrompt({
       prompt: input.prompt,
       projectName: input.projectName,
       experience,
-      manifest: input.manifest,
+      manifest: cleanManifest,
       ...(heroSource ? {
         heroAsset: {
           id: "studio-owned-hero",
@@ -53,12 +66,21 @@ export async function POST(request: Request) {
       : base.blueprint;
     const compilePlan = compileInteractive3DBlueprint(blueprint);
     const materialized = materializeInteractive3DExperience({ blueprint, experience });
+    const interactionGraph = interactionGraphForInteractive3D(blueprint);
+    const assetRequests = generationRequestsForInteractive3D(blueprint).map((request) => ({
+      ...request,
+      heroCandidate: blueprint.assets.find((asset) => asset.id === request.assetId)?.heroCandidate ?? false,
+    }));
 
     return Response.json({
       ok: true,
       ai: { configured: aiConfigured, used: aiConfigured },
       blueprint,
       candidate: materialized.experience,
+      assetManifest: cleanManifest,
+      interactionGraph,
+      assetRequests,
+      signatureSceneId: blueprint.experience.signatureSceneId,
       assets: materialized.assetReadiness,
       decisions: [
         ...base.decisions,

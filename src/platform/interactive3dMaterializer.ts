@@ -23,13 +23,16 @@ export function materializeInteractive3DExperience(input: {
 }): Interactive3DMaterialization {
   const plan = compileInteractive3DBlueprint(input.blueprint);
   const source = parseExperience(input.experience);
-  const baseIds = source.scenes.map((scene) => scene.id);
   const blueprintIds = plan.scenes.map((scene) => scene.id);
-  if (JSON.stringify(baseIds) !== JSON.stringify(blueprintIds)) {
-    throw new Error("Interactive 3D materialization requires blueprint scene IDs to match the template ExperienceConfig exactly.");
-  }
+  const seeds = source.scenes;
+  if (!seeds.length) throw new Error("Interactive 3D materialization requires at least one valid scene seed.");
 
   const next = structuredClone(source);
+  next.scenes = plan.scenes.map((direction, index) => {
+    const seed = structuredClone(seeds[Math.min(index, seeds.length - 1)]);
+    seed.id = direction.id;
+    return seed;
+  });
   const palette = input.blueprint.artDirection.palette;
   next.meta = {
     name: input.blueprint.project.name.slice(0, 100),
@@ -83,7 +86,10 @@ export function materializeInteractive3DExperience(input: {
     });
   } else {
     next.heroModel = "";
-    next.heroVisible = false;
+    // A generated project must always have a visible spatial subject immediately.
+    // Until the project-specific production asset is attached, PersistentHero renders
+    // a deterministic procedural stand-in so the website never appears unchanged/empty.
+    next.heroVisible = !heroVisual?.source;
   }
 
   const ranges = generatedRanges(blueprintIds, plan.signatureSlice.sceneId);
