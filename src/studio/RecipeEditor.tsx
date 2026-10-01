@@ -77,7 +77,7 @@ export function RecipeEditor({
           <div><span>BROWSER RECIPE EDITOR</span><h2 id="recipe-title">Start from a visual system</h2></div>
           <output>{visibleRecipes.length} recipes</output>
         </div>
-        <p className="studio-muted">Choose a production structure, load it into the draft, then direct the actual scenes, assets, motion and media layers below.</p>
+        <p className="studio-muted">Choose a production structure, load it into the draft, then direct the actual sections, assets, motion and media layers below.</p>
         <label>Search recipes<input aria-label="Recipe search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by industry or experience type" /></label>
         <div className="template-grid recipe-grid">
           {visibleRecipes.map((recipe, index) => {
@@ -86,7 +86,7 @@ export function RecipeEditor({
             return <article key={recipe.id} data-selected={selected}>
               <div className={`template-art template-art--${index + 1}`}><span>{String(index + 1).padStart(2, "0")}</span><i /><b /></div>
               <div><small>{recipe.id}</small><h3>{recipe.label}</h3><p>{recipe.description}</p>
-                <dl><div><dt>Scenes</dt><dd>{parsed.scenes.length}</dd></div><div><dt>Rig nodes</dt><dd>{parsed.productRig?.nodes.length ?? 0}</dd></div><div><dt>Media</dt><dd>{parsed.scenes.filter((item) => item.media).length}</dd></div></dl>
+                <dl><div><dt>Sections</dt><dd>{parsed.scenes.length}</dd></div><div><dt>Rig nodes</dt><dd>{parsed.productRig?.nodes.length ?? 0}</dd></div><div><dt>Media</dt><dd>{parsed.scenes.filter((item) => item.media).length}</dd></div></dl>
                 <button className={selected ? "" : "studio-primary"} type="button" onClick={() => { setSelectedId(recipe.id); setMessage(`${recipe.label} selected for review.`); }}>{selected ? "Selected recipe" : "Select recipe"}</button>
               </div>
             </article>;
@@ -100,10 +100,10 @@ export function RecipeEditor({
       </section>
 
       <section className="studio-card" aria-labelledby="recipe-scene-title">
-        <div className="studio-card__head"><div><span>LIVE DIRECTION</span><h2 id="recipe-scene-title">{scene.label}</h2></div><output>Scene {active + 1} / {experience.scenes.length}</output></div>
-        <label>Active scene<select aria-label="Recipe scene" value={active} onChange={(event) => setActive(Number(event.target.value))}>{experience.scenes.map((item, index) => <option key={item.id} value={index}>{String(index + 1).padStart(2, "0")} / {item.label}</option>)}</select></label>
+        <div className="studio-card__head"><div><span>LIVE DIRECTION</span><h2 id="recipe-scene-title">{scene.label}</h2></div><output>Section {active + 1} / {experience.scenes.length}</output></div>
+        <label>Active section<select aria-label="Recipe section" value={active} onChange={(event) => setActive(Number(event.target.value))}>{experience.scenes.map((item, index) => <option key={item.id} value={index}>{String(index + 1).padStart(2, "0")} / {item.label}</option>)}</select></label>
         <label>Project experience name<input aria-label="Recipe experience name" value={experience.meta.name} onChange={(event) => setExperience((current) => ({ ...current, meta: { ...current.meta, name: event.target.value } }))} /></label>
-        <label>Scene label<input aria-label="Recipe scene label" value={scene.label} onChange={(event) => updateScene({ label: event.target.value })} /></label>
+        <label>Section label<input aria-label="Recipe section label" value={scene.label} onChange={(event) => updateScene({ label: event.target.value })} /></label>
         <label>Headline<input aria-label="Recipe headline" value={scene.copy.headline} onChange={(event) => updateScene({ copy: { ...scene.copy, headline: event.target.value } })} /></label>
         <label>Body<textarea aria-label="Recipe body" rows={3} value={scene.copy.body} onChange={(event) => updateScene({ copy: { ...scene.copy, body: event.target.value } })} /></label>
         <div className="studio-field-row">
@@ -114,7 +114,7 @@ export function RecipeEditor({
       </section>
 
       <section className="studio-card" aria-labelledby="recipe-presets-title">
-        <div className="studio-card__head"><div><span>PORTABLE PRESETS</span><h2 id="recipe-presets-title">Direct this scene</h2></div><output>{motionPresets.length + transitionPresets.length} presets</output></div>
+        <div className="studio-card__head"><div><span>PORTABLE PRESETS</span><h2 id="recipe-presets-title">Direct this section</h2></div><output>{motionPresets.length + transitionPresets.length} presets</output></div>
         <label>Motion preset<select aria-label="Recipe motion preset" defaultValue="" onChange={(event) => { applyPreset(event.target.value); event.currentTarget.value = ""; }}><option value="">Apply motion...</option>{motionPresets.map((preset) => <option key={preset.id} value={preset.id}>{preset.label}</option>)}</select></label>
         <label>Transition preset<select aria-label="Recipe transition preset" disabled={!scene.media} defaultValue="" onChange={(event) => { applyPreset(event.target.value); event.currentTarget.value = ""; }}><option value="">{scene.media ? "Apply transition..." : "Add media before transitions"}</option>{transitionPresets.map((preset) => <option key={preset.id} value={preset.id}>{preset.label}</option>)}</select></label>
         <p className="studio-muted">Preset output is ordinary validated experience data. After applying it, use Sequence, Masks, Layers, and Preview for final direction.</p>

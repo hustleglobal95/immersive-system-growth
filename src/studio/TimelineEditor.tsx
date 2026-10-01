@@ -37,11 +37,11 @@ export function TimelineEditor({
         <div className="studio-card__head">
           <div>
             <span>MASTER TIMELINE</span>
-            <h2 id="timeline-title">Scene choreography</h2>
+            <h2 id="timeline-title">Section choreography</h2>
           </div>
-          <output>{experience.scenes.length} scenes</output>
+          <output>{experience.scenes.length} sections</output>
         </div>
-        <div className="timeline-track" role="list" aria-label="Experience scene ranges">
+        <div className="timeline-track" role="list" aria-label="Experience section ranges">
           {experience.scenes.map((item, index) => (
             <button
               key={item.id}
@@ -82,7 +82,7 @@ export function TimelineEditor({
       <section className="studio-card studio-inspector" aria-labelledby="scene-title">
         <div className="studio-card__head">
           <div>
-            <span>SCENE {String(active + 1).padStart(2, "0")}</span>
+            <span>SECTION {String(active + 1).padStart(2, "0")}</span>
             <h2 id="scene-title">{scene.label}</h2>
           </div>
           <code>{scene.id}</code>
@@ -121,7 +121,7 @@ export function TimelineEditor({
         </label>
         <div className="studio-field-row">
           <label>
-            Scene preset
+            Section preset
             <select
               defaultValue=""
               onChange={(event) => {

@@ -35,7 +35,7 @@ export function TemplateGallery({ experience, setExperience }: { experience: Exp
       const selected = experience.meta.name === parsed.meta.name;
       return <article key={template.id} data-selected={selected}>
         <div className={`template-art template-art--${index + 1}`}><span>{String(index + 1).padStart(2, "0")}</span><i /><b /></div>
-        <div><small>{template.id}</small><h3>{template.label}</h3><p>{template.description}</p><dl><div><dt>Scenes</dt><dd>{parsed.scenes.length}</dd></div><div><dt>Rig nodes</dt><dd>{parsed.productRig?.nodes.length ?? 0}</dd></div><div><dt>Media</dt><dd>{parsed.scenes.filter((scene) => scene.media).length}</dd></div></dl><button className={selected ? "" : "studio-primary"} type="button" onClick={() => applyTemplate(template.config, template.id)}>{selected ? "Current structure" : "Apply template"}</button></div>
+        <div><small>{template.id}</small><h3>{template.label}</h3><p>{template.description}</p><dl><div><dt>Sections</dt><dd>{parsed.scenes.length}</dd></div><div><dt>Rig nodes</dt><dd>{parsed.productRig?.nodes.length ?? 0}</dd></div><div><dt>Media</dt><dd>{parsed.scenes.filter((scene) => scene.media).length}</dd></div></dl><button className={selected ? "" : "studio-primary"} type="button" onClick={() => applyTemplate(template.config, template.id)}>{selected ? "Current structure" : "Apply template"}</button></div>
       </article>;
     })}</div>
   </section>;

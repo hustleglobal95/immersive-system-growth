@@ -166,7 +166,7 @@ export function StudioLivePreview({
         <output>{progress.toFixed(3)}</output>
         <input aria-label="Live preview progress" type="range" min="0" max="1" step="0.001" value={progress} onChange={(event) => { setPlaying(false); seek(Number(event.target.value)); }} />
       </div>}
-      {!reviewMode && <div className="studio-preview__scenes" role="list" aria-label="Preview scenes">
+      {!reviewMode && <div className="studio-preview__scenes" role="list" aria-label="Preview sections">
         {experience.scenes.map((scene, index) => <button role="listitem" type="button" key={scene.id} className={active === index ? "is-active" : ""} onClick={() => selectScene(index)}><small>{String(index + 1).padStart(2, "0")}</small>{scene.label}</button>)}
       </div>}
     </section>

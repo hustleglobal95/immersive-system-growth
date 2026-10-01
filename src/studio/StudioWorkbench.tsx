@@ -197,7 +197,7 @@ function titleFor(tab: Tab) {
     templates: "Industry templates",
     preview: "Live preview",
     director: "Camera direction",
-    timeline: "Scene timing",
+    timeline: "Section timing",
     sequence: "Motion composer",
     interactions: "Interaction graph",
     masks: "Mask lab",

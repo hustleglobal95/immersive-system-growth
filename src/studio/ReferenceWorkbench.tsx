@@ -17,7 +17,7 @@ const systemFields: Array<{ key:keyof StudioReferenceSystems; label:string; hint
   { key:"typography",label:"Typography",hint:"Scale, behavior, hierarchy, transitions and relationship to the subject." },
   { key:"motion",label:"Motion",hint:"Scroll choreography, camera pacing, sequencing and restraint." },
   { key:"interaction",label:"Interaction",hint:"Pointer, touch, drag, state changes, navigation and feedback." },
-  { key:"threeD",label:"3D / WebGL",hint:"Persistent subjects, depth, material, lighting, scene responsibility." },
+  { key:"threeD",label:"3D / WebGL",hint:"Persistent subjects, depth, material, lighting, section responsibility." },
   { key:"transitions",label:"Transitions",hint:"What remains continuous between chapters and what is allowed to change." },
   { key:"mobile",label:"Mobile",hint:"How the same idea translates when space and input change." },
   { key:"performance",label:"Performance",hint:"Prewarm, asset delivery, adaptive fidelity and runtime risks." },

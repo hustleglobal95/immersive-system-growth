@@ -25,7 +25,7 @@ export function ContextualDirection({ context, capabilities, proposal, nextActio
         : context.kind==="media" ? "MEDIA DIRECTION"
           : context.kind==="asset" ? "ASSET DIRECTION"
             : context.kind==="environment" ? "ENVIRONMENT DIRECTION"
-              : "SCENE DIRECTION";
+              : "SECTION DIRECTION";
   const highestIssue=context.issues.find((issue)=>issue.severity==="blocker")
     ?? context.issues.find((issue)=>issue.severity==="warning")
     ?? context.issues[0];
@@ -168,7 +168,7 @@ export function RefinePanel({ context, experience, setExperience, openAdvanced, 
       <label>Headline<textarea required minLength={1} rows={3} value={scene.copy.headline} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,copy:{...current.copy,headline:event.target.value}}))} /></label>
       <label>Body<textarea required minLength={1} rows={4} value={scene.copy.body} onChange={(event)=>updateScene(setExperience,context.sceneIndex,(current)=>({...current,copy:{...current.copy,body:event.target.value}}))} /></label>
     </Section>
-    <Section title="Motion"><button type="button" onClick={()=>openAnimate()}>Animate scene</button><button type="button" onClick={()=>openAdvanced("Motion")}>Advanced keyframes</button></Section>
+    <Section title="Motion"><button type="button" onClick={()=>openAnimate()}>Animate section</button><button type="button" onClick={()=>openAdvanced("Motion")}>Advanced keyframes</button></Section>
   </div>;
 }
 
@@ -221,7 +221,7 @@ export function ReviewSurface({ health, nextActions, proposal, onRun, onBuildSce
     </header>
 
     <section className="production-health-metrics" aria-label="Project health metrics">
-      <article><span>Scenes</span><strong>{health.metrics.scenesWithMotion}/{health.metrics.scenes}</strong><small>with authored motion</small></article>
+      <article><span>Sections</span><strong>{health.metrics.scenesWithMotion}/{health.metrics.scenes}</strong><small>with authored motion</small></article>
       <article><span>Mobile</span><strong>{health.metrics.scenesWithMobileCamera}/{health.metrics.scenes}</strong><small>with mobile camera</small></article>
       <article><span>Assets</span><strong>{Math.round(health.metrics.manifestHealth)}/100</strong><small>{health.metrics.registeredAssets} registered</small></article>
       <article><span>Interactions</span><strong>{health.metrics.interactionNodes}</strong><small>graph nodes</small></article>
@@ -232,7 +232,7 @@ export function ReviewSurface({ health, nextActions, proposal, onRun, onBuildSce
       <div className="production-surface-section-head"><div><span>WHAT NEEDS ATTENTION</span><strong>{blockers} blocker{blockers===1?"":"s"} · {warnings} warning{warnings===1?"":"s"}</strong></div><button type="button" onClick={onBuild}>Back to Build</button></div>
       {health.issues.length ? health.issues.map((issue)=><article key={issue.id} data-severity={issue.severity}>
         <div><span>{issue.domain.toUpperCase()}</span><strong>{issue.title}</strong><p>{issue.detail}</p><small>{issue.recommendedAction}</small></div>
-        <div>{typeof issue.sceneIndex==="number" && <button type="button" onClick={()=>onBuildScene(issue.sceneIndex!)}>Open scene</button>}{issue.domain==="assets" && <button type="button" onClick={onAssets}>Asset tools</button>}{issue.domain==="discoverability" && <button type="button" onClick={onDiscoverability}>Search & AI</button>}</div>
+        <div>{typeof issue.sceneIndex==="number" && <button type="button" onClick={()=>onBuildScene(issue.sceneIndex!)}>Open section</button>}{issue.domain==="assets" && <button type="button" onClick={onAssets}>Asset tools</button>}{issue.domain==="discoverability" && <button type="button" onClick={onDiscoverability}>Search & AI</button>}</div>
       </article>) : <div className="production-health-clear"><strong>No unresolved production-health issues.</strong><p>Forge still requires the normal release and real-device evidence appropriate to the project.</p></div>}
     </section>
 

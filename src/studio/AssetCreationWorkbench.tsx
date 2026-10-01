@@ -185,7 +185,7 @@ export function AssetCreationWorkbench() {
       }
       setInstalled(true);
       setMessage(durable
-        ? `${name} is permanent in Forge Asset Vault and assigned to ${type === "model" ? "the hero model" : scene?.label ?? "the selected scene"}.`
+        ? `${name} is permanent in Forge Asset Vault and assigned to ${type === "model" ? "the hero model" : scene?.label ?? "the selected section"}.`
         : `${name} is installed as a temporary draft asset. Connect Forge Asset Vault before shipping.`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Generated asset could not be installed.");
@@ -204,12 +204,12 @@ export function AssetCreationWorkbench() {
       <aside className="asset-creator__brief">
         <span>ASSET REQUEST</span>
         <h1>Create the missing production asset without leaving Forge.</h1>
-        <p>The Creative Agent can hand a scene requirement directly here. Forge selects the connected generation path, tracks the job, and can place the finished result into the active draft.</p>
+        <p>The Creative Agent can hand a section requirement directly here. Forge selects the connected generation path, tracks the job, and can place the finished result into the active draft.</p>
         <label>Asset name<input value={name} onChange={(event) => setName(event.target.value)} /></label>
         <label>Asset type<select value={type} onChange={(event) => setType(event.target.value as ForgeAssetType)}>{["model", "image", "video", "texture", "ui", "hdri", "audio"].map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
         <label>Why it exists<textarea rows={4} value={reason} onChange={(event) => setReason(event.target.value)} /></label>
         {type === "model" && <label>Reference image URL <span>(recommended)</span><input type="url" placeholder="https://… clean product/character plate" value={sourceImageUrl} onChange={(event) => setSourceImageUrl(event.target.value)} /><small>Use a clean, approved front/three-quarter reference when possible. Forge will use Meshy 7.1 Image-to-3D at 4K instead of letting text alone invent the hero.</small></label>}
-        <div className="asset-creator__meta"><span>Priority<strong>{priority}</strong></span><span>Scene<strong>{scene?.label ?? "Project-wide"}</strong></span><span>Generator<strong>{providerLabel}</strong></span></div>
+        <div className="asset-creator__meta"><span>Priority<strong>{priority}</strong></span><span>Section<strong>{scene?.label ?? "Project-wide"}</strong></span><span>Generator<strong>{providerLabel}</strong></span></div>
       </aside>
 
       <section className="asset-creator__stage">
@@ -235,14 +235,14 @@ export function AssetCreationWorkbench() {
 
         {status?.previewUrl && <section className="asset-creator__result"><span>PREVIEW</span><img src={status.previewUrl} alt={`${name} generated preview`} /></section>}
         {status?.status === "succeeded" && <section className="asset-creator__ready">
-          <div><span>ASSET READY</span><h3>Put it into the project.</h3><p>Forge will register the generated file in the local draft manifest and assign it to the selected scene or hero model. Forge automatically promotes generated files to permanent project storage when Asset Vault is connected. Draft-only provider bridges are blocked by Guided Ship.</p></div>
+          <div><span>ASSET READY</span><h3>Put it into the project.</h3><p>Forge will register the generated file in the local draft manifest and assign it to the selected section or hero model. Forge automatically promotes generated files to permanent project storage when Asset Vault is connected. Draft-only provider bridges are blocked by Guided Ship.</p></div>
           <div><button type="button" className="asset-creator__generate" disabled={busy || installed} onClick={() => void install()}>{installed ? "Added to Forge" : "Use in current project"}</button><button type="button" onClick={() => { setTicket(null); setStatus(null); setInstalled(false); setMessage(""); refineStarted.current = false; }}>Generate another</button></div>
         </section>}
 
         <section className="asset-creator__providers">
           <article><span>3D</span><strong>Meshy 7.1</strong><p>Approved reference image → 4K Image-to-3D PBR GLB (preferred). 4K text-to-3D remains the fallback.</p></article>
-          <article><span>IMAGE</span><strong>Higgsfield</strong><p>Production brief → 2K image generation → Forge scene media.</p></article>
-          <article><span>VIDEO</span><strong>Higgsfield</strong><p>Production brief → cinematic 5-second generation → Forge scene media.</p></article>
+          <article><span>IMAGE</span><strong>Higgsfield</strong><p>Production brief → 2K image generation → Forge section media.</p></article>
+          <article><span>VIDEO</span><strong>Higgsfield</strong><p>Production brief → cinematic 5-second generation → Forge section media.</p></article>
         </section>
       </section>
     </section>

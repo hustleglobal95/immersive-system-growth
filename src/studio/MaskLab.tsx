@@ -100,7 +100,7 @@ export function MaskLab({
 
         <div className="mask-lab__scene-row">
           <label>
-            Scene
+            Section
             <select value={active} onChange={(event) => setActive(Number(event.target.value))}>
               {experience.scenes.map((item, index) => (
                 <option key={item.id} value={index}>{String(index + 1).padStart(2, "0")} / {item.label}</option>
@@ -136,7 +136,7 @@ export function MaskLab({
           </>
         ) : (
           <div className="mask-lab__empty">
-            <strong>This scene has no media layer.</strong>
+            <strong>This section has no media layer.</strong>
             <p>Add the bundled reference image, then tune and export a production-ready mask recipe.</p>
           </div>
         )}

@@ -46,7 +46,7 @@ export function Interactive3DBuildDock(props: {
   const stages = useMemo(() => [
     { label: "Brief", done: prompt.trim().length >= 12 || Boolean(result) },
     { label: "Hero asset", done: result ? result.assets.ready : assetCount > 0 },
-    { label: "Scenes", done: result ? result.candidate.scenes.length > 1 : props.experience.scenes.length > 1 },
+    { label: "Sections", done: result ? result.candidate.scenes.length > 1 : props.experience.scenes.length > 1 },
     { label: "Motion", done: result ? result.candidate.scenes.some((scene) => scene.motionTracks.length > 0) : motionCount > 0 },
     { label: "Proof", done: props.healthStatus === "ready" },
   ], [assetCount, motionCount, prompt, props.experience.scenes.length, props.healthStatus, result]);
@@ -150,7 +150,7 @@ export function Interactive3DBuildDock(props: {
             ) : (
               <div className="production-3d-builder__empty">
                 <strong>One prompt, bounded output.</strong>
-                <p>Forge chooses the 3D archetype, signature scene, camera grammar, interaction model, mobile translation and asset needs before it touches the page.</p>
+                <p>Forge chooses the 3D archetype, signature section, camera grammar, interaction model, mobile translation and asset needs before it touches the page.</p>
               </div>
             )}
             {error && <p className="production-3d-builder__error" role="alert">{error}</p>}

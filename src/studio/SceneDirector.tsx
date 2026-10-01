@@ -71,11 +71,11 @@ export function SceneDirector({
     <div className="studio-grid studio-grid--director">
       <section className="studio-card director-camera">
         <div className="studio-card__head"><div><span>CAMERA DIRECTOR</span><h2>Path and framing</h2></div><code>{scene.id}</code></div>
-        <label>Scene<select value={active} onChange={(event) => chooseScene(Number(event.target.value))}>{experience.scenes.map((item, index) => <option key={item.id} value={index}>{String(index + 1).padStart(2, "0")} / {item.label}</option>)}</select></label>
+        <label>Section<select value={active} onChange={(event) => chooseScene(Number(event.target.value))}>{experience.scenes.map((item, index) => <option key={item.id} value={index}>{String(index + 1).padStart(2, "0")} / {item.label}</option>)}</select></label>
         <CameraPathDiagram points={points} />
         <div className="director-auto">
           <button type="button" className="studio-primary" onClick={autoDirect}>Auto-direct camera</button>
-          <span>Scores every Director shot against scene intent, live geometry, subject visibility, safe framing, floor clearance and scene-to-scene continuity, then authors editable tracks.</span>
+          <span>Scores every Director shot against section intent, live geometry, subject visibility, safe framing, floor clearance and section-to-section continuity, then authors editable tracks.</span>
           <strong data-testid="director-spatial-status">{liveSpatialCount > 0 ? `Live geometry ready · ${liveSpatialCount} spatial hull${liveSpatialCount === 1 ? "" : "s"}` : "Geometry preview warming up · proxy safety active"}</strong>
         </div>
         {directorNotice && <p className="sequencer-notice" role="status">{directorNotice}</p>}

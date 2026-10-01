@@ -67,7 +67,7 @@ export function ForgeEditor(){
   const [leftPanelTab,setLeftPanelTab]=useState<LeftPanelTab>("pages");
   const [inspectorTab,setInspectorTab]=useState<InspectorTab>("design");
   const [canvasTool,setCanvasTool]=useState<CanvasTool>("select");
-  const [canvasSelection,setCanvasSelection]=useState<ForgeCanvasSelection>({kind:"section",id:initialExperience.scenes[0].id});
+  const [storedCanvasSelection,setCanvasSelection]=useState<ForgeCanvasSelection>({kind:"section",id:initialExperience.scenes[0].id});
   const [transformMode,setTransformMode]=useState<ForgeTransformMode>("translate");
   const [previewMode,setPreviewMode]=useState(false);
   const [canvasViewport,setCanvasViewport]=useState<"desktop"|"tablet"|"mobile">("desktop");
@@ -91,6 +91,10 @@ export function ForgeEditor(){
   const sceneIndex=Math.min(activeScene,Math.max(0,draft.experience.scenes.length-1));
   const scene=draft.experience.scenes[sceneIndex];
   const sectionAssets=draft.experience.assets.filter((asset)=>asset.persist || !asset.scenes || asset.scenes.includes(scene.id));
+  const canvasSelection:ForgeCanvasSelection=(storedCanvasSelection.kind==="asset"&&!sectionAssets.some((asset)=>asset.id===storedCanvasSelection.id))
+    || (storedCanvasSelection.kind==="hero"&&!draft.experience.heroVisible)
+    || storedCanvasSelection.kind==="section"
+      ? {kind:"section",id:scene.id} : storedCanvasSelection;
   const selectedAsset=canvasSelection.kind==="asset" ? draft.experience.assets.find((asset)=>asset.id===canvasSelection.id) ?? null : null;
   const headlineTransform=draft.project.canvasEditor.headlineTransforms[scene.id] ?? {
     position:[0,.7,0] as Vec3,
@@ -253,7 +257,7 @@ export function ForgeEditor(){
   }
 
   function updateHeroTransform(transform:ForgeNodeTransform){
-    const scale=uniformScale(transform.scale);
+    const scale=uniformScale(transform.scale,scene.hero.from.scale);
     draft.setExperience((current)=>({
       ...current,
       scenes:current.scenes.map((item,index)=>index===sceneIndex
@@ -263,7 +267,7 @@ export function ForgeEditor(){
   }
 
   function updateAssetTransform(assetId:string,transform:ForgeNodeTransform){
-    const scale=uniformScale(transform.scale);
+    const scale=uniformScale(transform.scale,draft.experience.assets.find((asset)=>asset.id===assetId)?.scale??1);
     draft.setExperience((current)=>({
       ...current,
       assets:current.assets.map((asset)=>asset.id===assetId
@@ -496,6 +500,7 @@ export function ForgeEditor(){
                 {selectedTransform()&&<TransformInspector
                   transform={selectedTransform()!}
                   mode={transformMode}
+                  uniformScale={canvasSelection.kind!=="text"}
                   onModeChange={setTransformMode}
                   onChange={updateSelectedTransform}
                 />}
@@ -564,9 +569,10 @@ function LayerRow({icon,label,depth,active,onClick}:{icon:IconName;label:string;
   return <button type="button" className="forge-next__layer-row" data-active={active} style={{paddingLeft:10+depth*18}} onClick={onClick}><Icon name={icon}/><span>{label}</span></button>;
 }
 
-function TransformInspector({transform,mode,onModeChange,onChange}:{
+function TransformInspector({transform,mode,uniformScale,onModeChange,onChange}:{
   transform:ForgeNodeTransform;
   mode:ForgeTransformMode;
+  uniformScale:boolean;
   onModeChange:(mode:ForgeTransformMode)=>void;
   onChange:(transform:ForgeNodeTransform)=>void;
 }){
@@ -576,7 +582,10 @@ function TransformInspector({transform,mode,onModeChange,onChange}:{
     </div>
     <VectorFields label="Position" value={transform.position} step={.1} onChange={(position)=>onChange({...transform,position})}/>
     <VectorFields label="Rotation" value={transform.rotation.map((value)=>radToDeg(value)) as Vec3} step={1} suffix="°" onChange={(rotation)=>onChange({...transform,rotation:rotation.map((value)=>degToRad(value)) as Vec3})}/>
-    <VectorFields label="Scale" value={transform.scale} step={.05} min={.01} onChange={(scale)=>onChange({...transform,scale})}/>
+    <VectorFields label="Scale" value={transform.scale} step={.05} min={.01} onChange={(scale)=>{
+      const value=scale.find((value,index)=>value!==transform.scale[index])??scale[0];
+      onChange({...transform,scale:uniformScale?[value,value,value]:scale});
+    }}/>
   </div>;
 }
 
@@ -592,7 +601,8 @@ function VectorFields({label,value,onChange,step,min,suffix}:{label:string;value
       onChange={(event)=>{
         const next=[...value] as Vec3;
         const parsed=Number(event.target.value);
-        if(Number.isFinite(parsed)) next[index]=parsed;
+        if(!event.target.value || !Number.isFinite(parsed)) return;
+        next[index]=min===undefined?parsed:Math.max(min,parsed);
         onChange(next);
       }}
     />{suffix&&<i>{suffix}</i>}</label>)}</div>
@@ -687,7 +697,7 @@ function NewProjectDialog({name,setName,kind,setKind,onCreate,onClose}:{name:str
 
 function makeStarterExperience(base:ExperienceConfig,name:string,kind:ProjectKind):ExperienceConfig{
   const source=structuredClone(base.scenes[0]);
-  const labels:Record<ProjectKind,string>={"real-estate":"Arrival",product:"Hero Product",hospitality:"Arrival",automotive:"Vehicle Reveal",fashion:"Opening Look",custom:"Opening Scene"};
+  const labels:Record<ProjectKind,string>={"real-estate":"Arrival",product:"Hero Product",hospitality:"Arrival",automotive:"Vehicle Reveal",fashion:"Opening Look",custom:"Opening Section"};
   source.id="opening";
   source.label=labels[kind];
   source.range=[0,1];
@@ -710,7 +720,7 @@ function uniqueSceneId(experience:ExperienceConfig,base:string){
 }
 function slug(value:string){return value.toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,64);}
 function midpoint(range:[number,number]){return range[0]+(range[1]-range[0])*.5;}
-function uniformScale(scale:Vec3){return Math.max(.01,(scale[0]+scale[1]+scale[2])/3);}
+function uniformScale(scale:Vec3,previous:number){return Math.max(.01,scale.find((value)=>Math.abs(value-previous)>.000001)??previous);}
 function radToDeg(value:number){return value*180/Math.PI;}
 function degToRad(value:number){return value*Math.PI/180;}
 function validKind(value:ProjectKind|null):value is ProjectKind{return ["real-estate","product","hospitality","automotive","fashion","custom"].includes(value??"");}

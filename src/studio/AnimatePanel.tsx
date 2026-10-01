@@ -136,14 +136,14 @@ export function AnimatePanel({
 
     <div className="production-animate-panel__grid">
       <section className="production-animate-card">
-        <div className="production-animate-card__head"><span>01</span><strong>Scene motion</strong></div>
+        <div className="production-animate-card__head"><span>01</span><strong>Section motion</strong></div>
         <label>Motion recipe
           <select aria-label="Animate motion recipe" value={archetype} onChange={(event) => setArchetype(event.target.value as MotionArchetypeName)}>
             {motionArchetypeCatalog.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
           </select>
         </label>
         <p>{motionArchetypeCatalog.find((item) => item.id === archetype)?.description}</p>
-        <button type="button" className="primary" onClick={applyArchetype}>Apply to scene</button>
+        <button type="button" className="primary" onClick={applyArchetype}>Apply to section</button>
       </section>
 
       <section className="production-animate-card">
@@ -195,7 +195,7 @@ export function AnimatePanel({
             <button type="button" onClick={removeSelectedTrack}>Remove track</button>
             <button type="button" className="primary" onClick={onOpenSequencer}>Open full Sequencer</button>
           </div>
-        </> : <div className="production-animate-empty"><strong>Choose something to animate.</strong><p>Add a property track or apply a scene motion recipe. The controls will appear here immediately.</p></div>}
+        </> : <div className="production-animate-empty"><strong>Choose something to animate.</strong><p>Add a property track or apply a section motion recipe. The controls will appear here immediately.</p></div>}
       </section>
     </div>
 

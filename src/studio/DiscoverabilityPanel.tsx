@@ -32,7 +32,7 @@ export function DiscoverabilityPanel({
       </div>
       <p className="studio-muted">Forge optimizes crawlability, entity clarity, retrieval and citation eligibility. It does not promise a universal “LLM rank.”</p>
       <div className="studio-stats">
-        <div><dt>Semantic scene coverage</dt><dd>{report.metrics.semanticSceneCoverage}%</dd></div>
+        <div><dt>Semantic section coverage</dt><dd>{report.metrics.semanticSceneCoverage}%</dd></div>
         <div><dt>Search intents</dt><dd>{report.metrics.searchIntentCount}</dd></div>
         <div><dt>Authority topics</dt><dd>{report.metrics.authorityTopicCount}</dd></div>
         <div><dt>Public routes</dt><dd>{report.metrics.publicPathCount}</dd></div>

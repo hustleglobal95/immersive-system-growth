@@ -260,7 +260,7 @@ export function StructurePlanner() {
           </section>
 
           <section className="sp-sequence" aria-label="Home page section sequence">
-            <header><h3>{(draft.pages.find((page) => page.primary) ?? draft.pages[0])?.label ?? "Page"} · sections</h3><small>{draft.sections.length} sections · target {base.targetSceneRange[0]}–{base.targetSceneRange[1]} scenes</small></header>
+            <header><h3>{(draft.pages.find((page) => page.primary) ?? draft.pages[0])?.label ?? "Page"} · sections</h3><small>{draft.sections.length} sections · target {base.targetSceneRange[0]}–{base.targetSceneRange[1]} sections</small></header>
             <ol onDragLeave={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setDropIndex(null); }}>
               {draft.sections.map((section, index) => (
                 <li

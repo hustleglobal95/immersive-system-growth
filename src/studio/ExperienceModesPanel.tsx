@@ -21,7 +21,7 @@ export function ExperienceModesPanel() {
           <button type="button" onClick={() => setManifest(defaults)}>Reset</button>
         </div>
       </header>
-      <p>Select the dominant composition. Every mode reuses the same validated scenes, camera system, interaction graph and fallbacks.</p>
+      <p>Select the dominant composition. Every mode reuses the same validated sections, camera system, interaction graph and fallbacks.</p>
       <div className="experience-mode-grid">
         {manifest.modes.map((mode) => (
           <button key={mode.id} type="button" className={mode.id === manifest.activeMode ? "is-active" : ""} aria-pressed={mode.id === manifest.activeMode} onClick={() => setManifest({ ...manifest, activeMode: mode.id })}>
