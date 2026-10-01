@@ -308,7 +308,7 @@ export function ForgeEditor(){
             <button type="button" aria-label="Collapse layers" onClick={()=>setLayersOpen(false)}><Icon name="panelLeft" /></button>
           </div>
           {leftPanelTab==="pages" ? <>
-            <div className="forge-next__panel-section-title"><span>Website</span><button type="button" onClick={addScene} aria-label="Add scene"><Icon name="plus" /></button></div>
+            <div className="forge-next__panel-section-title"><span>Website</span><button type="button" onClick={addScene} aria-label="＋ Add scene"><Icon name="plus" /></button></div>
             <div className="forge-next__scene-list">
               {draft.experience.scenes.map((item,index)=><button key={item.id} type="button" data-active={index===sceneIndex} onClick={()=>selectScene(index)}>
                 <Icon name="page" /><div><strong>{item.label}</strong><small>{item.copy.headline}</small></div><span>{String(index+1).padStart(2,"0")}</span>
