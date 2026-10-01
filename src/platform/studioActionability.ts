@@ -80,7 +80,7 @@ export const studioActionabilityContracts:readonly StudioActionabilityContract[]
     label:"Website References",
     mode:"author",
     source:"src/studio/ReferenceWorkbench.tsx",
-    evidence:["PROJECT REFERENCES","Import analysis JSON","FORGE IMPLEMENTATION MAP","studioReferenceFromCorpus"],
+    evidence:["PROJECT REFERENCES","Import analysis JSON","Analyze screenshots","/api/studio/references/analyze","FORGE IMPLEMENTATION MAP","studioReferenceFromCorpus"],
     browserEvidence:"References workspace persists evidence-directed rules and feeds AI Build",
   },
   {
