@@ -5,6 +5,8 @@ import { planInteractive3DFromPrompt } from "@/src/platform/interactive3dPlanner
 import { aiGatewayInteractive3DPlannerConfigured, refineInteractive3DBlueprintWithAi } from "@/src/platform/autonomy/aiGatewayInteractive3DPlanner";
 import { compileInteractive3DBlueprint } from "@/src/platform/interactive3dCompiler";
 import { materializeInteractive3DExperience } from "@/src/platform/interactive3dMaterializer";
+import { generationRequestsForInteractive3D } from "@/src/platform/interactive3dAssetFactory";
+import { interactionGraphForInteractive3D } from "@/src/platform/interactive3dInteractionGraph";
 
 export const runtime = "nodejs";
 
@@ -53,12 +55,16 @@ export async function POST(request: Request) {
       : base.blueprint;
     const compilePlan = compileInteractive3DBlueprint(blueprint);
     const materialized = materializeInteractive3DExperience({ blueprint, experience });
+    const interactionGraph = interactionGraphForInteractive3D(blueprint);
+    const assetRequests = generationRequestsForInteractive3D(blueprint);
 
     return Response.json({
       ok: true,
       ai: { configured: aiConfigured, used: aiConfigured },
       blueprint,
       candidate: materialized.experience,
+      interactionGraph,
+      assetRequests,
       assets: materialized.assetReadiness,
       decisions: [
         ...base.decisions,
