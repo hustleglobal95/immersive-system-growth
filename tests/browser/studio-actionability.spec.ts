@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 async function openEditorTool(page:import("@playwright/test").Page,label:RegExp) {
   if(/asset/i.test(label.source)) {
-    await page.getByRole("button",{name:"Assets",exact:true}).click();
+    await page.locator(".production-topbar nav").getByRole("button",{name:"Assets",exact:true}).click();
     return;
   }
   if(/telemetry|performance/i.test(label.source)) {
