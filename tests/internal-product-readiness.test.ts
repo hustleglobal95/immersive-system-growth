@@ -69,7 +69,8 @@ test("internal product surfaces are wired into Studio and shipping blocks tempor
   const proxy = fs.readFileSync("proxy.ts", "utf8");
   assert.match(studio, /StudioVaultPanel/);
   assert.match(studio, /StudioIdentityBadge/);
-  assert.match(studio, /Project Vault/);
+  assert.match(studio, /StudioVaultPanel/);
+  assert.match(studio, />Versions</);
   assert.match(publish, /temporaryAssets/);
   assert.match(publish, /Asset durability/);
   assert.match(creator, /assets\/vault\/promote/);
