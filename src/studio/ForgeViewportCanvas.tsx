@@ -230,8 +230,7 @@ function EditableNode({
     </mesh>}
   </group>;
 
-  if(!selected)return node;
-  return <TransformControls
+  return <>{node}{selected&&<TransformControls
     object={root}
     mode={mode}
     space={mode==="translate"?"world":"local"}
@@ -242,7 +241,5 @@ function EditableNode({
     onMouseDown={()=>{dragging.current=true;onBegin();}}
     onObjectChange={emit}
     onMouseUp={()=>{emit();dragging.current=false;onEnd();}}
-  >
-    {node}
-  </TransformControls>;
+  />}</>;
 }
