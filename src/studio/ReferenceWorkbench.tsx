@@ -178,10 +178,10 @@ function ReferenceEditor({reference,onChange,onSystem,onRemove}:{
 
   const chooseScreenshots=(files:FileList|null)=>{
     const next=Array.from(files ?? []).slice(0,4);
-    const invalid=next.find((file)=>!["image/png","image/jpeg","image/webp"].includes(file.type) || file.size>3_200_000);
+    const invalid=next.find((file)=>!["image/png","image/jpeg","image/webp"].includes(file.type) || file.size>12_000_000);
     if(invalid) {
       setScreenshots([]);
-      setAnalysisMessage("Use up to four PNG, JPEG or WebP screenshots, each 3.2 MB or smaller.");
+      setAnalysisMessage("Use up to four PNG, JPEG or WebP screenshots, each 12 MB or smaller. Forge compresses them before analysis.");
       if(screenshotRef.current) screenshotRef.current.value="";
       return;
     }
@@ -196,7 +196,7 @@ function ReferenceEditor({reference,onChange,onSystem,onRemove}:{
     try {
       const encoded=await Promise.all(screenshots.map(async(file)=>({
         name:file.name,
-        dataUrl:await fileToDataUrl(file),
+        dataUrl:await fileToReferenceDataUrl(file),
       })));
       const response=await fetch("/api/studio/references/analyze",{
         method:"POST",
@@ -242,7 +242,7 @@ function ReferenceEditor({reference,onChange,onSystem,onRemove}:{
         <label className="reference-editor__drop">
           <input ref={screenshotRef} type="file" accept="image/png,image/jpeg,image/webp" multiple onChange={(event)=>chooseScreenshots(event.target.files)} />
           <span>{screenshots.length ? `${screenshots.length} screenshot${screenshots.length===1?"":"s"} selected` : "Choose screenshots"}</span>
-          <small>PNG / JPEG / WebP · up to 4 · 3.2 MB each</small>
+          <small>PNG / JPEG / WebP · up to 4 · Forge compresses before analysis</small>
         </label>
         {screenshots.length>0 && <div className="reference-editor__file-list">{screenshots.map((file)=><span key={file.name+file.size}>{file.name}</span>)}</div>}
         <button type="button" className="primary" disabled={!screenshots.length || analyzing} onClick={()=>void analyzeScreenshots()}>{analyzing ? "Analyzing visual evidence…" : "Analyze screenshots"}</button>
@@ -295,11 +295,30 @@ function withUniqueId(reference:StudioReference,references:StudioReference[]) {
   return {...reference,id:`${reference.id}-${index}`};
 }
 
-function fileToDataUrl(file:File) {
-  return new Promise<string>((resolve,reject)=>{
-    const reader=new FileReader();
-    reader.onload=()=>typeof reader.result==="string" ? resolve(reader.result) : reject(new Error("Screenshot could not be encoded."));
-    reader.onerror=()=>reject(reader.error ?? new Error("Screenshot could not be read."));
-    reader.readAsDataURL(file);
-  });
+async function fileToReferenceDataUrl(file:File) {
+  const bitmap=await createImageBitmap(file);
+  try {
+    const maxWidth=1440;
+    const maxHeight=2200;
+    const scale=Math.min(1,maxWidth/bitmap.width,maxHeight/bitmap.height);
+    let width=Math.max(1,Math.round(bitmap.width*scale));
+    let height=Math.max(1,Math.round(bitmap.height*scale));
+    let quality=.82;
+    for(let attempt=0;attempt<6;attempt+=1) {
+      const canvas=document.createElement("canvas");
+      canvas.width=width;
+      canvas.height=height;
+      const context=canvas.getContext("2d");
+      if(!context) throw new Error("Screenshot compression is unavailable in this browser.");
+      context.drawImage(bitmap,0,0,width,height);
+      const dataUrl=canvas.toDataURL("image/webp",quality);
+      if(dataUrl.length<=850_000) return dataUrl;
+      quality=Math.max(.5,quality-.1);
+      width=Math.max(720,Math.round(width*.88));
+      height=Math.max(900,Math.round(height*.88));
+    }
+    throw new Error("Screenshot remains too large after compression. Crop it to the relevant website state and try again.");
+  } finally {
+    bitmap.close();
+  }
 }
