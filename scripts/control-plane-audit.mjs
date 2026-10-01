@@ -21,11 +21,11 @@ const draft=fs.readFileSync("src/studio/useStudioDraft.ts","utf8");
 const loopPanel=fs.readFileSync("src/studio/LoopEnginePanel.tsx","utf8");
 const loopRunner=fs.readFileSync("scripts/loop-run.mjs","utf8");
 
-if(!studio.includes('const primarySurfaces = ["Build", "Review", "Ship"] as const')) {
-  issues.push({capabilityId:"studio",message:"Primary Studio navigation must remain Build / Review / Ship."});
+if(!studio.includes("const editorTabs = [") || !studio.includes('{ label:"Canvas", workspace:null }') || !studio.includes('{ label:"Motion", workspace:"Motion" }') || !studio.includes('{ label:"Interactions", workspace:"Interact" }') || !studio.includes('{ label:"Assets", workspace:"Assets" }') || !studio.includes('{ label:"Effects", workspace:"Visuals" }')) {
+  issues.push({capabilityId:"studio",message:"Forge must expose Canvas, Motion, Interactions, Assets and Effects as first-class editor workspaces."});
 }
-if(/const workspaces\s*=\s*\["Create",\s*"Motion",\s*"Interact",\s*"Assets",\s*"Ship"\]/.test(studio)) {
-  issues.push({capabilityId:"studio",message:"Retired five-workspace navigation returned to the default Studio surface."});
+if(studio.includes("SimpleForgeStudio") || studio.includes("production-advanced-menu")) {
+  issues.push({capabilityId:"studio",message:"Retired simple/advanced product splits must not return."});
 }
 for(const required of ["compileIntent","recommendNextActions","evaluateProjectHealth","ControlPlaneReview"]) {
   if(!studio.includes(required)) issues.push({capabilityId:"studio",message:"Studio is missing Control Plane integration: "+required+"."});
@@ -34,7 +34,7 @@ for(const forbidden of ["createMotionArchetype","applyArchetype","buildSelectedN
   if(studio.includes(forbidden)) issues.push({capabilityId:"studio",message:"Build surface bypasses Control Plane with legacy direct control: "+forbidden+"."});
 }
 if(!publish.includes("healthReady") || !publish.includes("Project Health")) {
-  issues.push({capabilityId:"ship",message:"Guided Ship must use Project Health as a release-readiness gate."});
+  issues.push({capabilityId:"ship",message:"Publishing must use Project Health as a release-readiness gate."});
 }
 if(!deepRoute.includes('requireStudioRole(request,"reviewer")') || !deepRoute.includes("safeArtifactPath")) {
   issues.push({capabilityId:"deep-candidate",message:"Loop-result bridge must remain reviewer-protected and path-bounded."});
