@@ -8,7 +8,7 @@ async function openAdvanced(page:import("@playwright/test").Page,label:RegExp) {
 
 test("Build keeps the live experience central and edits the selected scene", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/studio");
+  await page.goto("/studio/advanced");
 
   await expect(page.getByRole("button", { name: "Build", exact: true })).toHaveAttribute("aria-current", "page");
   await expect(page.locator(".production-runtime canvas").first()).toBeAttached();
@@ -25,7 +25,7 @@ test("New Project starts from isolated project state", async ({ page }) => {
     window.localStorage.setItem("forge-studio-guide-brief-v1", "Previous client mission that must not leak.");
     window.localStorage.setItem("forge-studio-guide-shipped-project-v1", "previous-client");
   });
-  await page.goto("/studio");
+  await page.goto("/studio/advanced");
   await page.getByLabel("Forge command").fill("new project");
   await page.getByRole("button", { name: "Direct", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Start from zero.", level: 2 })).toBeVisible();
@@ -69,7 +69,7 @@ test("New Project starts from isolated project state", async ({ page }) => {
 });
 
 test("Build prepares a reversible fast proposal before applying motion", async ({ page }) => {
-  await page.goto("/studio");
+  await page.goto("/studio/advanced");
   await page.getByRole("button", { name: "Add scene" }).click();
   await expect(page.getByLabel("Headline")).toHaveValue("Direct this moment.");
   await page.getByLabel("Forge command").fill("editorial reveal");
@@ -88,7 +88,7 @@ test("Build prepares a reversible fast proposal before applying motion", async (
 });
 
 test("Build Animate provides direct motion authoring before the expert sequencer", async ({ page }) => {
-  await page.goto("/studio");
+  await page.goto("/studio/advanced");
   await page.getByRole("button", { name: "＋ Scene" }).click();
   await page.getByRole("button", { name: "Animate", exact: true }).click();
 
@@ -112,7 +112,7 @@ test("Build Animate provides direct motion authoring before the expert sequencer
 });
 
 test("Build camera inspector directly edits shots and hands off to targeted Animate", async ({ page }) => {
-  await page.goto("/studio");
+  await page.goto("/studio/advanced");
   await page.getByRole("button", { name: "Objects", exact: true }).click();
   const tree=page.locator(".production-tree");
   await tree.getByRole("button", { name: /Camera/ }).first().click();
@@ -129,7 +129,7 @@ test("Build camera inspector directly edits shots and hands off to targeted Anim
 });
 
 test("Build environment inspector directly edits lighting and atmosphere", async ({ page }) => {
-  await page.goto("/studio");
+  await page.goto("/studio/advanced");
   await page.getByRole("button", { name: "Objects", exact: true }).click();
   await page.locator(".production-tree").getByRole("button", { name: /Environment/ }).click();
 
@@ -145,7 +145,7 @@ test("Build environment inspector directly edits lighting and atmosphere", async
 });
 
 test("Build media inspector directly edits presentation when media exists", async ({ page }) => {
-  await page.goto("/studio");
+  await page.goto("/studio/advanced");
   await page.getByRole("button", { name: "Objects", exact: true }).click();
   const media=page.locator(".production-tree").getByRole("button", { name: /Media/ });
   await expect(media).toBeVisible();
@@ -163,7 +163,7 @@ test("Build media inspector directly edits presentation when media exists", asyn
 });
 
 test("Advanced Sequencer preserves expert motion control", async ({ page }) => {
-  await page.goto("/studio");
+  await page.goto("/studio/advanced");
   await openAdvanced(page,/Sequencer/);
   await expect(page.getByRole("heading", { name: "Motion sequencer", level: 2 })).toBeVisible();
   await expect(page.locator(".sequencer-toolbar").getByRole("button", { name: "Play", exact: true })).toBeVisible();
@@ -173,7 +173,7 @@ test("Advanced Sequencer preserves expert motion control", async ({ page }) => {
 });
 
 test("Advanced Interactions preserves deterministic graph authoring", async ({ page }) => {
-  await page.goto("/studio");
+  await page.goto("/studio/advanced");
   await openAdvanced(page,/Interactions/);
   await expect(page.getByRole("heading", { name: "Interaction graph", level: 2 })).toBeVisible();
   await expect(page.getByRole("application", { name: "Interaction node graph" })).toBeVisible();
@@ -182,7 +182,7 @@ test("Advanced Interactions preserves deterministic graph authoring", async ({ p
 });
 
 test("Advanced Asset tools expose Asset Intelligence, bank and model inspection", async ({ page }) => {
-  await page.goto("/studio");
+  await page.goto("/studio/advanced");
   await openAdvanced(page,/Asset tools/);
   await expect(page.getByText("ASSET INTELLIGENCE")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Asset bank", level: 2, exact: true })).toBeVisible();
@@ -190,7 +190,7 @@ test("Advanced Asset tools expose Asset Intelligence, bank and model inspection"
 });
 
 test("Review makes Project Health the readiness control room", async ({ page }) => {
-  await page.goto("/studio");
+  await page.goto("/studio/advanced");
   await page.getByRole("button", { name: "Review", exact: true }).click();
   await expect(page.getByText("REVIEW / PROJECT HEALTH")).toBeVisible();
   await expect(page.getByText("WHAT NEEDS ATTENTION")).toBeVisible();
@@ -198,7 +198,7 @@ test("Review makes Project Health the readiness control room", async ({ page }) 
 });
 
 test("Ship honors Project Health and keeps protected publishing guided", async ({ page }) => {
-  await page.goto("/studio");
+  await page.goto("/studio/advanced");
   await page.getByRole("button", { name: "Ship", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Review, checkpoint and release." })).toBeVisible();
   await expect(page.getByText("GUIDED SHIP")).toBeVisible();
@@ -210,14 +210,14 @@ test("Ship honors Project Health and keeps protected publishing guided", async (
 });
 
 test("Advanced Telemetry remains available without permanent navigation", async ({ page }) => {
-  await page.goto("/studio");
+  await page.goto("/studio/advanced");
   await openAdvanced(page,/Telemetry/);
   await expect(page.getByRole("heading", { name: "Telemetry policy" })).toBeVisible();
   await expect(page.getByLabel("Sample rate")).toBeVisible();
 });
 
 test("Advanced Visual effects authors cursor reveal and visual physics without permanent navigation", async ({ page }) => {
-  await page.goto("/studio");
+  await page.goto("/studio/advanced");
   await openAdvanced(page,/Visual effects/);
   await expect(page.getByRole("heading", { name: "Visual Effects", level: 2 })).toBeVisible();
   await expect(page.getByText("LIVE DRAFT")).toBeVisible();
@@ -258,7 +258,7 @@ test("Mission Control promotes project-wide outcomes without adding navigation",
     window.localStorage.setItem("forge-studio-guide-brief-v1", "Create a flagship mechanical watch launch that feels precise, warm, engineered and unforgettable.");
     window.localStorage.setItem("forge-studio-guided-first-run-v1", "seen");
   });
-  await page.goto("/studio");
+  await page.goto("/studio/advanced");
 
   await expect(page.getByText("FORGE / MISSION CONTROL")).toBeVisible();
   await expect(page.getByRole("button", { name: "Guide", exact: true })).toBeVisible();
