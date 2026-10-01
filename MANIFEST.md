@@ -50,11 +50,11 @@ Immersive Site Forge 6.1 is organized as a multi-project production platform rat
 
 - browser-based Forge Studio at `/studio`
 - PRO+ Control Plane with seven first-class selection kinds (scene, camera, rig node, copy, media, asset, environment), self-validating Capability Registry, Intent Compiler, Next Action Engine, Project Health and non-mutating Proposal Contract
-- Build / Review / Ship primary Studio surfaces with Sequencer, Interactions, Asset tools, Visual effects and Telemetry moved under Advanced
+- editor-first Studio with Canvas, Motion, Interactions, Assets and Effects as first-class workspaces plus integrated Project Health, Performance, Search + AI and Publish
 - registry-driven contextual actions that route semantic operator intent into existing camera, motion, interaction, asset, Director and Loop systems without duplicating those engines
 - unified Current / Candidate review for reversible fast proposals and proposal-bound verified Loop project-state bundles, with exact working/Vault baseline parity and atomic local bundle undo/redo
 - reviewer-protected local Loop-result bridge that validates winning evidence before Studio can preview a deep candidate
-- Project Health release gating shared by Review and Guided Ship
+- Project Health release gating shared by quality review and protected publishing
 - private internal access layer with role-bearing HTTP-only sessions
 - GitHub-backed Project Vault with atomic durable snapshots, restore points, archive state and project journal
 - permanent generated-asset promotion through a provider-neutral Asset Vault gateway
@@ -76,7 +76,7 @@ Immersive Site Forge 6.1 is organized as a multi-project production platform rat
 - bounded image and color transition-layer composition
 - browser asset intake with hashes, media metadata, GLB structure and budget checks
 - Asset Intelligence scoring for budget pressure, dominant assets, duplicate binaries, traceable derivative coverage/savings and role-specific optimization actions
-- Guided Build workflow from idea → assets → scenes → motion → review → publish
+- AI Build inside the live editor for prompt-driven structure generation without hiding manual scene, asset, motion or interaction authoring
 - direct Asset Creator handoffs for Meshy 3D and Higgsfield image/video generation with server-only provider credentials
 - deterministic AVIF/WebP texture optimization with manifest updates
 - validated Studio project schema
