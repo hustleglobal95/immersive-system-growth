@@ -22,9 +22,11 @@ test("simple Studio builds through the bounded 3D planner",()=>{
   assert.match(simple,/StudioLivePreview/);
 });
 
-test("simple Studio can finish through Forge publishing",()=>{
+test("simple Studio can finish even when publishing is not configured",()=>{
   assert.match(simple,/fetch\("\/api\/studio\/publish\/status"/);
   assert.match(simple,/fetch\("\/api\/studio\/publish"/);
+  assert.match(simple,/downloadJson/);
+  assert.match(simple,/-finished\.json/);
   assert.match(simple,/releaseReady/);
 });
 
