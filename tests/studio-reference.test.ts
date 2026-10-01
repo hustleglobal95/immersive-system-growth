@@ -28,11 +28,20 @@ test("Forge imports structured reference analysis into transferable project inte
   assert.equal(activeStudioReferences([reference]).length,1);
 });
 
-test("URL-only references are stored but cannot steer a build without evidence or transfer rules",()=>{
+test("URL-only references are stored but cannot steer a build without transfer direction",()=>{
   const reference=studioReferenceFromUrl("https://example.com/reference","Example");
   assert.equal(activeStudioReferences([reference]).length,0);
   assert.deepEqual(studioReferencesToBlueprintReferences([reference]),[]);
   assert.deepEqual(studioReferencesToDirectorReferences([reference]),[]);
+
+  const evidenceOnly={...reference,evidence:["The subject remains centered across the supplied screenshot."]};
+  assert.equal(activeStudioReferences([evidenceOnly]).length,0);
+
+  const directed={...evidenceOnly,take:["Carry one persistent subject across chapters."],doNotCopy:["Exact composition"]};
+  const director=studioReferencesToDirectorReferences([directed]);
+  assert.equal(director.length,1);
+  assert.match(director[0].lesson,/Carry one persistent subject/i);
+  assert.match(director[0].lesson,/Do not copy: Exact composition/i);
 });
 
 test("Studio project schema persists website references",()=>{
