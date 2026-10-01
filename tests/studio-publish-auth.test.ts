@@ -31,3 +31,16 @@ test("publish session authorization rejects an expired signed token", () => {
   const request = new Request("https://forge.test/api/studio/publish", { headers: { cookie: `forge_studio_publish_session=${expired}` } });
   assert.equal(isPublishSessionAuthorized(request, secret), false);
 });
+
+
+test("trusted Vercel production perimeter does not require a second publish unlock", () => {
+  const request = new Request("https://forge.test/api/studio/publish");
+  const env = {
+    NODE_ENV: "production",
+    VERCEL: "1",
+    VERCEL_ENV: "production",
+    VERCEL_PROJECT_ID: "prj_bk5GbceP0Bqjo0tADAzAA3wpPfye",
+  };
+  assert.equal(isPublishSessionAuthorized(request, "", env), true);
+  assert.equal(isPublishRequestAuthorized(request, "", env), true);
+});

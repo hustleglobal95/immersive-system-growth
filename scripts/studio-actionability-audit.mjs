@@ -51,10 +51,13 @@ if(percent!==STUDIO_ACTIONABILITY_TARGET){
 }
 
 const route=read("app/studio/page.tsx");
-if(!route.includes("ProductionStudioWorkbench")) failures.push("The /studio route must render ProductionStudioWorkbench.");
+if(!route.includes("SimpleForgeStudio")) failures.push("The /studio route must render SimpleForgeStudio.");
+const advancedRoute=read("app/studio/advanced/page.tsx");
+if(!advancedRoute.includes("ProductionStudioWorkbench")) failures.push("The complete ProductionStudioWorkbench must remain reachable at /studio/advanced.");
 if(/import\s*\{\s*StudioWorkbench\s*\}/.test(route)) failures.push("Legacy StudioWorkbench must never be reachable from /studio.");
 
 const activeFiles=[
+  "src/studio/SimpleForgeStudio.tsx",
   "src/studio/ProductionStudioWorkbench.tsx",
   "src/studio/ControlPlaneSurfaces.tsx",
   "src/studio/OperatorMissionControl.tsx",
