@@ -13,6 +13,7 @@ import {
   studioReferencesToDirectorReferences,
 } from "../src/platform/studioReference";
 import { planInteractive3DFromPrompt } from "../src/platform/interactive3dPlanner";
+import { analyzeStudioReferenceScreenshots } from "../src/platform/referenceAnalyzer";
 
 test("Forge imports structured reference analysis into transferable project intelligence",()=>{
   const fixture=JSON.parse(fs.readFileSync("tests/fixtures/reference-analysis.example.json","utf8"));
@@ -56,4 +57,55 @@ test("interactive 3D planning carries evidence-directed references into the blue
   assert.match(plan.blueprint.references[0].lesson,/Carry one meaningful subject/i);
   assert.match(plan.blueprint.references[0].doNotCopy,/Exact composition/i);
   assert.ok(plan.decisions.some((item)=>/Reference intelligence: 1 evidence-directed/i.test(item)));
+});
+
+
+test("multimodal reference analyzer converts supplied screenshots into bounded Forge guidance",async()=>{
+  const reference=studioReferenceFromUrl("https://example.com/reference","Screenshot Reference");
+  let requestBody:unknown=null;
+  const fetchImpl=async(_input:RequestInfo | URL,init?:RequestInit)=>{
+    requestBody=init?.body ? JSON.parse(String(init.body)) : null;
+    return new Response(JSON.stringify({
+      choices:[{message:{content:JSON.stringify({
+        evidence:[
+          "Composition: The primary product remains centered while copy occupies a protected left column.",
+          "Typography: One oversized display line dominates supporting labels.",
+          "Depth: Foreground product scale separates from a restrained background plane."
+        ],
+        take:[
+          "Protect one persistent focal subject while adjacent editorial content changes by chapter."
+        ],
+        doNotCopy:[
+          "Exact composition",
+          "Brand imagery and copy",
+          "Palette and typeface bundle"
+        ],
+        systems:{
+          composition:"Reserve a stable focal zone and a protected editorial copy column.",
+          typography:"Use one dominant display scale with restrained support copy.",
+          motion:"",
+          interaction:"",
+          threeD:"Keep the product as the persistent depth anchor across chapters.",
+          transitions:"",
+          mobile:"Preserve subject-first hierarchy and stack copy below when width collapses.",
+          performance:""
+        }
+      })}}]
+    }),{status:200,headers:{"content-type":"application/json"}});
+  };
+  const analyzed=await analyzeStudioReferenceScreenshots({
+    reference,
+    screenshots:[{
+      name:"desktop.png",
+      dataUrl:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB"
+    }],
+    environment:{AI_GATEWAY_API_KEY:"test-token"},
+    fetchImpl:fetchImpl as typeof fetch,
+  });
+  assert.ok(analyzed.evidenceStrength>0.7);
+  assert.match(analyzed.take[0],/persistent focal subject/i);
+  assert.match(analyzed.systems.threeD,/persistent depth anchor/i);
+  assert.ok(analyzed.doNotCopy.includes("Exact composition"));
+  const outbound=requestBody as {messages?:Array<{content?:Array<{type?:string;image_url?:{url?:string}}>}>};
+  assert.equal(outbound.messages?.[0]?.content?.some((item)=>item.type==="image_url" && item.image_url?.url?.startsWith("data:image/png;base64,")),true);
 });
