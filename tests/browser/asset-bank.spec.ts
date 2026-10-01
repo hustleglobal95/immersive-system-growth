@@ -15,7 +15,7 @@ test("catalog API bounds responses, validates queries and resolves kit dependenc
 
 test("Studio searches sources, exports provenance and inserts with undo and draft persistence", async ({ page }) => {
   await page.goto("/studio");
-  await page.locator(".production-topbar nav").getByRole("button", { name: "Assets", exact: true }).click();
+  await page.getByRole("navigation",{name:"Editor modes"}).getByRole("button",{name:"Assets",exact:true}).click();
   await expect(page.getByRole("heading", { name: "Asset bank", level: 2, exact: true })).toBeVisible();
   await expect(page.getByText("2382 matching entries", { exact: true })).toBeVisible();
   await expect(page.locator("canvas")).toHaveCount(0);
@@ -48,13 +48,13 @@ test("Studio searches sources, exports provenance and inserts with undo and draf
   await page.getByRole("button", { name: "Insert asset into scene", exact: true }).click();
   await expect.poll(hasInserted).toBe(true);
   await page.reload();
-  await expect(page.locator("button.production-status")).toBeVisible();
+  await expect(page.locator("button.forge-next__health")).toBeVisible();
   await expect.poll(hasInserted).toBe(true);
 });
 
 test("kit replacement requires review, blocks incompatible interactions and supports undo", async ({ page }) => {
   await page.goto("/studio");
-  await page.locator(".production-topbar nav").getByRole("button", { name: "Assets", exact: true }).click();
+  await page.getByRole("navigation",{name:"Editor modes"}).getByRole("button",{name:"Assets",exact:true}).click();
   await page.getByRole("button", { name: "Review restaurant kit", exact: true }).click();
   await expect(page.getByText(/Applying this kit replaces/)).toBeVisible();
   await page.getByRole("button", { name: "Apply reviewed kit", exact: true }).click();
@@ -80,21 +80,21 @@ test("kit replacement requires review, blocks incompatible interactions and supp
     localStorage.setItem("forge-studio-v2",JSON.stringify(draft));
   });
   await page.reload();
-  await page.locator(".production-topbar nav").getByRole("button", { name: "Assets", exact: true }).click();
+  await page.getByRole("navigation",{name:"Editor modes"}).getByRole("button",{name:"Assets",exact:true}).click();
 
   await page.getByRole("button", { name: "Review burger-showcase kit", exact: true }).click();
   await page.getByRole("button", { name: "Apply reviewed kit", exact: true }).click();
   await expect(page.getByText(/Reference kit applied/)).toBeVisible();
   await expect(page.getByRole("button", { name: "Undo experience change" })).toBeEnabled();
   await page.getByRole("button", { name: "Undo experience change" }).click();
-  await expect(page.locator("button.production-status")).toBeVisible();
+  await expect(page.locator("button.forge-next__health")).toBeVisible();
   await expect(page.locator("canvas")).toHaveCount(0);
 });
 
 test("asset bank filters remain usable at a narrow viewport", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/studio");
-  await page.locator(".production-topbar nav").getByRole("button", { name: "Assets", exact: true }).click();
+  await page.getByRole("navigation",{name:"Editor modes"}).getByRole("button",{name:"Assets",exact:true}).click();
   await page.getByRole("combobox", { name: "Preparation", exact: true }).selectOption("prepared");
   await expect(page.getByText("No matching assets. Try fewer filters.")).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();

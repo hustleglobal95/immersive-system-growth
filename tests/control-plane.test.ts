@@ -129,18 +129,16 @@ test("Proposal Contract never grants authoritative mutation to a preview-only pr
   assert.equal(proposalCanMutateAuthoritativeState(accepted),false);
 });
 
-test("Studio consumes the Control Plane instead of hardcoding contextual capability branches",()=>{
-  const studio=fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx","utf8");
-  const surfaces=fs.readFileSync("src/studio/ControlPlaneSurfaces.tsx","utf8");
+test("Control Plane remains available behind the canvas-first editor",()=>{
+  const studio=fs.readFileSync("src/studio/ForgeEditor.tsx","utf8");
   const loops=fs.readFileSync("src/studio/LoopEnginePanel.tsx","utf8");
-  assert.match(studio,/resolveSelectionContext/);
-  assert.match(studio,/capabilitiesForContext/);
-  assert.match(studio,/createProposalDraft/);
-  assert.match(surfaces,/data-capability=/);
-  assert.doesNotMatch(studio,/if\(selection\.kind==="camera"\) return <section className="production-context"/);
+  assert.match(studio,/evaluateProjectHealth/);
+  assert.match(studio,/Interactive3DBuildDock/);
+  assert.match(studio,/LoopEnginePanel/);
+  assert.doesNotMatch(studio,/OperatorMissionControl/);
+  assert.doesNotMatch(studio,/production-advanced-menu/);
   assert.match(loops,/initialLoopId/);
 });
-
 
 test("Copy and Media are first-class contextual production targets",()=>{
   const copy=resolveSelectionContext({experience,manifest,graph,selection:{kind:"copy",index:0}});
@@ -332,19 +330,14 @@ test("Project-state fingerprint is deterministic and includes visual-effects sta
   assert.notEqual(projectStateFingerprint({experience,assetManifest:manifest,interactionGraph:graph,cinematicSystems:visual}),first);
 });
 
-test("Studio is one editor with first-class website authoring workspaces",()=>{
-  const studio=fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx","utf8");
-  assert.match(studio,/const editorTabs = \[/);
-  assert.match(studio,/label:"Canvas"/);
-  assert.match(studio,/label:"References"/);
-  assert.match(studio,/label:"Motion"/);
-  assert.match(studio,/label:"Interactions"/);
-  assert.match(studio,/label:"Assets"/);
-  assert.match(studio,/label:"Effects"/);
-  assert.match(studio,/ReviewSurface/);
-  assert.match(studio,/ShipSurface/);
+test("Studio is one editor with first-class website authoring modes",()=>{
+  const studio=fs.readFileSync("src/studio/ForgeEditor.tsx","utf8");
+  for(const token of ['id:"design",label:"Design"','id:"references",label:"References"','id:"motion",label:"Motion"','id:"interactions",label:"Interact"','id:"assets",label:"Assets"','id:"effects",label:"Effects"']) assert.ok(studio.includes(token),token);
+  assert.match(studio,/PublishPanel/);
+  assert.match(studio,/StudioVaultPanel/);
+  assert.match(studio,/LoopEnginePanel/);
   assert.doesNotMatch(studio,/primarySurfaces/);
-  assert.doesNotMatch(studio,/production-advanced-menu/);
+  assert.doesNotMatch(studio,/ProductionStudioWorkbench/);
 });
 
 test("Deep proposal evidence has protected remote execution and durable result bridges",()=>{
@@ -366,17 +359,14 @@ test("Deep proposal evidence has protected remote execution and durable result b
 });
 
 
-test("Canvas exposes bounded direct authoring without leaking legacy machinery",()=>{
-  const studio=fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx","utf8");
-  const surfaces=fs.readFileSync("src/studio/ControlPlaneSurfaces.tsx","utf8");
-  assert.doesNotMatch(studio,/Apply motion/);
-  assert.doesNotMatch(studio,/createMotionArchetype/);
-  assert.doesNotMatch(studio,/buildSelectedNode/);
-  assert.match(studio,/openSimpleAnimate/);
-  assert.match(surfaces,/Camera start FOV/);
-  assert.match(surfaces,/Environment exposure/);
-  assert.match(surfaces,/Media transition/);
-  assert.match(surfaces,/openAnimate\(\`rig:\$\{node\}:position\`\)/);
+test("Canvas exposes direct website authoring without legacy workflow machinery",()=>{
+  const studio=fs.readFileSync("src/studio/ForgeEditor.tsx","utf8");
+  assert.match(studio,/setSceneCopy/);
+  assert.match(studio,/addScene/);
+  assert.match(studio,/StudioLivePreview/);
+  assert.match(studio,/Interactive3DBuildDock/);
+  assert.doesNotMatch(studio,/ControlPlaneReview/);
+  assert.doesNotMatch(studio,/primarySurfaces/);
 });
 
 test("Accepted proposal bundles have atomic undo and redo history",()=>{

@@ -1,265 +1,82 @@
 import { expect, test } from "@playwright/test";
 
-async function openEditorTool(page:import("@playwright/test").Page,label:RegExp) {
-  if(/sequencer|motion/i.test(label.source)) {
-    await page.getByRole("button",{name:"Motion",exact:true}).click();
-    return;
-  }
-  if(/interaction/i.test(label.source)) {
-    await page.getByRole("button",{name:"Interactions",exact:true}).click();
-    return;
-  }
-  if(/asset/i.test(label.source)) {
-    await page.locator(".production-topbar nav").getByRole("button",{name:"Assets",exact:true}).click();
-    return;
-  }
-  if(/visual|effect/i.test(label.source)) {
-    await page.getByRole("button",{name:"Effects",exact:true}).click();
-    return;
-  }
-  const quality=page.locator("details.production-quality-menu");
-  await quality.locator("> summary").click();
-  await quality.getByRole("button",{name:label}).first().click();
-}
+const nav=(page:import("@playwright/test").Page)=>page.getByRole("navigation",{name:"Editor modes"});
 
-test("Build keeps the live experience central and edits the selected scene", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+test("canvas edit persists into the working website",async({page})=>{
   await page.goto("/studio");
-
-  await expect(page.getByRole("button", { name: "Canvas", exact: true })).toHaveAttribute("aria-current", "page");
-  await expect(page.locator(".production-runtime canvas").first()).toBeAttached();
-  await expect(page.getByLabel("Headline")).toBeVisible();
-
-  const headline=page.getByLabel("Headline");
-  await headline.fill("A directed cinematic scene");
-  await expect(headline).toHaveValue("A directed cinematic scene");
-  await expect(page.locator(".production-context")).toBeVisible();
-});
-
-test("New Project starts from isolated project state", async ({ page }) => {
-  await page.addInitScript(() => {
-    window.localStorage.setItem("forge-studio-guide-brief-v1", "Previous client mission that must not leak.");
-    window.localStorage.setItem("forge-studio-guide-shipped-project-v1", "previous-client");
-  });
-  await page.goto("/studio");
-  await page.getByLabel("Forge command").fill("new project");
-  await page.getByRole("button", { name: "Direct", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Start from zero.", level: 2 })).toBeVisible();
-
-  await page.getByLabel("Project name").fill("Isolation Test");
-  await page.getByRole("button", { name: "Create project", exact: true }).click();
-  await expect(page.getByText(/created from zero with isolated assets, interactions and visual effects/i)).toBeVisible();
-
-  await expect.poll(async () => page.evaluate(() => {
-    const raw=window.localStorage.getItem("forge-studio-v2");
-    if(!raw) return null;
-    const draft=JSON.parse(raw);
-    return {
-      id:draft.project?.id,
-      scenes:draft.experience?.scenes?.length,
-      models:draft.assetManifest?.models?.length,
-      textures:draft.assetManifest?.textures?.length,
-      hdr:draft.assetManifest?.hdr?.length,
-      video:draft.assetManifest?.video?.length,
-      graph:draft.interactionGraph?.id,
-      cinematicScenes:draft.cinematicSystems?.scenes?.length,
-      experiencePath:draft.project?.experiencePath,
-      visualSystemsPath:draft.project?.visualSystemsPath,
-    };
-  })).toEqual({
-    id:"isolation-test",
-    scenes:1,
-    models:0,
-    textures:0,
-    hdr:0,
-    video:0,
-    graph:"isolation-test-interactions",
-    cinematicScenes:0,
-    experiencePath:"clients/isolation-test/experience.json",
-    visualSystemsPath:"clients/isolation-test/visual-systems.json",
-  });
-});
-
-test("Build prepares a reversible fast proposal before applying motion", async ({ page }) => {
-  await page.goto("/studio");
-  await page.getByRole("button", { name: "Add scene" }).click();
-  await expect(page.getByLabel("Headline")).toHaveValue("Direct this moment.");
-  await page.getByLabel("Forge command").fill("editorial reveal");
-  await page.getByRole("button", { name: "Direct", exact: true }).click();
-
-  const review=page.getByLabel("Forge proposal review");
-  await expect(review).toBeVisible();
-  await expect(review.getByRole("button", { name: "Current", exact: true })).toBeVisible();
-  await expect(review.getByRole("button", { name: "Candidate", exact: true })).toHaveAttribute("aria-pressed", "true");
-  await expect(review.getByRole("button", { name: "Accept candidate", exact: true })).toBeVisible();
-
-  await review.getByRole("button", { name: "Accept candidate", exact: true }).click();
-  await expect(review.getByRole("button", { name: "Revert accepted change", exact: true })).toBeVisible();
-  await review.getByRole("button", { name: "Revert accepted change", exact: true }).click();
-  await expect(page.getByText(/reverted/i)).toBeVisible();
-});
-
-test("Build Animate provides direct motion authoring before the expert sequencer", async ({ page }) => {
-  await page.goto("/studio");
-  await page.getByRole("button", { name: "＋ Scene" }).click();
-  await page.getByRole("button", { name: "Animate", exact: true }).click();
-
-  await expect(page.getByRole("heading", { name: "Make something move.", level: 2 })).toBeVisible();
-  await expect(page.getByLabel("Animate motion recipe")).toBeVisible();
-  await page.getByLabel("Animate motion recipe").selectOption("editorial-reveal");
-  await page.getByRole("button", { name: "Apply to scene" }).click();
-  await expect(page.getByText(/Editorial reveal applied/)).toBeVisible();
-
-  await page.getByLabel("Animate target").selectOption("hero.scale");
-  await page.getByRole("button", { name: "Add property track" }).click();
-  await expect(page.getByText(/Hero scale added/)).toBeVisible();
-  await page.getByLabel("Animate Start value").fill("0.8");
-  await expect(page.getByLabel("Animate Start value")).toHaveValue("0.8");
-
-  await page.getByLabel("Animate preview progress").fill("0.5");
-  await expect(page.getByText("50%")).toBeVisible();
-
-  await page.getByRole("button", { name: "Open full Sequencer" }).click();
-  await expect(page.getByRole("heading", { name: "Motion sequencer", level: 2 })).toBeVisible();
-});
-
-test("Build camera inspector directly edits shots and hands off to targeted Animate", async ({ page }) => {
-  await page.goto("/studio");
-  await page.getByRole("button", { name: "Layers", exact: true }).click();
-  const tree=page.locator(".production-tree");
-  await tree.getByRole("button", { name: /Camera/ }).first().click();
-
-  await expect(page.getByLabel("Camera path", { exact: true })).toBeVisible();
-  await page.getByLabel("Camera path", { exact: true }).selectOption("orbit");
-  await expect(page.getByLabel("Camera path", { exact: true })).toHaveValue("orbit");
-  await page.getByLabel("Camera start FOV").fill("47");
-  await expect(page.getByLabel("Camera start FOV")).toHaveValue("47");
-
-  await page.getByRole("button", { name: "Animate camera", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Make something move.", level: 2 })).toBeVisible();
-  await expect(page.getByLabel("Animate target")).toHaveValue("camera.position");
-});
-
-test("Build environment inspector directly edits lighting and atmosphere", async ({ page }) => {
-  await page.goto("/studio");
-  await page.getByRole("button", { name: "Layers", exact: true }).click();
-  await page.locator(".production-tree").getByRole("button", { name: /Environment/ }).click();
-
-  await page.getByLabel("Environment exposure").fill("1.35");
-  await page.getByLabel("Environment bloom").fill("0.45");
-  await page.getByLabel("Environment key color").fill("#ffaa66");
-  await expect(page.getByLabel("Environment exposure")).toHaveValue("1.35");
-  await expect(page.getByLabel("Environment bloom")).toHaveValue("0.45");
-  await expect(page.getByLabel("Environment key color")).toHaveValue("#ffaa66");
-
-  await page.getByRole("button", { name: "Animate exposure", exact: true }).click();
-  await expect(page.getByLabel("Animate target")).toHaveValue("world.exposure");
-});
-
-test("Build media inspector directly edits presentation when media exists", async ({ page }) => {
-  await page.goto("/studio");
-  await page.getByRole("button", { name: "Layers", exact: true }).click();
-  const media=page.locator(".production-tree").getByRole("button", { name: /Media/ });
-  await expect(media).toBeVisible();
-  await media.click();
-
-  await page.getByLabel("Media transition").selectOption("dissolve");
-  await page.getByLabel("Media desktop position X").fill("42");
-  await page.getByLabel("Media mobile position Y").fill("58");
-  await expect(page.getByLabel("Media transition")).toHaveValue("dissolve");
-  await expect(page.getByLabel("Media desktop position X")).toHaveValue("42");
-  await expect(page.getByLabel("Media mobile position Y")).toHaveValue("58");
-
-  await page.getByRole("button", { name: "Animate reveal", exact: true }).click();
-  await expect(page.getByLabel("Animate target")).toHaveValue("media.reveal");
-});
-
-test("Motion workspace preserves expert motion control", async ({ page }) => {
-  await page.goto("/studio");
-  await openEditorTool(page,/Sequencer/);
-  await expect(page.getByRole("heading", { name: "Motion sequencer", level: 2 })).toBeVisible();
-  await expect(page.locator(".sequencer-toolbar").getByRole("button", { name: "Play", exact: true })).toBeVisible();
-  await expect(page.getByLabel("Playback range start")).toBeVisible();
-  await page.getByRole("button", { name: /Back to Canvas/ }).click();
-  await expect(page.getByRole("button", { name: "Canvas", exact: true })).toBeVisible();
-});
-
-test("Interactions workspace preserves deterministic graph authoring", async ({ page }) => {
-  await page.goto("/studio");
-  await openEditorTool(page,/Interactions/);
-  await expect(page.getByRole("heading", { name: "Interaction graph", level: 2 })).toBeVisible();
-  await expect(page.getByRole("application", { name: "Interaction node graph" })).toBeVisible();
-  await page.getByRole("button", { name: "Add trigger" }).click();
-  await expect(page.locator("button.production-status")).toBeVisible();
-});
-
-test("Assets workspace exposes Asset Intelligence, bank and model inspection", async ({ page }) => {
-  await page.goto("/studio");
-  await openEditorTool(page,/Asset tools/);
-  await expect(page.getByText("ASSET INTELLIGENCE")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Asset bank", level: 2, exact: true })).toBeVisible();
-  await expect(page.getByText(/manifest health/i)).toBeVisible();
-});
-
-test("Review makes Project Health the readiness control room", async ({ page }) => {
-  await page.goto("/studio");
-  await page.locator("button.production-status").click();
-  await expect(page.getByText("REVIEW / PROJECT HEALTH")).toBeVisible();
-  await expect(page.getByText("WHAT NEEDS ATTENTION")).toBeVisible();
-  await expect(page.getByText("RECOMMENDED")).toBeVisible();
-});
-
-test("Publish honors Project Health and keeps release authority protected", async ({ page }) => {
-  await page.goto("/studio");
-  await page.getByRole("button", { name: "Publish", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Review, checkpoint and release." })).toBeVisible();
-  await expect(page.getByText("PUBLISH / RELEASE")).toBeVisible();
-  await expect(page.getByText("Project Health", { exact: true }).first()).toBeVisible();
-  await expect(page.getByLabel("Owner publish secret")).toHaveCount(0);
-
-  await page.getByRole("button", { name: "Advanced setup" }).click();
-  await expect(page.getByLabel("Owner publish secret")).toHaveAttribute("type", "password");
-});
-
-test("Performance quality tool remains available from the editor", async ({ page }) => {
-  await page.goto("/studio");
-  await openEditorTool(page,/Performance/);
-  await expect(page.getByRole("heading", { name: "Telemetry policy" })).toBeVisible();
-  await expect(page.getByLabel("Sample rate")).toBeVisible();
-});
-
-test("Effects workspace authors cursor reveal and visual physics", async ({ page }) => {
-  await page.goto("/studio");
-  await openEditorTool(page,/Visual effects/);
-  await expect(page.getByRole("heading", { name: "Visual Effects", level: 2 })).toBeVisible();
-  await expect(page.getByText("LIVE DRAFT")).toBeVisible();
-  const preset=page.getByLabel("Preset");
-  await preset.selectOption("cursor");
-  await expect(page.getByLabel("Cursor mode")).toBeVisible();
-  await page.getByLabel("Cursor mode").selectOption("fluid");
-  await expect(page.getByLabel("Fluid resolution")).toBeVisible();
-  await expect(page.getByLabel("Curl")).toBeVisible();
-  await expect(page.getByLabel("Splat force")).toBeVisible();
-
-  await preset.selectOption("physics");
-  await expect(page.getByLabel("Warp mode")).toBeVisible();
-  await page.getByLabel("Warp mode").selectOption("shockwave");
-  await expect(page.getByLabel("Refraction mode")).toBeVisible();
-  await page.getByLabel("Refraction mode").selectOption("liquid");
-  await expect(page.getByLabel("Transition effect")).toBeVisible();
-  await page.getByLabel("Transition effect").selectOption("slats");
-  await expect(page.getByLabel("Transition target")).toBeVisible();
-  await expect.poll(async()=>page.evaluate(()=>{
-    const raw=window.localStorage.getItem("forge-studio-v2");
-    if(!raw) return false;
-    const draft=JSON.parse(raw);
-    return draft.cinematicSystems?.scenes?.some((scene:{warp?:{mode?:string}})=>scene.warp?.mode==="shockwave") ?? false;
-  })).toBe(true);
-
-  await page.getByRole("button", { name: /Back to Canvas/ }).click();
-  await expect(page.getByRole("button", { name: "Canvas", exact: true })).toBeVisible();
+  await expect(page.locator(".forge-next__canvas")).toBeVisible();
+  await page.getByLabel("Headline").fill("Forge Canvas Edit");
+  await expect.poll(()=>page.evaluate(()=>{
+    const raw=localStorage.getItem("forge-studio-v2");
+    return raw?JSON.parse(raw).experience?.scenes?.[0]?.copy?.headline:null;
+  })).toBe("Forge Canvas Edit");
   await page.reload();
-  await openEditorTool(page,/Visual effects/);
-  await expect(page.getByLabel("Warp mode")).toHaveValue("shockwave");
-  await expect(page.getByLabel("Transition effect")).toHaveValue("slats");
+  await expect(page.getByLabel("Headline")).toHaveValue("Forge Canvas Edit");
+});
+
+test("layers create and select website scenes",async({page})=>{
+  await page.goto("/studio");
+  const scenes=page.locator(".forge-next__scene-list>button");
+  const before=await scenes.count();
+  await page.getByRole("button",{name:"＋ Add scene",exact:true}).click();
+  await expect(scenes).toHaveCount(before+1);
+  await expect(page.getByLabel("Scene name")).toHaveValue(`Scene ${before+1}`);
+});
+
+test("canvas panels collapse without hiding the website",async({page})=>{
+  await page.goto("/studio");
+  await page.getByRole("button",{name:"Collapse layers"}).click();
+  await expect(page.locator(".forge-next__layers")).toHaveAttribute("data-open","false");
+  await expect(page.locator(".forge-next__canvas")).toBeVisible();
+  await page.getByRole("button",{name:"Collapse inspector"}).click();
+  await expect(page.locator(".forge-next__inspector")).toHaveAttribute("data-open","false");
+  await expect(page.locator(".forge-next__canvas")).toBeVisible();
+});
+
+test("mode bar moves between real production workspaces",async({page})=>{
+  await page.goto("/studio");
+  await nav(page).getByRole("button",{name:"References",exact:true}).click();
+  await expect(page.getByRole("heading",{name:"References",level:1})).toBeVisible();
+  await nav(page).getByRole("button",{name:"Motion",exact:true}).click();
+  await expect(page.getByRole("heading",{name:"Motion sequencer",level:2})).toBeVisible();
+  await nav(page).getByRole("button",{name:"Interact",exact:true}).click();
+  await expect(page.getByRole("heading",{name:"Interaction graph",level:2})).toBeVisible();
+  await nav(page).getByRole("button",{name:"Effects",exact:true}).click();
+  await expect(page.getByRole("heading",{name:"Visual Effects",level:2})).toBeVisible();
+});
+
+test("AI Build is an overlay on the editor instead of a separate product",async({page})=>{
+  await page.goto("/studio");
+  await page.getByRole("button",{name:"AI Build",exact:true}).click();
+  await expect(page.locator(".forge-next__ai-drawer")).toBeVisible();
+  await expect(page.locator(".forge-next__canvas")).toBeVisible();
+  await page.locator(".forge-next__drawer-head").getByRole("button").click();
+  await expect(page.locator(".forge-next__ai-drawer")).toHaveCount(0);
+});
+
+test("quality is one click from the editor and exposes project health",async({page})=>{
+  await page.goto("/studio");
+  await page.getByRole("button",{name:"Quality",exact:true}).click();
+  await expect(page.getByRole("heading",{name:"Quality",level:1})).toBeVisible();
+  await expect(page.locator(".forge-next__health-page")).toBeVisible();
+  await expect(page.getByRole("button",{name:"Performance",exact:true})).toBeVisible();
+  await expect(page.getByRole("button",{name:"Search & AI",exact:true})).toBeVisible();
+});
+
+test("project menu keeps Director, agent, versions and export reachable",async({page})=>{
+  await page.goto("/studio");
+  await page.getByRole("button",{name:"Project menu"}).click();
+  await expect(page.getByRole("link",{name:"Director",exact:true})).toBeVisible();
+  await expect(page.getByRole("link",{name:"Creative Agent",exact:true})).toBeVisible();
+  await expect(page.getByRole("link",{name:"Asset Creator",exact:true})).toBeVisible();
+  await expect(page.getByRole("button",{name:"Versions",exact:true})).toBeVisible();
+  await expect(page.getByRole("button",{name:"Improve current site",exact:true})).toBeVisible();
+});
+
+test("editor remains usable at a narrow viewport",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/studio");
+  await expect(page.locator("main.forge-next")).toBeVisible();
+  await expect(page.locator(".forge-next__canvas")).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
 });

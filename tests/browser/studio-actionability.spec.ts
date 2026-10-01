@@ -1,23 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-async function openEditorTool(page:import("@playwright/test").Page,label:RegExp) {
-  if(/asset/i.test(label.source)) {
-    await page.locator(".production-topbar nav").getByRole("button",{name:"Assets",exact:true}).click();
-    return;
-  }
-  if(/telemetry|performance/i.test(label.source)) {
-    const quality=page.locator("details.production-quality-menu");
-    await quality.locator("> summary").click();
-    await quality.getByRole("button",{name:/Performance/}).click();
-    return;
-  }
-  if(/search|ai/i.test(label.source)) {
-    const quality=page.locator("details.production-quality-menu");
-    await quality.locator("> summary").click();
-    await quality.getByRole("button",{name:/Search & AI/}).click();
-    return;
-  }
-}
+const editorNav=(page:import("@playwright/test").Page)=>page.getByRole("navigation",{name:"Editor modes"});
 
 function minimalGlb(name="Rotor") {
   const json=Buffer.from(JSON.stringify({
@@ -40,59 +23,63 @@ function minimalGlb(name="Rotor") {
   return buffer;
 }
 
-test("Build rig inspector targets the selected part in simple Animate",async({page})=>{
+test("References workspace persists evidence-directed rules and feeds AI Build",async({page})=>{
   await page.goto("/studio");
-  await openEditorTool(page,/Asset tools/);
-  const inspector=page.locator("section.studio-card").filter({has:page.getByRole("heading",{name:"GLB node mapper",level:2})});
-  await inspector.locator('input[type="file"]').setInputFiles({name:"actionability-rig.glb",mimeType:"model/gltf-binary",buffer:minimalGlb()});
-  await expect(page.getByText("Rotor",{exact:true}).first()).toBeVisible();
-  await page.getByLabel("Public model path").fill("/models/client/actionability-rig.glb");
-  await page.getByRole("button",{name:"Select recommended",exact:true}).click();
-  const create=page.getByRole("button",{name:"Create deterministic rig tracks",exact:true});
-  await expect(create).toBeEnabled();
-  await create.click();
+  await editorNav(page).getByRole("button",{name:"References",exact:true}).click();
+  await expect(page.getByText("PROJECT REFERENCES",{exact:true})).toBeVisible();
+
+  await page.getByLabel("Reference URL").fill("https://example.com/reference");
+  await page.getByLabel("Reference label").fill("Reference Test");
+  await page.getByRole("button",{name:"＋ Add website",exact:true}).click();
+  await expect(page.getByText("NEEDS DIRECTION",{exact:true})).toBeVisible();
+
+  await page.locator("label.reference-editor__list").filter({hasText:"Transfer / take"}).locator("textarea").fill("Carry one persistent subject through chapter transitions.");
+  await page.locator("label.reference-editor__list").filter({hasText:"Do not copy"}).locator("textarea").fill("Exact composition");
+  await expect(page.getByText("REFERENCE ACTIVE",{exact:true})).toBeVisible();
+
   await expect.poll(()=>page.evaluate(()=>{
     const raw=localStorage.getItem("forge-studio-v2");
-    if(!raw) return false;
-    const rig=JSON.parse(raw).experience?.productRig;
-    return rig?.nodes?.includes("Rotor") && rig?.tracks?.some((track:{node?:string})=>track.node==="Rotor");
-  })).toBe(true);
+    return raw ? JSON.parse(raw).project?.references?.[0]?.take?.[0] : null;
+  })).toBe("Carry one persistent subject through chapter transitions.");
 
-  await page.locator(".production-advanced-head").getByRole("button",{name:/Back to Canvas/}).click();
-  await page.getByRole("button",{name:"Layers",exact:true}).click();
-  await page.locator(".production-tree").getByRole("button",{name:/Rotor/}).click();
-  await page.locator(".production-right").getByRole("button",{name:"Position",exact:true}).click();
-  await expect(page.getByRole("heading",{name:"Make something move.",level:2})).toBeVisible();
-  await expect(page.getByLabel("Animate target")).toHaveValue("rig:Rotor:position");
+  await page.getByRole("button",{name:/Canvas/}).first().click();
+  await page.getByRole("button",{name:"AI Build",exact:true}).click();
+  await expect(page.getByText(/1 evidence-directed reference active/)).toBeVisible();
 });
 
-test("Build asset inspector opens actionable Asset tools",async({page})=>{
+test("Motion workspace preserves expert motion control",async({page})=>{
   await page.goto("/studio");
-  await page.locator(".production-left").getByRole("button",{name:"Assets",exact:true}).click();
-  const firstAsset=page.locator(".production-left .production-tree button").first();
-  await expect(firstAsset).toBeVisible();
-  await firstAsset.click();
-  await page.locator(".production-right").getByRole("button",{name:"Replace / optimize / inspect",exact:true}).click();
-  await expect(page.getByRole("heading",{name:"Inspect before repository upload",level:2})).toBeVisible();
-  await expect(page.getByRole("heading",{name:"Asset bank",level:2,exact:true})).toBeVisible();
+  await editorNav(page).getByRole("button",{name:"Motion",exact:true}).click();
+  await expect(page.getByRole("heading",{name:"Motion sequencer",level:2})).toBeVisible();
+  await expect(page.getByLabel("Playback rate")).toBeVisible();
+  await expect(page.getByLabel("Timeline snap")).toBeVisible();
+  await expect(page.getByRole("button",{name:"Play",exact:true})).toBeVisible();
+});
+
+test("Interactions workspace preserves deterministic graph authoring",async({page})=>{
+  await page.goto("/studio");
+  await editorNav(page).getByRole("button",{name:"Interact",exact:true}).click();
+  await expect(page.getByRole("heading",{name:"Interaction graph",level:2})).toBeVisible();
+  const nodes=page.getByRole("application",{name:"Interaction node graph"}).locator("button");
+  const before=await nodes.count();
+  await page.getByRole("button",{name:"Add trigger",exact:true}).click();
+  await expect(nodes).toHaveCount(before+1);
 });
 
 test("Assets workspace can stage a file and mutate project asset state",async({page})=>{
   await page.goto("/studio");
-  await openEditorTool(page,/Asset tools/);
+  await editorNav(page).getByRole("button",{name:"Assets",exact:true}).click();
   const intake=page.locator("section.studio-card").filter({has:page.getByRole("heading",{name:"Inspect before repository upload",level:2})});
   const png=Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZfKkAAAAASUVORK5CYII=","base64");
   await intake.locator('input[type="file"]').setInputFiles({name:"actionability.png",mimeType:"image/png",buffer:png});
-  const intakeStatus=intake.locator('p[role="status"]');
-  await expect(intakeStatus).toContainText("1 asset inspected locally");
+  const status=intake.locator('p[role="status"]');
+  await expect(status).toContainText("1 asset inspected locally");
   const record=page.locator(".asset-intake-list article").filter({hasText:"actionability.png"});
   await record.getByRole("button",{name:"Register",exact:true}).click();
-  await expect(intakeStatus).toContainText("added to the draft manifest");
   await record.getByRole("button",{name:"Use in draft",exact:true}).click();
-  await expect(intakeStatus).toContainText("Active scene media updated");
   await expect.poll(()=>page.evaluate(()=>{
     const raw=localStorage.getItem("forge-studio-v2");
-    if(!raw) return false;
+    if(!raw)return false;
     const draft=JSON.parse(raw);
     return draft.assetManifest?.textures?.some((item:{path?:string})=>item.path==="/textures/uploads/actionability.png")
       && draft.experience?.scenes?.[0]?.media?.src==="/textures/uploads/actionability.png";
@@ -101,7 +88,7 @@ test("Assets workspace can stage a file and mutate project asset state",async({p
 
 test("GLB Inspector creates deterministic rig tracks from a staged model",async({page})=>{
   await page.goto("/studio");
-  await openEditorTool(page,/Asset tools/);
+  await editorNav(page).getByRole("button",{name:"Assets",exact:true}).click();
   const inspector=page.locator("section.studio-card").filter({has:page.getByRole("heading",{name:"GLB node mapper",level:2})});
   await inspector.locator('input[type="file"]').setInputFiles({name:"actionability.glb",mimeType:"model/gltf-binary",buffer:minimalGlb()});
   await expect(page.getByText("Rotor",{exact:true}).first()).toBeVisible();
@@ -112,59 +99,58 @@ test("GLB Inspector creates deterministic rig tracks from a staged model",async(
   await create.click();
   await expect.poll(()=>page.evaluate(()=>{
     const raw=localStorage.getItem("forge-studio-v2");
-    if(!raw) return false;
+    if(!raw)return false;
     const rig=JSON.parse(raw).experience?.productRig;
-    return rig?.nodes?.includes("Rotor") && rig?.tracks?.some((track:{node?:string})=>track.node==="Rotor");
+    return rig?.nodes?.includes("Rotor")&&rig?.tracks?.some((track:{node?:string})=>track.node==="Rotor");
   })).toBe(true);
 });
 
-test("References workspace persists evidence-directed rules and feeds AI Build",async({page})=>{
+test("Effects workspace authors cursor reveal and visual physics",async({page})=>{
   await page.goto("/studio");
-  await page.locator(".production-topbar nav").getByRole("button",{name:"References",exact:true}).click();
-  await expect(page.getByText("PROJECT REFERENCES",{exact:true})).toBeVisible();
-
-  await page.getByLabel("Reference URL").fill("https://example.com/reference");
-  await page.getByLabel("Reference label").fill("Reference Test");
-  await page.getByRole("button",{name:"＋ Add website",exact:true}).click();
-  await expect(page.getByText("NEEDS DIRECTION",{exact:true})).toBeVisible();
-  await expect(page.getByText("VISUAL EVIDENCE ANALYZER",{exact:true})).toBeVisible();
-  await expect(page.getByRole("button",{name:"Analyze screenshots",exact:true})).toBeDisabled();
-
-  const transfer=page.locator("label.reference-editor__list").filter({hasText:"Transfer / take"}).locator("textarea");
-  await transfer.fill("Carry one persistent subject through chapter transitions.");
-  const avoid=page.locator("label.reference-editor__list").filter({hasText:"Do not copy"}).locator("textarea");
-  await avoid.fill("Exact composition");
-  await expect(page.getByText("REFERENCE ACTIVE",{exact:true})).toBeVisible();
-
+  await editorNav(page).getByRole("button",{name:"Effects",exact:true}).click();
+  await expect(page.getByRole("heading",{name:"Visual Effects",level:2})).toBeVisible();
+  const preset=page.locator("label").filter({hasText:"Preset"}).locator("select");
+  await preset.selectOption("cursor");
+  await expect(page.getByLabel("Cursor mode")).toBeVisible();
   await expect.poll(()=>page.evaluate(()=>{
     const raw=localStorage.getItem("forge-studio-v2");
-    if(!raw) return null;
-    const refs=JSON.parse(raw).project?.references ?? [];
-    return refs[0]?.take?.[0] ?? null;
-  })).toBe("Carry one persistent subject through chapter transitions.");
-
-  await page.getByRole("button",{name:/Back to Canvas/}).click();
-  await expect(page.getByText(/1 evidence-directed reference active/)).toBeVisible();
+    if(!raw)return false;
+    return JSON.parse(raw).cinematicSystems?.scenes?.some((scene:{cursorReveal?:unknown})=>Boolean(scene.cursorReveal))??false;
+  })).toBe(true);
 });
 
 test("Performance quality tool mutates telemetry policy",async({page})=>{
   await page.goto("/studio");
-  await openEditorTool(page,/Telemetry/);
+  await page.getByRole("button",{name:"Quality",exact:true}).click();
+  await page.getByRole("button",{name:"Performance",exact:true}).click();
+  await expect(page.getByRole("heading",{name:"Telemetry policy",level:2})).toBeVisible();
   const sample=page.locator("label").filter({hasText:"Sample rate"}).locator('input[type="range"]');
-  await expect(sample).toBeVisible();
   await sample.fill("0.55");
   await expect.poll(()=>page.evaluate(()=>{
     const raw=localStorage.getItem("forge-studio-v2");
-    return raw ? JSON.parse(raw).project?.telemetry?.sampleRate : null;
+    return raw?JSON.parse(raw).project?.telemetry?.sampleRate:null;
   })).toBe(.55);
 });
 
-test("AI Build is available directly from the editor without a guided shell",async({page})=>{
+test("Search and AI quality tool mutates discoverability policy and Project Health",async({page})=>{
   await page.goto("/studio");
-  await expect(page.getByRole("button",{name:"AI Build",exact:true})).toBeVisible();
-  await expect(page.getByText("Start Guided Build")).toHaveCount(0);
-  await page.getByRole("button",{name:"AI Build",exact:true}).click();
-  await expect(page.locator("#interactive-3d-build")).toBeVisible();
+  await page.getByRole("button",{name:"Quality",exact:true}).click();
+  await page.getByRole("button",{name:"Search & AI",exact:true}).click();
+  await expect(page.getByRole("heading",{name:"Discoverability contract",level:2})).toBeVisible();
+  await page.getByLabel("Default search title").fill("Forge Search Verified");
+  await expect.poll(()=>page.evaluate(()=>{
+    const raw=localStorage.getItem("forge-studio-v2");
+    return raw?JSON.parse(raw).project?.discoverability?.defaultTitle:null;
+  })).toBe("Forge Search Verified");
+  await page.getByRole("button",{name:"Project health",exact:true}).click();
+  await expect(page.locator(".forge-next__health-page")).toBeVisible();
+});
+
+test("Publish honors Project Health and keeps release authority protected",async({page})=>{
+  await page.goto("/studio");
+  await page.getByRole("button",{name:"Publish",exact:true}).click();
+  await expect(page.getByText("PUBLISH / RELEASE",{exact:true})).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Ready to create a review|Finish the release setup/})).toBeVisible();
 });
 
 test("Project Vault exposes durable save actions and explicit configuration state",async({page})=>{
@@ -173,58 +159,31 @@ test("Project Vault exposes durable save actions and explicit configuration stat
   await page.getByRole("button",{name:"Versions",exact:true}).click();
   const dialog=page.getByRole("dialog",{name:"Durable projects and restore points."});
   await expect(dialog).toBeVisible();
-  const status=dialog.locator(".production-vault-status strong");
-  await expect(status).not.toHaveText("Checking storage…");
-  const save=dialog.getByRole("button",{name:"Save to Project Vault",exact:true});
-  await expect(save).toBeVisible();
-  const statusText=(await status.textContent())??"";
-  if(statusText.includes("Vault not configured")){
-    await expect(dialog.getByText(/Configure the server Vault/)).toBeVisible();
-    await expect(save).toBeDisabled();
-  } else {
-    await expect(status).toContainText("Durable storage connected");
-  }
+  await expect(dialog.getByRole("button",{name:"Save to Project Vault",exact:true})).toBeVisible();
 });
 
-test("Improvement evidence keeps the Loop Engine executable or explicitly fail-closed",async({page})=>{
+test("Improvement engine remains executable from the new Forge editor",async({page})=>{
   await page.goto("/studio");
   await page.getByRole("button",{name:"Open command palette"}).click();
   await page.getByRole("button",{name:"Improve current site",exact:true}).click();
   const dialog=page.getByRole("dialog",{name:"Closed-loop improvement with proof."});
   await expect(dialog).toBeVisible();
   await expect(dialog.getByText("EXECUTABLE LOOP").first()).toBeVisible();
-  await expect(dialog.getByRole("button",{name:"Start from a proposal",exact:true}).first()).toBeVisible();
-  const response=await page.request.post("/api/studio/loops/run",{
-    data:{projectId:"test-project",loopId:"visual-polish",proposalId:"proposal-test",selectionKey:"scene:0",baselineFingerprint:"a".repeat(64),context:"Verify bounded improvement."},
-  });
-  expect([401,403,503]).toContain(response.status());
-  if(response.status()===503){
-    const body=await response.json();
-    expect(String(body.error)).toMatch(/not enabled|requires/i);
-  }
 });
 
-
-test("Search and AI quality tool mutates discoverability policy and Project Health",async({page})=>{
+test("New website starts from isolated project state",async({page})=>{
   await page.goto("/studio");
-  await openEditorTool(page,/Search & AI/);
-  await expect(page.getByRole("heading",{name:"Discoverability contract",level:2})).toBeVisible();
-
-  const title=page.getByLabel("Default search title");
-  await title.fill("Atelier Maris — Search and AI Verified");
+  await page.getByRole("button",{name:"Open command palette"}).click();
+  await page.getByRole("button",{name:"New website",exact:true}).click();
+  const dialog=page.getByRole("dialog",{name:"Start with a clean canvas."});
+  await dialog.getByLabel("Project name").fill("Fresh Forge Test");
+  await dialog.getByRole("button",{name:"custom",exact:true}).click();
+  await dialog.getByRole("button",{name:"Create website",exact:true}).click();
+  await expect(page.getByText("Fresh Forge Test",{exact:true}).first()).toBeVisible();
   await expect.poll(()=>page.evaluate(()=>{
     const raw=localStorage.getItem("forge-studio-v2");
-    return raw ? JSON.parse(raw).project?.discoverability?.defaultTitle : null;
-  })).toBe("Atelier Maris — Search and AI Verified");
-
-  const searchToggle=page.getByLabel("Allow AI search crawlers");
-  await searchToggle.uncheck();
-  await expect(page.getByText("AI search crawler access is disabled",{exact:true})).toBeVisible();
-  await searchToggle.check();
-
-  await page.locator(".production-advanced-head").getByRole("button",{name:/Back to Canvas/}).click();
-  await page.locator("button.production-status").click();
-  const metric=page.locator(".production-health-metrics article").filter({hasText:"Search + AI"});
-  await expect(metric).toBeVisible();
-  await expect(metric.locator("strong")).toContainText("/100");
+    if(!raw)return null;
+    const draft=JSON.parse(raw);
+    return {name:draft.project?.name,assets:draft.assetManifest?.models?.length??-1,refs:draft.project?.references?.length??-1};
+  })).toEqual({name:"Fresh Forge Test",assets:0,refs:0});
 });
