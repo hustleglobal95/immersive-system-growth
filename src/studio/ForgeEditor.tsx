@@ -28,6 +28,7 @@ import { ReferenceWorkbench } from "@/src/studio/ReferenceWorkbench";
 import { Interactive3DBuildDock } from "@/src/studio/Interactive3DBuildDock";
 import { StudioVaultPanel } from "@/src/studio/StudioVaultPanel";
 import { StudioIdentityBadge } from "@/src/studio/StudioIdentityBadge";
+import { LoopEnginePanel } from "@/src/studio/LoopEnginePanel";
 import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
 import type { AssetManifest } from "@/src/types/assets";
 import type { ExperienceConfig, SceneDefinition } from "@/src/types/experience";
@@ -59,6 +60,7 @@ export function ForgeEditor(){
   const [commandOpen,setCommandOpen]=useState(false);
   const [qualityTab,setQualityTab]=useState<"health"|"performance"|"search">("health");
   const [vaultOpen,setVaultOpen]=useState(false);
+  const [loopOpen,setLoopOpen]=useState(false);
   const [newProjectOpen,setNewProjectOpen]=useState(false);
   const [newName,setNewName]=useState("Untitled Experience");
   const [newKind,setNewKind]=useState<ProjectKind>("custom");
@@ -242,10 +244,12 @@ export function ForgeEditor(){
         <details className="forge-next__menu"><summary aria-label="Project menu">•••</summary><div>
           <button type="button" onClick={()=>setNewProjectOpen(true)}>New website</button>
           <button type="button" onClick={()=>setVaultOpen(true)}>Versions</button>
+          <button type="button" onClick={()=>setLoopOpen(true)}>Improve current site</button>
           <button type="button" onClick={()=>downloadJson("forge-project.json",{experience:draft.experience,project:draft.project,assetManifest:draft.assetManifest,interactionGraph:draft.interactionGraph,cinematicSystems:draft.cinematicSystems})}>Export project</button>
           <button type="button" onClick={()=>setMode("quality")}>Quality & performance</button>
           <Link href="/director">Director</Link>
           <Link href="/studio/agent">Creative Agent</Link>
+          <Link href="/studio/assets/create">Asset Creator</Link>
         </div></details>
         <StudioIdentityBadge />
       </div>
@@ -353,6 +357,15 @@ export function ForgeEditor(){
       <div className="forge-next__command-input"><span>⌘</span><input ref={commandInput} aria-label="Forge command" placeholder="Go to Motion, open References, publish…" onKeyDown={(event)=>{if(event.key==="Enter")runCommand(event.currentTarget.value);}}/><kbd>esc</kbd></div>
       <div className="forge-next__command-grid">{[...modes,{id:"quality" as const,label:"Quality",short:"Q"},{id:"publish" as const,label:"Publish",short:"P"}].map((item)=><button type="button" key={item.id} onClick={()=>{setMode(item.id);setCommandOpen(false);}}><span>{item.short}</span><strong>{item.label}</strong></button>)}<button type="button" onClick={()=>{setAiOpen(true);setMode("design");setCommandOpen(false);}}><span>AI</span><strong>AI Build</strong></button><button type="button" onClick={()=>{setNewProjectOpen(true);setCommandOpen(false);}}><span>＋</span><strong>New website</strong></button></div>
     </div></div>}
+    {loopOpen&&<LoopEnginePanel
+      projectId={draft.project.id}
+      projectName={draft.project.name}
+      workingBundle={{experience:draft.experience,assetManifest:draft.assetManifest,interactionGraph:draft.interactionGraph,cinematicSystems:draft.cinematicSystems}}
+      proposal={null}
+      onCandidateReady={(next)=>{draft.applyProjectBundle({experience:next.experience,assetManifest:next.assetManifest,interactionGraph:next.interactionGraph,cinematicSystems:next.cinematicSystems});setLoopOpen(false);setCandidate(null);setPreviewCandidate(false);setNotice("Verified improvement candidate applied to the working draft.");}}
+      onOpenVault={()=>{setLoopOpen(false);setVaultOpen(true);}}
+      onClose={()=>setLoopOpen(false)}
+    />}
     {vaultOpen&&<StudioVaultPanel draft={draft} onClose={()=>setVaultOpen(false)} onProjectChange={()=>{setCandidate(null);setPreviewCandidate(false);setActiveScene(0);}}/>}
     {newProjectOpen&&<NewProjectDialog name={newName} setName={setNewName} kind={newKind} setKind={setNewKind} onCreate={()=>startProject(newName,newKind)} onClose={()=>setNewProjectOpen(false)}/>}
   </main>;
