@@ -33,17 +33,10 @@ test("main Studio does not expose subsystem dashboards", async ({ page }) => {
   await expect(page.locator("details.production-advanced-menu")).toHaveCount(0);
 });
 
-test("Advanced preserves the complete production editor", async ({ page }) => {
-  await page.goto("/studio/advanced");
-  await expect(page.getByRole("heading", { level: 1, name: /Forge Studio/ })).toBeAttached();
-  await expect(page.getByRole("button", { name: "Build", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Review", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Ship", exact: true })).toBeVisible();
-});
 
-test("Studio exposes the guided product shell and keyboard command palette", async ({ page }) => {
+
+test("legacy advanced route returns to the one Forge Studio", async ({ page }) => {
   await page.goto("/studio/advanced");
-  await expect(page.getByRole("button", { name: "Open command palette" })).toBeVisible();
-  await page.keyboard.press(process.platform === "darwin" ? "Meta+K" : "Control+K");
-  await expect(page.getByRole("dialog", { name: "Go anywhere. Do anything." })).toBeVisible();
+  await expect(page).toHaveURL(/\/studio$/);
+  await expect(page.locator("main.forge-builder")).toBeVisible();
 });
