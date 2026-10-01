@@ -251,7 +251,7 @@ function ReferenceEditor({reference,onChange,onSystem,onRemove}:{
     </section>
 
     <div className="reference-editor__source-grid">
-      <label>Name<input value={reference.label} onChange={(event)=>{ if(event.target.value.trim()) onChange({label:event.target.value}); }} /></label>
+      <label>Name<input maxLength={180} value={reference.label} onChange={(event)=>{ if(event.target.value.trim()) onChange({label:event.target.value}); }} /></label>
       <label>Source URL<input type="url" value={reference.url} readOnly /></label>
     </div>
 
@@ -263,7 +263,7 @@ function ReferenceEditor({reference,onChange,onSystem,onRemove}:{
 
     <section className="reference-editor__systems">
       <header><span>FORGE IMPLEMENTATION MAP</span><strong>Translate the reference into build-system constraints.</strong></header>
-      <div>{systemFields.map((field)=><label key={field.key}><span>{field.label}</span><small>{field.hint}</small><textarea value={reference.systems[field.key]} onChange={(event)=>onSystem(field.key,event.target.value)} rows={4} /></label>)}</div>
+      <div>{systemFields.map((field)=><label key={field.key}><span>{field.label}</span><small>{field.hint}</small><textarea maxLength={900} value={reference.systems[field.key]} onChange={(event)=>onSystem(field.key,event.target.value)} rows={4} /></label>)}</div>
     </section>
   </div>;
 }
@@ -282,7 +282,7 @@ function ReferenceEmpty() {
 }
 
 function lines(value:string) {
-  return value.split("\n").map((item)=>item.trim()).filter(Boolean).slice(0,32);
+  return value.split("\n").map((item)=>item.trim().slice(0,400)).filter(Boolean).slice(0,32);
 }
 function host(value:string) {
   try { return new URL(value).hostname.replace(/^www\./,""); } catch { return value; }
