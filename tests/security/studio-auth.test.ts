@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { NextRequest } from "next/server";
 import { proxy } from "../../proxy";
-import { isProtectedAuthoringPath, studioAuthEnabled, studioAvailableInProduction } from "../../src/platform/studioPerimeter";
+import { isProtectedAuthoringPath, studioAuthEnabled, studioAvailableInProduction, studioUsesTrustedVercelPerimeter } from "../../src/platform/studioPerimeter";
 
 test("Studio auth defaults off in development, on in production, and lab remains public",()=>{
   assert.equal(studioAuthEnabled({}),false);
@@ -10,10 +10,14 @@ test("Studio auth defaults off in development, on in production, and lab remains
   assert.equal(studioAuthEnabled({NODE_ENV:"production"}),true);
   assert.equal(studioAuthEnabled({NODE_ENV:"development",STUDIO_AUTH_ENABLED:"true"}),true);
   assert.equal(studioAuthEnabled({NODE_ENV:"production",STUDIO_AUTH_ENABLED:"false"}),true);
+  assert.equal(studioUsesTrustedVercelPerimeter({NODE_ENV:"production",VERCEL:"1",VERCEL_ENV:"production",VERCEL_PROJECT_ID:"prj_bk5GbceP0Bqjo0tADAzAA3wpPfye"}),true);
+  assert.equal(studioAuthEnabled({NODE_ENV:"production",VERCEL:"1",VERCEL_ENV:"production",VERCEL_PROJECT_ID:"prj_bk5GbceP0Bqjo0tADAzAA3wpPfye"}),false);
+  assert.equal(studioAuthEnabled({NODE_ENV:"production",VERCEL:"1",VERCEL_ENV:"production",VERCEL_PROJECT_ID:"prj_bk5GbceP0Bqjo0tADAzAA3wpPfye",STUDIO_AUTH_ENABLED:"true"}),true);
   assert.equal(studioAuthEnabled({NODE_ENV:"production",CI:"true",STUDIO_AUTH_ENABLED:"false"}),true);
   assert.equal(studioAuthEnabled({NODE_ENV:"production",FORGE_STUDIO_TEST_AUTH_BYPASS:"true",STUDIO_AUTH_ENABLED:"false"}),true);
   assert.equal(studioAuthEnabled({NODE_ENV:"production",CI:"true",FORGE_STUDIO_TEST_AUTH_BYPASS:"true",STUDIO_AUTH_ENABLED:"false"}),false);
   assert.equal(studioAvailableInProduction({NODE_ENV:"production"}),false);
+  assert.equal(studioAvailableInProduction({NODE_ENV:"production",VERCEL:"1",VERCEL_ENV:"production",VERCEL_PROJECT_ID:"prj_bk5GbceP0Bqjo0tADAzAA3wpPfye"}),true);
   assert.equal(studioAvailableInProduction({NODE_ENV:"production",ENABLE_STUDIO_IN_PROD:"true"}),true);
   assert.equal(isProtectedAuthoringPath("/studio"),true);
   assert.equal(isProtectedAuthoringPath("/api/studio/vault/projects"),true);
