@@ -67,7 +67,10 @@ export async function POST(request: Request) {
     const compilePlan = compileInteractive3DBlueprint(blueprint);
     const materialized = materializeInteractive3DExperience({ blueprint, experience });
     const interactionGraph = interactionGraphForInteractive3D(blueprint);
-    const assetRequests = generationRequestsForInteractive3D(blueprint);
+    const assetRequests = generationRequestsForInteractive3D(blueprint).map((request) => ({
+      ...request,
+      heroCandidate: blueprint.assets.find((asset) => asset.id === request.assetId)?.heroCandidate ?? false,
+    }));
 
     return Response.json({
       ok: true,
@@ -77,6 +80,7 @@ export async function POST(request: Request) {
       assetManifest: cleanManifest,
       interactionGraph,
       assetRequests,
+      signatureSceneId: blueprint.experience.signatureSceneId,
       assets: materialized.assetReadiness,
       decisions: [
         ...base.decisions,
