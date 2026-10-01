@@ -133,7 +133,7 @@ export function ForgeViewportCanvas({
             textAlign="center"
             anchorX="center"
             anchorY="middle"
-            outlineWidth={selection.kind==="text"?.008:0}
+            outlineWidth={selection.kind==="text" ? .008 : 0}
             outlineColor="#7067f0"
           >
             {section.copy.headline}
