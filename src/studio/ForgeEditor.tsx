@@ -16,6 +16,12 @@ import { evaluateProjectHealth } from "@/src/platform/control-plane/projectHealt
 import { parseCinematicSystems } from "@/src/lib/cinematic/schema";
 import { cinematicSystems as initialCinematicSystems } from "@/src/lib/cinematic/config";
 import { StudioLivePreview } from "@/src/studio/StudioLivePreview";
+import {
+  ForgeViewportCanvas,
+  type ForgeCanvasSelection,
+  type ForgeNodeTransform,
+  type ForgeTransformMode,
+} from "@/src/studio/ForgeViewportCanvas";
 import { SequencerEditor } from "@/src/studio/SequencerEditor";
 import { InteractionGraphEditor } from "@/src/studio/InteractionGraphEditor";
 import { AssetManager } from "@/src/studio/AssetManager";
@@ -31,7 +37,7 @@ import { StudioIdentityBadge } from "@/src/studio/StudioIdentityBadge";
 import { LoopEnginePanel } from "@/src/studio/LoopEnginePanel";
 import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
 import type { AssetManifest } from "@/src/types/assets";
-import type { ExperienceConfig, SceneDefinition } from "@/src/types/experience";
+import type { ExperienceConfig, SceneDefinition, Vec3 } from "@/src/types/experience";
 
 const initialExperience=parseExperience(rawExperience);
 const initialProject=parseStudioProject(rawProject);
@@ -61,6 +67,9 @@ export function ForgeEditor(){
   const [leftPanelTab,setLeftPanelTab]=useState<LeftPanelTab>("pages");
   const [inspectorTab,setInspectorTab]=useState<InspectorTab>("design");
   const [canvasTool,setCanvasTool]=useState<CanvasTool>("select");
+  const [canvasSelection,setCanvasSelection]=useState<ForgeCanvasSelection>({kind:"section",id:initialExperience.scenes[0].id});
+  const [transformMode,setTransformMode]=useState<ForgeTransformMode>("translate");
+  const [previewMode,setPreviewMode]=useState(false);
   const [canvasViewport,setCanvasViewport]=useState<"desktop"|"tablet"|"mobile">("desktop");
   const [inspectorOpen,setInspectorOpen]=useState(true);
   const [aiOpen,setAiOpen]=useState(false);
@@ -81,6 +90,13 @@ export function ForgeEditor(){
 
   const sceneIndex=Math.min(activeScene,Math.max(0,draft.experience.scenes.length-1));
   const scene=draft.experience.scenes[sceneIndex];
+  const sectionAssets=draft.experience.assets.filter((asset)=>asset.persist || !asset.scenes || asset.scenes.includes(scene.id));
+  const selectedAsset=canvasSelection.kind==="asset" ? draft.experience.assets.find((asset)=>asset.id===canvasSelection.id) ?? null : null;
+  const headlineTransform=draft.project.canvasEditor.headlineTransforms[scene.id] ?? {
+    position:[0,.7,0] as Vec3,
+    rotation:[0,0,0] as Vec3,
+    scale:[1,1,1] as Vec3,
+  };
   const previewExperience=previewCandidate && candidate ? candidate : draft.experience;
   const projectHealth=useMemo(()=>evaluateProjectHealth({
     experience:draft.experience,
@@ -149,8 +165,12 @@ export function ForgeEditor(){
   function selectScene(index:number){
     setActiveScene(index);
     const next=draft.experience.scenes[index];
-    if(next) setCanvasProgress(midpoint(next.range));
+    if(next){
+      setCanvasProgress(midpoint(next.range));
+      setCanvasSelection({kind:"section",id:next.id});
+    }
     setPreviewCandidate(false);
+    setPreviewMode(false);
   }
 
   function setSceneCopy(key:"eyebrow"|"headline"|"body",value:string){
@@ -175,6 +195,7 @@ export function ForgeEditor(){
     const scenes=normalizeRanges([...draft.experience.scenes,next]);
     draft.setExperience((current)=>({...current,scenes}));
     setActiveScene(scenes.length-1);
+    setCanvasSelection({kind:"section",id:scenes[scenes.length-1].id});
     setCanvasProgress(midpoint(scenes[scenes.length-1].range));
   }
 
@@ -182,7 +203,9 @@ export function ForgeEditor(){
     if(draft.experience.scenes.length<=1) return;
     const scenes=normalizeRanges(draft.experience.scenes.filter((_,index)=>index!==sceneIndex));
     draft.setExperience((current)=>({...current,scenes}));
-    setActiveScene(Math.max(0,sceneIndex-1));
+    const nextIndex=Math.max(0,sceneIndex-1);
+    setActiveScene(nextIndex);
+    setCanvasSelection({kind:"section",id:scenes[nextIndex].id});
   }
 
   function startProject(name:string,kind:ProjectKind){
@@ -213,11 +236,69 @@ export function ForgeEditor(){
     draft.setCinematicSystems(parseCinematicSystems({version:1,defaults:initialCinematicSystems.defaults,scenes:[]}));
     setMode("design");
     setActiveScene(0);
+    setCanvasSelection({kind:"section",id:starter.scenes[0].id});
     setCandidate(null);
     setPreviewCandidate(false);
     setAiOpen(true);
     setNewProjectOpen(false);
     setNotice(`${name} created.`);
+  }
+
+  function selectCanvasNode(selection:ForgeCanvasSelection){
+    setCanvasSelection(selection);
+    setLeftPanelTab("layers");
+    setInspectorOpen(true);
+    setPreviewMode(false);
+    if(selection.kind==="text") setInspectorTab("content");
+    else setInspectorTab("design");
+  }
+
+  function updateHeroTransform(transform:ForgeNodeTransform){
+    const scale=uniformScale(transform.scale);
+    draft.setExperience((current)=>({
+      ...current,
+      scenes:current.scenes.map((item,index)=>index===sceneIndex
+        ? {...item,hero:{...item.hero,from:{position:transform.position,rotation:transform.rotation,scale}}}
+        : item),
+    }));
+  }
+
+  function updateAssetTransform(assetId:string,transform:ForgeNodeTransform){
+    const scale=uniformScale(transform.scale);
+    draft.setExperience((current)=>({
+      ...current,
+      assets:current.assets.map((asset)=>asset.id===assetId
+        ? {...asset,position:transform.position,rotation:transform.rotation,scale}
+        : asset),
+    }));
+  }
+
+  function updateHeadlineTransform(transform:ForgeNodeTransform){
+    draft.setProject((current)=>({
+      ...current,
+      canvasEditor:{
+        ...current.canvasEditor,
+        headlineTransforms:{...current.canvasEditor.headlineTransforms,[scene.id]:transform},
+      },
+    }));
+  }
+
+  function selectedTransform():ForgeNodeTransform|null{
+    if(canvasSelection.kind==="hero"){
+      const hero=scene.hero.from;
+      return {position:hero.position,rotation:hero.rotation,scale:[hero.scale,hero.scale,hero.scale]};
+    }
+    if(canvasSelection.kind==="asset"&&selectedAsset){
+      return {position:selectedAsset.position,rotation:selectedAsset.rotation,scale:[selectedAsset.scale,selectedAsset.scale,selectedAsset.scale]};
+    }
+    if(canvasSelection.kind==="text") return headlineTransform;
+    return null;
+  }
+
+  function updateSelectedTransform(next:ForgeNodeTransform){
+    if(canvasSelection.kind==="hero") updateHeroTransform(next);
+    else if(canvasSelection.kind==="asset") updateAssetTransform(canvasSelection.id,next);
+    else if(canvasSelection.kind==="text") updateHeadlineTransform(next);
   }
 
   function runCommand(raw:string){
