@@ -81,7 +81,7 @@ export function studioReferenceFromUrl(urlValue:string,labelValue=""):StudioRefe
     url:url.toString(),
     enabled:true,
     reviewedAt:"",
-    evidenceStrength:0.25,
+    evidenceStrength:0,
     evidence:[],
     take:[],
     doNotCopy:[],
@@ -163,10 +163,10 @@ export function importStudioReferenceAnalysis(input:unknown):StudioReference {
       typography:joinFact(facts.typography),
       motion:joinFact(facts.scrollChoreography),
       interaction:joinFact(facts.pointerTouchBehavior),
-      threeD:[joinFact(facts.depth),joinFact(facts.domWebglResponsibilities),joinFact(facts.persistentAnchors),systems.filter((item)=>/3d|webgl|scene|camera|spatial/i.test(item)).join("; ")].filter(Boolean).join(" "),
+      threeD:clip([joinFact(facts.depth),joinFact(facts.domWebglResponsibilities),joinFact(facts.persistentAnchors),systems.filter((item)=>/3d|webgl|scene|camera|spatial/i.test(item)).join("; ")].filter(Boolean).join(" "),900),
       transitions:joinFact(facts.transitionMechanics),
       mobile:joinFact(facts.mobileTranslation),
-      performance:[joinFact(facts.performanceRisks),existingSystems.filter((item)=>/asset|performance|preload|render/i.test(item)).join("; ")].filter(Boolean).join(" "),
+      performance:clip([joinFact(facts.performanceRisks),existingSystems.filter((item)=>/asset|performance|preload|render/i.test(item)).join("; ")].filter(Boolean).join(" "),900),
     },
   });
 }
