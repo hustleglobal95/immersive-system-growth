@@ -40,6 +40,9 @@ const initialGraph=parseInteractionGraph(rawInteractionGraph);
 
 type Mode="design"|"references"|"motion"|"interactions"|"assets"|"effects"|"quality"|"publish";
 type ProjectKind="real-estate"|"product"|"hospitality"|"automotive"|"fashion"|"custom";
+type LeftPanelTab="pages"|"layers";
+type InspectorTab="design"|"content";
+type CanvasTool="select"|"text";
 
 const modes:Array<{id:Mode;label:string;short:string}>= [
   {id:"design",label:"Design",short:"D"},
@@ -55,6 +58,9 @@ export function ForgeEditor(){
   const [mode,setMode]=useState<Mode>("design");
   const [activeScene,setActiveScene]=useState(0);
   const [layersOpen,setLayersOpen]=useState(true);
+  const [leftPanelTab,setLeftPanelTab]=useState<LeftPanelTab>("pages");
+  const [inspectorTab,setInspectorTab]=useState<InspectorTab>("design");
+  const [canvasTool,setCanvasTool]=useState<CanvasTool>("select");
   const [inspectorOpen,setInspectorOpen]=useState(true);
   const [aiOpen,setAiOpen]=useState(false);
   const [commandOpen,setCommandOpen]=useState(false);
@@ -88,6 +94,11 @@ export function ForgeEditor(){
       if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==="k"){
         event.preventDefault();
         setCommandOpen((value)=>!value);
+      }
+      if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==="j"){
+        event.preventDefault();
+        setMode("design");
+        setAiOpen((value)=>!value);
       }
       if(event.key==="Escape"){
         setCommandOpen(false);
@@ -232,17 +243,32 @@ export function ForgeEditor(){
     <header className="forge-next__topbar">
       <div className="forge-next__brand">
         <button type="button" className="forge-next__mark" onClick={()=>setMode("design")} aria-label="Forge home">F</button>
-        <div><strong>{draft.project.name}</strong><span>{scene?.label??"Website"}</span></div>
+        <button type="button" className="forge-next__project-button" onClick={()=>setCommandOpen(true)}>
+          <span className="forge-next__project-org">FORGE</span>
+          <span className="forge-next__project-separator">/</span>
+          <strong>{draft.project.name}</strong>
+          <Icon name="chevronDown" />
+        </button>
       </div>
-      <nav className="forge-next__modes" aria-label="Editor modes">
-        {modes.map((item)=><button key={item.id} type="button" aria-current={mode===item.id?"page":undefined} onClick={()=>setMode(item.id)}>{item.label}</button>)}
-      </nav>
+
+      <div className="forge-next__canvas-tools" role="toolbar" aria-label="Canvas tools">
+        <button type="button" aria-pressed={canvasTool==="select"} aria-label="Select tool" title="Select" onClick={()=>{setCanvasTool("select");setMode("design");}}><Icon name="cursor" /></button>
+        <span />
+        <button type="button" aria-label="Add section" title="Add section" onClick={()=>{setMode("design");addScene();}}><Icon name="frame" /></button>
+        <button type="button" aria-pressed={canvasTool==="text"} aria-label="Edit text" title="Text" onClick={()=>{setCanvasTool("text");setMode("design");setInspectorOpen(true);setInspectorTab("content");}}><Icon name="text" /></button>
+        <button type="button" aria-label="Open assets" title="Media & 3D" onClick={()=>setMode("assets")}><Icon name="media" /></button>
+        <button type="button" aria-label="Open references" title="References" onClick={()=>setMode("references")}><Icon name="reference" /></button>
+        <span />
+        <button type="button" aria-label="Open motion" title="Motion" onClick={()=>setMode("motion")}><Icon name="motion" /></button>
+      </div>
+
       <div className="forge-next__top-actions">
-        <button type="button" aria-label="Undo" disabled={!draft.canUndoExperience} onClick={draft.undoExperience}>↶</button>
-        <button type="button" aria-label="Redo" disabled={!draft.canRedoExperience} onClick={draft.redoExperience}>↷</button>
+        <button type="button" aria-label="Undo" disabled={!draft.canUndoExperience} onClick={draft.undoExperience}><Icon name="undo" /></button>
+        <button type="button" aria-label="Redo" disabled={!draft.canRedoExperience} onClick={draft.redoExperience}><Icon name="redo" /></button>
         <button type="button" className="forge-next__health" data-status={projectHealth.status} onClick={()=>setMode("quality")}><i />{projectHealth.status==="ready"?"Ready":projectHealth.status}</button>
+        <button type="button" className="forge-next__preview-action" onClick={()=>{setMode("design");setPreviewCandidate(false);}}><Icon name="play" /> Preview</button>
         <button type="button" className="forge-next__publish" onClick={()=>setMode("publish")}>Publish</button>
-        <details className="forge-next__menu"><summary aria-label="Project menu">•••</summary><div>
+        <details className="forge-next__menu"><summary aria-label="Project menu"><Icon name="more" /></summary><div>
           <button type="button" onClick={()=>setNewProjectOpen(true)}>New website</button>
           <button type="button" onClick={()=>setVaultOpen(true)}>Versions</button>
           <button type="button" onClick={()=>setLoopOpen(true)}>Improve current site</button>
@@ -257,33 +283,69 @@ export function ForgeEditor(){
     </header>
 
     <div className="forge-next__shell">
-      <aside className="forge-next__rail">
-        {modes.map((item)=><button key={item.id} type="button" data-active={mode===item.id} title={item.label} aria-label={item.label} onClick={()=>setMode(item.id)}><span>{item.short}</span></button>)}
+      <nav className="forge-next__rail" aria-label="Editor modes">
+        <div className="forge-next__rail-primary">
+          <button type="button" data-active={mode==="design"} aria-label="Design" title="Design" onClick={()=>setMode("design")}><Icon name="layers" /></button>
+          <button type="button" data-active={mode==="references"} aria-label="References" title="References" onClick={()=>setMode("references")}><Icon name="reference" /></button>
+          <button type="button" data-active={mode==="assets"} aria-label="Assets" title="Assets" onClick={()=>setMode("assets")}><Icon name="media" /></button>
+          <button type="button" data-active={mode==="motion"} aria-label="Motion" title="Motion" onClick={()=>setMode("motion")}><Icon name="motion" /></button>
+          <button type="button" data-active={mode==="interactions"} aria-label="Interact" title="Interactions" onClick={()=>setMode("interactions")}><Icon name="bolt" /></button>
+          <button type="button" data-active={mode==="effects"} aria-label="Effects" title="Effects" onClick={()=>setMode("effects")}><Icon name="sparkles" /></button>
+        </div>
         <div className="forge-next__rail-spacer" />
-        <button type="button" data-active={mode==="quality"} title="Quality" aria-label="Quality" onClick={()=>setMode("quality")}><span>Q</span></button>
-        <button type="button" title="Commands" aria-label="Open command palette" onClick={()=>setCommandOpen(true)}><span>⌘</span></button>
-      </aside>
+        <button type="button" data-active={mode==="quality"} title="Quality" aria-label="Quality" onClick={()=>setMode("quality")}><Icon name="shield" /></button>
+        <button type="button" title="Commands" aria-label="Open command palette" onClick={()=>setCommandOpen(true)}><Icon name="command" /></button>
+      </nav>
 
       {mode==="design" ? <>
         <aside className="forge-next__layers" data-open={layersOpen}>
-          <div className="forge-next__panel-head"><div><span>Layers</span><small>{draft.experience.scenes.length} scenes</small></div><button type="button" aria-label="Collapse layers" onClick={()=>setLayersOpen(false)}>‹</button></div>
-          <div className="forge-next__scene-list">
-            {draft.experience.scenes.map((item,index)=><button key={item.id} type="button" data-active={index===sceneIndex} onClick={()=>selectScene(index)}>
-              <span>{String(index+1).padStart(2,"0")}</span><div><strong>{item.label}</strong><small>{item.copy.headline}</small></div>
-            </button>)}
+          <div className="forge-next__panel-head forge-next__panel-head--tabs">
+            <div className="forge-next__panel-tabs">
+              <button type="button" aria-current={leftPanelTab==="pages"?"page":undefined} onClick={()=>setLeftPanelTab("pages")}>Pages</button>
+              <button type="button" aria-current={leftPanelTab==="layers"?"page":undefined} onClick={()=>setLeftPanelTab("layers")}>Layers</button>
+            </div>
+            <button type="button" aria-label="Collapse layers" onClick={()=>setLayersOpen(false)}><Icon name="panelLeft" /></button>
           </div>
-          <button type="button" className="forge-next__add-scene" onClick={addScene}>＋ Add scene</button>
+          {leftPanelTab==="pages" ? <>
+            <div className="forge-next__panel-section-title"><span>Website</span><button type="button" onClick={addScene} aria-label="Add scene"><Icon name="plus" /></button></div>
+            <div className="forge-next__scene-list">
+              {draft.experience.scenes.map((item,index)=><button key={item.id} type="button" data-active={index===sceneIndex} onClick={()=>selectScene(index)}>
+                <Icon name="page" /><div><strong>{item.label}</strong><small>{item.copy.headline}</small></div><span>{String(index+1).padStart(2,"0")}</span>
+              </button>)}
+            </div>
+          </> : <div className="forge-next__layer-tree">
+            <LayerRow icon="frame" label={scene.label} depth={0} active />
+            <LayerRow icon="text" label="Copy" depth={1} onClick={()=>{setInspectorTab("content");setCanvasTool("text");}} />
+            {scene.media&&<LayerRow icon="media" label={scene.media.kind==="video"?"Video":"Media"} depth={1} onClick={()=>setMode("assets")} />}
+            {draft.experience.heroModel&&<LayerRow icon="cube" label="Hero 3D" depth={1} onClick={()=>setMode("assets")} />}
+            <LayerRow icon="motion" label={"Motion · "+scene.motionTracks.length} depth={1} onClick={()=>setMode("motion")} />
+            <LayerRow icon="bolt" label="Interactions" depth={1} onClick={()=>setMode("interactions")} />
+          </div>}
+          <div className="forge-next__left-footer">
+            <button type="button" onClick={()=>setMode("references")}><Icon name="reference" /><span>{draft.project.references.length} references</span></button>
+            <button type="button" onClick={()=>setMode("assets")}><Icon name="media" /><span>Asset library</span></button>
+          </div>
         </aside>
 
         <section className="forge-next__canvas-area">
-          {!layersOpen&&<button className="forge-next__edge-toggle forge-next__edge-toggle--left" type="button" onClick={()=>setLayersOpen(true)}>Layers ›</button>}
-          {!inspectorOpen&&<button className="forge-next__edge-toggle forge-next__edge-toggle--right" type="button" onClick={()=>setInspectorOpen(true)}>‹ Inspector</button>}
+          {!layersOpen&&<button className="forge-next__edge-toggle forge-next__edge-toggle--left" type="button" onClick={()=>setLayersOpen(true)}><Icon name="panelRight" /></button>}
+          {!inspectorOpen&&<button className="forge-next__edge-toggle forge-next__edge-toggle--right" type="button" onClick={()=>setInspectorOpen(true)}><Icon name="panelLeft" /></button>}
+
           <div className="forge-next__canvas-bar">
-            <div><button type="button" className={previewCandidate?"":"active"} onClick={()=>setPreviewCandidate(false)}>Current</button>{candidate&&<button type="button" className={previewCandidate?"active":""} onClick={()=>setPreviewCandidate(true)}>Candidate</button>}</div>
-            <strong>{scene?.label}</strong>
-            <div><button type="button" onClick={()=>setAiOpen((value)=>!value)}>AI Build</button><button type="button" onClick={()=>setMode("motion")}>Animate</button></div>
+            <div className="forge-next__canvas-context"><span>{scene?.label}</span><i>/</i><strong>Desktop</strong></div>
+            <div className="forge-next__viewport-switcher" aria-label="Canvas viewport">
+              <button type="button" className="active"><Icon name="desktop" /> Desktop</button>
+              <button type="button"><Icon name="tablet" /></button>
+              <button type="button"><Icon name="phone" /></button>
+            </div>
+            <div className="forge-next__canvas-actions">
+              {candidate&&<div className="forge-next__candidate-toggle"><button type="button" className={previewCandidate?"":"active"} onClick={()=>setPreviewCandidate(false)}>Current</button><button type="button" className={previewCandidate?"active":""} onClick={()=>setPreviewCandidate(true)}>Candidate</button></div>}
+              <button type="button" onClick={()=>setMode("motion")}><Icon name="motion" /> Animate</button>
+            </div>
           </div>
+
           <div className="forge-next__canvas">
+            <div className="forge-next__artboard-label"><span>{draft.project.name}</span><small>1200 px</small></div>
             <StudioLivePreview
               experience={previewExperience}
               active={Math.min(sceneIndex,previewExperience.scenes.length-1)}
@@ -292,9 +354,11 @@ export function ForgeEditor(){
               onProgressChange={setCanvasProgress}
               cinematicSystems={draft.cinematicSystems}
             />
+            <button type="button" className="forge-next__agent-launch" onClick={()=>setAiOpen((value)=>!value)} aria-expanded={aiOpen}><Icon name="sparkles" /><span>Ask Forge</span><kbd>⌘ J</kbd></button>
           </div>
+
           {aiOpen&&<aside className="forge-next__ai-drawer">
-            <div className="forge-next__drawer-head"><div><span>AI Build</span><strong>Generate structure, then edit it here.</strong></div><button type="button" onClick={()=>setAiOpen(false)}>×</button></div>
+            <div className="forge-next__drawer-head"><div><span><Icon name="sparkles" /> Forge Agent</span><strong>Build and revise the website without leaving the canvas.</strong></div><button type="button" aria-label="Close AI Build" onClick={()=>setAiOpen(false)}><Icon name="close" /></button></div>
             <Interactive3DBuildDock
               initialPrompt=""
               projectName={draft.project.name}
@@ -307,35 +371,48 @@ export function ForgeEditor(){
               onOpenAssets={()=>{setMode("assets");setAiOpen(false);}}
             />
           </aside>}
+
           <div className="forge-next__timeline">
-            <div className="forge-next__timeline-controls"><button type="button" onClick={()=>setMode("motion")}>Timeline</button><span>{Math.round(canvasProgress*100)}%</span></div>
+            <div className="forge-next__timeline-controls"><button type="button" onClick={()=>setMode("motion")}><Icon name="motion" /> Timeline</button><span>{Math.round(canvasProgress*100)}%</span></div>
             <div className="forge-next__timeline-track">{draft.experience.scenes.map((item,index)=><button key={item.id} type="button" data-active={index===sceneIndex} style={{flex:Math.max(.08,item.range[1]-item.range[0])}} onClick={()=>selectScene(index)}><i />{item.label}</button>)}</div>
           </div>
         </section>
 
         <aside className="forge-next__inspector" data-open={inspectorOpen}>
-          <div className="forge-next__panel-head"><div><span>Inspector</span><small>Scene {sceneIndex+1}</small></div><button type="button" aria-label="Collapse inspector" onClick={()=>setInspectorOpen(false)}>›</button></div>
+          <div className="forge-next__panel-head forge-next__panel-head--inspector">
+            <div className="forge-next__inspector-tabs">
+              <button type="button" aria-current={inspectorTab==="design"?"page":undefined} onClick={()=>setInspectorTab("design")}>Design</button>
+              <button type="button" aria-current={inspectorTab==="content"?"page":undefined} onClick={()=>setInspectorTab("content")}>Content</button>
+            </div>
+            <button type="button" aria-label="Collapse inspector" onClick={()=>setInspectorOpen(false)}><Icon name="panelRight" /></button>
+          </div>
           <div className="forge-next__inspector-scroll">
-            <section>
-              <label>Scene name<input value={scene.label} maxLength={80} onChange={(event)=>draft.setExperience((current)=>({...current,scenes:current.scenes.map((item,index)=>index===sceneIndex?{...item,label:event.target.value}:item)}))}/></label>
-            </section>
-            <section>
-              <h3>Content</h3>
-              <label>Eyebrow<input value={scene.copy.eyebrow} onChange={(event)=>setSceneCopy("eyebrow",event.target.value)}/></label>
-              <label>Headline<textarea rows={3} value={scene.copy.headline} onChange={(event)=>setSceneCopy("headline",event.target.value)}/></label>
-              <label>Body<textarea rows={5} value={scene.copy.body??""} onChange={(event)=>setSceneCopy("body",event.target.value)}/></label>
-            </section>
-            <section>
-              <h3>Experience</h3>
-              <div className="forge-next__readout"><span>Hero</span><strong>{draft.experience.heroModel?"3D model":"None"}</strong></div>
-              <div className="forge-next__readout"><span>Motion tracks</span><strong>{scene.motionTracks.length}</strong></div>
-              <div className="forge-next__readout"><span>Media</span><strong>{scene.media?.kind??"None"}</strong></div>
-              <div className="forge-next__readout"><span>References</span><strong>{draft.project.references.length}</strong></div>
-            </section>
-            <section>
-              <h3>Open in</h3>
-              <div className="forge-next__inspector-actions"><button type="button" onClick={()=>setMode("references")}>References</button><button type="button" onClick={()=>setMode("motion")}>Motion</button><button type="button" onClick={()=>setMode("interactions")}>Interactions</button><button type="button" onClick={()=>setMode("effects")}>Effects</button></div>
-            </section>
+            {inspectorTab==="design" ? <>
+              <InspectorSection title="Scene">
+                <label>Name<input value={scene.label} maxLength={80} onChange={(event)=>draft.setExperience((current)=>({...current,scenes:current.scenes.map((item,index)=>index===sceneIndex?{...item,label:event.target.value}:item)}))}/></label>
+                <div className="forge-next__field-grid"><Readout label="Range" value={Math.round((scene.range[1]-scene.range[0])*100)+"%"} /><Readout label="Tracks" value={String(scene.motionTracks.length)} /></div>
+              </InspectorSection>
+              <InspectorSection title="Experience">
+                <Readout label="Hero" value={draft.experience.heroModel?"3D model":"None"} />
+                <Readout label="Media" value={scene.media?.kind??"None"} />
+                <Readout label="References" value={String(draft.project.references.length)} />
+                <div className="forge-next__inspector-actions"><button type="button" onClick={()=>setMode("motion")}><Icon name="motion" /> Motion</button><button type="button" onClick={()=>setMode("interactions")}><Icon name="bolt" /> Interactions</button><button type="button" onClick={()=>setMode("effects")}><Icon name="sparkles" /> Effects</button><button type="button" onClick={()=>setMode("references")}><Icon name="reference" /> References</button></div>
+              </InspectorSection>
+              <InspectorSection title="Project">
+                <button type="button" className="forge-next__row-action" onClick={()=>setMode("quality")}><span>Quality & performance</span><Icon name="chevronRight" /></button>
+                <button type="button" className="forge-next__row-action" onClick={()=>setVaultOpen(true)}><span>Version history</span><Icon name="chevronRight" /></button>
+              </InspectorSection>
+            </> : <>
+              <InspectorSection title="Content">
+                <label>Eyebrow<input value={scene.copy.eyebrow} onChange={(event)=>setSceneCopy("eyebrow",event.target.value)}/></label>
+                <label>Headline<textarea rows={4} value={scene.copy.headline} onChange={(event)=>setSceneCopy("headline",event.target.value)}/></label>
+                <label>Body<textarea rows={6} value={scene.copy.body??""} onChange={(event)=>setSceneCopy("body",event.target.value)}/></label>
+              </InspectorSection>
+              <InspectorSection title="Source">
+                <button type="button" className="forge-next__row-action" onClick={()=>setMode("assets")}><span>Replace media</span><Icon name="chevronRight" /></button>
+                <button type="button" className="forge-next__row-action" onClick={()=>setMode("references")}><span>Reference direction</span><Icon name="chevronRight" /></button>
+              </InspectorSection>
+            </>}
             <section className="forge-next__danger"><button type="button" disabled={draft.experience.scenes.length<=1} onClick={removeScene}>Delete scene</button></section>
           </div>
         </aside>
@@ -355,8 +432,8 @@ export function ForgeEditor(){
 
     {notice&&<button type="button" className="forge-next__toast" onClick={()=>setNotice("")}>{notice}<span>×</span></button>}
     {commandOpen&&<div className="forge-next__command-backdrop" onMouseDown={(event)=>{if(event.target===event.currentTarget)setCommandOpen(false);}}><div className="forge-next__command">
-      <div className="forge-next__command-input"><span>⌘</span><input ref={commandInput} aria-label="Forge command" value={commandValue} placeholder="Go to Motion, open References, publish…" onChange={(event)=>setCommandValue(event.target.value)} onKeyDown={(event)=>{if(event.key==="Enter"){runCommand(commandValue);setCommandValue("");}}}/><kbd>esc</kbd></div>
-      <div className="forge-next__command-grid">{[...modes,{id:"quality" as const,label:"Quality",short:"Q"},{id:"publish" as const,label:"Publish",short:"P"}].map((item)=><button type="button" key={item.id} onClick={()=>{setMode(item.id);setCommandOpen(false);}}><span>{item.short}</span><strong>{item.label}</strong></button>)}<button type="button" onClick={()=>{setAiOpen(true);setMode("design");setCommandOpen(false);}}><span>AI</span><strong>AI Build</strong></button><button type="button" onClick={()=>{setNewProjectOpen(true);setCommandOpen(false);}}><span>＋</span><strong>New website</strong></button><button type="button" onClick={()=>{setVaultOpen(true);setCommandOpen(false);}}><span>V</span><strong>Versions</strong></button><button type="button" onClick={()=>{setLoopOpen(true);setCommandOpen(false);}}><span>↗</span><strong>Improve current site</strong></button></div>
+      <div className="forge-next__command-input"><Icon name="search" /><input ref={commandInput} aria-label="Forge command" value={commandValue} placeholder="Search commands and tools…" onChange={(event)=>setCommandValue(event.target.value)} onKeyDown={(event)=>{if(event.key==="Enter"){runCommand(commandValue);setCommandValue("");}}}/><kbd>esc</kbd></div>
+      <div className="forge-next__command-grid">{[...modes,{id:"quality" as const,label:"Quality",short:"Q"},{id:"publish" as const,label:"Publish",short:"P"}].map((item)=><button type="button" key={item.id} onClick={()=>{setMode(item.id);setCommandOpen(false);}}><Icon name={modeIcon(item.id)} /><strong>{item.label}</strong></button>)}<button type="button" onClick={()=>{setAiOpen(true);setMode("design");setCommandOpen(false);}}><Icon name="sparkles" /><strong>AI Build</strong></button><button type="button" onClick={()=>{setNewProjectOpen(true);setCommandOpen(false);}}><Icon name="plus" /><strong>New website</strong></button><button type="button" onClick={()=>{setVaultOpen(true);setCommandOpen(false);}}><Icon name="history" /><strong>Versions</strong></button><button type="button" onClick={()=>{setLoopOpen(true);setCommandOpen(false);}}><Icon name="wand" /><strong>Improve current site</strong></button></div>
     </div></div>}
     {loopOpen&&<LoopEnginePanel
       projectId={draft.project.id}
@@ -370,6 +447,68 @@ export function ForgeEditor(){
     {vaultOpen&&<StudioVaultPanel draft={draft} onClose={()=>setVaultOpen(false)} onProjectChange={()=>{setCandidate(null);setPreviewCandidate(false);setActiveScene(0);}}/>}
     {newProjectOpen&&<NewProjectDialog name={newName} setName={setNewName} kind={newKind} setKind={setNewKind} onCreate={()=>startProject(newName,newKind)} onClose={()=>setNewProjectOpen(false)}/>}
   </main>;
+}
+function LayerRow({icon,label,depth,active,onClick}:{icon:IconName;label:string;depth:number;active?:boolean;onClick?:()=>void}){
+  return <button type="button" className="forge-next__layer-row" data-active={active} style={{paddingLeft:10+depth*18}} onClick={onClick}><Icon name={icon}/><span>{label}</span></button>;
+}
+
+function InspectorSection({title,children}:{title:string;children:React.ReactNode}){
+  return <section className="forge-next__inspector-section"><h3>{title}</h3>{children}</section>;
+}
+
+function Readout({label,value}:{label:string;value:string}){
+  return <div className="forge-next__readout"><span>{label}</span><strong>{value}</strong></div>;
+}
+
+type IconName="cursor"|"frame"|"text"|"media"|"reference"|"motion"|"undo"|"redo"|"play"|"more"|"layers"|"bolt"|"sparkles"|"shield"|"command"|"panelLeft"|"panelRight"|"plus"|"page"|"cube"|"desktop"|"tablet"|"phone"|"close"|"chevronDown"|"chevronRight"|"search"|"history"|"wand"|"quality"|"publish";
+
+function modeIcon(mode:Mode|"quality"|"publish"):IconName {
+  if(mode==="design") return "layers";
+  if(mode==="references") return "reference";
+  if(mode==="motion") return "motion";
+  if(mode==="interactions") return "bolt";
+  if(mode==="assets") return "media";
+  if(mode==="effects") return "sparkles";
+  if(mode==="quality") return "shield";
+  return "publish";
+}
+
+function Icon({name}:{name:IconName}){
+  const common={width:16,height:16,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.7,strokeLinecap:"round" as const,strokeLinejoin:"round" as const,ariaHidden:true};
+  const paths:Record<IconName,React.ReactNode>={
+    cursor:<><path d="M5 3l12 9-6 1.4L9 19z"/><path d="M11 13l4 5"/></>,
+    frame:<><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 4v4H4M16 4v4h4M8 20v-4H4M16 20v-4h4"/></>,
+    text:<><path d="M5 6h14M12 6v12M8 18h8"/></>,
+    media:<><rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M6 16l4-4 3 3 2-2 3 3"/><circle cx="15.5" cy="9" r="1.3"/></>,
+    reference:<><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><path d="M16.5 13v7M13 16.5h7"/></>,
+    motion:<><path d="M4 12h3l2-5 4 10 2-5h5"/></>,
+    undo:<><path d="M9 7L4 12l5 5"/><path d="M5 12h8a6 6 0 010 12"/></>,
+    redo:<><path d="M15 7l5 5-5 5"/><path d="M19 12h-8a6 6 0 000 12"/></>,
+    play:<path d="M8 5l11 7-11 7z"/>,
+    more:<><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></>,
+    layers:<><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12l9 5 9-5M3 16l9 5 9-5"/></>,
+    bolt:<path d="M13 2L5 14h6l-1 8 9-13h-6z"/>,
+    sparkles:<><path d="M12 3l1.2 3.8L17 8l-3.8 1.2L12 13l-1.2-3.8L7 8l3.8-1.2z"/><path d="M18 14l.8 2.2L21 17l-2.2.8L18 20l-.8-2.2L15 17l2.2-.8z"/></>,
+    shield:<path d="M12 3l7 3v5c0 4.6-2.9 8.1-7 10-4.1-1.9-7-5.4-7-10V6z"/>,
+    command:<><path d="M9 8V6a3 3 0 10-3 3h12a3 3 0 10-3-3v12a3 3 0 103-3H6a3 3 0 103 3z"/></>,
+    panelLeft:<><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></>,
+    panelRight:<><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/></>,
+    plus:<><path d="M12 5v14M5 12h14"/></>,
+    page:<><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5"/></>,
+    cube:<><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></>,
+    desktop:<><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></>,
+    tablet:<><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M11 18h2"/></>,
+    phone:<><rect x="8" y="3" width="8" height="18" rx="2"/><path d="M11 18h2"/></>,
+    close:<><path d="M6 6l12 12M18 6L6 18"/></>,
+    chevronDown:<path d="M7 9l5 5 5-5"/>,
+    chevronRight:<path d="M9 6l6 6-6 6"/>,
+    search:<><circle cx="11" cy="11" r="6"/><path d="M16 16l5 5"/></>,
+    history:<><path d="M3 12a9 9 0 109-9 9 9 0 00-6.4 2.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></>,
+    wand:<><path d="M4 20L16 8M13 5l2-2M19 9l2-2M18 16l2 2M6 6L4 4"/><path d="M14 6l4 4"/></>,
+    quality:<path d="M12 3l7 3v5c0 4.6-2.9 8.1-7 10-4.1-1.9-7-5.4-7-10V6z"/>,
+    publish:<><path d="M12 16V4M8 8l4-4 4 4"/><path d="M5 13v7h14v-7"/></>,
+  };
+  return <svg {...common}>{paths[name]}</svg>;
 }
 
 function WorkspaceHeader({mode,projectName,onCanvas}:{mode:Mode;projectName:string;onCanvas:()=>void}){
