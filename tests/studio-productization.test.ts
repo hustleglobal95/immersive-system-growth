@@ -7,6 +7,7 @@ const studio=fs.readFileSync("src/studio/SimpleForgeStudio.tsx","utf8");
 const route=fs.readFileSync("app/api/studio/interactive3d/plan/route.ts","utf8");
 const planner=fs.readFileSync("src/platform/interactive3dPlanner.ts","utf8");
 const materializer=fs.readFileSync("src/platform/interactive3dMaterializer.ts","utf8");
+const advanced=fs.readFileSync("app/studio/advanced/page.tsx","utf8");
 
 test("default Studio is one real Forge builder",()=>{
   assert.match(page,/SimpleForgeStudio/);
@@ -50,4 +51,10 @@ test("finished projects still export when automatic publishing is unavailable",(
   assert.match(studio,/downloadJson/);
   assert.match(studio,/-finished\.json/);
   assert.match(studio,/fetch\("\/api\/studio\/publish"/);
+});
+
+
+test("there is only one user-facing Forge Studio",()=>{
+  assert.match(advanced,/redirect\("\/studio"\)/);
+  assert.doesNotMatch(advanced,/ProductionStudioWorkbench/);
 });
