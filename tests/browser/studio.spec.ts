@@ -10,7 +10,7 @@ async function openEditorTool(page:import("@playwright/test").Page,label:RegExp)
     return;
   }
   if(/asset/i.test(label.source)) {
-    await page.getByRole("button",{name:"Assets",exact:true}).click();
+    await page.locator(".production-topbar nav").getByRole("button",{name:"Assets",exact:true}).click();
     return;
   }
   if(/visual|effect/i.test(label.source)) {
