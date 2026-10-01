@@ -53,7 +53,8 @@ if(percent!==STUDIO_ACTIONABILITY_TARGET){
 const route=read("app/studio/page.tsx");
 if(!route.includes("SimpleForgeStudio")) failures.push("The /studio route must render SimpleForgeStudio.");
 const advancedRoute=read("app/studio/advanced/page.tsx");
-if(!advancedRoute.includes("ProductionStudioWorkbench")) failures.push("The complete ProductionStudioWorkbench must remain reachable at /studio/advanced.");
+if(!advancedRoute.includes('redirect("/studio")')) failures.push("Legacy /studio/advanced must redirect to the single /studio product.");
+if(advancedRoute.includes("ProductionStudioWorkbench")) failures.push("Legacy /studio/advanced must not render a duplicate ProductionStudioWorkbench.");
 if(/import\s*\{\s*StudioWorkbench\s*\}/.test(route)) failures.push("Legacy StudioWorkbench must never be reachable from /studio.");
 
 const activeFiles=[
