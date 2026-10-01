@@ -7,7 +7,7 @@
 The permanent editor workspaces are visible in the top bar:
 
 - **Canvas** — live production site, scene/layer selection, contextual inspector, AI Build, direct camera/copy/environment editing, proposal review and scroll timeline.
-- **References** — project website references, Forge corpus search, reference-analysis import, observed evidence, transferable principles, explicit no-copy boundaries, and mapping into composition, typography, motion, interaction, 3D, transitions, mobile and performance.
+- **References** — project website references, Forge corpus search, reference-analysis import, multimodal screenshot deconstruction, observed evidence, transferable principles, explicit no-copy boundaries, and mapping into composition, typography, motion, interaction, 3D, transitions, mobile and performance. Forge treats a URL as a locator only; visual claims come from supplied screenshots or evidence-backed corpus records.
 - **Motion** — frame-accurate sequencer, tracks, curves, recording, camera timing and responsive overrides.
 - **Interactions** — deterministic trigger/state/action graph for pointer, scroll, sequence, camera, shader, audio, navigation and other runtime behaviors.
 - **Assets** — intake, Asset Bank, manifest control, GLB inspection, rig mapping and optimization.
@@ -33,7 +33,7 @@ Asset intake does not upload binary files. Copy approved optimized assets into t
 ## Recommended authoring sequence
 
 1. Open or create the website directly in `/studio`.
-2. Add relevant website references in References. Import a Forge reference-analysis JSON or explicitly record observed evidence, transferable principles and do-not-copy rules; URL-only references remain non-directive.
+2. Add relevant website references in References. Attach desktop/mobile/key-state screenshots for Forge to deconstruct, import a Forge reference-analysis JSON, or explicitly record observed evidence, transferable principles and do-not-copy rules; URL-only references remain non-directive.
 3. Use AI Build or manual scene/layer authoring to establish the site structure from the project brief plus active reference intelligence.
 4. Inspect and optimize licensed assets, then register final outputs in Assets.
 5. Map GLB nodes and establish the persistent 3D subject/rig.
