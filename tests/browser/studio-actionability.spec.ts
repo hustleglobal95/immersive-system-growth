@@ -122,6 +122,8 @@ test("References workspace persists evidence-directed rules and feeds AI Build",
   await page.goto("/studio");
   await page.locator(".production-topbar nav").getByRole("button",{name:"References",exact:true}).click();
   await expect(page.getByText("PROJECT REFERENCES",{exact:true})).toBeVisible();
+  await expect(page.getByText("VISUAL EVIDENCE ANALYZER",{exact:true})).toBeVisible();
+  await expect(page.getByRole("button",{name:"Analyze screenshots",exact:true})).toBeDisabled();
 
   await page.getByLabel("Reference URL").fill("https://example.com/reference");
   await page.getByLabel("Reference label").fill("Reference Test");
