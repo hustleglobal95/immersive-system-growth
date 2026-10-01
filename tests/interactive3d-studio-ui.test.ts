@@ -2,26 +2,28 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
-const simple = fs.readFileSync("src/studio/SimpleForgeStudio.tsx", "utf8");
-const advanced = fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx", "utf8");
+const editor = fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx", "utf8");
 const dock = fs.readFileSync("src/studio/Interactive3DBuildDock.tsx", "utf8");
 const route = fs.readFileSync("app/api/studio/interactive3d/plan/route.ts", "utf8");
 const page = fs.readFileSync("app/studio/page.tsx", "utf8");
-const advancedPage = fs.readFileSync("app/studio/advanced/page.tsx", "utf8");
 
-test("default Studio keeps interactive 3D creation simple", () => {
-  assert.match(page, /SimpleForgeStudio/);
-  assert.match(simple, /Build Website/);
-  assert.match(simple, /StudioLivePreview/);
-  assert.match(simple, /\/api\/studio\/interactive3d\/plan/);
-  assert.doesNotMatch(page, /interactive-3d-studio\.css/);
+test("default Studio is the complete interactive 3D website editor", () => {
+  assert.match(page, /ProductionStudioWorkbench/);
+  assert.doesNotMatch(page, /SimpleForgeStudio/);
+  assert.match(editor, /LIVE SITE CANVAS/);
+  assert.match(editor, /LAYERS \+ SCENES/);
+  assert.match(editor, /INSPECTOR/);
+  assert.match(editor, /SCROLL TIMELINE/);
+  assert.match(editor, /Interactive3DBuildDock/);
 });
 
-test("full interactive 3D authoring machinery remains available in Advanced", () => {
-  assert.match(advancedPage, /ProductionStudioWorkbench/);
-  assert.match(advanced, /Interactive3DBuildDock/);
-  assert.match(advanced, /SCENE GRAPH/);
-  assert.match(advanced, /LIVE 3D VIEWPORT/);
+test("Forge exposes core website authoring workspaces directly", () => {
+  assert.match(editor, /label:"Canvas"/);
+  assert.match(editor, /label:"Motion"/);
+  assert.match(editor, /label:"Interactions"/);
+  assert.match(editor, /label:"Assets"/);
+  assert.match(editor, /label:"Effects"/);
+  assert.doesNotMatch(editor, /production-advanced-menu/);
   assert.match(dock, /AI 3D BUILD/);
 });
 

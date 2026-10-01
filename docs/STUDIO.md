@@ -1,23 +1,29 @@
 # Forge Studio
 
-`/studio` is the production control surface. One validated draft drives the live production preview, Review, Ship and every Advanced specialist tool.
+`/studio` is the Forge product: one production editor for building interactive 3D websites. It opens directly into the working site rather than a wizard, dashboard, or simplified shell.
 
-## Primary surfaces
+## Editor model
 
-- **Build** is the default canvas-first authoring surface. Selection Context, Next Best Action, semantic command intent and proposal review keep subsystem choice out of the operator's path. Scene, camera, rig node, copy, media, asset and environment selections each resolve their own relevant outcomes.
-- **Review** is the Project Health control room. Validation, asset pressure, motion coverage, mobile translation and interaction readiness are presented through one health model with direct repair routes.
-- **Ship** is the guided release surface. It honors Project Health, Project Vault/review controls, durable assets and protected publishing authority.
+The permanent editor workspaces are visible in the top bar:
 
-## Advanced
+- **Canvas** — live production site, scene/layer selection, contextual inspector, AI Build, direct camera/copy/environment editing, proposal review and scroll timeline.
+- **Motion** — frame-accurate sequencer, tracks, curves, recording, camera timing and responsive overrides.
+- **Interactions** — deterministic trigger/state/action graph for pointer, scroll, sequence, camera, shader, audio, navigation and other runtime behaviors.
+- **Assets** — intake, Asset Bank, manifest control, GLB inspection, rig mapping and optimization.
+- **Effects** — cinematic systems, cursor reveals, mask reveals, warp, refraction and scene transitions.
 
-Advanced preserves full expert depth without making it permanent navigation:
+Quality and release tools stay in the same product:
 
-- **Sequencer** — exact motion tracks, curves, recording, camera timing and low-level copy/media motion.
-- **Interactions** — deterministic trigger/state/action graph.
-- **Asset tools** — Asset Intelligence, bank, manifest and GLB inspection.
-- **Telemetry** — real-device performance evidence.
+- **Project Health** — validation, asset pressure, motion coverage, mobile translation and interaction readiness.
+- **Performance** — real-device telemetry and runtime evidence.
+- **Search + AI** — discoverability, crawlability, entities and AI retrieval policy.
+- **Publish** — protected release review creation gated by Project Health, durable assets and publishing authority.
 
-Director, Creative Agent, Asset Creator, Project Vault and the Loop Engine remain available as specialist systems, but ordinary production does not require learning their internal names before taking action.
+AI Build, Creative Agent, Director, Asset Creator, Project Vault/Versions and the Loop Engine are production capabilities inside Forge. They do not create a second Studio or hide the editor behind a first-run flow.
+
+## Working state
+
+One validated draft drives the live production preview and every editor workspace.
 
 Drafts are stored in the browser under `forge-studio-v2` as the fast working copy. Project Vault can persist the complete validated Studio state on a dedicated GitHub branch, including named versions and restore points, so important projects do not depend on one browser. Export remains available for portable handoffs. Import validates before replacing the current experience draft.
 
@@ -25,56 +31,28 @@ Asset intake does not upload binary files. Copy approved optimized assets into t
 
 ## Recommended authoring sequence
 
-1. Create the client folder or apply an industry template.
-2. Inspect and optimize licensed assets, then register the final outputs.
-3. Map GLB nodes, then add scene-local node tracks or global product choreography.
-4. Direct cameras, lights, materials, masks and transition layers in Studio.
-5. Use Sequence for keyframe timing, responsive overrides, curves and record-mode adjustments.
-6. Scrub forward, backward and across scene boundaries in Preview.
-7. Export a handoff bundle or open a review PR.
-8. Run the complete validation and browser gates before protected deployment.
+1. Open or create the website directly in `/studio`.
+2. Use AI Build or manual scene/layer authoring to establish the site structure.
+3. Inspect and optimize licensed assets, then register final outputs in Assets.
+4. Map GLB nodes and establish the persistent 3D subject/rig.
+5. Direct cameras, lights, copy, media, materials and environment from Canvas.
+6. Build scroll choreography and keyframes in Motion.
+7. Add deterministic behavior in Interactions.
+8. Add masks, reveals, refraction, warp and transitions in Effects.
+9. Scrub the live site forward, backward and across scene boundaries.
+10. Resolve Project Health, performance and mobile issues.
+11. Publish a protected review when the website is ready.
 
 The Mask Lab can add `/textures/reference/reveal-field.svg` to a scene as a safe authoring fixture. This is an original bundled texture, not client artwork. See [mask reveals](MASK_REVEALS.md).
 
 See [motion sequencer](MOTION_SEQUENCER.md) for the track contract, supported targets and editor controls.
 
+## Control Plane
 
-## Studio interaction layers
+The editor remains selection-aware. Selecting a scene, camera, rig node, environment, copy, media or asset resolves a typed Selection Context. The Capability Registry determines which Forge actions are valid for that context, and Proposal Contracts keep deep changes previewable and reversible.
 
-Studio exposes one project through a PRO+ control hierarchy rather than presenting every production subsystem at once:
+Operator intelligence, Director intelligence and Loop verification remain engine capabilities that can improve the current website. They are not separate permanent product surfaces.
 
-- **Guided Build** is the first-run and project-progress path: idea → assets → scenes → motion → review → publish. A fresh project opens the guide automatically and the shell always exposes the current next step.
-- **Build** is the normal visual authoring surface for scenes, copy, camera choices, coordinated motion, assets and live preview.
-  The cockpit is selection-aware: selecting a scene, camera, rig node, environment or asset resolves one typed Selection Context. The PRO+ Control Plane then asks the Capability Registry which operator intents are valid for that context. The contextual direction card renders those registered capabilities instead of owning a separate hardcoded action tree.
-  Selecting a capability creates a typed Proposal Contract before Forge routes into Motion, Interaction, Assets, Director or a Loop. Deep actions are marked preview-required; instant actions must remain reversible. See [PRO+ Control Plane](CONTROL_PLANE.md).
-- **Advanced** contains the sequencer, interaction graph, model inspection, low-level asset tooling, performance telemetry and deployment configuration.
+Use **Command-K / Ctrl-K** (or `/` outside a text field) to open the Forge command palette.
 
-Use **Command-K / Ctrl-K** (or `/` outside a text field) to open the Forge command palette. **Assist** in the Studio header contains Creative Agent, Director and Asset Creator; these are specialist tools inside the same workflow rather than floating entry points.
-
-### Guided Ship
-
-Ship opens in guided mode. It reports project validation, release destination, server publishing connection and whether the current browser is authorized to create review branches. Repository credentials remain server-side.
-
-`FORGE_STUDIO_PUBLISH_SECRET` is an owner credential. Advanced setup can exchange it once for an HTTP-only, SameSite=Strict browser session. Normal review publishing then uses that session and does not keep the secret in client state. The existing bearer-secret API authorization remains supported for automation and backward compatibility.
-
-Telemetry and workflow internals remain available under Advanced controls rather than blocking the normal authoring path.
-
-
-See [internal product operations](INTERNAL_PRODUCT.md) for Project Vault, Asset Vault, operator roles and production memory.
-
-
-## Operator Intelligence
-
-When the Guided Build brief contains a real project outcome, Build promotes **Mission Control** above the selection-level Next Best Action surface.
-
-Mission Control compiles that brief into a Mission Contract, generates a dependency-aware Plan Graph, ranks the next project-wide outcome and applies one of three operator modes:
-
-- **Guide** — recommend the highest-leverage operation;
-- **Copilot** — execute bounded reversible capabilities;
-- **Autopilot** — execute reversible work and prepare preview-required candidates, while stopping at taste and authority gates.
-
-Mission execution still routes through Selection Context, the Capability Registry, Proposal Contracts, Loop verification and Project Vault boundaries. It does not create a second mutation path.
-
-The permanent Studio model remains **Build / Review / Ship**. Mission Control lives inside Build and disappears back to the normal selection-level Next Best Action surface when no mission brief exists.
-
-See [Operator Intelligence](OPERATOR_INTELLIGENCE.md).
+See [PRO+ Control Plane](CONTROL_PLANE.md) and [internal product operations](INTERNAL_PRODUCT.md).

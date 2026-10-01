@@ -1,16 +1,32 @@
 import { expect, test } from "@playwright/test";
 
-async function openAdvanced(page:import("@playwright/test").Page,label:RegExp) {
-  const advanced=page.locator("details.production-advanced-menu");
-  await advanced.locator("> summary").click();
-  await advanced.getByRole("button", { name: label }).first().click();
+async function openEditorTool(page:import("@playwright/test").Page,label:RegExp) {
+  if(/sequencer|motion/i.test(label.source)) {
+    await page.getByRole("button",{name:"Motion",exact:true}).click();
+    return;
+  }
+  if(/interaction/i.test(label.source)) {
+    await page.getByRole("button",{name:"Interactions",exact:true}).click();
+    return;
+  }
+  if(/asset/i.test(label.source)) {
+    await page.locator(".production-topbar nav").getByRole("button",{name:"Assets",exact:true}).click();
+    return;
+  }
+  if(/visual|effect/i.test(label.source)) {
+    await page.getByRole("button",{name:"Effects",exact:true}).click();
+    return;
+  }
+  const quality=page.locator("details.production-quality-menu");
+  await quality.locator("> summary").click();
+  await quality.getByRole("button",{name:label}).first().click();
 }
 
 test("Build keeps the live experience central and edits the selected scene", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/studio/advanced");
+  await page.goto("/studio");
 
-  await expect(page.getByRole("button", { name: "Build", exact: true })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("button", { name: "Canvas", exact: true })).toHaveAttribute("aria-current", "page");
   await expect(page.locator(".production-runtime canvas").first()).toBeAttached();
   await expect(page.getByLabel("Headline")).toBeVisible();
 
@@ -25,7 +41,7 @@ test("New Project starts from isolated project state", async ({ page }) => {
     window.localStorage.setItem("forge-studio-guide-brief-v1", "Previous client mission that must not leak.");
     window.localStorage.setItem("forge-studio-guide-shipped-project-v1", "previous-client");
   });
-  await page.goto("/studio/advanced");
+  await page.goto("/studio");
   await page.getByLabel("Forge command").fill("new project");
   await page.getByRole("button", { name: "Direct", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Start from zero.", level: 2 })).toBeVisible();
@@ -49,8 +65,6 @@ test("New Project starts from isolated project state", async ({ page }) => {
       cinematicScenes:draft.cinematicSystems?.scenes?.length,
       experiencePath:draft.project?.experiencePath,
       visualSystemsPath:draft.project?.visualSystemsPath,
-      guideBrief:window.localStorage.getItem("forge-studio-guide-brief-v1"),
-      shipped:window.localStorage.getItem("forge-studio-guide-shipped-project-v1"),
     };
   })).toEqual({
     id:"isolation-test",
@@ -63,13 +77,11 @@ test("New Project starts from isolated project state", async ({ page }) => {
     cinematicScenes:0,
     experiencePath:"clients/isolation-test/experience.json",
     visualSystemsPath:"clients/isolation-test/visual-systems.json",
-    guideBrief:"",
-    shipped:"",
   });
 });
 
 test("Build prepares a reversible fast proposal before applying motion", async ({ page }) => {
-  await page.goto("/studio/advanced");
+  await page.goto("/studio");
   await page.getByRole("button", { name: "Add scene" }).click();
   await expect(page.getByLabel("Headline")).toHaveValue("Direct this moment.");
   await page.getByLabel("Forge command").fill("editorial reveal");
@@ -88,7 +100,7 @@ test("Build prepares a reversible fast proposal before applying motion", async (
 });
 
 test("Build Animate provides direct motion authoring before the expert sequencer", async ({ page }) => {
-  await page.goto("/studio/advanced");
+  await page.goto("/studio");
   await page.getByRole("button", { name: "＋ Scene" }).click();
   await page.getByRole("button", { name: "Animate", exact: true }).click();
 
@@ -112,8 +124,8 @@ test("Build Animate provides direct motion authoring before the expert sequencer
 });
 
 test("Build camera inspector directly edits shots and hands off to targeted Animate", async ({ page }) => {
-  await page.goto("/studio/advanced");
-  await page.getByRole("button", { name: "Objects", exact: true }).click();
+  await page.goto("/studio");
+  await page.getByRole("button", { name: "Layers", exact: true }).click();
   const tree=page.locator(".production-tree");
   await tree.getByRole("button", { name: /Camera/ }).first().click();
 
@@ -129,8 +141,8 @@ test("Build camera inspector directly edits shots and hands off to targeted Anim
 });
 
 test("Build environment inspector directly edits lighting and atmosphere", async ({ page }) => {
-  await page.goto("/studio/advanced");
-  await page.getByRole("button", { name: "Objects", exact: true }).click();
+  await page.goto("/studio");
+  await page.getByRole("button", { name: "Layers", exact: true }).click();
   await page.locator(".production-tree").getByRole("button", { name: /Environment/ }).click();
 
   await page.getByLabel("Environment exposure").fill("1.35");
@@ -145,8 +157,8 @@ test("Build environment inspector directly edits lighting and atmosphere", async
 });
 
 test("Build media inspector directly edits presentation when media exists", async ({ page }) => {
-  await page.goto("/studio/advanced");
-  await page.getByRole("button", { name: "Objects", exact: true }).click();
+  await page.goto("/studio");
+  await page.getByRole("button", { name: "Layers", exact: true }).click();
   const media=page.locator(".production-tree").getByRole("button", { name: /Media/ });
   await expect(media).toBeVisible();
   await media.click();
@@ -162,46 +174,46 @@ test("Build media inspector directly edits presentation when media exists", asyn
   await expect(page.getByLabel("Animate target")).toHaveValue("media.reveal");
 });
 
-test("Advanced Sequencer preserves expert motion control", async ({ page }) => {
-  await page.goto("/studio/advanced");
-  await openAdvanced(page,/Sequencer/);
+test("Motion workspace preserves expert motion control", async ({ page }) => {
+  await page.goto("/studio");
+  await openEditorTool(page,/Sequencer/);
   await expect(page.getByRole("heading", { name: "Motion sequencer", level: 2 })).toBeVisible();
   await expect(page.locator(".sequencer-toolbar").getByRole("button", { name: "Play", exact: true })).toBeVisible();
   await expect(page.getByLabel("Playback range start")).toBeVisible();
-  await page.getByRole("button", { name: /Back to Studio/ }).click();
-  await expect(page.getByRole("button", { name: "Build", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: /Back to Canvas/ }).click();
+  await expect(page.getByRole("button", { name: "Canvas", exact: true })).toBeVisible();
 });
 
-test("Advanced Interactions preserves deterministic graph authoring", async ({ page }) => {
-  await page.goto("/studio/advanced");
-  await openAdvanced(page,/Interactions/);
+test("Interactions workspace preserves deterministic graph authoring", async ({ page }) => {
+  await page.goto("/studio");
+  await openEditorTool(page,/Interactions/);
   await expect(page.getByRole("heading", { name: "Interaction graph", level: 2 })).toBeVisible();
   await expect(page.getByRole("application", { name: "Interaction node graph" })).toBeVisible();
   await page.getByRole("button", { name: "Add trigger" }).click();
   await expect(page.locator("button.production-status")).toBeVisible();
 });
 
-test("Advanced Asset tools expose Asset Intelligence, bank and model inspection", async ({ page }) => {
-  await page.goto("/studio/advanced");
-  await openAdvanced(page,/Asset tools/);
+test("Assets workspace exposes Asset Intelligence, bank and model inspection", async ({ page }) => {
+  await page.goto("/studio");
+  await openEditorTool(page,/Asset tools/);
   await expect(page.getByText("ASSET INTELLIGENCE")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Asset bank", level: 2, exact: true })).toBeVisible();
   await expect(page.getByText(/manifest health/i)).toBeVisible();
 });
 
 test("Review makes Project Health the readiness control room", async ({ page }) => {
-  await page.goto("/studio/advanced");
-  await page.getByRole("button", { name: "Review", exact: true }).click();
+  await page.goto("/studio");
+  await page.locator("button.production-status").click();
   await expect(page.getByText("REVIEW / PROJECT HEALTH")).toBeVisible();
   await expect(page.getByText("WHAT NEEDS ATTENTION")).toBeVisible();
   await expect(page.getByText("RECOMMENDED")).toBeVisible();
 });
 
-test("Ship honors Project Health and keeps protected publishing guided", async ({ page }) => {
-  await page.goto("/studio/advanced");
-  await page.getByRole("button", { name: "Ship", exact: true }).click();
+test("Publish honors Project Health and keeps release authority protected", async ({ page }) => {
+  await page.goto("/studio");
+  await page.getByRole("button", { name: "Publish", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Review, checkpoint and release." })).toBeVisible();
-  await expect(page.getByText("GUIDED SHIP")).toBeVisible();
+  await expect(page.getByText("PUBLISH / RELEASE")).toBeVisible();
   await expect(page.getByText("Project Health", { exact: true }).first()).toBeVisible();
   await expect(page.getByLabel("Owner publish secret")).toHaveCount(0);
 
@@ -209,16 +221,16 @@ test("Ship honors Project Health and keeps protected publishing guided", async (
   await expect(page.getByLabel("Owner publish secret")).toHaveAttribute("type", "password");
 });
 
-test("Advanced Telemetry remains available without permanent navigation", async ({ page }) => {
-  await page.goto("/studio/advanced");
-  await openAdvanced(page,/Telemetry/);
+test("Performance quality tool remains available from the editor", async ({ page }) => {
+  await page.goto("/studio");
+  await openEditorTool(page,/Telemetry/);
   await expect(page.getByRole("heading", { name: "Telemetry policy" })).toBeVisible();
   await expect(page.getByLabel("Sample rate")).toBeVisible();
 });
 
-test("Advanced Visual effects authors cursor reveal and visual physics without permanent navigation", async ({ page }) => {
-  await page.goto("/studio/advanced");
-  await openAdvanced(page,/Visual effects/);
+test("Effects workspace authors cursor reveal and visual physics", async ({ page }) => {
+  await page.goto("/studio");
+  await openEditorTool(page,/Visual effects/);
   await expect(page.getByRole("heading", { name: "Visual Effects", level: 2 })).toBeVisible();
   await expect(page.getByText("LIVE DRAFT")).toBeVisible();
   const preset=page.getByLabel("Preset");
@@ -244,32 +256,10 @@ test("Advanced Visual effects authors cursor reveal and visual physics without p
     return draft.cinematicSystems?.scenes?.some((scene:{warp?:{mode?:string}})=>scene.warp?.mode==="shockwave") ?? false;
   })).toBe(true);
 
-  await page.getByRole("button", { name: /Back to Studio/ }).click();
-  await expect(page.getByRole("button", { name: "Build", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: /Back to Canvas/ }).click();
+  await expect(page.getByRole("button", { name: "Canvas", exact: true })).toBeVisible();
   await page.reload();
-  await openAdvanced(page,/Visual effects/);
+  await openEditorTool(page,/Visual effects/);
   await expect(page.getByLabel("Warp mode")).toHaveValue("shockwave");
   await expect(page.getByLabel("Transition effect")).toHaveValue("slats");
-});
-
-
-test("Mission Control promotes project-wide outcomes without adding navigation", async ({ page }) => {
-  await page.addInitScript(() => {
-    window.localStorage.setItem("forge-studio-guide-brief-v1", "Create a flagship mechanical watch launch that feels precise, warm, engineered and unforgettable.");
-    window.localStorage.setItem("forge-studio-guided-first-run-v1", "seen");
-  });
-  await page.goto("/studio/advanced");
-
-  await expect(page.getByText("FORGE / MISSION CONTROL")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Guide", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Copilot", exact: true })).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByRole("button", { name: "Autopilot", exact: true })).toBeVisible();
-  await expect(page.getByText(/NEXT OUTCOME/)).toBeVisible();
-  await expect(page.getByText("SIGNATURE MOMENT")).toBeVisible();
-
-  await page.getByRole("button", { name: "Autopilot", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Autopilot", exact: true })).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByRole("button", { name: "Build", exact: true })).toHaveAttribute("aria-current", "page");
-  await expect(page.getByRole("button", { name: "Review", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Ship", exact: true })).toBeVisible();
 });

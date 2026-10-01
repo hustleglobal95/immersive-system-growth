@@ -51,17 +51,13 @@ if(percent!==STUDIO_ACTIONABILITY_TARGET){
 }
 
 const route=read("app/studio/page.tsx");
-if(!route.includes("SimpleForgeStudio")) failures.push("The /studio route must render SimpleForgeStudio.");
-const advancedRoute=read("app/studio/advanced/page.tsx");
-if(!advancedRoute.includes('redirect("/studio")')) failures.push("Legacy /studio/advanced must redirect to the single /studio product.");
-if(advancedRoute.includes("ProductionStudioWorkbench")) failures.push("Legacy /studio/advanced must not render a duplicate ProductionStudioWorkbench.");
+if(!route.includes("ProductionStudioWorkbench")) failures.push("The /studio route must render the full ProductionStudioWorkbench.");
+if(route.includes("SimpleForgeStudio")) failures.push("The retired simple builder must never be reachable from /studio.");
 if(/import\s*\{\s*StudioWorkbench\s*\}/.test(route)) failures.push("Legacy StudioWorkbench must never be reachable from /studio.");
 
 const activeFiles=[
-  "src/studio/SimpleForgeStudio.tsx",
   "src/studio/ProductionStudioWorkbench.tsx",
   "src/studio/ControlPlaneSurfaces.tsx",
-  "src/studio/OperatorMissionControl.tsx",
   "src/studio/AnimatePanel.tsx",
   "src/studio/SequencerEditor.tsx",
   "src/studio/InteractionGraphEditor.tsx",
@@ -74,7 +70,6 @@ const activeFiles=[
   "src/studio/StudioVaultPanel.tsx",
   "src/studio/LoopEnginePanel.tsx",
   "src/studio/ControlPlaneReview.tsx",
-  "src/studio/StudioWorkflowGuide.tsx",
 ];
 
 for(const file of activeFiles){
@@ -82,8 +77,8 @@ for(const file of activeFiles){
 }
 
 const requiredChecks=[
-  ["src/studio/ProductionStudioWorkbench.tsx",'const primarySurfaces = ["Build", "Review", "Ship"] as const',"Studio primary navigation changed"],
-  ["src/studio/ProductionStudioWorkbench.tsx","openSimpleAnimate","Build must expose simple targeted Animate"],
+  ["src/studio/ProductionStudioWorkbench.tsx","const editorTabs = [","Studio must expose the editor workspace tabs"],
+  ["src/studio/ProductionStudioWorkbench.tsx","openSimpleAnimate","Canvas must expose targeted motion authoring"],
   ["src/studio/CinematicSystemsPanel.tsx","LIVE DRAFT","Visual Effects must identify itself as live draft authoring"],
   ["src/studio/useStudioDraft.ts","cinematicSystems","Studio draft must persist cinematic systems"],
   ["src/studio/StudioLivePreview.tsx","CinematicSystemsLayer contained","Studio preview must render the production cinematic compositor"],

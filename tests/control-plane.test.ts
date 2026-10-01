@@ -332,15 +332,18 @@ test("Project-state fingerprint is deterministic and includes visual-effects sta
   assert.notEqual(projectStateFingerprint({experience,assetManifest:manifest,interactionGraph:graph,cinematicSystems:visual}),first);
 });
 
-test("Studio exposes Build Review Ship and keeps specialist tools under Advanced",()=>{
+test("Studio is one editor with first-class website authoring workspaces",()=>{
   const studio=fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx","utf8");
-  assert.match(studio,/primarySurfaces = \["Build", "Review", "Ship"\]/);
-  assert.match(studio,/production-advanced-menu/);
+  assert.match(studio,/const editorTabs = \[/);
+  assert.match(studio,/label:"Canvas"/);
+  assert.match(studio,/label:"Motion"/);
+  assert.match(studio,/label:"Interactions"/);
+  assert.match(studio,/label:"Assets"/);
+  assert.match(studio,/label:"Effects"/);
   assert.match(studio,/ReviewSurface/);
   assert.match(studio,/ShipSurface/);
-  assert.match(studio,/NEXT BEST ACTION/);
-  assert.match(studio,/Project Health/);
-  assert.doesNotMatch(studio,/const workspaces = \["Create", "Motion", "Interact", "Assets", "Ship"\]/);
+  assert.doesNotMatch(studio,/primarySurfaces/);
+  assert.doesNotMatch(studio,/production-advanced-menu/);
 });
 
 test("Deep proposal evidence has protected remote execution and durable result bridges",()=>{
@@ -362,7 +365,7 @@ test("Deep proposal evidence has protected remote execution and durable result b
 });
 
 
-test("Build exposes bounded direct authoring without leaking legacy machinery",()=>{
+test("Canvas exposes bounded direct authoring without leaking legacy machinery",()=>{
   const studio=fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx","utf8");
   const surfaces=fs.readFileSync("src/studio/ControlPlaneSurfaces.tsx","utf8");
   assert.doesNotMatch(studio,/Apply motion/);

@@ -3,26 +3,29 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const page=fs.readFileSync("app/studio/page.tsx","utf8");
-const studio=fs.readFileSync("src/studio/SimpleForgeStudio.tsx","utf8");
+const studio=fs.readFileSync("src/studio/ProductionStudioWorkbench.tsx","utf8");
+const dock=fs.readFileSync("src/studio/Interactive3DBuildDock.tsx","utf8");
+const publish=fs.readFileSync("src/studio/ProjectPanels.tsx","utf8");
 const route=fs.readFileSync("app/api/studio/interactive3d/plan/route.ts","utf8");
 const planner=fs.readFileSync("src/platform/interactive3dPlanner.ts","utf8");
 const materializer=fs.readFileSync("src/platform/interactive3dMaterializer.ts","utf8");
 
-test("default Studio is one real Forge builder",()=>{
-  assert.match(page,/SimpleForgeStudio/);
-  assert.match(studio,/forge-builder/);
-  assert.match(studio,/"Build Website"/);
-  assert.match(studio,/"Finish Website"/);
-  assert.doesNotMatch(studio,/type Mode="build"/);
-  assert.doesNotMatch(studio,/href="\/studio\/advanced"/);
+test("default Studio is the complete Forge website editor",()=>{
+  assert.match(page,/ProductionStudioWorkbench/);
+  assert.doesNotMatch(page,/SimpleForgeStudio/);
+  assert.match(studio,/LIVE SITE CANVAS/);
+  assert.match(studio,/LAYERS \+ SCENES/);
+  assert.match(studio,/SCROLL TIMELINE/);
+  assert.match(studio,/Interactive3DBuildDock/);
+  assert.doesNotMatch(studio,/production-advanced-menu/);
 });
 
-test("Build Website applies a complete fresh project bundle",()=>{
-  assert.match(studio,/fetch\("\/api\/studio\/interactive3d\/plan"/);
-  assert.match(studio,/assetManifest:body\.assetManifest/);
-  assert.match(studio,/interactionGraph:body\.interactionGraph/);
-  assert.match(studio,/useCurrentHero:false/);
-  assert.match(studio,/draft\.applyProjectBundle/);
+test("AI Build is part of the editor and uses the interactive 3D planning path",()=>{
+  assert.match(studio,/AI Build/);
+  assert.match(dock,/fetch\("\/api\/studio\/interactive3d\/plan"/);
+  assert.match(dock,/useCurrentHero/);
+  assert.match(studio,/onPreview/);
+  assert.match(studio,/onApply/);
 });
 
 test("planner generates project-specific site structure instead of reusing template scene IDs",()=>{
@@ -32,11 +35,12 @@ test("planner generates project-specific site structure instead of reusing templ
   assert.doesNotMatch(materializer,/requires blueprint scene IDs to match/);
 });
 
-test("new builds are visibly interactive before final assets arrive",()=>{
+test("new builds remain editable through the real production canvas",()=>{
   assert.match(materializer,/next\.heroVisible = !heroVisual\?\.source/);
-  assert.match(studio,/Generate Hero/);
-  assert.match(studio,/\/api\/studio\/assets\/generate/);
   assert.match(studio,/StudioLivePreview/);
+  assert.match(studio,/AssetManager/);
+  assert.match(studio,/SequencerEditor/);
+  assert.match(studio,/InteractionGraphEditor/);
 });
 
 test("planning endpoint returns the whole generated website state",()=>{
@@ -46,8 +50,9 @@ test("planning endpoint returns the whole generated website state",()=>{
   assert.match(route,/signatureSceneId/);
 });
 
-test("finished projects still export when automatic publishing is unavailable",()=>{
-  assert.match(studio,/downloadJson/);
-  assert.match(studio,/-finished\.json/);
-  assert.match(studio,/fetch\("\/api\/studio\/publish"/);
+test("publishing remains a protected editor release action",()=>{
+  assert.match(studio,/Publish/);
+  assert.match(publish,/fetch\("\/api\/studio\/publish"/);
+  assert.match(publish,/healthReady/);
+  assert.match(publish,/PUBLISH \/ RELEASE/);
 });

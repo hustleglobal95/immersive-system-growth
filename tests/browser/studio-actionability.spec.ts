@@ -1,9 +1,22 @@
 import { expect, test } from "@playwright/test";
 
-async function openAdvanced(page:import("@playwright/test").Page,label:RegExp) {
-  const advanced=page.locator("details.production-advanced-menu");
-  await advanced.locator("> summary").click();
-  await advanced.getByRole("button",{name:label}).first().click();
+async function openEditorTool(page:import("@playwright/test").Page,label:RegExp) {
+  if(/asset/i.test(label.source)) {
+    await page.locator(".production-topbar nav").getByRole("button",{name:"Assets",exact:true}).click();
+    return;
+  }
+  if(/telemetry|performance/i.test(label.source)) {
+    const quality=page.locator("details.production-quality-menu");
+    await quality.locator("> summary").click();
+    await quality.getByRole("button",{name:/Performance/}).click();
+    return;
+  }
+  if(/search|ai/i.test(label.source)) {
+    const quality=page.locator("details.production-quality-menu");
+    await quality.locator("> summary").click();
+    await quality.getByRole("button",{name:/Search & AI/}).click();
+    return;
+  }
 }
 
 function minimalGlb(name="Rotor") {
@@ -28,8 +41,8 @@ function minimalGlb(name="Rotor") {
 }
 
 test("Build rig inspector targets the selected part in simple Animate",async({page})=>{
-  await page.goto("/studio/advanced");
-  await openAdvanced(page,/Asset tools/);
+  await page.goto("/studio");
+  await openEditorTool(page,/Asset tools/);
   const inspector=page.locator("section.studio-card").filter({has:page.getByRole("heading",{name:"GLB node mapper",level:2})});
   await inspector.locator('input[type="file"]').setInputFiles({name:"actionability-rig.glb",mimeType:"model/gltf-binary",buffer:minimalGlb()});
   await expect(page.getByText("Rotor",{exact:true}).first()).toBeVisible();
@@ -45,8 +58,8 @@ test("Build rig inspector targets the selected part in simple Animate",async({pa
     return rig?.nodes?.includes("Rotor") && rig?.tracks?.some((track:{node?:string})=>track.node==="Rotor");
   })).toBe(true);
 
-  await page.locator(".production-advanced-head").getByRole("button",{name:/Back to Studio/}).click();
-  await page.getByRole("button",{name:"Objects",exact:true}).click();
+  await page.locator(".production-advanced-head").getByRole("button",{name:/Back to Canvas/}).click();
+  await page.getByRole("button",{name:"Layers",exact:true}).click();
   await page.locator(".production-tree").getByRole("button",{name:/Rotor/}).click();
   await page.locator(".production-right").getByRole("button",{name:"Position",exact:true}).click();
   await expect(page.getByRole("heading",{name:"Make something move.",level:2})).toBeVisible();
@@ -54,7 +67,7 @@ test("Build rig inspector targets the selected part in simple Animate",async({pa
 });
 
 test("Build asset inspector opens actionable Asset tools",async({page})=>{
-  await page.goto("/studio/advanced");
+  await page.goto("/studio");
   await page.locator(".production-left").getByRole("button",{name:"Assets",exact:true}).click();
   const firstAsset=page.locator(".production-left .production-tree button").first();
   await expect(firstAsset).toBeVisible();
@@ -64,9 +77,9 @@ test("Build asset inspector opens actionable Asset tools",async({page})=>{
   await expect(page.getByRole("heading",{name:"Asset bank",level:2,exact:true})).toBeVisible();
 });
 
-test("Advanced Asset tools can stage a file and mutate project asset state",async({page})=>{
-  await page.goto("/studio/advanced");
-  await openAdvanced(page,/Asset tools/);
+test("Assets workspace can stage a file and mutate project asset state",async({page})=>{
+  await page.goto("/studio");
+  await openEditorTool(page,/Asset tools/);
   const intake=page.locator("section.studio-card").filter({has:page.getByRole("heading",{name:"Inspect before repository upload",level:2})});
   const png=Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZfKkAAAAASUVORK5CYII=","base64");
   await intake.locator('input[type="file"]').setInputFiles({name:"actionability.png",mimeType:"image/png",buffer:png});
@@ -87,8 +100,8 @@ test("Advanced Asset tools can stage a file and mutate project asset state",asyn
 });
 
 test("GLB Inspector creates deterministic rig tracks from a staged model",async({page})=>{
-  await page.goto("/studio/advanced");
-  await openAdvanced(page,/Asset tools/);
+  await page.goto("/studio");
+  await openEditorTool(page,/Asset tools/);
   const inspector=page.locator("section.studio-card").filter({has:page.getByRole("heading",{name:"GLB node mapper",level:2})});
   await inspector.locator('input[type="file"]').setInputFiles({name:"actionability.glb",mimeType:"model/gltf-binary",buffer:minimalGlb()});
   await expect(page.getByText("Rotor",{exact:true}).first()).toBeVisible();
@@ -105,9 +118,9 @@ test("GLB Inspector creates deterministic rig tracks from a staged model",async(
   })).toBe(true);
 });
 
-test("Advanced Telemetry mutates policy without permanent navigation",async({page})=>{
-  await page.goto("/studio/advanced");
-  await openAdvanced(page,/Telemetry/);
+test("Performance quality tool mutates telemetry policy",async({page})=>{
+  await page.goto("/studio");
+  await openEditorTool(page,/Telemetry/);
   const sample=page.locator("label").filter({hasText:"Sample rate"}).locator('input[type="range"]');
   await expect(sample).toBeVisible();
   await sample.fill("0.55");
@@ -117,26 +130,18 @@ test("Advanced Telemetry mutates policy without permanent navigation",async({pag
   })).toBe(.55);
 });
 
-test("Guided Build persists a project brief and returns to production",async({page})=>{
-  await page.goto("/studio/advanced");
-  await page.getByRole("button",{name:"Open command palette"}).click();
-  await page.getByRole("dialog",{name:"Go anywhere. Do anything."}).getByRole("button",{name:"Guided Build",exact:true}).click();
-  const guide=page.getByRole("dialog",{name:"Build the project without learning the machinery."});
-  await expect(guide).toBeVisible();
-  const brief="Create a precise luxury product reveal with a mechanical signature moment.";
-  await guide.locator("textarea").fill(brief);
-  await expect.poll(()=>page.evaluate(()=>localStorage.getItem("forge-studio-guide-brief-v1"))).toBe(brief);
-  await guide.getByRole("button",{name:"Close guide"}).click();
-  await expect(page.getByRole("button",{name:"Build",exact:true})).toHaveAttribute("aria-current","page");
-  await page.getByRole("button",{name:"Open command palette"}).click();
-  await page.getByRole("dialog",{name:"Go anywhere. Do anything."}).getByRole("button",{name:"Guided Build",exact:true}).click();
-  await expect(page.getByRole("dialog").locator("textarea")).toHaveValue(brief);
+test("AI Build is available directly from the editor without a guided shell",async({page})=>{
+  await page.goto("/studio");
+  await expect(page.getByRole("button",{name:"AI Build",exact:true})).toBeVisible();
+  await expect(page.getByText("Start Guided Build")).toHaveCount(0);
+  await page.getByRole("button",{name:"AI Build",exact:true}).click();
+  await expect(page.locator("#interactive-3d-build")).toBeVisible();
 });
 
 test("Project Vault exposes durable save actions and explicit configuration state",async({page})=>{
-  await page.goto("/studio/advanced");
+  await page.goto("/studio");
   await page.getByRole("button",{name:"Open command palette"}).click();
-  await page.getByRole("button",{name:"Project Vault",exact:true}).click();
+  await page.getByRole("button",{name:"Versions",exact:true}).click();
   const dialog=page.getByRole("dialog",{name:"Durable projects and restore points."});
   await expect(dialog).toBeVisible();
   const status=dialog.locator(".production-vault-status strong");
@@ -153,9 +158,9 @@ test("Project Vault exposes durable save actions and explicit configuration stat
 });
 
 test("Improvement evidence keeps the Loop Engine executable or explicitly fail-closed",async({page})=>{
-  await page.goto("/studio/advanced");
+  await page.goto("/studio");
   await page.getByRole("button",{name:"Open command palette"}).click();
-  await page.getByRole("button",{name:"Improvement evidence",exact:true}).click();
+  await page.getByRole("button",{name:"Improve current site",exact:true}).click();
   const dialog=page.getByRole("dialog",{name:"Closed-loop improvement with proof."});
   await expect(dialog).toBeVisible();
   await expect(dialog.getByText("EXECUTABLE LOOP").first()).toBeVisible();
@@ -171,9 +176,9 @@ test("Improvement evidence keeps the Loop Engine executable or explicitly fail-c
 });
 
 
-test("Advanced Search and AI mutates discoverability policy and Project Health",async({page})=>{
-  await page.goto("/studio/advanced");
-  await openAdvanced(page,/Search & AI/);
+test("Search and AI quality tool mutates discoverability policy and Project Health",async({page})=>{
+  await page.goto("/studio");
+  await openEditorTool(page,/Search & AI/);
   await expect(page.getByRole("heading",{name:"Discoverability contract",level:2})).toBeVisible();
 
   const title=page.getByLabel("Default search title");
@@ -188,8 +193,8 @@ test("Advanced Search and AI mutates discoverability policy and Project Health",
   await expect(page.getByText("AI search crawler access is disabled",{exact:true})).toBeVisible();
   await searchToggle.check();
 
-  await page.locator(".production-advanced-head").getByRole("button",{name:/Back to Studio/}).click();
-  await page.getByRole("button",{name:"Review",exact:true}).click();
+  await page.locator(".production-advanced-head").getByRole("button",{name:/Back to Canvas/}).click();
+  await page.locator("button.production-status").click();
   const metric=page.locator(".production-health-metrics article").filter({hasText:"Search + AI"});
   await expect(metric).toBeVisible();
   await expect(metric.locator("strong")).toContainText("/100");

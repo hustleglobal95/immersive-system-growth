@@ -1,7 +1,7 @@
 import fs from "node:fs";
 
 const checks = [
-  check("Studio product shell", 12, () => files("src/studio/ProductionStudioWorkbench.tsx", "src/studio/StudioWorkflowGuide.tsx")),
+  check("Studio website editor", 12, () => files("src/studio/ProductionStudioWorkbench.tsx", "src/studio/StudioLivePreview.tsx", "src/studio/SequencerEditor.tsx", "src/studio/InteractionGraphEditor.tsx")),
   check("Project Vault implementation", 18, () => files("src/platform/studioVault.ts", "src/studio/StudioVaultPanel.tsx", "app/api/studio/vault/projects/route.ts")),
   check("Asset Vault implementation", 16, () => files("src/platform/assetVault.ts", "app/api/studio/assets/vault/promote/route.ts")),
   check("Internal access implementation", 14, () => files("src/platform/studioAccess.ts", "proxy.ts", "app/studio/login/page.tsx")),
