@@ -51,15 +51,13 @@ if(percent!==STUDIO_ACTIONABILITY_TARGET){
 }
 
 const route=read("app/studio/page.tsx");
-if(!route.includes("ProductionStudioWorkbench")) failures.push("The /studio route must render the full ProductionStudioWorkbench.");
+if(!route.includes("ForgeEditor")) failures.push("The /studio route must render ForgeEditor.");
 if(route.includes("SimpleForgeStudio")) failures.push("The retired simple builder must never be reachable from /studio.");
 if(/import\s*\{\s*StudioWorkbench\s*\}/.test(route)) failures.push("Legacy StudioWorkbench must never be reachable from /studio.");
 
 const activeFiles=[
-  "src/studio/ProductionStudioWorkbench.tsx",
+  "src/studio/ForgeEditor.tsx",
   "src/studio/ReferenceWorkbench.tsx",
-  "src/studio/ControlPlaneSurfaces.tsx",
-  "src/studio/AnimatePanel.tsx",
   "src/studio/SequencerEditor.tsx",
   "src/studio/InteractionGraphEditor.tsx",
   "src/studio/AssetManager.tsx",
@@ -70,7 +68,6 @@ const activeFiles=[
   "src/studio/DiscoverabilityPanel.tsx",
   "src/studio/StudioVaultPanel.tsx",
   "src/studio/LoopEnginePanel.tsx",
-  "src/studio/ControlPlaneReview.tsx",
 ];
 
 for(const file of activeFiles){
@@ -78,9 +75,12 @@ for(const file of activeFiles){
 }
 
 const requiredChecks=[
-  ["src/studio/ProductionStudioWorkbench.tsx","const editorTabs = [","Studio must expose the editor workspace tabs"],
-  ["src/studio/ProductionStudioWorkbench.tsx","openSimpleAnimate","Canvas must expose targeted motion authoring"],
-  ["src/studio/ProductionStudioWorkbench.tsx",'{ label:"References", workspace:"References" }',"Studio must expose References as a first-class workspace"],
+  ["src/studio/ForgeEditor.tsx",'id:"design",label:"Design"',"Forge must expose Design as a first-class mode"],
+  ["src/studio/ForgeEditor.tsx",'id:"references",label:"References"',"Forge must expose References as a first-class mode"],
+  ["src/studio/ForgeEditor.tsx",'id:"motion",label:"Motion"',"Forge must expose Motion as a first-class mode"],
+  ["src/studio/ForgeEditor.tsx",'id:"interactions",label:"Interact"',"Forge must expose Interactions as a first-class mode"],
+  ["src/studio/ForgeEditor.tsx",'id:"assets",label:"Assets"',"Forge must expose Assets as a first-class mode"],
+  ["src/studio/ForgeEditor.tsx",'id:"effects",label:"Effects"',"Forge must expose Effects as a first-class mode"],
   ["src/studio/ReferenceWorkbench.tsx","FORGE IMPLEMENTATION MAP","References must translate evidence into Forge system constraints"],
   ["src/studio/CinematicSystemsPanel.tsx","LIVE DRAFT","Visual Effects must identify itself as live draft authoring"],
   ["src/studio/useStudioDraft.ts","cinematicSystems","Studio draft must persist cinematic systems"],
