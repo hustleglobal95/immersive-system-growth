@@ -58,6 +58,7 @@ export function ForgeEditor(){
   const [inspectorOpen,setInspectorOpen]=useState(true);
   const [aiOpen,setAiOpen]=useState(false);
   const [commandOpen,setCommandOpen]=useState(false);
+  const [commandValue,setCommandValue]=useState("");
   const [qualityTab,setQualityTab]=useState<"health"|"performance"|"search">("health");
   const [vaultOpen,setVaultOpen]=useState(false);
   const [loopOpen,setLoopOpen]=useState(false);
@@ -354,7 +355,7 @@ export function ForgeEditor(){
 
     {notice&&<button type="button" className="forge-next__toast" onClick={()=>setNotice("")}>{notice}<span>×</span></button>}
     {commandOpen&&<div className="forge-next__command-backdrop" onMouseDown={(event)=>{if(event.target===event.currentTarget)setCommandOpen(false);}}><div className="forge-next__command">
-      <div className="forge-next__command-input"><span>⌘</span><input ref={commandInput} aria-label="Forge command" placeholder="Go to Motion, open References, publish…" onKeyDown={(event)=>{if(event.key==="Enter")runCommand(event.currentTarget.value);}}/><kbd>esc</kbd></div>
+      <div className="forge-next__command-input"><span>⌘</span><input ref={commandInput} aria-label="Forge command" value={commandValue} placeholder="Go to Motion, open References, publish…" onChange={(event)=>setCommandValue(event.target.value)} onKeyDown={(event)=>{if(event.key==="Enter"){runCommand(commandValue);setCommandValue("");}}}/><kbd>esc</kbd></div>
       <div className="forge-next__command-grid">{[...modes,{id:"quality" as const,label:"Quality",short:"Q"},{id:"publish" as const,label:"Publish",short:"P"}].map((item)=><button type="button" key={item.id} onClick={()=>{setMode(item.id);setCommandOpen(false);}}><span>{item.short}</span><strong>{item.label}</strong></button>)}<button type="button" onClick={()=>{setAiOpen(true);setMode("design");setCommandOpen(false);}}><span>AI</span><strong>AI Build</strong></button><button type="button" onClick={()=>{setNewProjectOpen(true);setCommandOpen(false);}}><span>＋</span><strong>New website</strong></button><button type="button" onClick={()=>{setVaultOpen(true);setCommandOpen(false);}}><span>V</span><strong>Versions</strong></button><button type="button" onClick={()=>{setLoopOpen(true);setCommandOpen(false);}}><span>↗</span><strong>Improve current site</strong></button></div>
     </div></div>}
     {loopOpen&&<LoopEnginePanel
