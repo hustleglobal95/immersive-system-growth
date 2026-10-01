@@ -60,10 +60,10 @@ export function DirectorWorkbench() {
       const project=parseStudioProject(payload.project);
       const references=studioReferencesToDirectorReferences(project.references);
       if(!references.length) return;
-      setBrief((current)=>{
-        const next={...current,references};
+      const next={...starterBrief,references};
+      queueMicrotask(()=>{
+        setBrief(next);
         setTreatment(directProject(next));
-        return next;
       });
     } catch {
       // Director remains usable with its starter brief if Studio storage is unavailable.
