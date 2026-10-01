@@ -209,11 +209,11 @@ test("Review makes Project Health the readiness control room", async ({ page }) 
   await expect(page.getByText("RECOMMENDED")).toBeVisible();
 });
 
-test("Ship honors Project Health and keeps protected publishing guided", async ({ page }) => {
+test("Publish honors Project Health and keeps release authority protected", async ({ page }) => {
   await page.goto("/studio");
   await page.getByRole("button", { name: "Publish", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Review, checkpoint and release." })).toBeVisible();
-  await expect(page.getByText("GUIDED SHIP")).toBeVisible();
+  await expect(page.getByText("PUBLISH / RELEASE")).toBeVisible();
   await expect(page.getByText("Project Health", { exact: true }).first()).toBeVisible();
   await expect(page.getByLabel("Owner publish secret")).toHaveCount(0);
 
