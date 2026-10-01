@@ -22,7 +22,7 @@ export async function POST(request:Request) {
   }
 
   const size=Number(request.headers.get("content-length") ?? 0);
-  if(Number.isFinite(size) && size>16_000_000) {
+  if(Number.isFinite(size) && size>4_000_000) {
     return Response.json({ok:false,error:"Reference analysis request is too large."},{status:413});
   }
   if(!referenceAnalyzerConfigured(process.env)) {
