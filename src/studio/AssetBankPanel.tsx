@@ -56,7 +56,7 @@ export function AssetBankPanel({ experience, setExperience, assetManifest, setAs
   const select = (asset: BankAsset) => { kitRequest.current++; setSelected(asset); setPreview(false); setKit(null); setMessage(""); };
   const loadKit = async (id: string) => {
     const request = ++kitRequest.current;
-    setMessage("Loading scene kit…"); setSelected(null); setKit(null); setPreview(false);
+    setMessage("Loading section kit…"); setSelected(null); setKit(null); setPreview(false);
     try {
       const response = await fetch("/api/asset-bank?kit=" + encodeURIComponent(id));
       const data = await response.json(); if (!response.ok) throw new Error(data.error);
@@ -75,7 +75,7 @@ export function AssetBankPanel({ experience, setExperience, assetManifest, setAs
   const applyKit = () => {
     if (!kit) return;
     const missing = incompatibleBankKitBindings(kit.experience, interactionGraph);
-    if (missing.length) { setMessage(`Existing interactions reference scenes or hotspots outside this kit: ${missing.join(", ")}. Export the kit for a new project, or update those interactions first.`); return; }
+    if (missing.length) { setMessage(`Existing interactions reference sections or hotspots outside this kit: ${missing.join(", ")}. Export the kit for a new project, or update those interactions first.`); return; }
     try {
       const nextManifest = addBankFiles(kit.assets, assetManifest);
       setExperience(parseExperience(kit.experience)); setAssetManifest(nextManifest); setSceneId(kit.experience.scenes[0].id);
@@ -84,7 +84,7 @@ export function AssetBankPanel({ experience, setExperience, assetManifest, setAs
   };
   const selectedFile = selected?.files.find((f) => f.role === "runtime");
   return <section className={`studio-card ${styles.bank}`} aria-labelledby="bank-heading">
-    <div className={styles.heading}><div><span>PRODUCTION LIBRARY</span><h2 id="bank-heading">Asset bank</h2><p>Find sources, inspect prepared assets, and explore coordinated scene kits.</p></div><div><strong>{results?.catalogTotal.toLocaleString() ?? "…"}</strong><small>catalog entries</small></div></div>
+    <div className={styles.heading}><div><span>PRODUCTION LIBRARY</span><h2 id="bank-heading">Asset bank</h2><p>Find sources, inspect prepared assets, and explore coordinated section kits.</p></div><div><strong>{results?.catalogTotal.toLocaleString() ?? "…"}</strong><small>catalog entries</small></div></div>
     <div className={styles.filters}>
       <label>Search assets<input type="search" value={q} maxLength={200} placeholder="Wood, studio, chair, kitchen…" onChange={(e) => { setQ(e.target.value); setPage(1); }} /></label>
       <label>Asset type<select value={kind} onChange={(e) => { setKind(e.target.value); setPage(1); }}><option value="">All types</option>{bankKinds.map((k) => <option key={k}>{k}</option>)}</select></label>
@@ -111,13 +111,13 @@ export function AssetBankPanel({ experience, setExperience, assetManifest, setAs
           {selected.approval && <p>Reviewed by {selected.approval.by} · {selected.approval.date} · {selected.approval.scope}</p>}
           <button type="button" onClick={() => setShortlist((items) => items.some((a) => a.id === selected.id) ? items.filter((a) => a.id !== selected.id) : [...items, selected])}>{shortlist.some((a) => a.id === selected.id) ? "Remove from shortlist" : "Add to shortlist"}</button>
           {selected.kind === "model" && selectedFile && <><button type="button" onClick={() => setPreview(!preview)}>{preview ? "Close 3D preview" : "Open 3D preview"}</button>{preview && <ModelPreview key={selected.id} url={selectedFile.url} />}</>}
-          {selected.status === "source" ? <p>Source listing only. Download from the provider, optimize, then use bank:prepare to register verified runtime files.</p> : <><label>Destination scene<select value={sceneId} onChange={(e) => setSceneId(e.target.value)}>{experience.scenes.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}</select></label><button type="button" className="studio-primary" disabled={!["model", "image", "video"].includes(selected.kind)} onClick={insert}>Insert asset into scene</button><small>Model insertion adds a scene object. It does not replace the persistent hero or its rig.</small></>}
+          {selected.status === "source" ? <p>Source listing only. Download from the provider, optimize, then use bank:prepare to register verified runtime files.</p> : <><label>Destination section<select value={sceneId} onChange={(e) => setSceneId(e.target.value)}>{experience.scenes.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}</select></label><button type="button" className="studio-primary" disabled={!["model", "image", "video"].includes(selected.kind)} onClick={insert}>Insert asset into section</button><small>Model insertion adds a section object. It does not replace the persistent hero or its rig.</small></>}
           {!!selected.metadata.nodes?.length && <details><summary>{selected.metadata.nodes.length} inspected nodes</summary><ul>{selected.metadata.nodes.map((node, i) => <li key={i}>{node}</li>)}</ul></details>}
         </> : <><h3>Inspect an asset</h3><p>Select a card to see its source, license, preparation status and available variants.</p><p>Source entries need optimization and runtime verification. Reference fixtures support layout and motion development.</p></>}
       </aside>
     </div>
     <h3>Coordinated reference kits</h3><div className={styles.kits}>{results?.kits.map((item) => <article key={item.id}><small>{item.industry} · reference</small><h4>{item.title}</h4><p>{item.description}</p><button type="button" onClick={() => void loadKit(item.id)}>Review {item.industry} kit</button></article>)}</div>
-    {kit && <div className={styles.kitReview}><h3>Review: {kit.kit.title}</h3><p>{kit.kit.artDirection}</p><p>Applying this kit replaces {experience.scenes.length} current scenes with {kit.experience.scenes.length} reference scenes, including camera, lighting, model and concept copy.</p><button type="button" onClick={() => setPreview(!preview)}>{preview ? "Close kit preview" : "Preview kit"}</button><button type="button" onClick={() => downloadJson(kit.kit.recipe + ".json", kit.experience)}>Export kit experience</button><button type="button" onClick={applyKit}>Apply reviewed kit</button>{preview && <KitPreview key={kit.kit.id} experience={kit.experience} active={kitActive} setActive={setKitActive} />}</div>}
+    {kit && <div className={styles.kitReview}><h3>Review: {kit.kit.title}</h3><p>{kit.kit.artDirection}</p><p>Applying this kit replaces {experience.scenes.length} current sections with {kit.experience.scenes.length} reference sections, including camera, lighting, model and concept copy.</p><button type="button" onClick={() => setPreview(!preview)}>{preview ? "Close kit preview" : "Preview kit"}</button><button type="button" onClick={() => downloadJson(kit.kit.recipe + ".json", kit.experience)}>Export kit experience</button><button type="button" onClick={applyKit}>Apply reviewed kit</button>{preview && <KitPreview key={kit.kit.id} experience={kit.experience} active={kitActive} setActive={setKitActive} />}</div>}
     <p className={styles.credit}>Source catalog: <a href="https://polyhaven.com" target="_blank" rel="noreferrer">Powered by Poly Haven</a>. Prepared files are staged separately. Shortlists remain in this workspace until exported.</p>
   </section>;
 }

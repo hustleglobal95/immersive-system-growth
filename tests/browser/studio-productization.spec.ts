@@ -28,7 +28,8 @@ test("AI Build opens from the canvas and stages a candidate", async ({ page }) =
   await page.getByRole("button",{name:"AI Build",exact:true}).click();
   await expect(page.locator(".forge-next__ai-drawer")).toBeVisible();
   await expect(page.locator("#interactive-3d-build")).toBeVisible();
-  await expect(page.getByText("Describe the website. Forge plans the spatial system using your project reference intelligence.")).toBeVisible();
+  await expect(page.getByLabel("AI website brief")).toBeVisible();
+  await expect(page.getByRole("button",{name:"Build 3D direction",exact:true})).toBeVisible();
 });
 
 test("Command palette navigates the new Forge editor", async ({ page }) => {

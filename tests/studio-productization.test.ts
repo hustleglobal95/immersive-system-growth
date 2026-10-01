@@ -4,6 +4,7 @@ import fs from "node:fs";
 
 const page=fs.readFileSync("app/studio/page.tsx","utf8");
 const editor=fs.readFileSync("src/studio/ForgeEditor.tsx","utf8");
+const viewport=fs.readFileSync("src/studio/ForgeViewportCanvas.tsx","utf8");
 const dock=fs.readFileSync("src/studio/Interactive3DBuildDock.tsx","utf8");
 const publish=fs.readFileSync("src/studio/ProjectPanels.tsx","utf8");
 const route=fs.readFileSync("app/api/studio/interactive3d/plan/route.ts","utf8");
@@ -17,7 +18,26 @@ test("default Studio is the replacement canvas-first Forge editor",()=>{
   assert.match(editor,/forge-next__layers/);
   assert.match(editor,/forge-next__inspector/);
   assert.match(editor,/forge-next__timeline/);
+  assert.match(editor,/ForgeViewportCanvas/);
   assert.match(editor,/StudioLivePreview/);
+});
+
+test("Forge edit stage is a real selectable R3F canvas",()=>{
+  assert.match(viewport,/Canvas/);
+  assert.match(viewport,/Grid/);
+  assert.match(viewport,/OrbitControls/);
+  assert.match(viewport,/TransformControls/);
+  assert.match(viewport,/EditableNode/);
+  assert.match(viewport,/onSelect/);
+  assert.match(viewport,/onObjectChange/);
+});
+
+test("Forge editor exposes Sections to users while runtime scenes stay internal",()=>{
+  assert.match(editor,/>Sections</);
+  assert.match(editor,/Website sections/);
+  assert.match(editor,/Section elements/);
+  assert.match(editor,/Delete section/);
+  assert.doesNotMatch(editor,/\+ Add scene/);
 });
 
 test("Forge exposes core website authoring modes directly",()=>{

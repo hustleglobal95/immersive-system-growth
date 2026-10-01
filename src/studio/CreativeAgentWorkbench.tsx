@@ -24,7 +24,7 @@ const initialManifest = rawAssetManifest as AssetManifest;
 const initialGraph = parseInteractionGraph(rawInteractionGraph);
 
 const fallbackIdeas = [
-  "Make this scene feel more cinematic without adding spectacle.",
+  "Make this section feel more cinematic without adding spectacle.",
   "Find the smartest way to turn the current assets into a signature hero moment.",
   "Rework the experience so camera, motion, assets and copy support one clear idea.",
   "Push the concept harder, but protect mobile performance and restraint.",
@@ -92,7 +92,7 @@ export function CreativeAgentWorkbench() {
 
   const tryAnother = () => {
     setVariation((value) => value + 1);
-    setNotice("Director changed medium, camera grammar, scene strategy, hierarchy and asset requirements instead of restyling the same answer.");
+    setNotice("Director changed medium, camera grammar, section strategy, hierarchy and asset requirements instead of restyling the same answer.");
   };
 
   const toggleScene = (sceneIndex: number) => {
@@ -117,11 +117,11 @@ export function CreativeAgentWorkbench() {
       return;
     }
     if (!selectedScenes.length) {
-      setNotice("Select at least one scene before applying the execution plan.");
+      setNotice("Select at least one section before applying the execution plan.");
       return;
     }
     draft.setExperience((current) => applyCreativeExecutionPlan(current, plan, selectedScenes));
-    setNotice(`${plan.title} motion applied across ${selectedScenes.length} scene${selectedScenes.length === 1 ? "" : "s"}. ${selectedBlocked ? `${selectedBlocked} selected scene${selectedBlocked === 1 ? " remains" : "s remain"} asset-blocked and are not marked production-ready.` : "All selected scenes have a buildable asset path."} The change is reversible with Undo.`);
+    setNotice(`${plan.title} motion applied across ${selectedScenes.length} section${selectedScenes.length === 1 ? "" : "s"}. ${selectedBlocked ? `${selectedBlocked} selected section${selectedBlocked === 1 ? " remains" : "s remain"} asset-blocked and are not marked production-ready.` : "All selected sections have a buildable asset path."} The change is reversible with Undo.`);
   };
 
   return <main className="creative-agent">
@@ -135,7 +135,7 @@ export function CreativeAgentWorkbench() {
         <span className="creative-agent__eyebrow">EXECUTIVE CREATIVE DIRECTION</span>
         <small className="creative-agent__memory-status">{creativeContext.loading ? "Loading studio creative memory…" : creativeContext.error ? "Studio memory unavailable · brief-only direction active" : `${creativeContext.counts?.priorProjects ?? 0} prior project${(creativeContext.counts?.priorProjects ?? 0)===1?"":"s"} · ${creativeContext.counts?.tasteLayers ?? 0} taste layer${(creativeContext.counts?.tasteLayers ?? 0)===1?"":"s"}`}</small>
         <h1>Describe the outcome. Director chooses the smartest production path.</h1>
-        <p>Every scene must pass hierarchy review and carry an explicit asset strategy. Missing hero, video or 3D inputs can be sent directly to Forge Asset Creator instead of being treated as invisible production debt.</p>
+        <p>Every section must pass hierarchy review and carry an explicit asset strategy. Missing hero, video or 3D inputs can be sent directly to Forge Asset Creator instead of being treated as invisible production debt.</p>
 
         <label>Creative intent
           <textarea value={idea} onChange={(event) => { setIdea(event.target.value); setVariation(0); }} />
@@ -143,7 +143,7 @@ export function CreativeAgentWorkbench() {
 
         <div className="creative-agent__context">
           <span>Project<strong>{draft.project.name}</strong></span>
-          <span>Scenes<strong>{draft.experience.scenes.length}</strong></span>
+          <span>Sections<strong>{draft.experience.scenes.length}</strong></span>
           <span>Assets<strong>{assetCount(draft.assetManifest)}</strong></span>
           <span>Rig nodes<strong>{draft.experience.productRig?.nodes.length ?? 0}</strong></span>
         </div>
@@ -160,7 +160,7 @@ export function CreativeAgentWorkbench() {
           <div><span>INFERENCE</span><strong>{Math.round(promptIntelligence.confidence * 100)}%</strong></div>
           <div><span>HIERARCHY</span><strong>{report.hierarchy.overallScore}/10</strong></div>
           <div><span>EXECUTION MEDIUM</span><strong>{plan.mediumLabel}</strong></div>
-          <div><span>ASSET READY</span><strong>{plan.assetSummary.scenesBuildableNow.length}/{plan.sceneMoves.length} scenes</strong></div>
+          <div><span>ASSET READY</span><strong>{plan.assetSummary.scenesBuildableNow.length}/{plan.sceneMoves.length} sections</strong></div>
           <div><span>CREATE</span><strong>{plan.assetSummary.totalAssetsToCreate} required assets</strong></div>
           <div><span>EVIDENCE</span><strong>{Math.round(report.evidence.coverage * 100)}%</strong></div>
         </div>
@@ -223,8 +223,8 @@ export function CreativeAgentWorkbench() {
         <section className="creative-agent__asset-summary">
           <header><span>MANDATORY ASSET PLAN</span><h3>What must exist for this idea to work</h3></header>
           <div className="creative-agent__asset-summary-grid">
-            <article><span>CREATE FIRST</span><strong>{plan.assetSummary.highestLeverageAssetToCreateFirst ?? "No critical new asset"}</strong><p>Highest-leverage missing asset across the proposed scene arc.</p></article>
-            <article><span>BUILDABLE NOW</span><strong>{plan.assetSummary.scenesBuildableNow.length}</strong><p>{plan.assetSummary.scenesBuildableNow.join(" · ") || "No proposed scene is buildable yet."}</p></article>
+            <article><span>CREATE FIRST</span><strong>{plan.assetSummary.highestLeverageAssetToCreateFirst ?? "No critical new asset"}</strong><p>Highest-leverage missing asset across the proposed section arc.</p></article>
+            <article><span>BUILDABLE NOW</span><strong>{plan.assetSummary.scenesBuildableNow.length}</strong><p>{plan.assetSummary.scenesBuildableNow.join(" · ") || "No proposed section is buildable yet."}</p></article>
             <article className={plan.assetSummary.blockedScenes.length ? "is-blocked" : ""}><span>BLOCKED</span><strong>{plan.assetSummary.blockedScenes.length}</strong><p>{plan.assetSummary.blockedScenes.join(" · ") || "No critical asset blockers."}</p></article>
             <article><span>ASSET BURDEN</span><strong>{plan.assetSummary.totalAssetsToCreate} required</strong><p>{plan.assetSummary.totalExistingAssetsUsed} existing used · {plan.assetSummary.totalReusableAssets} additional reusable</p></article>
           </div>
@@ -233,7 +233,7 @@ export function CreativeAgentWorkbench() {
 
         <section className="creative-agent__plan">
           <header>
-            <div><span>EXECUTION PLAN</span><h3>Multi-scene direction + asset requirements</h3></div>
+            <div><span>EXECUTION PLAN</span><h3>Multi-section direction + asset requirements</h3></div>
             <button type="button" onClick={() => setPreviewOpen((value) => !value)}>{previewOpen ? "Hide patch" : "Preview patch"}</button>
           </header>
           <div className="creative-agent__scene-list">
@@ -265,7 +265,7 @@ export function CreativeAgentWorkbench() {
             {plan.patchSummary.map((line, index) => <code key={line} className={selectedScenes.includes(plan.sceneMoves[index]?.sceneIndex ?? -1) ? "" : "is-muted"}>{line}</code>)}
           </div>}
           <div className="creative-agent__apply-row">
-            <div><strong>{selectedScenes.length} scene{selectedScenes.length === 1 ? "" : "s"} selected · {selectedBlocked} asset-blocked · {hierarchyBlocked ? "hierarchy held" : "hierarchy clear"} · {originalityBlocked ? "originality held" : "originality clear"}</strong><span>Missing assets are never faked as complete. Signature/Flagship work cannot apply while prior-project repetition is unresolved.</span></div>
+            <div><strong>{selectedScenes.length} section{selectedScenes.length === 1 ? "" : "s"} selected · {selectedBlocked} asset-blocked · {hierarchyBlocked ? "hierarchy held" : "hierarchy clear"} · {originalityBlocked ? "originality held" : "originality clear"}</strong><span>Missing assets are never faked as complete. Signature/Flagship work cannot apply while prior-project repetition is unresolved.</span></div>
             <button className="creative-agent__apply" disabled={!plan.validation.valid || hierarchyBlocked || originalityBlocked} onClick={applyPlan}>Apply reversible plan</button>
           </div>
         </section>
@@ -279,7 +279,7 @@ export function CreativeAgentWorkbench() {
           </article>
           <article>
             <span>ASSET STRATEGY</span>
-            <h3>Every proposed scene must explain its production inputs.</h3>
+            <h3>Every proposed section must explain its production inputs.</h3>
             {plan.assetStrategy.map((item) => <p key={item}>{item}</p>)}
           </article>
           <article>

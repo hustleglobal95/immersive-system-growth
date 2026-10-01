@@ -293,7 +293,7 @@ export function SequencerEditor({
           <div><span>FRAME-ACCURATE AUTHORING</span><h2 id="sequencer-title">Motion sequencer</h2></div>
           <output>{scene.motionTracks.length} tracks / {scene.motionTracks.reduce((count, track) => count + track.keyframes.length, 0)} keys</output>
         </div>
-        <div className="sequencer-scenes" role="list" aria-label="Sequencer scenes">
+        <div className="sequencer-scenes" role="list" aria-label="Sequencer sections">
           {experience.scenes.map((item, index) => <button role="listitem" type="button" key={item.id} className={active === index ? "is-active" : ""} onClick={() => chooseScene(index)}>{String(index + 1).padStart(2, "0")} {item.label}</button>)}
         </div>
         <div className="sequencer-toolbar">
@@ -301,7 +301,7 @@ export function SequencerEditor({
           <button type="button" onClick={() => { setPlaying(false); setPlayhead(playbackRange[0]); }}>Stop</button>
           <label className="studio-check"><input type="checkbox" checked={loop} onChange={(event) => setLoop(event.target.checked)} />Loop</label>
           <label>Rate<select aria-label="Playback rate" value={playbackRate} onChange={(event) => setPlaybackRate(Number(event.target.value))}><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1">1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
-          <label>Seconds<input aria-label="Scene playback duration" className="sequencer-number" type="number" min="1" max="30" step="0.5" value={duration} onChange={(event) => setDuration(Math.max(1, Math.min(30, Number(event.target.value))))} /></label>
+          <label>Seconds<input aria-label="Section playback duration" className="sequencer-number" type="number" min="1" max="30" step="0.5" value={duration} onChange={(event) => setDuration(Math.max(1, Math.min(30, Number(event.target.value))))} /></label>
           <button type="button" onClick={undo} disabled={!canUndo} aria-label="Undo motion edit">Undo</button>
           <button type="button" onClick={redo} disabled={!canRedo} aria-label="Redo motion edit">Redo</button>
           <button type="button" onClick={copyKeys} disabled={!selection.length}>Copy</button>
@@ -319,7 +319,7 @@ export function SequencerEditor({
           <span>Preview range</span>
           <label>In<input aria-label="Playback range start" type="number" min="0" max={playbackRange[1] - 0.01} step="0.01" value={playbackRange[0]} onChange={(event) => setPlaybackRange([Math.max(0, Math.min(playbackRange[1] - 0.01, Number(event.target.value))), playbackRange[1]])} /></label>
           <label>Out<input aria-label="Playback range end" type="number" min={playbackRange[0] + 0.01} max="1" step="0.01" value={playbackRange[1]} onChange={(event) => setPlaybackRange([playbackRange[0], Math.min(1, Math.max(playbackRange[0] + 0.01, Number(event.target.value)))])} /></label>
-          <button type="button" onClick={() => setPlaybackRange([0, 1])}>Full scene</button>
+          <button type="button" onClick={() => setPlaybackRange([0, 1])}>Full section</button>
         </div>
         <div className="sequencer-add">
           <select aria-label="Motion target" value={target} onChange={(event) => setTarget(event.target.value)}>{groupedOptions(options)}</select>

@@ -3,6 +3,16 @@ import { discoverabilityDefaults, discoverabilitySchema } from "@/src/platform/d
 import { studioReferenceSchema } from "@/src/platform/studioReference";
 
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+const finite=z.number().finite();
+const vec3=z.tuple([finite,finite,finite]);
+const canvasNodeTransformSchema=z.object({
+  position:vec3,
+  rotation:vec3,
+  scale:vec3,
+}).strict();
+const canvasEditorSchema=z.object({
+  headlineTransforms:z.record(slug,canvasNodeTransformSchema).default({}),
+}).strict().default({headlineTransforms:{}});
 const relativeJsonPath = z
   .string()
   .regex(/^(?!\/)(?!.*\.\.)(?:[a-zA-Z0-9._-]+\/)*[a-zA-Z0-9._-]+\.json$/);
@@ -72,6 +82,7 @@ export const studioProjectSchema = z
     experienceModesPath: relativeJsonPath.default("config/experience-modes.json"),
     contentSources: z.array(contentSourceSchema).max(20).default([]),
     references: z.array(studioReferenceSchema).max(20).default([]),
+    canvasEditor: canvasEditorSchema,
     discoverability: discoverabilitySchema.default(discoverabilityDefaults()),
     deployment: z
       .object({

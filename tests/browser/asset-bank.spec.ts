@@ -22,7 +22,7 @@ test("Studio searches sources, exports provenance and inserts with undo and draf
   await page.getByRole("combobox", { name: "Preparation", exact: true }).selectOption("source");
   await expect(page.getByText("2375 matching entries", { exact: true })).toBeVisible();
   await page.locator('button[aria-pressed="false"]').filter({ hasText: "Needs preparation" }).first().click();
-  await expect(page.getByRole("button", { name: "Insert asset into scene" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Insert asset into section" })).toHaveCount(0);
   await page.getByRole("button", { name: "Add to shortlist", exact: true }).click();
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "Export shortlist (1)", exact: true }).click();
@@ -39,13 +39,13 @@ test("Studio searches sources, exports provenance and inserts with undo and draf
   await expect(page.getByText(/3D preview unavailable/)).toHaveCount(0);
   await page.getByRole("button", { name: "Close 3D preview", exact: true }).click();
   await expect(page.locator("canvas")).toHaveCount(0);
-  await page.getByRole("button", { name: "Insert asset into scene", exact: true }).click();
+  await page.getByRole("button", { name: "Insert asset into section", exact: true }).click();
   await expect(page.getByText(/Burger reference model added to/)).toBeVisible();
   const hasInserted = () => page.evaluate(() => JSON.parse(localStorage.getItem("forge-studio-v2")!).experience.assets.some((a: { id: string }) => a.id === "bank-forge-burger"));
   await expect.poll(hasInserted).toBe(true);
   await page.getByRole("button", { name: "Undo experience change" }).click();
   await expect.poll(hasInserted).toBe(false);
-  await page.getByRole("button", { name: "Insert asset into scene", exact: true }).click();
+  await page.getByRole("button", { name: "Insert asset into section", exact: true }).click();
   await expect.poll(hasInserted).toBe(true);
   await page.reload();
   await expect(page.locator("button.forge-next__health")).toBeVisible();
@@ -58,7 +58,7 @@ test("kit replacement requires review, blocks incompatible interactions and supp
   await page.getByRole("button", { name: "Review restaurant kit", exact: true }).click();
   await expect(page.getByText(/Applying this kit replaces/)).toBeVisible();
   await page.getByRole("button", { name: "Apply reviewed kit", exact: true }).click();
-  await expect(page.getByText(/Existing interactions reference scenes or hotspots outside this kit/)).toBeVisible();
+  await expect(page.getByText(/Existing interactions reference sections or hotspots outside this kit/)).toBeVisible();
 
   // Replacement remains blocked until the operator explicitly removes scene-bound interactions
   // that would become invalid under the new kit. Simulate that reviewed graph edit in the stored draft.

@@ -32,7 +32,7 @@ export function ProjectPanel({
         <div className="studio-card__head"><div><span>CAPABILITY</span><h2>Production readiness</h2></div><output>8 systems</output></div>
         <ul className="readiness-list">
           {[
-            ["Timeline", experience.scenes.length + " editable scenes"],
+            ["Timeline", experience.scenes.length + " editable sections"],
             ["Product rig", (experience.productRig?.nodes.length ?? 0) + " named nodes"],
             ["Media", experience.scenes.filter((scene) => scene.media).length + " transition layers"],
             ["Content", project.contentSources.length + " configured sources"],
@@ -40,7 +40,7 @@ export function ProjectPanel({
             ["Telemetry", project.telemetry.enabled ? "configured" : "disabled"],
           ].map(([label, value]) => <li key={label}><span>{label}</span><strong>{value}</strong></li>)}
         </ul>
-        <a className="studio-secondary" href="/lab">Open live scene lab</a>
+        <a className="studio-secondary" href="/lab">Open live section lab</a>
       </section>
     </div>
   );

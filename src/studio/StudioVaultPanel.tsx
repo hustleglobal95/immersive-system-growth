@@ -174,7 +174,7 @@ export function StudioVaultPanel({ draft, onClose, onProjectChange }: { draft: D
         <aside>
           <div className="production-vault-section-head"><span>PROJECTS</span><strong>{projects.filter((project) => project.status === "active").length} active</strong></div>
           <button type="button" className="production-vault-current" onClick={() => { setSelectedId(draft.project.id); if (!projects.some((project) => project.id === draft.project.id)) { setVersions([]); setEvents([]); } }}><span>CURRENT DRAFT</span><strong>{draft.project.name}</strong></button>
-          {projects.map((project) => <button type="button" key={project.id} data-selected={project.id === selectedId} onClick={() => setSelectedId(project.id)}><strong>{project.name}</strong><span>{project.sceneCount} scenes · {project.versionCount} versions</span><small>{project.status} · {new Date(project.updatedAt).toLocaleString()}</small></button>)}
+          {projects.map((project) => <button type="button" key={project.id} data-selected={project.id === selectedId} onClick={() => setSelectedId(project.id)}><strong>{project.name}</strong><span>{project.sceneCount} sections · {project.versionCount} versions</span><small>{project.status} · {new Date(project.updatedAt).toLocaleString()}</small></button>)}
         </aside>
 
         <main>

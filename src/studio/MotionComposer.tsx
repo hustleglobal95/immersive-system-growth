@@ -74,7 +74,7 @@ export function MotionComposer({
     const after = result.state.scenes[active]?.motionTracks.length ?? before;
     const additions = Math.max(0, after - before);
     if (!additions && result.state.scenes[active]?.motionTracks.length === before) {
-      setNotice("This scene already has authored motion on those targets.");
+      setNotice("This section already has authored motion on those targets.");
       return;
     }
     beginGroup();
@@ -91,7 +91,7 @@ export function MotionComposer({
           <output>{trackCount} tracks · {keyCount} keys</output>
         </div>
 
-        <div className="motion-composer__scene-strip" role="list" aria-label="Scenes">
+        <div className="motion-composer__scene-strip" role="list" aria-label="Sections">
           {experience.scenes.map((item, index) => (
             <button key={item.id} type="button" role="listitem" className={active === index ? "is-active" : ""} onClick={() => setActive(index)}>
               <small>{String(index + 1).padStart(2, "0")}</small>

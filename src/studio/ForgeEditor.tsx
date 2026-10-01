@@ -16,6 +16,12 @@ import { evaluateProjectHealth } from "@/src/platform/control-plane/projectHealt
 import { parseCinematicSystems } from "@/src/lib/cinematic/schema";
 import { cinematicSystems as initialCinematicSystems } from "@/src/lib/cinematic/config";
 import { StudioLivePreview } from "@/src/studio/StudioLivePreview";
+import {
+  ForgeViewportCanvas,
+  type ForgeCanvasSelection,
+  type ForgeNodeTransform,
+  type ForgeTransformMode,
+} from "@/src/studio/ForgeViewportCanvas";
 import { SequencerEditor } from "@/src/studio/SequencerEditor";
 import { InteractionGraphEditor } from "@/src/studio/InteractionGraphEditor";
 import { AssetManager } from "@/src/studio/AssetManager";
@@ -31,7 +37,7 @@ import { StudioIdentityBadge } from "@/src/studio/StudioIdentityBadge";
 import { LoopEnginePanel } from "@/src/studio/LoopEnginePanel";
 import { downloadJson, useStudioDraft } from "@/src/studio/useStudioDraft";
 import type { AssetManifest } from "@/src/types/assets";
-import type { ExperienceConfig, SceneDefinition } from "@/src/types/experience";
+import type { ExperienceConfig, SceneDefinition, Vec3 } from "@/src/types/experience";
 
 const initialExperience=parseExperience(rawExperience);
 const initialProject=parseStudioProject(rawProject);
@@ -61,6 +67,9 @@ export function ForgeEditor(){
   const [leftPanelTab,setLeftPanelTab]=useState<LeftPanelTab>("pages");
   const [inspectorTab,setInspectorTab]=useState<InspectorTab>("design");
   const [canvasTool,setCanvasTool]=useState<CanvasTool>("select");
+  const [storedCanvasSelection,setCanvasSelection]=useState<ForgeCanvasSelection>({kind:"section",id:initialExperience.scenes[0].id});
+  const [transformMode,setTransformMode]=useState<ForgeTransformMode>("translate");
+  const [previewMode,setPreviewMode]=useState(false);
   const [canvasViewport,setCanvasViewport]=useState<"desktop"|"tablet"|"mobile">("desktop");
   const [inspectorOpen,setInspectorOpen]=useState(true);
   const [aiOpen,setAiOpen]=useState(false);
@@ -81,6 +90,17 @@ export function ForgeEditor(){
 
   const sceneIndex=Math.min(activeScene,Math.max(0,draft.experience.scenes.length-1));
   const scene=draft.experience.scenes[sceneIndex];
+  const sectionAssets=draft.experience.assets.filter((asset)=>asset.persist || !asset.scenes || asset.scenes.includes(scene.id));
+  const canvasSelection:ForgeCanvasSelection=(storedCanvasSelection.kind==="asset"&&!sectionAssets.some((asset)=>asset.id===storedCanvasSelection.id))
+    || (storedCanvasSelection.kind==="hero"&&!draft.experience.heroVisible)
+    || storedCanvasSelection.kind==="section"
+      ? {kind:"section",id:scene.id} : storedCanvasSelection;
+  const selectedAsset=canvasSelection.kind==="asset" ? draft.experience.assets.find((asset)=>asset.id===canvasSelection.id) ?? null : null;
+  const headlineTransform=draft.project.canvasEditor.headlineTransforms[scene.id] ?? {
+    position:[0,.7,0] as Vec3,
+    rotation:[0,0,0] as Vec3,
+    scale:[1,1,1] as Vec3,
+  };
   const previewExperience=previewCandidate && candidate ? candidate : draft.experience;
   const projectHealth=useMemo(()=>evaluateProjectHealth({
     experience:draft.experience,
@@ -149,8 +169,12 @@ export function ForgeEditor(){
   function selectScene(index:number){
     setActiveScene(index);
     const next=draft.experience.scenes[index];
-    if(next) setCanvasProgress(midpoint(next.range));
+    if(next){
+      setCanvasProgress(midpoint(next.range));
+      setCanvasSelection({kind:"section",id:next.id});
+    }
     setPreviewCandidate(false);
+    setPreviewMode(false);
   }
 
   function setSceneCopy(key:"eyebrow"|"headline"|"body",value:string){
@@ -166,8 +190,8 @@ export function ForgeEditor(){
     const next:SceneDefinition={
       ...base,
       id,
-      label:`Scene ${draft.experience.scenes.length+1}`,
-      copy:{...base.copy,eyebrow:`${String(draft.experience.scenes.length+1).padStart(2,"0")} / SCENE`,headline:"New scene"},
+      label:`Section ${draft.experience.scenes.length+1}`,
+      copy:{...base.copy,eyebrow:`${String(draft.experience.scenes.length+1).padStart(2,"0")} / SECTION`,headline:"New section"},
       range:[0,1],
       motionTracks:[],
       blocks:[],
@@ -175,6 +199,7 @@ export function ForgeEditor(){
     const scenes=normalizeRanges([...draft.experience.scenes,next]);
     draft.setExperience((current)=>({...current,scenes}));
     setActiveScene(scenes.length-1);
+    setCanvasSelection({kind:"section",id:scenes[scenes.length-1].id});
     setCanvasProgress(midpoint(scenes[scenes.length-1].range));
   }
 
@@ -182,7 +207,9 @@ export function ForgeEditor(){
     if(draft.experience.scenes.length<=1) return;
     const scenes=normalizeRanges(draft.experience.scenes.filter((_,index)=>index!==sceneIndex));
     draft.setExperience((current)=>({...current,scenes}));
-    setActiveScene(Math.max(0,sceneIndex-1));
+    const nextIndex=Math.max(0,sceneIndex-1);
+    setActiveScene(nextIndex);
+    setCanvasSelection({kind:"section",id:scenes[nextIndex].id});
   }
 
   function startProject(name:string,kind:ProjectKind){
@@ -213,11 +240,68 @@ export function ForgeEditor(){
     draft.setCinematicSystems(parseCinematicSystems({version:1,defaults:initialCinematicSystems.defaults,scenes:[]}));
     setMode("design");
     setActiveScene(0);
+    setCanvasSelection({kind:"section",id:starter.scenes[0].id});
     setCandidate(null);
     setPreviewCandidate(false);
     setAiOpen(true);
     setNewProjectOpen(false);
     setNotice(`${name} created.`);
+  }
+
+  function selectCanvasNode(selection:ForgeCanvasSelection){
+    setCanvasSelection(selection);
+    setLeftPanelTab("layers");
+    setInspectorOpen(true);
+    setPreviewMode(false);
+    setInspectorTab("design");
+  }
+
+  function updateHeroTransform(transform:ForgeNodeTransform){
+    const scale=uniformScale(transform.scale,scene.hero.from.scale);
+    draft.setExperience((current)=>({
+      ...current,
+      scenes:current.scenes.map((item,index)=>index===sceneIndex
+        ? {...item,hero:{...item.hero,from:{position:transform.position,rotation:transform.rotation,scale}}}
+        : item),
+    }));
+  }
+
+  function updateAssetTransform(assetId:string,transform:ForgeNodeTransform){
+    const scale=uniformScale(transform.scale,draft.experience.assets.find((asset)=>asset.id===assetId)?.scale??1);
+    draft.setExperience((current)=>({
+      ...current,
+      assets:current.assets.map((asset)=>asset.id===assetId
+        ? {...asset,position:transform.position,rotation:transform.rotation,scale}
+        : asset),
+    }));
+  }
+
+  function updateHeadlineTransform(transform:ForgeNodeTransform){
+    draft.setProject((current)=>({
+      ...current,
+      canvasEditor:{
+        ...current.canvasEditor,
+        headlineTransforms:{...current.canvasEditor.headlineTransforms,[scene.id]:transform},
+      },
+    }));
+  }
+
+  function selectedTransform():ForgeNodeTransform|null{
+    if(canvasSelection.kind==="hero"){
+      const hero=scene.hero.from;
+      return {position:hero.position,rotation:hero.rotation,scale:[hero.scale,hero.scale,hero.scale]};
+    }
+    if(canvasSelection.kind==="asset"&&selectedAsset){
+      return {position:selectedAsset.position,rotation:selectedAsset.rotation,scale:[selectedAsset.scale,selectedAsset.scale,selectedAsset.scale]};
+    }
+    if(canvasSelection.kind==="text") return headlineTransform;
+    return null;
+  }
+
+  function updateSelectedTransform(next:ForgeNodeTransform){
+    if(canvasSelection.kind==="hero") updateHeroTransform(next);
+    else if(canvasSelection.kind==="asset") updateAssetTransform(canvasSelection.id,next);
+    else if(canvasSelection.kind==="text") updateHeadlineTransform(next);
   }
 
   function runCommand(raw:string){
@@ -267,9 +351,9 @@ export function ForgeEditor(){
         <button type="button" aria-label="Undo" disabled={!draft.canUndoExperience} onClick={draft.undoExperience}><Icon name="undo" /></button>
         <button type="button" aria-label="Redo" disabled={!draft.canRedoExperience} onClick={draft.redoExperience}><Icon name="redo" /></button>
         <button type="button" className="forge-next__health" data-status={projectHealth.status} onClick={()=>setMode("quality")}><i />{projectHealth.status==="ready"?"Ready":projectHealth.status}</button>
-        <button type="button" className="forge-next__preview-action" onClick={()=>{setMode("design");setPreviewCandidate(false);}}><Icon name="play" /> Preview</button>
+        <button type="button" className="forge-next__preview-action" onClick={()=>{setMode("design");setPreviewMode((value)=>!value);}}><Icon name="play" /> {previewMode?"Edit":"Preview"}</button>
         <button type="button" className="forge-next__publish" onClick={()=>setMode("publish")}>Publish</button>
-        <details className="forge-next__menu"><summary aria-label="Project menu"><Icon name="more" /></summary><div>
+        <details className="forge-next__menu"><summary role="button" aria-label="Project menu"><Icon name="more" /></summary><div>
           <button type="button" onClick={()=>setNewProjectOpen(true)}>New website</button>
           <button type="button" onClick={()=>setVaultOpen(true)}>Versions</button>
           <button type="button" onClick={()=>setLoopOpen(true)}>Improve current site</button>
@@ -308,17 +392,18 @@ export function ForgeEditor(){
             <button type="button" aria-label="Collapse layers" onClick={()=>setLayersOpen(false)}><Icon name="panelLeft" /></button>
           </div>
           {leftPanelTab==="pages" ? <>
-            <div className="forge-next__panel-section-title"><span>Website</span><button type="button" onClick={addScene} aria-label="＋ Add scene"><Icon name="plus" /></button></div>
-            <div className="forge-next__scene-list">
+            <div className="forge-next__panel-section-title"><span>Sections</span><button type="button" onClick={addScene} aria-label="＋ Add section"><Icon name="plus" /></button></div>
+            <div className="forge-next__scene-list" aria-label="Website sections">
               {draft.experience.scenes.map((item,index)=><button key={item.id} type="button" data-active={index===sceneIndex} onClick={()=>selectScene(index)}>
-                <Icon name="page" /><div><strong>{item.label}</strong><small>{item.copy.headline}</small></div><span>{String(index+1).padStart(2,"0")}</span>
+                <Icon name="frame" /><div><strong>{item.label}</strong><small>{item.copy.headline}</small></div><span>{String(index+1).padStart(2,"0")}</span>
               </button>)}
             </div>
-          </> : <div className="forge-next__layer-tree">
-            <LayerRow icon="frame" label={scene.label} depth={0} active />
-            <LayerRow icon="text" label="Copy" depth={1} onClick={()=>{setInspectorTab("content");setCanvasTool("text");}} />
-            {scene.media&&<LayerRow icon="media" label={scene.media.kind==="video"?"Video":"Media"} depth={1} onClick={()=>setMode("assets")} />}
-            {draft.experience.heroModel&&<LayerRow icon="cube" label="Hero 3D" depth={1} onClick={()=>setMode("assets")} />}
+          </> : <div className="forge-next__layer-tree" aria-label="Section elements">
+            <LayerRow icon="frame" label={scene.label} depth={0} active={canvasSelection.kind==="section"} onClick={()=>selectCanvasNode({kind:"section",id:scene.id})} />
+            <LayerRow icon="text" label="Headline" depth={1} active={canvasSelection.kind==="text"} onClick={()=>{selectCanvasNode({kind:"text",id:"headline"});setCanvasTool("text");}} />
+            {scene.media&&<LayerRow icon="media" label={scene.media.kind==="video"?"Background video":"Background media"} depth={1} onClick={()=>setMode("assets")} />}
+            {draft.experience.heroVisible&&<LayerRow icon="cube" label="Hero 3D" depth={1} active={canvasSelection.kind==="hero"} onClick={()=>selectCanvasNode({kind:"hero",id:"hero"})} />}
+            {sectionAssets.map((asset)=><LayerRow key={asset.id} icon={asset.kind==="model"?"cube":"media"} label={asset.id} depth={1} active={canvasSelection.kind==="asset"&&canvasSelection.id===asset.id} onClick={()=>selectCanvasNode({kind:"asset",id:asset.id})} />)}
             <LayerRow icon="motion" label={"Motion · "+scene.motionTracks.length} depth={1} onClick={()=>setMode("motion")} />
             <LayerRow icon="bolt" label="Interactions" depth={1} onClick={()=>setMode("interactions")} />
           </div>}
@@ -333,30 +418,48 @@ export function ForgeEditor(){
           {!inspectorOpen&&<button className="forge-next__edge-toggle forge-next__edge-toggle--right" type="button" onClick={()=>setInspectorOpen(true)}><Icon name="panelLeft" /></button>}
 
           <div className="forge-next__canvas-bar">
-            <div className="forge-next__canvas-context"><span>{scene?.label}</span><i>/</i><strong>Desktop</strong></div>
+            <div className="forge-next__canvas-context"><span>{scene?.label}</span><i>/</i><strong>{previewMode||previewCandidate?"Preview":"Edit stage"}</strong></div>
             <div className="forge-next__viewport-switcher" aria-label="Canvas viewport">
               <button type="button" className={canvasViewport==="desktop"?"active":""} aria-pressed={canvasViewport==="desktop"} onClick={()=>setCanvasViewport("desktop")}><Icon name="desktop" /> Desktop</button>
               <button type="button" className={canvasViewport==="tablet"?"active":""} aria-pressed={canvasViewport==="tablet"} aria-label="Tablet viewport" onClick={()=>setCanvasViewport("tablet")}><Icon name="tablet" /></button>
               <button type="button" className={canvasViewport==="mobile"?"active":""} aria-pressed={canvasViewport==="mobile"} aria-label="Mobile viewport" onClick={()=>setCanvasViewport("mobile")}><Icon name="phone" /></button>
             </div>
             <div className="forge-next__canvas-actions">
-              {candidate&&<div className="forge-next__candidate-toggle"><button type="button" className={previewCandidate?"":"active"} onClick={()=>setPreviewCandidate(false)}>Current</button><button type="button" className={previewCandidate?"active":""} onClick={()=>setPreviewCandidate(true)}>Candidate</button></div>}
+              {!previewMode&&!previewCandidate&&<div className="forge-next__transform-modes" role="group" aria-label="Transform mode">
+                {(["translate","rotate","scale"] as const).map((item)=><button type="button" key={item} aria-pressed={transformMode===item} onClick={()=>setTransformMode(item)}>{item==="translate"?"Move":item==="rotate"?"Rotate":"Scale"}</button>)}
+              </div>}
+              {candidate&&<div className="forge-next__candidate-toggle"><button type="button" className={previewCandidate?"":"active"} onClick={()=>{setPreviewCandidate(false);setPreviewMode(false);}}>Current</button><button type="button" className={previewCandidate?"active":""} onClick={()=>{setPreviewCandidate(true);setPreviewMode(true);}}>Candidate</button></div>}
+              <button type="button" onClick={()=>{setPreviewMode((value)=>!value);setPreviewCandidate(false);}}><Icon name="play" /> {previewMode?"Edit stage":"Preview"}</button>
               <button type="button" onClick={()=>setMode("motion")}><Icon name="motion" /> Animate</button>
             </div>
           </div>
 
-          <div className="forge-next__canvas">
-            <div className="forge-next__artboard-label"><span>{draft.project.name}</span><small>1200 px</small></div>
-            <StudioLivePreview
-              experience={previewExperience}
-              active={Math.min(sceneIndex,previewExperience.scenes.length-1)}
-              setActive={(index)=>{const target=previewExperience.scenes[index];if(target)setCanvasProgress(midpoint(target.range));setActiveScene(Math.min(index,draft.experience.scenes.length-1));}}
-              progress={canvasProgress}
-              onProgressChange={setCanvasProgress}
-              cinematicSystems={draft.cinematicSystems}
-              viewport={canvasViewport}
-              onViewportChange={setCanvasViewport}
-            />
+          <div className="forge-next__canvas" data-canvas-mode={previewMode||previewCandidate?"preview":"edit"}>
+            <div className="forge-next__artboard-label"><span>{draft.project.name}</span><small>{previewMode||previewCandidate?"Website preview":"3D edit stage"}</small></div>
+            {previewMode||previewCandidate
+              ? <StudioLivePreview
+                  experience={previewExperience}
+                  active={Math.min(sceneIndex,previewExperience.scenes.length-1)}
+                  setActive={(index)=>{const target=previewExperience.scenes[index];if(target)setCanvasProgress(midpoint(target.range));setActiveScene(Math.min(index,draft.experience.scenes.length-1));}}
+                  progress={canvasProgress}
+                  onProgressChange={setCanvasProgress}
+                  cinematicSystems={draft.cinematicSystems}
+                  viewport={canvasViewport}
+                  onViewportChange={setCanvasViewport}
+                />
+              : <ForgeViewportCanvas
+                  experience={draft.experience}
+                  activeSection={sceneIndex}
+                  selection={canvasSelection}
+                  transformMode={transformMode}
+                  headlineTransform={headlineTransform}
+                  onSelect={selectCanvasNode}
+                  onHeroTransform={updateHeroTransform}
+                  onAssetTransform={updateAssetTransform}
+                  onHeadlineTransform={updateHeadlineTransform}
+                  onTransformBegin={draft.beginExperienceGroup}
+                  onTransformEnd={draft.endExperienceGroup}
+                />}
             <button type="button" className="forge-next__agent-launch" aria-label="AI Build" onClick={()=>setAiOpen((value)=>!value)} aria-expanded={aiOpen}><Icon name="sparkles" /><span>Ask Forge</span><kbd>⌘ J</kbd></button>
           </div>
 
@@ -391,12 +494,23 @@ export function ForgeEditor(){
           </div>
           <div className="forge-next__inspector-scroll">
             {inspectorTab==="design" ? <>
-              <InspectorSection title="Scene">
-                <label>Name<input value={scene.label} maxLength={80} onChange={(event)=>draft.setExperience((current)=>({...current,scenes:current.scenes.map((item,index)=>index===sceneIndex?{...item,label:event.target.value}:item)}))}/></label>
-                <div className="forge-next__field-grid"><Readout label="Range" value={Math.round((scene.range[1]-scene.range[0])*100)+"%"} /><Readout label="Tracks" value={String(scene.motionTracks.length)} /></div>
+              <InspectorSection title="Selected element">
+                <Readout label="Type" value={canvasSelection.kind==="section"?"Section":canvasSelection.kind==="hero"?"Hero 3D":canvasSelection.kind==="asset"?"3D / media asset":"3D headline"} />
+                <Readout label="Selection" value={canvasSelection.kind==="asset"?canvasSelection.id:canvasSelection.kind==="text"?"Headline":canvasSelection.kind==="hero"?"Hero":scene.label} />
+                {selectedTransform()&&<TransformInspector
+                  transform={selectedTransform()!}
+                  mode={transformMode}
+                  uniformScale={canvasSelection.kind!=="text"}
+                  onModeChange={setTransformMode}
+                  onChange={updateSelectedTransform}
+                />}
               </InspectorSection>
-              <InspectorSection title="Experience">
-                <Readout label="Hero" value={draft.experience.heroModel?"3D model":"None"} />
+              <InspectorSection title="Section">
+                <label>Name<input value={scene.label} maxLength={80} onChange={(event)=>draft.setExperience((current)=>({...current,scenes:current.scenes.map((item,index)=>index===sceneIndex?{...item,label:event.target.value}:item)}))}/></label>
+                <div className="forge-next__field-grid"><Readout label="Scroll span" value={Math.round((scene.range[1]-scene.range[0])*100)+"%"} /><Readout label="Motion tracks" value={String(scene.motionTracks.length)} /></div>
+              </InspectorSection>
+              <InspectorSection title="Website systems">
+                <Readout label="Hero" value={draft.experience.heroVisible?"Enabled":"Hidden"} />
                 <Readout label="Media" value={scene.media?.kind??"None"} />
                 <Readout label="References" value={String(draft.project.references.length)} />
                 <div className="forge-next__inspector-actions"><button type="button" onClick={()=>setMode("motion")}><Icon name="motion" /> Motion</button><button type="button" onClick={()=>setMode("interactions")}><Icon name="bolt" /> Interactions</button><button type="button" onClick={()=>setMode("effects")}><Icon name="sparkles" /> Effects</button><button type="button" onClick={()=>setMode("references")}><Icon name="reference" /> References</button></div>
@@ -416,7 +530,7 @@ export function ForgeEditor(){
                 <button type="button" className="forge-next__row-action" onClick={()=>setMode("references")}><span>Reference direction</span><Icon name="chevronRight" /></button>
               </InspectorSection>
             </>}
-            <section className="forge-next__danger"><button type="button" disabled={draft.experience.scenes.length<=1} onClick={removeScene}>Delete scene</button></section>
+            <section className="forge-next__danger"><button type="button" disabled={draft.experience.scenes.length<=1} onClick={removeScene}>Delete section</button></section>
           </div>
         </aside>
       </> : <section className="forge-next__workspace">
@@ -453,6 +567,46 @@ export function ForgeEditor(){
 }
 function LayerRow({icon,label,depth,active,onClick}:{icon:IconName;label:string;depth:number;active?:boolean;onClick?:()=>void}){
   return <button type="button" className="forge-next__layer-row" data-active={active} style={{paddingLeft:10+depth*18}} onClick={onClick}><Icon name={icon}/><span>{label}</span></button>;
+}
+
+function TransformInspector({transform,mode,uniformScale,onModeChange,onChange}:{
+  transform:ForgeNodeTransform;
+  mode:ForgeTransformMode;
+  uniformScale:boolean;
+  onModeChange:(mode:ForgeTransformMode)=>void;
+  onChange:(transform:ForgeNodeTransform)=>void;
+}){
+  return <div className="forge-next__transform-inspector">
+    <div className="forge-next__transform-tabs" role="group" aria-label="Transform inspector mode">
+      {(["translate","rotate","scale"] as const).map((item)=><button key={item} type="button" aria-pressed={mode===item} onClick={()=>onModeChange(item)}>{item==="translate"?"Move":item==="rotate"?"Rotate":"Scale"}</button>)}
+    </div>
+    <VectorFields label="Position" value={transform.position} step={.1} onChange={(position)=>onChange({...transform,position})}/>
+    <VectorFields label="Rotation" value={transform.rotation.map((value)=>radToDeg(value)) as Vec3} step={1} suffix="°" onChange={(rotation)=>onChange({...transform,rotation:rotation.map((value)=>degToRad(value)) as Vec3})}/>
+    <VectorFields label="Scale" value={transform.scale} step={.05} min={.01} onChange={(scale)=>{
+      const value=scale.find((value,index)=>value!==transform.scale[index])??scale[0];
+      onChange({...transform,scale:uniformScale?[value,value,value]:scale});
+    }}/>
+  </div>;
+}
+
+function VectorFields({label,value,onChange,step,min,suffix}:{label:string;value:Vec3;onChange:(value:Vec3)=>void;step:number;min?:number;suffix?:string}){
+  return <div className="forge-next__vector-field">
+    <span>{label}</span>
+    <div>{(["X","Y","Z"] as const).map((axis,index)=><label key={axis}><small>{axis}</small><input
+      aria-label={label+" "+axis}
+      type="number"
+      step={step}
+      min={min}
+      value={Number(value[index].toFixed(label==="Rotation"?1:3))}
+      onChange={(event)=>{
+        const next=[...value] as Vec3;
+        const parsed=Number(event.target.value);
+        if(!event.target.value || !Number.isFinite(parsed)) return;
+        next[index]=min===undefined?parsed:Math.max(min,parsed);
+        onChange(next);
+      }}
+    />{suffix&&<i>{suffix}</i>}</label>)}</div>
+  </div>;
 }
 
 function InspectorSection({title,children}:{title:string;children:React.ReactNode}){
@@ -543,7 +697,7 @@ function NewProjectDialog({name,setName,kind,setKind,onCreate,onClose}:{name:str
 
 function makeStarterExperience(base:ExperienceConfig,name:string,kind:ProjectKind):ExperienceConfig{
   const source=structuredClone(base.scenes[0]);
-  const labels:Record<ProjectKind,string>={"real-estate":"Arrival",product:"Hero Product",hospitality:"Arrival",automotive:"Vehicle Reveal",fashion:"Opening Look",custom:"Opening Scene"};
+  const labels:Record<ProjectKind,string>={"real-estate":"Arrival",product:"Hero Product",hospitality:"Arrival",automotive:"Vehicle Reveal",fashion:"Opening Look",custom:"Opening Section"};
   source.id="opening";
   source.label=labels[kind];
   source.range=[0,1];
@@ -566,4 +720,7 @@ function uniqueSceneId(experience:ExperienceConfig,base:string){
 }
 function slug(value:string){return value.toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,64);}
 function midpoint(range:[number,number]){return range[0]+(range[1]-range[0])*.5;}
+function uniformScale(scale:Vec3,previous:number){return Math.max(.01,scale.find((value)=>Math.abs(value-previous)>.000001)??previous);}
+function radToDeg(value:number){return value*180/Math.PI;}
+function degToRad(value:number){return value*Math.PI/180;}
 function validKind(value:ProjectKind|null):value is ProjectKind{return ["real-estate","product","hospitality","automotive","fashion","custom"].includes(value??"");}

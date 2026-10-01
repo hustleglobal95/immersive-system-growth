@@ -63,7 +63,7 @@ export function AssetManager({ setExperience, assetManifest, setAssetManifest, a
         : { kind: "image" as const, src: asset.path, alt: asset.file.name, transition: "dissolve" as const, maskSoftness: 18, layers: [], position: [50, 50] as [number, number], mobilePosition: [50, 50] as [number, number], overlap: .25, direction: "up" as const, zoom: 1.05, textEnd: .28 };
       return replaceScene(current, active, { ...scene, media });
     });
-    setMessage(asset.group === "models" ? "Draft hero model updated." : "Active scene media updated.");
+    setMessage(asset.group === "models" ? "Draft hero model updated." : "Active section media updated.");
   };
 
   return <div className="studio-grid studio-grid--assets">

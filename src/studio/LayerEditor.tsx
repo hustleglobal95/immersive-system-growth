@@ -30,14 +30,14 @@ export function LayerEditor({ experience, setExperience, active, setActive }: { 
   return <div className="studio-grid studio-grid--layers">
     <section className="studio-card">
       <div className="studio-card__head"><div><span>TRANSITION STACK</span><h2>Image and color layers</h2></div><output>{layers.length} / 6</output></div>
-      <label>Scene<select value={active} onChange={(event) => setActive(Number(event.target.value))}>{experience.scenes.map((item, index) => <option key={item.id} value={index}>{String(index + 1).padStart(2, "0")} / {item.label}</option>)}</select></label>
-      {!scene.media ? <div className="layer-empty"><p>This scene needs a base media layer before overlays can be composed.</p><button type="button" className="studio-primary" onClick={addMedia}>Add reference media</button></div> : <>
+      <label>Section<select value={active} onChange={(event) => setActive(Number(event.target.value))}>{experience.scenes.map((item, index) => <option key={item.id} value={index}>{String(index + 1).padStart(2, "0")} / {item.label}</option>)}</select></label>
+      {!scene.media ? <div className="layer-empty"><p>This section needs a base media layer before overlays can be composed.</p><button type="button" className="studio-primary" onClick={addMedia}>Add reference media</button></div> : <>
         <div className="studio-actions"><button type="button" disabled={layers.length >= 6} onClick={() => addLayer("color")}>Add color flash</button><button type="button" disabled={layers.length >= 6} onClick={() => addLayer("image")}>Add image overlay</button></div>
         <ol className="layer-stack">{layers.map((layer, index) => <li key={layer.id}><span>{String(index + 1).padStart(2, "0")}</span><strong>{layer.id}</strong><small>{layer.kind} / {layer.blendMode}</small><button type="button" onClick={() => updateLayers(layers.filter((_, position) => position !== index))}>Remove</button></li>)}</ol>
       </>}
     </section>
     <section className="studio-card">
-      <div className="studio-card__head"><div><span>LAYER INSPECTOR</span><h2>Timing and blend</h2></div><code>scene local 0 to 1</code></div>
+      <div className="studio-card__head"><div><span>LAYER INSPECTOR</span><h2>Timing and blend</h2></div><code>section local 0 to 1</code></div>
       {!layers.length ? <p className="studio-muted">Add a layer to control its local timing envelope, blend mode and movement.</p> : layers.map((layer, index) => <details className="layer-inspector" key={layer.id} open={index === layers.length - 1}>
         <summary>{String(index + 1).padStart(2, "0")} / {layer.id}</summary>
         <label>Layer ID<input value={layer.id} onChange={(event) => updateLayer(index, { id: slug(event.target.value) })} /></label>
