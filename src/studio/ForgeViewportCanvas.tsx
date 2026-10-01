@@ -196,7 +196,7 @@ function EditableNode({
   onEnd:()=>void;
   children:ReactNode;
 }){
-  const root=useRef<Group>(null);
+  const root=useRef<Group>(null!);
   const dragging=useRef(false);
 
   useLayoutEffect(()=>{
@@ -232,6 +232,7 @@ function EditableNode({
 
   if(!selected)return node;
   return <TransformControls
+    object={root}
     mode={mode}
     space={mode==="translate"?"world":"local"}
     size={.78}
