@@ -61,6 +61,7 @@ export function ForgeEditor(){
   const [leftPanelTab,setLeftPanelTab]=useState<LeftPanelTab>("pages");
   const [inspectorTab,setInspectorTab]=useState<InspectorTab>("design");
   const [canvasTool,setCanvasTool]=useState<CanvasTool>("select");
+  const [canvasViewport,setCanvasViewport]=useState<"desktop"|"tablet"|"mobile">("desktop");
   const [inspectorOpen,setInspectorOpen]=useState(true);
   const [aiOpen,setAiOpen]=useState(false);
   const [commandOpen,setCommandOpen]=useState(false);
@@ -334,9 +335,9 @@ export function ForgeEditor(){
           <div className="forge-next__canvas-bar">
             <div className="forge-next__canvas-context"><span>{scene?.label}</span><i>/</i><strong>Desktop</strong></div>
             <div className="forge-next__viewport-switcher" aria-label="Canvas viewport">
-              <button type="button" className="active"><Icon name="desktop" /> Desktop</button>
-              <button type="button"><Icon name="tablet" /></button>
-              <button type="button"><Icon name="phone" /></button>
+              <button type="button" className={canvasViewport==="desktop"?"active":""} aria-pressed={canvasViewport==="desktop"} onClick={()=>setCanvasViewport("desktop")}><Icon name="desktop" /> Desktop</button>
+              <button type="button" className={canvasViewport==="tablet"?"active":""} aria-pressed={canvasViewport==="tablet"} aria-label="Tablet viewport" onClick={()=>setCanvasViewport("tablet")}><Icon name="tablet" /></button>
+              <button type="button" className={canvasViewport==="mobile"?"active":""} aria-pressed={canvasViewport==="mobile"} aria-label="Mobile viewport" onClick={()=>setCanvasViewport("mobile")}><Icon name="phone" /></button>
             </div>
             <div className="forge-next__canvas-actions">
               {candidate&&<div className="forge-next__candidate-toggle"><button type="button" className={previewCandidate?"":"active"} onClick={()=>setPreviewCandidate(false)}>Current</button><button type="button" className={previewCandidate?"active":""} onClick={()=>setPreviewCandidate(true)}>Candidate</button></div>}
@@ -353,8 +354,10 @@ export function ForgeEditor(){
               progress={canvasProgress}
               onProgressChange={setCanvasProgress}
               cinematicSystems={draft.cinematicSystems}
+              viewport={canvasViewport}
+              onViewportChange={setCanvasViewport}
             />
-            <button type="button" className="forge-next__agent-launch" onClick={()=>setAiOpen((value)=>!value)} aria-expanded={aiOpen}><Icon name="sparkles" /><span>Ask Forge</span><kbd>⌘ J</kbd></button>
+            <button type="button" className="forge-next__agent-launch" aria-label="AI Build" onClick={()=>setAiOpen((value)=>!value)} aria-expanded={aiOpen}><Icon name="sparkles" /><span>Ask Forge</span><kbd>⌘ J</kbd></button>
           </div>
 
           {aiOpen&&<aside className="forge-next__ai-drawer">
@@ -474,7 +477,7 @@ function modeIcon(mode:Mode|"quality"|"publish"):IconName {
 }
 
 function Icon({name}:{name:IconName}){
-  const common={width:16,height:16,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.7,strokeLinecap:"round" as const,strokeLinejoin:"round" as const,ariaHidden:true};
+  const common={width:16,height:16,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.7,strokeLinecap:"round" as const,strokeLinejoin:"round" as const,"aria-hidden":true};
   const paths:Record<IconName,React.ReactNode>={
     cursor:<><path d="M5 3l12 9-6 1.4L9 19z"/><path d="M11 13l4 5"/></>,
     frame:<><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 4v4H4M16 4v4h4M8 20v-4H4M16 20v-4h4"/></>,
