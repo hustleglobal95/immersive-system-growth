@@ -76,6 +76,14 @@ export const studioActionabilityContracts:readonly StudioActionabilityContract[]
     browserEvidence:"Build Animate provides direct motion authoring before the expert sequencer",
   },
   {
+    id:"editor.references",
+    label:"Website References",
+    mode:"author",
+    source:"src/studio/ReferenceWorkbench.tsx",
+    evidence:["PROJECT REFERENCES","Import analysis JSON","FORGE IMPLEMENTATION MAP","studioReferenceFromCorpus"],
+    browserEvidence:"References workspace persists evidence-directed rules and feeds AI Build",
+  },
+  {
     id:"editor.motion",
     label:"Motion Sequencer",
     mode:"author",
