@@ -11,8 +11,8 @@ test("default Studio is the simple Forge product",()=>{
   assert.match(page,/SimpleForgeStudio/);
   assert.doesNotMatch(page,/ProductionStudioWorkbench/);
   assert.match(simple,/type Mode="build"\|"edit"\|"finish"/);
-  assert.match(simple,/>Build Website</);
-  assert.match(simple,/>Finish Website</);
+  assert.match(simple,/"Build Website"/);
+  assert.match(simple,/"Finish Website"/);
   assert.match(simple,/href="\/studio\/advanced"/);
 });
 
