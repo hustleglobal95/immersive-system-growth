@@ -32,6 +32,8 @@ export function StudioLivePreview({
   gizmo = null,
   reviewMode = false,
   reviewViewport,
+  viewport: controlledViewport,
+  onViewportChange,
   cinematicSystems = productionCinematicSystems,
 }: {
   experience: ExperienceConfig;
@@ -42,11 +44,13 @@ export function StudioLivePreview({
   gizmo?: StudioGizmoState | null;
   reviewMode?: boolean;
   reviewViewport?: "desktop" | "mobile";
+  viewport?: Viewport;
+  onViewportChange?: (viewport:Viewport)=>void;
   cinematicSystems?: CinematicSystemsManifest;
 }) {
   const [internalProgress, setInternalProgress] = useState(() => midpoint(experience.scenes[active].range));
   const progress = controlledProgress ?? internalProgress;
-  const [viewport, setViewport] = useState<Viewport>(reviewViewport ?? "desktop");
+  const [internalViewport, setInternalViewport] = useState<Viewport>(reviewViewport ?? controlledViewport ?? "desktop");
   const [playing, setPlaying] = useState(false);
   const progressRef = useRef(progress);
   const onProgressChangeRef = useRef(onProgressChange);
@@ -125,7 +129,7 @@ export function StudioLivePreview({
     if (onProgressChangeRef.current) onProgressChangeRef.current(next);
     else setInternalProgress(next);
   };
-  const effectiveViewport:Viewport = reviewViewport ?? viewport;
+  const effectiveViewport:Viewport = reviewViewport ?? controlledViewport ?? internalViewport;
   const aspect = effectiveViewport === "mobile" ? 9 / 16 : effectiveViewport === "tablet" ? 4 / 3 : 16 / 9;
   const sampled = sampleExperience(progress, false, experience, aspect);
 
@@ -143,7 +147,7 @@ export function StudioLivePreview({
       </div>}
       {!reviewMode && <div className="studio-preview__toolbar">
         <div role="group" aria-label="Preview viewport">
-          {(["desktop", "tablet", "mobile"] as const).map((size) => <button type="button" key={size} aria-pressed={viewport === size} onClick={() => setViewport(size)}>{size}</button>)}
+          {(["desktop", "tablet", "mobile"] as const).map((size) => <button type="button" key={size} aria-pressed={effectiveViewport === size} onClick={() => { setInternalViewport(size); onViewportChange?.(size); }}>{size}</button>)}
         </div>
         <label>Quality<select aria-label="Preview quality" value={quality} onChange={(event) => useExperienceStore.getState().setQuality(event.target.value as QualityMode)}><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label>
         <span>{stats.calls || stats.triangles ? `Render · ${stats.calls} calls · ${stats.triangles.toLocaleString()} triangles` : "Renderer ready"}</span>
