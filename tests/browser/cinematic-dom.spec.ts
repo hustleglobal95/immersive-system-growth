@@ -11,15 +11,15 @@ test("DOM choreography reverses and reduced motion restores readable baseline", 
   });
   await expect.poll(panelY).toBeGreaterThan(5);
 
-  // The current Casa Lumen opening is intentionally settled. Scene 02 carries the first
-  // scroll-gated headline entrance, so use one of its generated word boxes to prove seek/reverse.
+  // Scene 02 carries a scroll-gated headline entrance, so use one of its generated
+  // word boxes to prove seek and reverse against the active project.
   const movingWord = page.locator('[data-motion-scene="1"] [data-motion-headline] .forge-split__inner').first();
   const wordY = () => movingWord.evaluate((element) => new DOMMatrix(getComputedStyle(element).transform).m42);
   await expect.poll(wordY).toBeGreaterThan(5);
 
-  await page.locator('a[href="#material"]').first().click();
+  await page.locator('a[href="#choice"]').first().click();
   await expect.poll(wordY).toBeLessThan(.1);
-  await page.locator('a[href="#parti"]').first().click();
+  await page.locator('a[href="#place"]').first().click();
   await expect.poll(wordY).toBeGreaterThan(5);
 
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -31,9 +31,9 @@ test("DOM choreography reverses and reduced motion restores readable baseline", 
   await page.emulateMedia({ reducedMotion: "no-preference" });
   // Prove that motion actually resumes by seeking the same active choreography through
   // a settled state and back into its entrance state after reduced motion is disabled.
-  await page.locator('a[href="#material"]').first().click();
+  await page.locator('a[href="#choice"]').first().click();
   await expect.poll(wordY).toBeLessThan(.1);
-  await page.locator('a[href="#parti"]').first().click();
+  await page.locator('a[href="#place"]').first().click();
   await expect.poll(wordY).toBeGreaterThan(5);
 
   await page.setViewportSize({ width: 390, height: 844 });

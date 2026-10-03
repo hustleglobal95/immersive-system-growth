@@ -40,19 +40,23 @@ test("generated stress fixture preserves invariants at flagship-scale scene coun
     id: `stress-scene-${index + 1}`,
     label: `Stress Scene ${index + 1}`,
     range: [index / 16, (index + 1) / 16] as [number, number],
+    blocks: source.blocks.map((block, blockIndex) => ({
+      ...structuredClone(block),
+      id: `stress-block-${index}-${blockIndex}`,
+    })),
     motionTracks: Array.from({ length: 4 }, (__, trackIndex) => ({
-      ...structuredClone(source.motionTracks[trackIndex % Math.max(1, source.motionTracks.length)] ?? {
+      ...structuredClone({
         id: "generated",
         label: "Generated",
         type: "number",
-        target: "copy.opacity",
+        target: trackIndex === 0 ? "copy.opacity" : trackIndex === 1 ? "copy.y" : trackIndex === 2 ? "camera.fov" : "world.exposure",
         blend: "absolute",
         viewport: "all",
         muted: false,
         locked: false,
         keyframes: [
-          { id: "generated-0", at: 0, value: 0, easing: "linear" },
-          { id: "generated-1", at: 1, value: 1, easing: "linear" },
+          { id: `generated-${index}-${trackIndex}-0`, at: 0, value: trackIndex === 2 ? 42 : trackIndex === 3 ? 1 : 0, easing: "linear" },
+          { id: `generated-${index}-${trackIndex}-1`, at: 1, value: trackIndex === 2 ? 46 : trackIndex === 3 ? 1.1 : 1, easing: "linear" },
         ],
       }),
       id: `stress-${index}-${trackIndex}`,
@@ -74,7 +78,12 @@ test("generated stress fixture preserves invariants at flagship-scale scene coun
     if (next.kind === "video" && next.sceneId) next.sceneId = rename(next.sceneId);
     return next;
   });
-  const stress = parseExperience({ ...structuredClone(base), scenes, hotspots, assets });
+  let stress: ReturnType<typeof parseExperience>;
+  try {
+    stress = parseExperience({ ...structuredClone(base), scenes, hotspots, assets });
+  } catch (error) {
+    assert.fail(error instanceof Error ? error.message : String(error));
+  }
   assert.equal(stress.scenes.length, 16);
   const stressSceneIds = new Set(stress.scenes.map((scene) => scene.id));
   assert.equal(stress.hotspots.length, base.hotspots.length);

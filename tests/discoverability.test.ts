@@ -29,13 +29,13 @@ test("new projects fail closed until canonical search identity is authored",()=>
 test("structured data describes both the website and primary entity",()=>{
   const data=buildStructuredData(project.discoverability,experience) as {"@graph":Array<Record<string,unknown>>};
   assert.equal(data["@graph"][0]?.["@type"],"WebSite");
-  assert.equal(data["@graph"][1]?.["@type"],"ProfessionalService");
-  assert.equal(data["@graph"][1]?.name,"Atelier Maris");
+  assert.equal(data["@graph"][1]?.["@type"],project.discoverability.primaryEntity.type);
+  assert.equal(data["@graph"][1]?.name,project.discoverability.primaryEntity.name);
 });
 
 test("llms text is grounded in declared public pages and authority topics",()=>{
   const text=buildLlmsText(project.discoverability,experience);
-  assert.match(text,/# Atelier Maris/);
+  assert.ok(text.includes(`# ${project.discoverability.siteName}`));
   assert.match(text,/Authority topics/);
   assert.match(text,/https:\/\/immersive-system-growth\.vercel\.app\/site/);
   assert.doesNotMatch(text,/\/studio\b/);

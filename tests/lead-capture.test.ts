@@ -96,13 +96,13 @@ test("submissions from one client are rate limited", () => {
   resetRateLimits();
 });
 
-test("the checked-in conversion section validates and its brochure name cannot traverse", () => {
+test("the checked-in conversion section validates and brochure names cannot traverse", () => {
   const parsed = conversionSchema.safeParse(experience.conversion);
   assert(parsed.success);
-  if (parsed.success) assert.equal(parsed.data.brochure?.file, "casa-lumen.pdf");
   const base = experience.conversion;
+  const validBrochure = { id: "test-brochure", label: "Test brochure", file: "test-brochure.pdf", size: "1 KB" };
   for (const file of ["../../package.json", "/etc/passwd", "a/b.pdf", "note.txt", "UPPER.pdf"])
-    assert(!conversionSchema.safeParse({ ...base, brochure: { ...base.brochure, file } }).success, file);
+    assert(!conversionSchema.safeParse({ ...base, brochure: { ...validBrochure, file } }).success, file);
   // A brochure intent without a brochure is rejected rather than rendering a dead button.
   assert(!conversionSchema.safeParse({ ...base, intent: "brochure", brochure: undefined }).success);
 });
